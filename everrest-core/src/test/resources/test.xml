@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2009 eXo Platform SAS.
+
+    This is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as
+    published by the Free Software Foundation; either version 2.1 of
+    the License, or (at your option) any later version.
+
+    This software is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this software; if not, write to the Free
+    Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+    02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" sv:name="/" xlink:href="http://localhost:8080/portal/rest/jcr/repository/">
+   <sv:property sv:name="jcr:primaryType" xlink:href="http://localhost:8080/portal/rest/jcr/repository/jcr:primaryType" />
+   <sv:property sv:name="jcr:mixinTypes" xlink:href="http://localhost:8080/portal/rest/jcr/repository/jcr:mixinTypes" />
+   <sv:property sv:name="exo:owner" xlink:href="http://localhost:8080/portal/rest/jcr/repository/exo:owner" />
+   <sv:property sv:name="exo:permissions" xlink:href="http://localhost:8080/portal/rest/jcr/repository/exo:permissions" />
+   <sv:node sv:name="exo:portal-registry" xlink:href="http://localhost:8080/portal/rest/jcr/repository/exo:portal-registry" />
+   <sv:node sv:name="users" xlink:href="http://localhost:8080/portal/rest/jcr/repository/users" />
+   <sv:node sv:name="groups" xlink:href="http://localhost:8080/portal/rest/jcr/repository/groups" />
+   <sv:node sv:name="home" xlink:href="http://localhost:8080/portal/rest/jcr/repository/home" />
+   <sv:node sv:name="cms" xlink:href="http://localhost:8080/portal/rest/jcr/repository/cms" />
+   <sv:node sv:name="exo:registry" xlink:href="http://localhost:8080/portal/rest/jcr/repository/exo:registry" />
+</sv:node>

@@ -1,0 +1,6 @@
+For runing test:
+1. Put in tomcat/webapp/cross-domain-ajax/server document server.html 
+   from /cross-domain-ajax/src/server and test.txt from /cross-domain-ajax/test/
+2. Found directory for apache web-sites and create folowing structure on it /cross-domain-ajax/client and put on in files client.html 
+   from /cross-domain-ajax/src/client and index.html from /cross-domain-ajax/test/
+3. In browser http://localhost/cross-domain-ajax/client/ and push button "test cross-domain".

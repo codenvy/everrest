@@ -1,0 +1,31 @@
+<html>
+<head>
+<script type="text/javascript" src="xda.js"></script>	
+<script type="text/javascript">
+
+  
+	
+  function test(){
+		var facade = xdaInit();
+		facade.clientURI = "http://localhost/cross-domain-ajax/client/client.html";
+		facade.serverURI = "http://localhost:8080/cross-domain-ajax/server/server.html";
+		facade.apiURI = "http://localhost:8080/cross-domain-ajax/server/test.txt";
+		facade.method = "POST";
+		facade.load = function(result) {
+				alert(result.responseText);
+		}
+		facade.setRequestHeader("keep-alive","200");
+		xda.create(facade);
+	}
+ 
+ 
+  
+</script>
+</head>
+<body id="body">
+<div id="frs">
+</div>
+<button onclick='test()'>test cross-domain</button>
+	 
+</body>
+</html>

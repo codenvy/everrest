@@ -1,0 +1,1 @@
+{"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}
