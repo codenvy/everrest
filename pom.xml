@@ -43,10 +43,9 @@
       <exo.product.name>everrest</exo.product.name>
       <exo.product.specification>1.0</exo.product.specification>
 
-      <org.exoplatform.kernel.version>2.2.0-CR1</org.exoplatform.kernel.version>
-      <org.exoplatform.core.version>2.3.0-CR1</org.exoplatform.core.version>
+      <org.exoplatform.kernel.version>2.2.0-GA</org.exoplatform.kernel.version>
+      <org.exoplatform.core.version>2.3.0-GA</org.exoplatform.core.version>
       <org.everrest.version>1.0-SNAPSHOT</org.everrest.version>
-      <org.exoplatform.jcr.version>1.12.0-CR1</org.exoplatform.jcr.version>
 	  
 	  <javax.ws.rs.version>1.0</javax.ws.rs.version>
 	  <javax.servlet.version>2.4</javax.servlet.version>

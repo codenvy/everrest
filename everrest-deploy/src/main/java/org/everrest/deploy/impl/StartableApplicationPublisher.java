@@ -18,11 +18,6 @@
  */
 package org.everrest.deploy.impl;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
-import javax.ws.rs.core.Application;
-
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.Inject;
@@ -34,16 +29,24 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.picocontainer.Startable;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+import javax.ws.rs.core.Application;
+
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: StartableApplicationPublisher.java 436 2009-10-28 06:47:29Z aparfonov $
+ * @version $Id: StartableApplicationPublisher.java 436 2009-10-28 06:47:29Z
+ *          aparfonov $
  */
 public class StartableApplicationPublisher extends ApplicationPublisher implements DependencySupplier, Startable
 {
 
    private ExoContainer container;
 
-   public StartableApplicationPublisher(ResourceBinder resources, ExoContainerContext containerContext)
+   public StartableApplicationPublisher(ResourceBinder resources, //
+      ExoJAXRSApplication exoJAXRSApplication, // to be sure main exo application deploy mechanism initialized
+      ExoContainerContext containerContext)
    {
       super(resources, ProviderBinder.getInstance());
       container = containerContext.getContainer();
@@ -79,7 +82,9 @@ public class StartableApplicationPublisher extends ApplicationPublisher implemen
    {
       List<Application> applications = container.getComponentInstancesOfType(Application.class);
       for (Application application : applications)
+      {
          publish(application);
+      }
    }
 
    /**

@@ -18,6 +18,22 @@
  */
 package org.everrest.deploy.impl;
 
+import org.everrest.core.Filter;
+import org.everrest.core.GenericContainerRequest;
+import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.RequestFilter;
+import org.everrest.core.RequestHandler;
+import org.everrest.core.ResponseFilter;
+import org.everrest.core.impl.ContainerRequest;
+import org.everrest.core.impl.ContainerResponse;
+import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.method.MethodInvokerFilter;
+import org.everrest.core.provider.EntityProvider;
+import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.resource.ResourceContainer;
+import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,23 +50,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-
-import org.everrest.core.Filter;
-import org.everrest.core.GenericContainerRequest;
-import org.everrest.core.GenericContainerResponse;
-import org.everrest.core.RequestFilter;
-import org.everrest.core.RequestHandler;
-import org.everrest.core.ResponseFilter;
-import org.everrest.deploy.impl.BaseTest;
-import org.everrest.core.impl.ContainerRequest;
-import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.method.MethodInvokerFilter;
-import org.everrest.core.provider.EntityProvider;
-import org.everrest.core.resource.GenericMethodResource;
-import org.everrest.core.resource.ResourceContainer;
-import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
@@ -70,7 +69,7 @@ public class StartableApplicationPublisherTest extends BaseTest
    }
 
    // Check does we get all additional component specified in configuration.
-   public void testDeployAdditionalComponents()
+   public void _testDeployAdditionalComponents()
    {
       ProviderBinder providers = ProviderBinder.getInstance();
       // XXX Able (no NPE) to use null instead "path" because UriPattern
@@ -166,7 +165,7 @@ public class StartableApplicationPublisherTest extends BaseTest
       }
    }
 
-   // -------------- Component of exo-container. It will become to be singleton resource. 
+   // -------------- Component of exo-container. It will become to be singleton resource.
 
    @Path("a")
    public static class Resource1 implements ResourceContainer

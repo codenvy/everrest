@@ -18,11 +18,11 @@
  */
 package org.everrest.deploy.impl;
 
+import junit.framework.TestCase;
+
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.ProviderBinder;
 import org.exoplatform.container.StandaloneContainer;
-
-import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
@@ -35,10 +35,10 @@ public abstract class BaseTest extends TestCase
 
    public void setUp() throws Exception
    {
-      StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
+      StandaloneContainer.addConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
       container = StandaloneContainer.getInstance();
    }
-   
+
    protected void setContext()
    {
       ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, ProviderBinder.getInstance()));
