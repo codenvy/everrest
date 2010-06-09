@@ -178,12 +178,17 @@
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
-            <artifactId>everrest-env-exo</artifactId>
+            <artifactId>everrest-json</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
-            <artifactId>everrest-json</artifactId>
+            <artifactId>everrest-deploy</artifactId>
+            <version>${org.everrest.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.everrest</groupId>
+            <artifactId>everrest-env-exo</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <dependency>
