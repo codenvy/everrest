@@ -46,7 +46,7 @@ public class BeanBuilder
 
    /**
     * Create Java Bean from Json Source.
-    * 
+    *
     * @param clazz the Class of target Object.
     * @param jsonValue the Json representation.
     * @return Object.
@@ -54,6 +54,13 @@ public class BeanBuilder
     */
    public Object createObject(Class<?> clazz, JsonValue jsonValue) throws Exception
    {
+      if (JsonUtils.getType(clazz) == Types.ENUM)
+      {
+         // Enum is not instantiable via CLass.getInstance().
+         // This is used when enum is member of array or collection.
+         Class c = clazz;
+         return Enum.valueOf(c, jsonValue.getStringValue());
+      }
       Object object = clazz.newInstance();
       Method[] methods = clazz.getMethods();
 
@@ -101,6 +108,12 @@ public class BeanBuilder
                {
                   switch (type)
                   {
+                     case ENUM : {
+                        Class c = methodParameterClazz;
+                        Enum<?> en = Enum.valueOf(c, childJsonValue.getStringValue());
+                        method.invoke(object, new Object[]{en});
+                     }
+                        break;
                      case ARRAY_OBJECT : {
                         Object array = createArray(methodParameterClazz, childJsonValue);
                         method.invoke(object, new Object[]{array});
@@ -305,7 +318,7 @@ public class BeanBuilder
    /**
     * Create array of Java Object from Json Source include multi-dimension
     * array.
-    * 
+    *
     * @param clazz the Class of target Object.
     * @param jsonValue the Json representation.
     * @return Object.
@@ -351,7 +364,7 @@ public class BeanBuilder
 
    /**
     * Create Objects of known types.
-    * 
+    *
     * @param clazz class.
     * @param jsonValue JsonValue , @see {@link JsonValue}
     * @return Object.

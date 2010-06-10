@@ -39,6 +39,21 @@ public class Book
 
    private boolean delivery;
 
+   public Book()
+   {
+   }
+
+   public Book(String author, String title, double price, long isdn, int pages, boolean availability, boolean delivery)
+   {
+      this.author = author;
+      this.title = title;
+      this.price = price;
+      this.isdn = isdn;
+      this.pages = pages;
+      this.availability = availability;
+      this.delivery = delivery;
+   }
+
    public void setAuthor(String s)
    {
       author = s;

@@ -20,14 +20,19 @@ package org.everrest.json.impl;
 
 import junit.framework.TestCase;
 
+import org.everrest.json.BeanWithBookEnum;
+import org.everrest.json.BeanWithSimpleEnum;
 import org.everrest.json.BeanWithTransientField;
 import org.everrest.json.Book;
+import org.everrest.json.BookEnum;
 import org.everrest.json.BookStorage;
 import org.everrest.json.BookWrapper;
 import org.everrest.json.JavaMapBean;
+import org.everrest.json.StringEnum;
 import org.everrest.json.value.JsonValue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -214,4 +219,48 @@ public class JsonGeneratorTest extends TestCase
       }
    }
 
+   public void testEnumSerialization() throws Exception
+   {
+      BeanWithSimpleEnum be = new BeanWithSimpleEnum();
+      be.setName("name");
+      be.setCount(StringEnum.TWO);
+      be.setCounts(new StringEnum[]{StringEnum.ONE, StringEnum.TWO});
+      be.setCountList(Arrays.asList(StringEnum.ONE, StringEnum.TWO, StringEnum.TREE));
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
+      //System.out.println(jsonValue);
+
+      assertEquals("name", jsonValue.getElement("name").getStringValue());
+
+      assertEquals(StringEnum.TWO.name(), jsonValue.getElement("count").getStringValue());
+
+      JsonValue countValues = jsonValue.getElement("counts");
+      List<String> tmp = new ArrayList<String>();
+      for (Iterator<JsonValue> counts = countValues.getElements(); counts.hasNext();)
+      {
+         tmp.add(counts.next().getStringValue());
+      }
+      assertEquals(2, tmp.size());
+      assertTrue(tmp.contains(StringEnum.ONE.name()));
+      assertTrue(tmp.contains(StringEnum.TWO.name()));
+
+      JsonValue countListValues = jsonValue.getElement("countList");
+      tmp = new ArrayList<String>();
+      for (Iterator<JsonValue> counts = countListValues.getElements(); counts.hasNext();)
+      {
+         tmp.add(counts.next().getStringValue());
+      }
+      assertEquals(3, tmp.size());
+      assertTrue(tmp.contains(StringEnum.ONE.name()));
+      assertTrue(tmp.contains(StringEnum.TWO.name()));
+      assertTrue(tmp.contains(StringEnum.TREE.name()));
+   }
+
+   public void testEnumSerialization2() throws Exception
+   {
+      BeanWithBookEnum be = new BeanWithBookEnum();
+      be.setBook(BookEnum.JUNIT_IN_ACTION);
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
+      //System.out.println(jsonValue);
+      assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
+   }
 }

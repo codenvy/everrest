@@ -115,7 +115,7 @@ public class JsonGeneratorImpl implements JsonGenerator
 
    /**
     * Create JsonValue corresponding to Java object.
-    * 
+    *
     * @param object source object.
     * @return JsonValue.
     * @throws JsonException if any errors occurs.
@@ -146,6 +146,8 @@ public class JsonGeneratorImpl implements JsonGenerator
             return new StringValue(Character.toString((Character)object));
          case STRING :
             return new StringValue((String)object);
+         case ENUM :
+            return new StringValue(((Enum)object).name());
          case ARRAY_BOOLEAN : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
@@ -260,7 +262,7 @@ public class JsonGeneratorImpl implements JsonGenerator
    /**
     * Check fields in class which marked as 'transient'. Transient fields will
     * be not serialized in JSON representation.
-    * 
+    *
     * @param clazz the class.
     * @return list of fields which must be skiped.
     */
