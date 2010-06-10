@@ -18,13 +18,6 @@
  */
 package org.everrest.core.tools;
 
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.impl.ContainerRequest;
@@ -33,10 +26,17 @@ import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 /**
- * This class may be useful for running test and should not be used for launching
- * services in real environment, Servlet Container for example.
- *  
+ * This class may be useful for running test and should not be used for
+ * launching services in real environment, Servlet Container for example.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ResourceLauncher.java 497 2009-11-08 13:19:25Z aparfonov $
  */
@@ -76,7 +76,7 @@ public class ResourceLauncher
       if (env == null)
          env = new EnvironmentContext();
       EnvironmentContext.setCurrent(env);
-      
+
       ContainerRequest request =
          new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
       ContainerResponse response = new ContainerResponse(writer);

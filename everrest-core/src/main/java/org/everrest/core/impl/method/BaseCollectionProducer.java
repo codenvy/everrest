@@ -32,7 +32,8 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BaseCollectionProducer.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: BaseCollectionProducer.java 285 2009-10-15 16:21:30Z aparfonov
+ *          $
  */
 public abstract class BaseCollectionProducer implements TypeProducer
 {
@@ -45,8 +46,8 @@ public abstract class BaseCollectionProducer implements TypeProducer
    /**
     * Constructs BaseCollectionProducer.
     * 
-    * @param collectionClass class of Collections, should be one of {@link List},
-    *          {@link Set}, {@link SortedSet} .
+    * @param collectionClass class of Collections, should be one of {@link List}
+    *        , {@link Set}, {@link SortedSet} .
     */
    protected BaseCollectionProducer(Class<?> collectionClass)
    {
@@ -57,8 +58,8 @@ public abstract class BaseCollectionProducer implements TypeProducer
     * Create collection's element.
     * 
     * @param value this String will be used for creation object, usually String
-    *          will be used as parameter for constructor or static method
-    *          <code>valueOf</code>
+    *        will be used as parameter for constructor or static method
+    *        <code>valueOf</code>
     * @return newly created collection's element
     * @throws Exception if any error occurs
     */
@@ -66,14 +67,12 @@ public abstract class BaseCollectionProducer implements TypeProducer
 
    /**
     * Create Object (it is Collection) and add in it elements. Elements must
-    * either:
-    * <li>To be a Sting</li>
-    * <li>Have a constructor that accepts a single String argument.</li>
-    * <li>Have a static method named <code>valueOf</code> that accepts a single
-    * String argument</li>.
-    * If values map does not contains any value for parameter <i>param</i>
-    * then <i>defaultValue</i> will be used, in this case Collection will 
-    * contains single element. {@inheritDoc}
+    * either: <li>To be a Sting</li> <li>Have a constructor that accepts a
+    * single String argument.</li> <li>Have a static method named
+    * <code>valueOf</code> that accepts a single String argument</li>. If values
+    * map does not contains any value for parameter <i>param</i> then
+    * <i>defaultValue</i> will be used, in this case Collection will contains
+    * single element. {@inheritDoc}
     */
    public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception
    {

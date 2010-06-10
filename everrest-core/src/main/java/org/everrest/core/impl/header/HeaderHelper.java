@@ -90,7 +90,8 @@ public final class HeaderHelper
 
    /**
     * Comparator for tokens which have quality value.
-    * @see QualityValue 
+    * 
+    * @see QualityValue
     */
    public static final Comparator<QualityValue> QUALITY_VALUE_COMPARATOR = new Comparator<QualityValue>()
    {
@@ -121,6 +122,7 @@ public final class HeaderHelper
 
    /**
     * Accept media type producer.
+    * 
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptMediaType> LIST_MEDIA_TYPE_PRODUCER =
@@ -154,6 +156,7 @@ public final class HeaderHelper
 
    /**
     * Accept language producer.
+    * 
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptLanguage> LIST_LANGUAGE_PRODUCER =
@@ -186,8 +189,9 @@ public final class HeaderHelper
    }
 
    /**
-    * Accept token producer. Useful for processing
-    * 'accept-charset' and 'accept-encoding' request headers.
+    * Accept token producer. Useful for processing 'accept-charset' and
+    * 'accept-encoding' request headers.
+    * 
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptToken> LIST_TOKEN_PRODUCER = new ListHeaderProducer<AcceptToken>()
@@ -261,7 +265,7 @@ public final class HeaderHelper
    {
 
       /**
-       * Cookie name. 
+       * Cookie name.
        */
       String name;
 
@@ -462,9 +466,9 @@ public final class HeaderHelper
 
    /**
     * Parse date header. Will try to found appropriated format for given date
-    * header. Format can be one of see {@link <a
-    * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1"
-    * >HTTP/1.1 documentation</a>}.
+    * header. Format can be one of see
+    * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>}
+    * .
     * 
     * @param header source date header
     * @return parsed Date
@@ -488,7 +492,8 @@ public final class HeaderHelper
 
    /**
     * @param httpHeaders HTTP headers
-    * @return parsed content-length or null if content-length header is not specified
+    * @return parsed content-length or null if content-length header is not
+    *         specified
     */
    public static long getContentLengthLong(MultivaluedMap<String, String> httpHeaders)
    {
@@ -512,9 +517,9 @@ public final class HeaderHelper
    }
 
    /**
-    * Convert Collection&lt;String&gt; to single String, where values separated by ','.
-    * Useful for getting source string of HTTP header for next processing quality
-    * value of header tokens.
+    * Convert Collection&lt;String&gt; to single String, where values separated
+    * by ','. Useful for getting source string of HTTP header for next
+    * processing quality value of header tokens.
     * 
     * @param collection the source list
     * @return String result

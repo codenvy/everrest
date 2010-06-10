@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * @param <V> {@link org.everrest.core.RequestFilter} or
- *          {@link org.everrest.core.ResponseFilter}
+ *        {@link org.everrest.core.ResponseFilter}
  */
 public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements ExtMultivaluedMap<UriPattern, V>
 {

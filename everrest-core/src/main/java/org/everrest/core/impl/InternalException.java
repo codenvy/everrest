@@ -20,11 +20,11 @@ package org.everrest.core.impl;
 
 /**
  * Should not be used by custom services. They have to use
- * {@link javax.ws.rs.WebApplicationException} instead. This Exception is
- * used as wrapper for exception that may occur during request processing.
+ * {@link javax.ws.rs.WebApplicationException} instead. This Exception is used
+ * as wrapper for exception that may occur during request processing.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: InternalException.java -1   $
+ * @version $Id: InternalException.java -1 $
  */
 public class InternalException extends RuntimeException
 {

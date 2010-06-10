@@ -18,6 +18,8 @@
  */
 package org.everrest.core.impl.method;
 
+import org.everrest.core.Property;
+
 import java.lang.annotation.Annotation;
 
 import javax.ws.rs.CookieParam;
@@ -28,11 +30,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
-import org.everrest.core.Property;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ParameterResolverFactory.java 292 2009-10-19 07:03:07Z aparfonov $
+ * @version $Id: ParameterResolverFactory.java 292 2009-10-19 07:03:07Z
+ *          aparfonov $
  */
 public final class ParameterResolverFactory
 {
@@ -70,8 +71,8 @@ public final class ParameterResolverFactory
          return new QueryParameterResolver((QueryParam)annotation);
       if (clazz == Property.class)
          return new PropertyResolver((Property)annotation);
-//      if (clazz == Inject.class)
-//         return new InjectableProvider((Inject)annotation);
+      //      if (clazz == Inject.class)
+      //         return new InjectableProvider((Inject)annotation);
       return null;
    }
 

@@ -19,7 +19,9 @@
 package org.everrest.json.impl;
 
 /**
- * Should be thrown if any error occurs during JSON <-> Java Object transformation.
+ * Should be thrown if any error occurs during JSON <-> Java Object
+ * transformation.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: JsonException.java 34417 2009-07-23 14:42:56Z dkatayev $
  */

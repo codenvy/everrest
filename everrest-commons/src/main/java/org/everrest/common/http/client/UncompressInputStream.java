@@ -43,6 +43,7 @@ import java.io.InputStream;
  * unix "compress" utility (LZC, a LZW variant). This code is based heavily on
  * the <var>unlzw.c</var> code in <var>gzip-1.2.4</var> (written by Peter
  * Jannesen) and the original compress code.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

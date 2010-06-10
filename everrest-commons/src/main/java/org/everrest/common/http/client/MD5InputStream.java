@@ -42,6 +42,7 @@ import java.security.NoSuchAlgorithmException;
  * This class calculates a running md5 digest of the data read. When the stream
  * is closed the calculated digest is passed to a HashVerifier which is expected
  * to verify this digest and to throw an Exception if it fails.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -112,9 +113,10 @@ class MD5InputStream extends FilterInputStream
     * Close the stream and check the digest. If the stream has not been fully
     * read then the rest of the data will first be read (and discarded) to
     * complete the digest calculation.
+    * 
     * @exception IOException if the close()'ing the underlying stream throws an
-    *              IOException, or if the expected digest and the calculated
-    *              digest don't match.
+    *            IOException, or if the expected digest and the calculated
+    *            digest don't match.
     */
    public synchronized void close() throws IOException
    {
@@ -124,9 +126,10 @@ class MD5InputStream extends FilterInputStream
 
    /**
     * Close the stream and check the digest.
+    * 
     * @exception IOException if the close()'ing the underlying stream throws an
-    *              IOException, or if the expected digest and the calculated
-    *              digest don't match.
+    *            IOException, or if the expected digest and the calculated
+    *            digest don't match.
     */
    private void real_close() throws IOException
    {

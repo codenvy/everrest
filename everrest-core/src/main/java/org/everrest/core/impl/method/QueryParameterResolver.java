@@ -25,7 +25,8 @@ import javax.ws.rs.QueryParam;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: QueryParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: QueryParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
+ *          $
  */
 public class QueryParameterResolver extends ParameterResolver<QueryParam>
 {
@@ -47,8 +48,7 @@ public class QueryParameterResolver extends ParameterResolver<QueryParam>
     * {@inheritDoc}
     */
    @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception
+   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String param = this.queryParam.value();
       TypeProducer typeProducer =

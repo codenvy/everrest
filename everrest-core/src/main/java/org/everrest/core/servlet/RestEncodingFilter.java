@@ -28,7 +28,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
- * @author <a href="mailto:volodymyr.krasnikov@exoplatform.com.ua">Volodymyr Krasnikov</a>
+ * @author <a href="mailto:volodymyr.krasnikov@exoplatform.com.ua">Volodymyr
+ *         Krasnikov</a>
  */
 public class RestEncodingFilter implements Filter
 {
@@ -47,8 +48,7 @@ public class RestEncodingFilter implements Filter
    }
 
    /**
-    * Set character encoding.
-    * {@inheritDoc}
+    * Set character encoding. {@inheritDoc}
     */
    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain filterChain) throws IOException,
       ServletException

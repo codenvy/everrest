@@ -39,7 +39,7 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
 {
 
    /**
-    * Serial version UID. 
+    * Serial version UID.
     */
    private static final long serialVersionUID = 8930689464134153848L;
 

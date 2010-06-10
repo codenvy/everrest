@@ -18,18 +18,6 @@
  */
 package org.everrest.core.impl;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.ExceptionMapper;
-
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ExtHttpHeaders;
@@ -44,9 +32,21 @@ import org.everrest.core.ResponseFilter;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.ExceptionMapper;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestHandlerImpl.java -1   $
+ * @version $Id: RequestHandlerImpl.java -1 $
  */
 public final class RequestHandlerImpl implements RequestHandler
 {
@@ -87,8 +87,9 @@ public final class RequestHandlerImpl implements RequestHandler
    private static final Log LOG = ExoLogger.getLogger(RequestHandlerImpl.class.getName());
 
    /**
-    * Application properties. Properties from this map will be copied to ApplicationContext
-    * and may be accessible via method {@link ApplicationContextImpl#getProperties()}. 
+    * Application properties. Properties from this map will be copied to
+    * ApplicationContext and may be accessible via method
+    * {@link ApplicationContextImpl#getProperties()}.
     */
    private static final Map<String, String> properties = new HashMap<String, String>();
 
@@ -267,7 +268,7 @@ public final class RequestHandlerImpl implements RequestHandler
 
    /**
     * Create error response with specified status and body message.
-    *  
+    * 
     * @param status response status
     * @param message response message
     * @return response

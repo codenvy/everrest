@@ -64,6 +64,7 @@ import java.util.Hashtable;
  * exist.
  * <P>
  * Ideally, java.net.URL should subclass URI.
+ * 
  * @see <A HREF="http://www.ics.uci.edu/pub/ietf/uri/rfc2396.txt">rfc-2396< /A>
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
@@ -72,8 +73,8 @@ import java.util.Hashtable;
 public class URI
 {
    /**
-    * If true, then the parser will resolve certain URI's in backwards compatible
-    * (but technically incorrect) manner. Example:
+    * If true, then the parser will resolve certain URI's in backwards
+    * compatible (but technically incorrect) manner. Example:
     * 
     * <PRE>
     * base   = http://a/b/c/d;p?q
@@ -379,9 +380,10 @@ public class URI
    /**
     * Constructs a URI from the given string representation. The string must be
     * an absolute URI.
+    * 
     * @param uri a String containing an absolute URI
     * @exception ParseException if no scheme can be found or a specified port
-    *              cannot be parsed as a number
+    *            cannot be parsed as a number
     */
    public URI(String uri) throws ParseException
    {
@@ -391,13 +393,15 @@ public class URI
    /**
     * Constructs a URI from the given string representation, relative to the
     * given base URI.
+    * 
     * @param base the base URI, relative to which <var>rel_uri</var> is to be
-    *          parsed
+    *        parsed
     * @param rel_uri a String containing a relative or absolute URI
-    * @exception ParseException if <var>base</var> is null and <var>rel_uri</var>
-    *              is not an absolute URI, or if <var>base</var> is not null and
-    *              the scheme is not known to use the generic syntax, or if a
-    *              given port cannot be parsed as a number
+    * @exception ParseException if <var>base</var> is null and
+    *            <var>rel_uri</var> is not an absolute URI, or if
+    *            <var>base</var> is not null and the scheme is not known to use
+    *            the generic syntax, or if a given port cannot be parsed as a
+    *            number
     */
    public URI(URI base, String rel_uri) throws ParseException
    {
@@ -547,8 +551,9 @@ public class URI
    }
 
    /**
-    * Remove all "/../" and "/./" from path, where possible. Leading "/../"'s are
-    * not removed.
+    * Remove all "/../" and "/./" from path, where possible. Leading "/../"'s
+    * are not removed.
+    * 
     * @param path the path to canonicalize
     * @return the canonicalized path
     */
@@ -675,9 +680,10 @@ public class URI
 
    /**
     * Construct a URI from the given URL.
+    * 
     * @param url the URL
-    * @exception ParseException if <code>url.toExternalForm()</code> generates an
-    *              invalid string representation
+    * @exception ParseException if <code>url.toExternalForm()</code> generates
+    *            an invalid string representation
     */
    public URI(URL url) throws ParseException
    {
@@ -687,6 +693,7 @@ public class URI
    /**
     * Constructs a URI from the given parts, using the default port for this
     * scheme (if known). The parts must be in unescaped form.
+    * 
     * @param scheme the scheme (sometimes known as protocol)
     * @param host the host
     * @param path the path part
@@ -698,7 +705,9 @@ public class URI
    }
 
    /**
-    * Constructs a URI from the given parts. The parts must be in unescaped form.
+    * Constructs a URI from the given parts. The parts must be in unescaped
+    * form.
+    * 
     * @param scheme the scheme (sometimes known as protocol)
     * @param host the host
     * @param port the port
@@ -713,6 +722,7 @@ public class URI
    /**
     * Constructs a URI from the given parts. Any part except for the the scheme
     * may be null. The parts must be in unescaped form.
+    * 
     * @param scheme the scheme (sometimes known as protocol)
     * @param userinfo the userinfo
     * @param host the host
@@ -764,6 +774,7 @@ public class URI
 
    /**
     * Constructs an opaque URI from the given parts.
+    * 
     * @param scheme the scheme (sometimes known as protocol)
     * @param opaque the opaque part
     * @exception ParseException if <var>scheme</var> is null
@@ -790,8 +801,9 @@ public class URI
    }
 
    /**
-    * @return true if the scheme should be parsed according to a semi-generic-URI
-    *         syntax &lt;scheme&tgt;://&lt;hostport&gt;/&lt;opaque&gt;
+    * @return true if the scheme should be parsed according to a
+    *         semi-generic-URI syntax
+    *         &lt;scheme&tgt;://&lt;hostport&gt;/&lt;opaque&gt;
     */
    public static boolean usesSemiGenericSyntax(String scheme)
    {
@@ -800,6 +812,7 @@ public class URI
 
    /**
     * Return the default port used by a given protocol.
+    * 
     * @param protocol the protocol
     * @return the port number, or 0 if unknown
     */
@@ -898,12 +911,13 @@ public class URI
     * generic-URI = scheme &quot;:&quot; [ &quot;//&quot; server ] [ &quot;/&quot; ] [ path_segments ] [ &quot;?&quot; query ]
     * </PRE>
     * 
-    * (see RFC-2396 for exact syntax). Only URLs using the generic-URI syntax can
-    * be used to create and resolve relative URIs.
+    * (see RFC-2396 for exact syntax). Only URLs using the generic-URI syntax
+    * can be used to create and resolve relative URIs.
     * <P>
     * Whether a given scheme is parsed according to the generic-URI syntax or
     * wether it is treated as opaque is determined by an internal table of URI
     * schemes.
+    * 
     * @see <A HREF="http://www.ics.uci.edu/pub/ietf/uri/rfc2396.txt">rfc-2396<
     *      /A>
     */
@@ -925,11 +939,12 @@ public class URI
     * 
     * I.e. parsing is identical to the generic-syntax, except that the path part
     * is not further parsed. URLs using the semi-generic-URI syntax can be used
-    * to create and resolve relative URIs with the restriction that all paths are
-    * treated as absolute.
+    * to create and resolve relative URIs with the restriction that all paths
+    * are treated as absolute.
     * <P>
     * Whether a given scheme is parsed according to the semi-generic-URI syntax
     * is determined by an internal table of URI schemes.
+    * 
     * @see #isGenericURI()
     */
    public boolean isSemiGenericURI()
@@ -939,6 +954,7 @@ public class URI
 
    /**
     * Will try to create a java.net.URL object from this URI.
+    * 
     * @return the URL
     * @exception MalformedURLException if no handler is available for the scheme
     */
@@ -1042,8 +1058,9 @@ public class URI
    /**
     * Return the URI as string. This differs from toExternalForm() in that all
     * elements are unescaped before assembly. This is <em>not suitable</em> for
-    * passing to other apps or in header fields and such, and is usually not what
-    * you want.
+    * passing to other apps or in header fields and such, and is usually not
+    * what you want.
+    * 
     * @return the URI as a string
     * @see #toExternalForm()
     */
@@ -1147,6 +1164,7 @@ public class URI
 
    /**
     * The hash code is calculated over scheme, host, path, and query.
+    * 
     * @return the hash code
     */
    public int hashCode()
@@ -1167,6 +1185,7 @@ public class URI
    /**
     * Escape any character not in the given character class. Characters greater
     * 255 are always escaped according to ??? .
+    * 
     * @param elem the string to escape
     * @param allowed_char the BitSet of all allowed characters
     * @param utf8 if true, will first UTF-8 encode unallowed characters
@@ -1180,6 +1199,7 @@ public class URI
    /**
     * Escape any character not in the given character class. Characters greater
     * 255 are always escaped according to ??? .
+    * 
     * @param elem the array of characters to escape
     * @param allowed_char the BitSet of all allowed characters
     * @param utf8 if true, will first UTF-8 encode unallowed characters
@@ -1266,11 +1286,12 @@ public class URI
 
    /**
     * Unescape escaped characters (i.e. %xx) except reserved ones.
+    * 
     * @param str the string to unescape
     * @param reserved the characters which may not be unescaped, or null
     * @return the unescaped string
-    * @exception ParseException if the two digits following a `%' are not a valid
-    *              hex number
+    * @exception ParseException if the two digits following a `%' are not a
+    *            valid hex number
     */
    public static final String unescape(String str, BitSet reserved) throws ParseException
    {
@@ -1393,8 +1414,9 @@ public class URI
    }
 
    /**
-    * Unescape escaped characters (i.e. %xx). If a ParseException would be thrown
-    * then just return the original string.
+    * Unescape escaped characters (i.e. %xx). If a ParseException would be
+    * thrown then just return the original string.
+    * 
     * @param str the string to unescape
     * @param reserved the characters which may not be unescaped, or null
     * @return the unescaped string, or the original string if unescaping would
@@ -1415,6 +1437,7 @@ public class URI
 
    /**
     * Run test set.
+    * 
     * @exception Exception if any test fails
     */
    public static void main(String args[]) throws Exception

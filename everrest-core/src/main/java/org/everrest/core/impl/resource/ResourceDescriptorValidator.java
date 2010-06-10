@@ -67,7 +67,8 @@ import javax.ws.rs.core.MultivaluedMap;
  * <p>
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceDescriptorValidator.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: ResourceDescriptorValidator.java 285 2009-10-15 16:21:30Z
+ *          aparfonov $
  */
 public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 {
@@ -167,8 +168,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
    /**
     * Validate SubResourceMethodDescriptor. SubResourceMethodDescriptor is a
-    * method which annotated with path annotation and has HTTP method annotation.
-    * This method can process the request directly. {@inheritDoc}
+    * method which annotated with path annotation and has HTTP method
+    * annotation. This method can process the request directly. {@inheritDoc}
     */
    public void visitSubResourceMethodDescriptor(SubResourceMethodDescriptor srmd)
    {
@@ -184,8 +185,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
    /**
     * Check method parameter for valid annotations. NOTE If a any method
-    * parameter is annotated with {@link FormParam} then type of entity parameter
-    * must be MultivalueMap&lt;String, String&gt;.
+    * parameter is annotated with {@link FormParam} then type of entity
+    * parameter must be MultivalueMap&lt;String, String&gt;.
     * 
     * @param rmd See {@link ResourceMethodDescriptor}
     */

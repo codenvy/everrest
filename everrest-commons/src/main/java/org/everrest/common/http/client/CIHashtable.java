@@ -37,6 +37,7 @@ import java.util.Hashtable;
 
 /**
  * This class implements a Hashtable with case-insensitive Strings as keys.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -47,6 +48,7 @@ class CIHashtable extends Hashtable
    /**
     * Create a new CIHashtable with the specified initial capacity and the
     * specified load factor.
+    * 
     * @param intialCapacity the initial number of buckets
     * @param loadFactor a number between 0.0 and 1.0
     * @see java.util.Hashtable(int, float)
@@ -58,6 +60,7 @@ class CIHashtable extends Hashtable
 
    /**
     * Create a new CIHashtable with the specified initial capacity.
+    * 
     * @param intialCapacity the initial number of buckets
     * @see java.util.Hashtable(int)
     */
@@ -68,6 +71,7 @@ class CIHashtable extends Hashtable
 
    /**
     * Create a new CIHashtable with a default initial capacity.
+    * 
     * @see java.util.Hashtable()
     */
    public CIHashtable()
@@ -80,6 +84,7 @@ class CIHashtable extends Hashtable
    /**
     * Retrieves the object associated with the specified key. The key lookup is
     * case-insensitive.
+    * 
     * @param key the key
     * @return the object associated with the key, or null if none found.
     * @see java.util.Hashtable.get(Object)
@@ -91,10 +96,11 @@ class CIHashtable extends Hashtable
 
    /**
     * Stores the specified object with the specified key.
+    * 
     * @param key the key
     * @param value the object to be associated with the key
-    * @return the object previously associated with the key, or null if there was
-    *         none.
+    * @return the object previously associated with the key, or null if there
+    *         was none.
     * @see java.util.Hashtable.put(Object, Object)
     */
    public Object put(String key, Object value)
@@ -105,6 +111,7 @@ class CIHashtable extends Hashtable
    /**
     * Looks whether any object is associated with the specified key. The key
     * lookup is case insensitive.
+    * 
     * @param key the key
     * @return true is there is an object associated with key, false otherwise
     * @see java.util.Hashtable.containsKey(Object)
@@ -117,6 +124,7 @@ class CIHashtable extends Hashtable
    /**
     * Removes the object associated with this key from the Hashtable. The key
     * lookup is case insensitive.
+    * 
     * @param key the key
     * @return the object associated with this key, or null if there was none.
     * @see java.util.Hashtable.remove(Object)
@@ -128,6 +136,7 @@ class CIHashtable extends Hashtable
 
    /**
     * Returns an enumeration of all the keys in the Hashtable.
+    * 
     * @return the requested Enumerator
     * @see java.util.Hashtable.keys(Object)
     */

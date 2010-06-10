@@ -21,8 +21,8 @@ package org.everrest.ext.util;
 import org.w3c.dom.Element;
 
 /**
- * Created by The eXo Platform SAS.<br/> Can add xlink:href into given Element
- * of DOM structure.<br/>
+ * Created by The eXo Platform SAS.<br/>
+ * Can add xlink:href into given Element of DOM structure.<br/>
  * 
  * @author Gennady Azarenkov
  * @version $Id: XlinkHref.java 301 2009-10-19 14:41:18Z aparfonov $

@@ -18,8 +18,6 @@
  */
 package org.everrest.json.impl;
 
-import org.everrest.json.impl.JsonUtils;
-
 import junit.framework.TestCase;
 
 /**

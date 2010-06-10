@@ -37,6 +37,7 @@ public class StringValue extends JsonValue
 
    /**
     * Constructs new StringValue.
+    * 
     * @param value the value.
     */
    public StringValue(String value)

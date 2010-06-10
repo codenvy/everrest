@@ -80,8 +80,7 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
     */
    public org.everrest.core.wadl.research.Resource createResource(String path)
    {
-      org.everrest.core.wadl.research.Resource wadlResource =
-         new org.everrest.core.wadl.research.Resource();
+      org.everrest.core.wadl.research.Resource wadlResource = new org.everrest.core.wadl.research.Resource();
       if (path != null)
          wadlResource.setPath(path);
       return wadlResource;
@@ -114,8 +113,7 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
       if (httpMethod.equals("HEAD"))
          return null;
 
-      org.everrest.core.wadl.research.Method wadlMethod =
-         new org.everrest.core.wadl.research.Method();
+      org.everrest.core.wadl.research.Method wadlMethod = new org.everrest.core.wadl.research.Method();
       wadlMethod.setName(httpMethod);
       java.lang.reflect.Method m = rmd.getMethod();
       // NOTE Method may be null in some cases. For example OPTIONS method

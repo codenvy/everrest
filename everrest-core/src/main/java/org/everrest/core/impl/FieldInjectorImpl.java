@@ -43,7 +43,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: FieldInjectorImpl.java -1   $
+ * @version $Id: FieldInjectorImpl.java -1 $
  */
 public class FieldInjectorImpl implements FieldInjector
 {
@@ -64,8 +64,9 @@ public class FieldInjectorImpl implements FieldInjector
    private final Annotation annotation;
 
    /**
-    * Default value for this parameter, default value can be used if there is not
-    * found required parameter in request. See {@link javax.ws.rs.DefaultValue}.
+    * Default value for this parameter, default value can be used if there is
+    * not found required parameter in request. See
+    * {@link javax.ws.rs.DefaultValue}.
     */
    private final String defaultValue;
 

@@ -103,11 +103,9 @@ public final class WadlProcessor
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     * @return see {@link WadlGenerator#createResponse()}
     */
-   private org.everrest.core.wadl.research.Resource processResource(
-      AbstractResourceDescriptor resourceDescriptor)
+   private org.everrest.core.wadl.research.Resource processResource(AbstractResourceDescriptor resourceDescriptor)
    {
-      org.everrest.core.wadl.research.Resource wadlResource =
-         wadlGenerator.createResource(resourceDescriptor);
+      org.everrest.core.wadl.research.Resource wadlResource = wadlGenerator.createResource(resourceDescriptor);
 
       // Keeps common parameters for resource.
       Map<String, Param> wadlResourceParams = new HashMap<String, Param>();
@@ -138,8 +136,7 @@ public final class WadlProcessor
    /**
     * Process sub-resource methods.
     * 
-    * @param wadlResource see
-    *          {@link org.exoplatform.services.rest.wadl.research.Resource}
+    * @param wadlResource see {@link org.everrest.core.wadl.research.Resource}
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     */
    private void processSubResourceMethods(org.everrest.core.wadl.research.Resource wadlResource,
@@ -166,8 +163,7 @@ public final class WadlProcessor
                {
                   wadlSubResource = wadlGenerator.createResource(path);
                   Map<String, Param> wadlResourceParams = new HashMap<String, Param>();
-                  org.everrest.core.wadl.research.Method wadlMethod =
-                     processMethod(srmd, wadlResourceParams);
+                  org.everrest.core.wadl.research.Method wadlMethod = processMethod(srmd, wadlResourceParams);
                   if (wadlMethod == null)
                      continue;
                   wadlSubResource.getMethodOrResource().add(wadlMethod);
@@ -181,8 +177,7 @@ public final class WadlProcessor
                   // iteration.
                   Map<String, Param> wadlResourceParams = wadlCommonSubResourceParams.get(path);
                   // Add new method.
-                  org.everrest.core.wadl.research.Method wadlMethod =
-                     processMethod(srmd, wadlResourceParams);
+                  org.everrest.core.wadl.research.Method wadlMethod = processMethod(srmd, wadlResourceParams);
                   if (wadlMethod == null)
                      continue;
                   wadlSubResource.getMethodOrResource().add(wadlMethod);
@@ -207,8 +202,7 @@ public final class WadlProcessor
    /**
     * Process sub-resource locators.
     * 
-    * @param wadlResource see
-    *          {@link org.exoplatform.services.rest.wadl.research.Resource}
+    * @param wadlResource see {@link org.everrest.core.wadl.research.Resource}
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     */
    private void processSubResourceLocators(org.everrest.core.wadl.research.Resource wadlResource,
@@ -227,7 +221,7 @@ public final class WadlProcessor
    /**
     * @param rmd see {@link ResourceMethodDescriptor}
     * @param wadlResourceParams for adding parameters which must be in parent
-    * @return {@link org.exoplatform.services.rest.wadl.research.Method}
+    * @return {@link org.everrest.core.wadl.research.Method}
     */
    private org.everrest.core.wadl.research.Method processMethod(ResourceMethodDescriptor rmd,
       Map<String, Param> wadlResourceParams)
@@ -252,7 +246,7 @@ public final class WadlProcessor
    /**
     * @param rmd see {@link ResourceMethodDescriptor}
     * @param wadlResourceParams for adding parameters which must be in parent
-    * @return {@link org.exoplatform.services.rest.wadl.research.Request}
+    * @return {@link org.everrest.core.wadl.research.Request}
     */
    private org.everrest.core.wadl.research.Request processRequest(ResourceMethodDescriptor rmd,
       Map<String, Param> wadlResourceParams)
@@ -292,7 +286,7 @@ public final class WadlProcessor
 
    /**
     * @param rmd see {@link ResourceMethodDescriptor}
-    * @return {@link org.exoplatform.services.rest.wadl.research.Response}
+    * @return {@link org.everrest.core.wadl.research.Response}
     */
    private org.everrest.core.wadl.research.Response processResponse(ResourceMethodDescriptor rmd)
    {

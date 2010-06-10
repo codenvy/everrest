@@ -45,6 +45,7 @@ public class AcceptToken extends Token implements QualityValue
 
    /**
     * Create AcceptToken with specified quality value.
+    * 
     * @param token a token
     * @param qValue a quality value
     */

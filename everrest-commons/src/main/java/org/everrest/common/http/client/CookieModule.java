@@ -89,6 +89,7 @@ import java.util.Vector;
  * defaults to a system dependent name. The reading and saving of cookies is
  * enabled by setting the system property <var>HTTPClient.cookies.save</var> to
  * <var>true</var>.
+ * 
  * @see <a
  *      href="http://home.netscape.com/newsref/std/cookie_spec.html">Netscape's
  *      cookie spec</a>
@@ -483,6 +484,7 @@ public class CookieModule implements HTTPClientModule
    /**
     * Discard all cookies for the given context. Cookies stored in persistent
     * storage are not affected.
+    * 
     * @param context the context Object
     */
    public static void discardAllCookies(Object context)
@@ -493,6 +495,7 @@ public class CookieModule implements HTTPClientModule
 
    /**
     * List all stored cookies for all contexts.
+    * 
     * @return an array of all Cookies
     * @since V0.3-1
     */
@@ -522,6 +525,7 @@ public class CookieModule implements HTTPClientModule
 
    /**
     * List all stored cookies for a given context.
+    * 
     * @param context the context Object.
     * @return an array of Cookies
     * @since V0.3-1
@@ -547,6 +551,7 @@ public class CookieModule implements HTTPClientModule
     * Add the specified cookie to the list of cookies in the default context. If
     * a compatible cookie (as defined by <var>Cookie.equals()</var>) already
     * exists in the list then it is replaced with the new cookie.
+    * 
     * @param cookie the Cookie to add
     * @since V0.3-1
     */
@@ -560,6 +565,7 @@ public class CookieModule implements HTTPClientModule
     * Add the specified cookie to the list of cookies for the specified context.
     * If a compatible cookie (as defined by <var>Cookie.equals()</var>) already
     * exists in the list then it is replaced with the new cookie.
+    * 
     * @param cookie the cookie to add
     * @param context the context Object.
     * @since V0.3-1
@@ -574,6 +580,7 @@ public class CookieModule implements HTTPClientModule
     * Remove the specified cookie from the list of cookies in the default
     * context. If the cookie is not found in the list then this method does
     * nothing.
+    * 
     * @param cookie the Cookie to remove
     * @since V0.3-1
     */
@@ -587,6 +594,7 @@ public class CookieModule implements HTTPClientModule
     * Remove the specified cookie from the list of cookies for the specified
     * context. If the cookie is not found in the list then this method does
     * nothing.
+    * 
     * @param cookie the cookie to remove
     * @param context the context Object
     * @since V0.3-1
@@ -607,22 +615,22 @@ public class CookieModule implements HTTPClientModule
     * <P>
     * At initialization time a default handler is installed. This handler allows
     * all cookies to be sent. For any cookie that a server wishes to be set two
-    * lists are consulted. If the server matches any host or domain in the reject
-    * list then the cookie is rejected; if the server matches any host or domain
-    * in the accept list then the cookie is accepted (in that order). If no host
-    * or domain match is found in either of these two lists and user interaction
-    * is allowed then a dialog box is poped up to ask the user whether to accept
-    * or reject the cookie; if user interaction is not allowed the cookie is
-    * accepted.
+    * lists are consulted. If the server matches any host or domain in the
+    * reject list then the cookie is rejected; if the server matches any host or
+    * domain in the accept list then the cookie is accepted (in that order). If
+    * no host or domain match is found in either of these two lists and user
+    * interaction is allowed then a dialog box is poped up to ask the user
+    * whether to accept or reject the cookie; if user interaction is not allowed
+    * the cookie is accepted.
     * <P>
     * The accept and reject lists in the default handler are initialized at
     * startup from the two properties <var>HTTPClient.cookies.hosts.accept</var>
     * and <var>HTTPClient.cookies.hosts.reject</var>. These properties must
     * contain a "|" separated list of host and domain names. All names beginning
     * with a "." are treated as domain names, all others as host names. An empty
-    * string will match all hosts. The two lists are further expanded if the user
-    * chooses one of the "Accept All from Domain" or "Reject All from Domain"
-    * buttons in the dialog box.
+    * string will match all hosts. The two lists are further expanded if the
+    * user chooses one of the "Accept All from Domain" or
+    * "Reject All from Domain" buttons in the dialog box.
     * <P>
     * Note: the default handler does not implement the rules concerning
     * unverifiable transactions (section 3.3.6, <A
@@ -632,6 +640,7 @@ public class CookieModule implements HTTPClientModule
     * determine when a request is verifiable and when not. You are therefore
     * encouraged to provide your own handler which implements section 3.3.6 (use
     * the <code>CookiePolicyHandler.sendCookie</code> method for this).
+    * 
     * @param handler the new policy handler
     * @return the previous policy handler
     */
@@ -691,6 +700,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
     * returns whether this cookie should be accepted. First checks the stored
     * lists of accept and reject domains, and if it is neither accepted nor
     * rejected by these then query the user via a popup.
+    * 
     * @param cookie the cookie in question
     * @param req the request
     * @param resp the response
@@ -734,6 +744,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
    /**
     * This handler just allows all cookies to be sent which were accepted (i.e.
     * no further restrictions are placed on the sending of cookies).
+    * 
     * @return true
     */
    public boolean sendCookie(Cookie cookie, RoRequest req)
@@ -784,6 +795,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
 /**
  * A simple popup that asks whether the cookie should be accepted or rejected,
  * or if cookies from whole domains should be silently accepted or rejected.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -991,6 +1003,7 @@ class BasicCookieBox extends Frame
 
    /**
     * the method called by the DefaultCookiePolicyHandler.
+    * 
     * @return true if the cookie should be accepted
     */
    public synchronized boolean accept(Cookie cookie, DefaultCookiePolicyHandler h, String server)

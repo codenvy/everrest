@@ -18,10 +18,6 @@
  */
 package org.everrest.core.impl.method;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.List;
-
 import org.everrest.core.Filter;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.EnvironmentContext;
@@ -31,6 +27,10 @@ import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
+
+import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -147,8 +147,8 @@ public class MethodInvokerFilterTest extends BaseTest
       assertEquals(204, launcher.service("GET", "/a", "", null, null, null).getStatus());
       providers.addMethodInvokerFilter(MethodInvokerFilter1.class);
       EnvironmentContext env = new EnvironmentContext();
-      env.put(HttpServletRequest.class, new MockHttpServletRequest("", new ByteArrayInputStream(new byte[0]), 0,
-         "GET", new HashMap<String, List<String>>()));
+      env.put(HttpServletRequest.class, new MockHttpServletRequest("", new ByteArrayInputStream(new byte[0]), 0, "GET",
+         new HashMap<String, List<String>>()));
       assertEquals(400, launcher.service("GET", "/a/b", "", null, null, env).getStatus());
       assertEquals(204, launcher.service("GET", "/a", "", null, null, env).getStatus());
       unregistry(r);

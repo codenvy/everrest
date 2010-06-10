@@ -21,7 +21,6 @@ package org.everrest.core.impl.provider;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
-import org.everrest.core.impl.provider.IOHelper;
 import org.everrest.core.provider.EntityProvider;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
@@ -54,7 +53,8 @@ import javax.ws.rs.ext.Providers;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ProviderContextParameterInjectionTest.java 497 2009-11-08 13:19:25Z aparfonov $
+ * @version $Id: ProviderContextParameterInjectionTest.java 497 2009-11-08
+ *          13:19:25Z aparfonov $
  */
 public class ProviderContextParameterInjectionTest extends BaseTest
 {

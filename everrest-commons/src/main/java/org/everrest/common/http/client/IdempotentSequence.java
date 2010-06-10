@@ -56,6 +56,7 @@ import java.util.Hashtable;
  *     if (seq.isIdempotent(r1)) ...
  *     ...
  * </PRE>
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -98,6 +99,7 @@ class IdempotentSequence
     * Add the request to the end of the list of requests. This is used to build
     * the complete sequence of requests before determining whether the sequence
     * is idempotent.
+    * 
     * @param req the next request
     */
    public void add(Request req)
@@ -131,11 +133,12 @@ class IdempotentSequence
     * <LI>else the thread is not idempotent.
     * </OL>
     * <P>
-    * The major assumption here is that the side effects of any method only apply
-    * to resource specified. E.g. a <tt>"PUT /barbara.html"</tt> will only affect
-    * the resource "/barbara.html" and nothing else. This assumption is violated
-    * by POST of course; however, POSTs are not pipelined and will therefore
-    * never show up here.
+    * The major assumption here is that the side effects of any method only
+    * apply to resource specified. E.g. a <tt>"PUT /barbara.html"</tt> will only
+    * affect the resource "/barbara.html" and nothing else. This assumption is
+    * violated by POST of course; however, POSTs are not pipelined and will
+    * therefore never show up here.
+    * 
     * @param req the request
     */
    public boolean isIdempotent(Request req)
@@ -190,6 +193,7 @@ class IdempotentSequence
    /**
     * A method is idempotent if the side effects of N identical requests is the
     * same as for a single request (Section 9.1.2 of RFC-????).
+    * 
     * @return true if method is idempotent
     */
    public static boolean methodIsIdempotent(String method)
@@ -223,11 +227,12 @@ class IdempotentSequence
    }
 
    /**
-    * A method is complete if any side effects of the request affect the complete
-    * resource. For example, a PUT is complete but a PUT with byte-ranges
-    * wouldn't be. In essence, if a request uses a method which has side effects
-    * and is complete then the state of the resource after the request is
-    * independent of the state of the resource before the request.
+    * A method is complete if any side effects of the request affect the
+    * complete resource. For example, a PUT is complete but a PUT with
+    * byte-ranges wouldn't be. In essence, if a request uses a method which has
+    * side effects and is complete then the state of the resource after the
+    * request is independent of the state of the resource before the request.
+    * 
     * @return true if method is complete
     */
    public static boolean methodIsComplete(String method)

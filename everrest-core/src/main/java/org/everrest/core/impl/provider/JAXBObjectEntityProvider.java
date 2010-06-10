@@ -45,7 +45,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: JAXBObjectEntityProvider.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: JAXBObjectEntityProvider.java 285 2009-10-15 16:21:30Z
+ *          aparfonov $
  */
 @Provider
 @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})

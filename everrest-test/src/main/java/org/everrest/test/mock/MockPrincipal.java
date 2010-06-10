@@ -23,14 +23,14 @@ package org.everrest.test.mock;
  */
 public class MockPrincipal implements java.security.Principal
 {
-   
+
    private final String username;
-   
+
    public MockPrincipal(String username)
    {
       this.username = username;
    }
-   
+
    /**
     * {@inheritDoc}
     */

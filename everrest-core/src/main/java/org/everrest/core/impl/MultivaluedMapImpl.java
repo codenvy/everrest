@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @see javax.ws.rs.core.MultivaluedMap
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MultivaluedMapImpl.java -1   $
+ * @version $Id: MultivaluedMapImpl.java -1 $
  */
 public class MultivaluedMapImpl extends HashMap<String, List<String>> implements ExtMultivaluedMap<String, String>
 {

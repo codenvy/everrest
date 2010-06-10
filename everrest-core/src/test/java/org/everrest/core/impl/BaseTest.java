@@ -18,18 +18,12 @@
  */
 package org.everrest.core.impl;
 
-import java.util.Properties;
-
 import junit.framework.TestCase;
 
-//import org.exoplatform.container.StandaloneContainer;
-import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RequestHandlerImpl;
-import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.SimpleDependencySupplier;
 import org.exoplatform.services.log.LogConfigurator;
 import org.exoplatform.services.log.impl.Log4JConfigurator;
+
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>

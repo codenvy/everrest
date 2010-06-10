@@ -36,6 +36,7 @@ import java.io.IOException;
 
 /**
  * This interface defines a hash verifier.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -45,6 +46,7 @@ interface HashVerifier
     * This method is invoked when a digest of a stream has been calculated. It
     * must verify that the hash (or some function of it) is correct and throw an
     * IOException if it is not.
+    * 
     * @param hash the calculated hash
     * @param len the number of bytes read from the stream
     * @exception IOException if the verification fails.

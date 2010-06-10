@@ -34,7 +34,8 @@ import javax.ws.rs.ext.Providers;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContextParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: ContextParameterResolver.java 285 2009-10-15 16:21:30Z
+ *          aparfonov $
  */
 public class ContextParameterResolver extends ParameterResolver<Context>
 {
@@ -97,8 +98,7 @@ public class ContextParameterResolver extends ParameterResolver<Context>
     * {@inheritDoc}
     */
    @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception
+   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String className = parameter.getParameterClass().getName();
       CONTEXT_PARAMS cp = CONTEXT_PARAMETERS_MAP.get(className);

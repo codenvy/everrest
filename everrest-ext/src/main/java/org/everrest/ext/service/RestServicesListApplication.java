@@ -25,7 +25,8 @@ import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: RestServicesListApplication.java 1897 2010-02-18 13:23:36Z max_shaposhnik $
+ * @version $Id: RestServicesListApplication.java 1897 2010-02-18 13:23:36Z
+ *          max_shaposhnik $
  */
 public class RestServicesListApplication extends Application
 {

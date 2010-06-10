@@ -18,9 +18,9 @@
  */
 package org.everrest.core.rest.uri;
 
-import org.everrest.core.uri.UriPattern;
-
 import junit.framework.TestCase;
+
+import org.everrest.core.uri.UriPattern;
 
 import java.util.ArrayList;
 import java.util.Collections;

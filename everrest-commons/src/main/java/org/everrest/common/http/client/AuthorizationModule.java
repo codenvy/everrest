@@ -44,6 +44,7 @@ import java.util.Hashtable;
  * preemptively sent if any suitable candidate info is available. If a request
  * returns with an appropriate status (401 or 407) then the necessary info is
  * sought from the AuthenticationInfo class.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -495,12 +496,13 @@ class AuthorizationModule implements HTTPClientModule
     * tries to retrieve the neccessary parameters from AuthorizationInfo, and
     * failing that calls the AuthHandler. Handles multiple authentication
     * headers.
+    * 
     * @param auth_str the authentication header field returned by the server.
     * @param req the Request used
     * @param resp the full Response received
     * @param header the header name to use in the new headers array.
     * @param idx_arr an array of indicies holding the state of where we are when
-    *          handling multiple authorization headers.
+    *        handling multiple authorization headers.
     * @param prev the previous auth info sent, or null if none
     * @return the new credentials, or null if none found
     * @exception ProtocolException if <var>auth_str</var> is null.

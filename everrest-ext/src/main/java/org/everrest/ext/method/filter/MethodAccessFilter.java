@@ -34,7 +34,8 @@ import javax.ws.rs.core.SecurityContext;
 
 /**
  * Contract of this class thats constrains access to the resource method that
- * use JSR-250 security common annotations. See also https://jsr250.dev.java.net .
+ * use JSR-250 security common annotations. See also https://jsr250.dev.java.net
+ * .
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: MethodAccessFilter.java 301 2009-10-19 14:41:18Z aparfonov $

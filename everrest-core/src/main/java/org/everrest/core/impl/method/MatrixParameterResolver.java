@@ -28,7 +28,8 @@ import javax.ws.rs.core.PathSegment;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MatrixParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: MatrixParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
+ *          $
  */
 public class MatrixParameterResolver extends ParameterResolver<MatrixParam>
 {
@@ -50,8 +51,7 @@ public class MatrixParameterResolver extends ParameterResolver<MatrixParam>
     * {@inheritDoc}
     */
    @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception
+   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String param = matrixParam.value();
       TypeProducer typeProducer =

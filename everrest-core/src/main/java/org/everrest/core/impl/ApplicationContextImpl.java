@@ -41,7 +41,7 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ApplicationContextImpl.java -1   $
+ * @version $Id: ApplicationContextImpl.java -1 $
  */
 public class ApplicationContextImpl implements ApplicationContext
 {
@@ -93,7 +93,7 @@ public class ApplicationContextImpl implements ApplicationContext
     * Mutable runtime attributes.
     */
    private Map<String, Object> attributes;
-   
+
    /**
     * Properties.
     */
@@ -153,7 +153,7 @@ public class ApplicationContextImpl implements ApplicationContext
     * Not decoded query parameters.
     */
    private MultivaluedMap<String, String> encodedQueryParameters;
-   
+
    /**
     * Decoded query parameters.
     */
@@ -203,7 +203,7 @@ public class ApplicationContextImpl implements ApplicationContext
 
       return absolutePath = getRequestUriBuilder().replaceQuery(null).fragment(null).build();
    }
-   
+
    /**
     * {@inheritDoc}
     */

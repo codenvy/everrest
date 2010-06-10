@@ -21,8 +21,6 @@ package org.everrest.core.impl.method;
 import junit.framework.TestCase;
 
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.impl.method.ParameterHelper;
-import org.everrest.core.impl.method.StringConstructorProducer;
 import org.everrest.core.method.TypeProducer;
 
 import javax.ws.rs.core.MultivaluedMap;

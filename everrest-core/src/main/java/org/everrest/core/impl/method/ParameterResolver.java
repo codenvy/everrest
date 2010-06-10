@@ -29,8 +29,8 @@ public abstract class ParameterResolver<T>
 {
 
    /**
-    * Create object which will be passed in resource method or locator. Object is
-    * instance of {@link MethodParameterImpl#getParameterClass()}.
+    * Create object which will be passed in resource method or locator. Object
+    * is instance of {@link MethodParameterImpl#getParameterClass()}.
     * 
     * @param parameter See {@link Parameter}
     * @param context See {@link ApplicationContext}
@@ -38,7 +38,6 @@ public abstract class ParameterResolver<T>
     *         {@link MethodParameterImpl#getParameterClass()}
     * @throws Exception if any errors occurs
     */
-   public abstract Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception;
+   public abstract Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception;
 
 }

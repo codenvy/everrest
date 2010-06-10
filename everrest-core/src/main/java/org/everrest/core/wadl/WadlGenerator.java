@@ -45,8 +45,8 @@ public interface WadlGenerator
 
    /**
     * @return {@link Resources} instance. Element <i>resources</i> in WADL
-    *         document is container for the descriptions of resources provided by
-    *         application
+    *         document is container for the descriptions of resources provided
+    *         by application
     */
    Resources createResources();
 
@@ -66,39 +66,37 @@ public interface WadlGenerator
 
    /**
     * @param md See {@link ResourceMethodDescriptor}
-    * @return {@link org.exoplatform.services.rest.wadl.research.Method}
-    *         describes the input to and output from an HTTP protocol method they
-    *         may be applied to a resource
+    * @return {@link org.everrest.core.rest.wadl.research.Method} describes the
+    *         input to and output from an HTTP protocol method they may be
+    *         applied to a resource
     */
    org.everrest.core.wadl.research.Method createMethod(ResourceMethodDescriptor md);
 
    /**
-    * @return {@link org.exoplatform.services.rest.wadl.research.Request}
-    *         describes the input to be included when applying an HTTP method to
-    *         a resource
-    * @see {@link org.exoplatform.services.rest.wadl.research.Method}
+    * @return {@link org.everrest.core.wadl.research.Request} describes the
+    *         input to be included when applying an HTTP method to a resource
+    * @see {@link org.everrest.core.wadl.research.Method}
     */
    org.everrest.core.wadl.research.Request createRequest();
 
    /**
-    * @return {@link org.exoplatform.services.rest.wadl.research.Response}
-    *         describes the output that result from performing an HTTP method on
-    *         a resource
-    * @see {@link org.exoplatform.services.rest.wadl.research.Method}
+    * @return {@link org.everrest.core.wadl.research.Response} describes the
+    *         output that result from performing an HTTP method on a resource
+    * @see {@link org.everrest.core.wadl.research.Method}
     */
    org.everrest.core.wadl.research.Response createResponse();
 
    /**
     * @param mediaType one of media type that resource can consume
-    * @return {@link RepresentationType} describes a representation of resource's
-    *         state
+    * @return {@link RepresentationType} describes a representation of
+    *         resource's state
     */
    RepresentationType createRequestRepresentation(MediaType mediaType);
 
    /**
     * @param mediaType one of media type that resource can produce
-    * @return {@link RepresentationType} describes a representation of resource's
-    *         state
+    * @return {@link RepresentationType} describes a representation of
+    *         resource's state
     */
    RepresentationType createResponseRepresentation(MediaType mediaType);
 
@@ -106,9 +104,9 @@ public interface WadlGenerator
     * @param methodParameter See {@link MethodParameter}
     * @return {@link Param} describes a parameterized component of its parent
     *         element resource, request, response
-    * @see org.exoplatform.services.rest.wadl.research.Resource
-    * @see org.exoplatform.services.rest.wadl.research.Request
-    * @see org.exoplatform.services.rest.wadl.research.Response
+    * @see org.everrest.core.wadl.research.Resource
+    * @see org.everrest.core.wadl.research.Request
+    * @see org.everrest.core.wadl.research.Response
     */
    Param createParam(MethodParameter methodParameter);
 

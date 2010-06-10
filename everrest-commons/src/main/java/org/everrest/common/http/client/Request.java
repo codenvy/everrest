@@ -35,6 +35,7 @@ package org.everrest.common.http.client;
 /**
  * This class represents an http request. It's used by classes which implement
  * the HTTPClientModule interface.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -65,8 +66,8 @@ public final class Request implements RoRequest, Cloneable
    private boolean allow_ui;
 
    /**
-    * number of millisecs to wait for an error from the server before sending the
-    * entity (used when retrying requests)
+    * number of millisecs to wait for an error from the server before sending
+    * the entity (used when retrying requests)
     */
    long delay_entity = 0;
 
@@ -86,6 +87,7 @@ public final class Request implements RoRequest, Cloneable
 
    /**
     * Creates a new request structure.
+    * 
     * @param con the current HTTPConnection
     * @param method the request method
     * @param req_uri the request-uri
@@ -236,7 +238,7 @@ public final class Request implements RoRequest, Cloneable
 
    /**
     * @param allow_ui are modules and handlers allowed to popup windows or
-    *          otherwise interact with the user?
+    *        otherwise interact with the user?
     */
    public void setAllowUI(boolean allow_ui)
    {
@@ -266,6 +268,7 @@ public final class Request implements RoRequest, Cloneable
 
    /**
     * Copy all the fields from <var>other</var> to this request.
+    * 
     * @param other the Request to copy from
     */
    public void copyFrom(Request other)

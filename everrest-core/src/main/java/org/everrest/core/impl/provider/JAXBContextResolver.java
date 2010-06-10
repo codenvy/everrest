@@ -18,6 +18,8 @@
  */
 package org.everrest.core.impl.provider;
 
+import org.everrest.core.impl.header.MediaTypeHelper;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.Consumes;
@@ -27,8 +29,6 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-
-import org.everrest.core.impl.header.MediaTypeHelper;
 
 /**
  * Provide cache for {@link JAXBContext}.
@@ -57,8 +57,8 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
    }
 
    /**
-    * Return JAXBContext according to supplied type. If no one context found then
-    * try create new context and save it in cache.
+    * Return JAXBContext according to supplied type. If no one context found
+    * then try create new context and save it in cache.
     * 
     * @param classes classes to be bound
     * @return JAXBContext
@@ -81,7 +81,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     * @param classes set of java classes to be bound
     * @return JAXBContext
     * @throws JAXBException if JAXBContext for supplied classes can't be created
-    *           in any reasons
+    *         in any reasons
     */
    public JAXBContext createJAXBContext(Class<?> clazz) throws JAXBException
    {

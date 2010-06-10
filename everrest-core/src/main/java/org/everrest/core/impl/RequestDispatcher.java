@@ -58,7 +58,7 @@ import javax.ws.rs.core.Response.Status;
  * Lookup resource which can serve request.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestDispatcher.java -1   $
+ * @version $Id: RequestDispatcher.java -1 $
  */
 public final class RequestDispatcher
 {
@@ -150,11 +150,11 @@ public final class RequestDispatcher
    }
 
    /**
-    * Get last element from path parameters. This element will be used as request
-    * path for child resources.
+    * Get last element from path parameters. This element will be used as
+    * request path for child resources.
     * 
     * @param parameterValues See
-    *          {@link ApplicationContextImpl#getParameterValues()}
+    *        {@link ApplicationContextImpl#getParameterValues()}
     * @return last element from given list or empty string if last element is
     *         null
     */
@@ -165,18 +165,18 @@ public final class RequestDispatcher
    }
 
    /**
-    * Process resource methods, sub-resource methods and sub-resource locators to
-    * find the best one for serve request.
+    * Process resource methods, sub-resource methods and sub-resource locators
+    * to find the best one for serve request.
     * 
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param context See {@link ApplicationContextImpl}
     * @param resourceFactory the root resource factory or resource factory which
-    *          was created by previous sub-resource locator
+    *        was created by previous sub-resource locator
     * @param resource instance of resource class
     * @param requestPath request path, it is relative path to the base URI or
-    *          other resource which was called before (one of sub-resource
-    *          locators)
+    *        other resource which was called before (one of sub-resource
+    *        locators)
     */
    private void dispatch(GenericContainerRequest request, GenericContainerResponse response,
       ApplicationContext context, ObjectFactory<AbstractResourceDescriptor> resourceFactory, Object resource,
@@ -343,14 +343,15 @@ public final class RequestDispatcher
    }
 
    /**
-    * Compare two sub-resources. One of it is {@link SubResourceMethodDescriptor}
-    * and other one id {@link SubResourceLocatorDescriptor}. First compare
-    * UriPattern, see {@link UriPattern#URIPATTERN_COMPARATOR}. NOTE URI
-    * comparator compare UriPattrens for descending sorting. So it it return
-    * negative integer then it minds SubResourceMethodDescriptor has higher
-    * priority by UriPattern comparison. If comparator return positive integer
-    * then SubResourceLocatorDescriptor has higher priority. And finally if zero
-    * was returned then UriPattern is equals, in this case
+    * Compare two sub-resources. One of it is
+    * {@link SubResourceMethodDescriptor} and other one id
+    * {@link SubResourceLocatorDescriptor}. First compare UriPattern, see
+    * {@link UriPattern#URIPATTERN_COMPARATOR}. NOTE URI comparator compare
+    * UriPattrens for descending sorting. So it it return negative integer then
+    * it minds SubResourceMethodDescriptor has higher priority by UriPattern
+    * comparison. If comparator return positive integer then
+    * SubResourceLocatorDescriptor has higher priority. And finally if zero was
+    * returned then UriPattern is equals, in this case
     * SubResourceMethodDescriptor must be selected.
     * 
     * @param srmd See {@link SubResourceMethodDescriptor}
@@ -416,7 +417,7 @@ public final class RequestDispatcher
 
    /**
     * Process resource methods.
-    *
+    * 
     * @param <T> ResourceMethodDescriptor extension
     * @param rmm See {@link ResourceMethodMap}
     * @param request See {@link GenericContainerRequest}
@@ -502,7 +503,7 @@ public final class RequestDispatcher
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param capturingValues the list for keeping template values. See
-    *          {@link javax.ws.rs.core.UriInfo#getPathParameters()}
+    *        {@link javax.ws.rs.core.UriInfo#getPathParameters()}
     * @param methods list for method resources
     * @return true if at least one sub-resource method found false otherwise
     */

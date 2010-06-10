@@ -45,6 +45,7 @@ import java.util.Vector;
  * This class represents an http cookie as specified in the <A
  * HREF="http://www.ietf.org/rfc/rfc2965.txt">HTTP State Management Mechanism
  * spec</A> (also known as a version 1 cookie).
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3
@@ -76,21 +77,22 @@ public class Cookie2 extends Cookie
 
    /**
     * Create a cookie.
+    * 
     * @param name the cookie name
     * @param value the cookie value
     * @param domain the host this cookie will be sent to
     * @param port_list an array of allowed server ports for this cookie, or null
-    *          if the the cookie may be sent to any port
+    *        if the the cookie may be sent to any port
     * @param path the path prefix for which this cookie will be sent
     * @param epxires the Date this cookie expires, or null if never
     * @param discard if true then the cookie will be discarded at the end of the
-    *          session regardless of expiry
+    *        session regardless of expiry
     * @param secure if true this cookie will only be over secure connections
     * @param comment the comment associated with this cookie, or null if none
     * @param comment_url the comment URL associated with this cookie, or null if
-    *          none
+    *        none
     * @exception NullPointerException if <var>name</var>, <var>value</var>,
-    *              <var>domain</var>, or <var>path</var> is null
+    *            <var>domain</var>, or <var>path</var> is null
     */
    public Cookie2(String name, String value, String domain, int[] port_list, String path, Date expires,
       boolean discard, boolean secure, String comment, URI comment_url)
@@ -124,6 +126,7 @@ public class Cookie2 extends Cookie
 
    /**
     * Use <code>parse()</code> to create cookies.
+    * 
     * @see #parse(java.lang.String, HTTPClient.RoRequest)
     */
    protected Cookie2(RoRequest req)
@@ -151,6 +154,7 @@ public class Cookie2 extends Cookie
 
    /**
     * Parses the Set-Cookie2 header into an array of Cookies.
+    * 
     * @param set_cookie the Set-Cookie2 header received from the server
     * @param req the request used
     * @return an array of Cookies as parsed from the Set-Cookie2 header

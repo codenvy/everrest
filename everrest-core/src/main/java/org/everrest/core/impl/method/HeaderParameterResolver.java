@@ -25,7 +25,8 @@ import javax.ws.rs.HeaderParam;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: HeaderParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: HeaderParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
+ *          $
  */
 public class HeaderParameterResolver extends ParameterResolver<HeaderParam>
 {
@@ -47,8 +48,7 @@ public class HeaderParameterResolver extends ParameterResolver<HeaderParam>
     * {@inheritDoc}
     */
    @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception
+   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String param = this.headerParam.value();
       TypeProducer typeProducer =

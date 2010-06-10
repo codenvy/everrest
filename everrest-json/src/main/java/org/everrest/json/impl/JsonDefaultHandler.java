@@ -139,6 +139,7 @@ public class JsonDefaultHandler implements JsonHandler
 
    /**
     * Parse characters array dependent of context.
+    * 
     * @param characters the characters array.
     * @return JsonValue.
     */

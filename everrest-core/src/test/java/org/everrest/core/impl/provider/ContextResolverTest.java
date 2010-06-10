@@ -18,11 +18,11 @@
  */
 package org.everrest.core.impl.provider;
 
+import org.everrest.core.impl.BaseTest;
+
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-
-import org.everrest.core.impl.BaseTest;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>

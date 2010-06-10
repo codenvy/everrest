@@ -49,12 +49,14 @@ public interface JsonHandler
 
    /**
     * The key name found in the input JSON stream.
+    * 
     * @param key the key.
     */
    void key(String key);
 
    /**
-    * Characters set found, it can be any characters. 
+    * Characters set found, it can be any characters.
+    * 
     * @param characters the array of characters.
     */
    void characters(char[] characters);

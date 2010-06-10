@@ -24,7 +24,7 @@ import java.util.List;
  * Abstract description of object.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ObjectModel.java -1   $
+ * @version $Id: ObjectModel.java -1 $
  */
 public interface ObjectModel
 {

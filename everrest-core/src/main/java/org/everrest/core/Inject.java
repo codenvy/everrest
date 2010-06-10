@@ -24,12 +24,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to annotate fields that should be injected with instances 
- * provided by {@link DependencySupplier}. If DependencyInjector
- * is not available than field will be not initialized
-
+ * Used to annotate fields that should be injected with instances provided by
+ * {@link DependencySupplier}. If DependencyInjector is not available than field
+ * will be not initialized
+ * 
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: Inject.java -1   $
+ * @version $Id: Inject.java -1 $
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

@@ -19,9 +19,6 @@
 package org.everrest.core.impl.header;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.header.AcceptLanguage;
-import org.everrest.core.impl.header.AcceptLanguageHeaderDelegate;
-import org.everrest.core.impl.header.HeaderHelper;
 
 import java.util.List;
 

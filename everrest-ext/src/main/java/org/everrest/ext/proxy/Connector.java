@@ -18,15 +18,15 @@
  */
 package org.everrest.ext.proxy;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.everrest.common.http.client.HTTPResponse;
 import org.everrest.common.http.client.ModuleException;
 import org.everrest.common.http.client.ParseException;
 import org.everrest.common.http.client.ProtocolNotSuppException;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
@@ -35,50 +35,47 @@ import org.everrest.common.http.client.ProtocolNotSuppException;
 public abstract class Connector
 {
 
-   /** The  connect timeout. */
-   protected static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000; 
-   
-   
+   /** The connect timeout. */
+   protected static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000;
+
    /**
     * Do GET proxy request.
     * 
     * @param httpRequest the HttpServletRequest
     * @param url the url to request
-    * @return  response HTTPResponse
+    * @return response HTTPResponse
     */
-   abstract HTTPResponse fetchGet(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
-   IOException, ModuleException,ParseException;
-   
+   abstract HTTPResponse fetchGet(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException;
+
    /**
     * Do POST proxy request.
     * 
     * @param httpRequest the HttpServletRequest
     * @param url the url to request
-    * @return  response HTTPResponse
+    * @return response HTTPResponse
     */
-   abstract HTTPResponse fetchPost(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
-   IOException, ModuleException,ParseException;
-   
-   
+   abstract HTTPResponse fetchPost(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException;
+
    /**
     * Do PUT proxy request.
     * 
     * @param httpRequest the HttpServletRequest
     * @param url the url to request
-    * @return  response HTTPResponse
+    * @return response HTTPResponse
     */
-   abstract HTTPResponse doPut(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
-   IOException, ModuleException,ParseException;
-   
-   
+   abstract HTTPResponse doPut(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException;
+
    /**
     * Do DELETE proxy request.
     * 
     * @param httpRequest the HttpServletRequest
     * @param url the url to request
-    * @return  response HTTPResponse
+    * @return response HTTPResponse
     */
-   abstract HTTPResponse doDelete(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
-   IOException, ModuleException,ParseException;
+   abstract HTTPResponse doDelete(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException;
 
 }

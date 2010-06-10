@@ -43,6 +43,7 @@ import java.util.zip.InflaterInputStream;
 /**
  * This module handles the TransferEncoding response header. It currently
  * handles the "gzip", "deflate", "compress", "chunked" and "identity" tokens.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

@@ -153,7 +153,7 @@ public class ApplicationTest extends BaseTest
       }
 
    }
-   
+
    @Filter
    public static class MethodInvokerFilter1 implements MethodInvokerFilter
    {
@@ -162,9 +162,9 @@ public class ApplicationTest extends BaseTest
       {
          invFilter = true;
       }
-      
+
    }
-   
+
    @Filter
    public static class RequestFilter1 implements RequestFilter
    {
@@ -173,9 +173,9 @@ public class ApplicationTest extends BaseTest
       {
          requestFilter = true;
       }
-      
+
    }
-   
+
    @Filter
    public static class ResponseFilter1 implements ResponseFilter
    {
@@ -184,7 +184,7 @@ public class ApplicationTest extends BaseTest
       {
          responseFilter = true;
       }
-      
+
    }
 
    public void testRegistry()
@@ -200,9 +200,11 @@ public class ApplicationTest extends BaseTest
    }
 
    private static boolean requestFilter = false;
+
    private static boolean responseFilter = false;
+
    private static boolean invFilter = false;
-   
+
    private ResourceLauncher launcher;
 
    public void setUp() throws Exception
@@ -244,7 +246,7 @@ public class ApplicationTest extends BaseTest
       // should be 200 status instead 500 if ExceptionMapper works correct
       assertEquals(200, resp.getStatus());
       assertEquals("test Illegal State Exception", resp.getEntity());
-      
+
       // check are filters were visited
       assertTrue(requestFilter);
       assertTrue(responseFilter);

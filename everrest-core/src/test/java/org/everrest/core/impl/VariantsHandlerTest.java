@@ -18,11 +18,6 @@
  */
 package org.everrest.core.impl;
 
-
-import org.everrest.core.impl.ContainerRequest;
-import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.impl.VariantsHandler;
-
 import java.util.List;
 import java.util.Locale;
 

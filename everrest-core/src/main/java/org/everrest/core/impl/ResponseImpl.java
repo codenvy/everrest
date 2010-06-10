@@ -38,7 +38,7 @@ import javax.ws.rs.core.Variant;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResponseImpl.java -1   $
+ * @version $Id: ResponseImpl.java -1 $
  */
 public final class ResponseImpl extends Response
 {
@@ -49,12 +49,12 @@ public final class ResponseImpl extends Response
    private final int status;
 
    /**
-    * Entity. Entity will be written as response message body. 
+    * Entity. Entity will be written as response message body.
     */
    private final Object entity;
 
    /**
-    * HTTP headers. 
+    * HTTP headers.
     */
    private final MultivaluedMap<String, Object> headers;
 
@@ -112,7 +112,7 @@ public final class ResponseImpl extends Response
        */
       private enum HEADERS {
          /**
-          * Cache control. 
+          * Cache control.
           */
          CACHE_CONTROL,
          /**
@@ -128,7 +128,7 @@ public final class ResponseImpl extends Response
           */
          CONTENT_TYPE,
          /**
-          * Content-length. 
+          * Content-length.
           */
          CONTENT_LENGTH,
          /**
@@ -206,6 +206,7 @@ public final class ResponseImpl extends Response
 
       /**
        * Useful for clone method.
+       * 
        * @param other other ResponseBuilderImpl
        * @see #clone()
        */
@@ -375,7 +376,8 @@ public final class ResponseImpl extends Response
 
       /**
        * Remove header with supplied name.
-       * @param name a header name 
+       * 
+       * @param name a header name
        */
       private void remove(String name)
       {

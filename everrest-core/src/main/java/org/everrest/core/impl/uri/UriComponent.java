@@ -103,17 +103,17 @@ public final class UriComponent
    private static final String DIGIT = fillTable("0-9");
 
    /**
-    * Characters that are allowed in a URI but do not have a reserved purpose are
-    * called unreserved. These include uppercase and lowercase letters, decimal
-    * digits, hyphen, period, underscore, and tilde.
+    * Characters that are allowed in a URI but do not have a reserved purpose
+    * are called unreserved. These include uppercase and lowercase letters,
+    * decimal digits, hyphen, period, underscore, and tilde.
     * <p>
     * Unreserved = ALPHA | DIGIT | '-' | '.' | '_' | '~'
     */
    private static final String UNRESERVED = ALPHA + DIGIT + "-._~";
 
    /**
-    * The subset of the reserved characters (gen-delims) is used as delimiters of
-    * the generic URI components.
+    * The subset of the reserved characters (gen-delims) is used as delimiters
+    * of the generic URI components.
     */
    private static final String GEN_DELIM = ":/?#[]@";
 
@@ -214,10 +214,11 @@ public final class UriComponent
    }
 
    /**
-    * Check string and if it does not contains any '%' characters validate it for
-    * contains only valid characters. If it contains '%' then check does
+    * Check string and if it does not contains any '%' characters validate it
+    * for contains only valid characters. If it contains '%' then check does
     * following two character is valid hex numbers, if not then encode '%' to
-    * '%25' otherwise keep characters without change, there is no double encoding.
+    * '%25' otherwise keep characters without change, there is no double
+    * encoding.
     * 
     * @param str source string
     * @param component part of URI, e. g. schema, host, path
@@ -311,8 +312,8 @@ public final class UriComponent
     * 
     * @param str the source percent encoded string
     * @param component component of URI, scheme, host, port, etc. NOTE type of
-    *          component is not used currently but will be used for decoding IPv6
-    *          addresses
+    *        component is not used currently but will be used for decoding IPv6
+    *        addresses
     * @return decoded string
     */
    // TODO decoding for IPv6

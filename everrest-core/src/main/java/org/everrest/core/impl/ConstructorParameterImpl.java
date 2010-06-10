@@ -27,13 +27,13 @@ import java.lang.reflect.Type;
  * Describes constructor's parameter.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ConstructorParameterImpl.java -1   $
+ * @version $Id: ConstructorParameterImpl.java -1 $
  */
 public class ConstructorParameterImpl implements ConstructorParameter
 {
 
    /**
-    * All annotations including JAX-RS annotation.  
+    * All annotations including JAX-RS annotation.
     */
    private final Annotation[] additional;
 
@@ -43,7 +43,8 @@ public class ConstructorParameterImpl implements ConstructorParameter
    private final Annotation annotation;
 
    /**
-    * Parameter type. See {@link java.lang.reflect.Constructor#getGenericParameterTypes()} .
+    * Parameter type. See
+    * {@link java.lang.reflect.Constructor#getGenericParameterTypes()} .
     */
    private final Type type;
 
@@ -53,8 +54,9 @@ public class ConstructorParameterImpl implements ConstructorParameter
    private final Class<?> clazz;
 
    /**
-    * Default value for this parameter, default value can be used if there is not
-    * found required parameter in request. See {@link javax.ws.rs.DefaultValue}.
+    * Default value for this parameter, default value can be used if there is
+    * not found required parameter in request. See
+    * {@link javax.ws.rs.DefaultValue}.
     */
    private final String defaultValue;
 
@@ -70,7 +72,8 @@ public class ConstructorParameterImpl implements ConstructorParameter
     * @param additional see {@link #additional}
     * @param clazz parameter class
     * @param type generic parameter type
-    * @param defaultValue default value for parameter. See {@link javax.ws.rs.DefaultValue}.
+    * @param defaultValue default value for parameter. See
+    *        {@link javax.ws.rs.DefaultValue}.
     * @param encoded true if parameter must not be decoded false otherwise
     */
    public ConstructorParameterImpl(Annotation annotation, Annotation[] additional, Class<?> clazz, Type type,

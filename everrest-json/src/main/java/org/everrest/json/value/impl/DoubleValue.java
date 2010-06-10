@@ -35,6 +35,7 @@ public class DoubleValue extends NumericValue
 
    /**
     * Constructs new DoubleValue.
+    * 
     * @param value the value.
     */
    public DoubleValue(double value)

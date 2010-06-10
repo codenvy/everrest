@@ -25,7 +25,7 @@ package org.everrest.core;
  * wrong parameters.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestFilter.java -1   $
+ * @version $Id: RequestFilter.java -1 $
  */
 public interface RequestFilter
 {

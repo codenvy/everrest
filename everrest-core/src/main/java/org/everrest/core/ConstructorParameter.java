@@ -22,7 +22,7 @@ package org.everrest.core;
  * Constructor parameter.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ConstructorParameter.java -1   $
+ * @version $Id: ConstructorParameter.java -1 $
  */
 public interface ConstructorParameter extends Parameter
 {

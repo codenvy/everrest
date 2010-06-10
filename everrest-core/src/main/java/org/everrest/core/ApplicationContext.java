@@ -35,7 +35,7 @@ import javax.ws.rs.ext.Providers;
  * information.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ApplicationContext.java -1   $
+ * @version $Id: ApplicationContext.java -1 $
  */
 public interface ApplicationContext extends UriInfo, InitialProperties
 {
@@ -49,7 +49,7 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * So add each new resource at the begin of list.
     * 
     * @param resource the resource e. g. resource class, sub-resource method or
-    *          sub-resource locator.
+    *        sub-resource locator.
     */
    void addMatchedResource(Object resource);
 
@@ -61,8 +61,8 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * </p>
     * So add each new URI at the begin of list.
     * 
-    * @param uri the partial part of that matched to resource class, sub-resource
-    *          method or sub-resource locator.
+    * @param uri the partial part of that matched to resource class,
+    *        sub-resource method or sub-resource locator.
     */
    void addMatchedURI(String uri);
 
@@ -81,9 +81,8 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     */
    GenericContainerResponse getContainerResponse();
 
-   
    DependencySupplier getDependencySupplier();
-   
+
    /**
     * @return See {@link HttpHeaders}
     */
@@ -93,13 +92,12 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * @return {@link InitialProperties}
     */
    InitialProperties getInitialProperties();
-   
-   
+
    /**
-    * Should be used to pass template values in context by using returned list in
-    * matching to @see
-    * {@link org.everrest.core.uri.UriPattern#match(String, List)}
-    * . List will be cleared during matching.
+    * Should be used to pass template values in context by using returned list
+    * in matching to @see
+    * {@link org.everrest.core.uri.UriPattern#match(String, List)} . List will
+    * be cleared during matching.
     * 
     * @return the list for template values
     */
@@ -127,7 +125,7 @@ public interface ApplicationContext extends UriInfo, InitialProperties
    UriInfo getUriInfo();
 
    void setDependencyInjector(DependencySupplier depInjector);
-   
+
    /**
     * Pass in context list of path template parameters @see {@link UriPattern}.
     * 

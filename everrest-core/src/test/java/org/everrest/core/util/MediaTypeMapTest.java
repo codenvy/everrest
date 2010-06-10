@@ -19,7 +19,6 @@
 package org.everrest.core.util;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.util.MediaTypeMap;
 
 import java.util.Iterator;
 

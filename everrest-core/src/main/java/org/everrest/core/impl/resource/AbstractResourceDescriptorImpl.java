@@ -69,7 +69,8 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: AbstractResourceDescriptorImpl.java 292 2009-10-19 07:03:07Z aparfonov $
+ * @version $Id: AbstractResourceDescriptorImpl.java 292 2009-10-19 07:03:07Z
+ *          aparfonov $
  */
 public class AbstractResourceDescriptorImpl implements AbstractResourceDescriptor
 {
@@ -505,8 +506,8 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     * <p>
     * On receipt of a HEAD request an implementation MUST either: 1. Call method
     * annotated with request method designation for HEAD or, if none present, 2.
-    * Call method annotated with a request method designation GET and discard any
-    * returned entity.
+    * Call method annotated with a request method designation GET and discard
+    * any returned entity.
     * </p>
     */
    protected void resolveHeadRequest()
@@ -605,7 +606,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     * @param resourceClass class that contains discovered method
     * @param annotationClass annotation type what we are looking for
     * @param metaAnnotation false if annotation should be on method and true in
-    *          method should contain annotations that has supplied annotation
+    *        method should contain annotations that has supplied annotation
     * @return annotation from class or its ancestor or null if nothing found
     */
    protected <T extends Annotation> T getMethodAnnotation(Method method, Class<?> resourceClass,

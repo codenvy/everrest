@@ -50,7 +50,8 @@ public class AcceptMediaType extends MediaType implements QualityValue
       RuntimeDelegate.getInstance().createHeaderDelegate(AcceptMediaType.class);
 
    /**
-    * Creates a new instance of AcceptedMediaType by parsing the supplied string.
+    * Creates a new instance of AcceptedMediaType by parsing the supplied
+    * string.
     * 
     * @param header accepted media type string
     * @return AcceptedMediaType
@@ -71,9 +72,9 @@ public class AcceptMediaType extends MediaType implements QualityValue
    }
 
    /**
-    * Constructs AcceptedMediaType with supplied quality value. If map parameters
-    * is null or does not contains value with key 'q' then default quality value
-    * will be used.
+    * Constructs AcceptedMediaType with supplied quality value. If map
+    * parameters is null or does not contains value with key 'q' then default
+    * quality value will be used.
     * 
     * @param type media type
     * @param subtype media sub-type

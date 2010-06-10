@@ -25,7 +25,8 @@ import javax.ws.rs.core.Cookie;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: CookieParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: CookieParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
+ *          $
  */
 public class CookieParameterResolver extends ParameterResolver<CookieParam>
 {
@@ -47,8 +48,7 @@ public class CookieParameterResolver extends ParameterResolver<CookieParam>
     * {@inheritDoc}
     */
    @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception
+   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String param = this.cookieParam.value();
       Object c = context.getHttpHeaders().getCookies().get(param);

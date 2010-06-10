@@ -32,11 +32,11 @@ public interface TypeProducer
 
    /**
     * @param param parameter name, parameter name should be getting from
-    *          parameter annotation
+    *        parameter annotation
     * @param values all value which can be used for construct object, it can be
-    *          header parameters, path parameters, query parameters, etc
+    *        header parameters, path parameters, query parameters, etc
     * @param defaultValue default value which can be used if in value can't be
-    *          found required value with name <i>param</i>
+    *        found required value with name <i>param</i>
     * @return newly created object
     * @throws Exception if any errors occurs
     */

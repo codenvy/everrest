@@ -43,6 +43,7 @@ import java.util.zip.InflaterInputStream;
 /**
  * This module handles the Content-Encoding response header. It currently
  * handles the "gzip", "deflate", "compress" and "identity" tokens.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

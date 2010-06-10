@@ -18,17 +18,15 @@
  */
 package org.everrest.core.impl;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.List;
-
 import org.everrest.core.Filter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.ResponseFilter;
-import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
+
+import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
@@ -42,7 +40,7 @@ import javax.ws.rs.ext.Providers;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResponseFilterTest.java -1   $
+ * @version $Id: ResponseFilterTest.java -1 $
  */
 public class ResponseFilterTest extends BaseTest
 {

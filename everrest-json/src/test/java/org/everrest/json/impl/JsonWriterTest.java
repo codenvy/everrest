@@ -18,8 +18,6 @@
  */
 package org.everrest.json.impl;
 
-import org.everrest.json.impl.JsonWriterImpl;
-
 import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;

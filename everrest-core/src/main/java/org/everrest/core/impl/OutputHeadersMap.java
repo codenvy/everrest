@@ -29,7 +29,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * Case insensitive {@link MultivaluedMap}.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: OutputHeadersMap.java -1   $
+ * @version $Id: OutputHeadersMap.java -1 $
  */
 //TODO this implementation is not efficient, probably can be better extend
 //java.util.AbstractMap

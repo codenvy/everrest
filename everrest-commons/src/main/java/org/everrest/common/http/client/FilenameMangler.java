@@ -39,6 +39,7 @@ package org.everrest.common.http.client;
  * Codecs.mpFormDataEncode} may be handed an instance of a class which
  * implements this interface in order to control names of the decoded files or
  * the names sent in the encoded data.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3-1
@@ -56,12 +57,13 @@ public interface FilenameMangler
     * For
     * {@link Codecs#mpFormDataEncode(HTTPClient.NVPair[], HTTPClient.NVPair[], HTTPClient.NVPair[], HTTPClient.FilenameMangler)
     * Codecs.mpFormDataEncode} this is also invoked on each filename, allowing
-    * you to control the actual name used in the <var>filename</var> attribute of
-    * the Content-Disposition header. This does not change the name of the file
-    * actually read. If null is returned then the file is ignored.
+    * you to control the actual name used in the <var>filename</var> attribute
+    * of the Content-Disposition header. This does not change the name of the
+    * file actually read. If null is returned then the file is ignored.
+    * 
     * @param filename the original filename in the Content-Disposition header
     * @param fieldname the name of the this field, i.e. the value of the
-    *          <var>name</var> attribute in Content-Disposition header
+    *        <var>name</var> attribute in Content-Disposition header
     * @return the new file name, or null if the file is to be ignored.
     */
    public String mangleFilename(String filename, String fieldname);

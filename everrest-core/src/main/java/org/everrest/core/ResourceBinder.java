@@ -26,7 +26,7 @@ import java.util.List;
  * Manages root resources.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceBinder.java -1   $
+ * @version $Id: ResourceBinder.java -1 $
  */
 public interface ResourceBinder
 {

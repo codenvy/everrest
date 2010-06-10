@@ -22,7 +22,7 @@ package org.everrest.core;
  * Provide object instance of components that support singleton lifecycle.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: SingletonObjectFactory.java -1   $
+ * @version $Id: SingletonObjectFactory.java -1 $
  * @param <T>
  */
 public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFactory<T>

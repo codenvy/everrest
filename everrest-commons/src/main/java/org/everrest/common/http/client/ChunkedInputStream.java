@@ -39,6 +39,7 @@ import java.io.InputStream;
 
 /**
  * This class de-chunks an input stream.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

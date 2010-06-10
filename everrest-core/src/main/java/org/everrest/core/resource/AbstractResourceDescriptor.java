@@ -27,7 +27,8 @@ import org.everrest.core.uri.UriPattern;
  * class that uses JAX-RS annotations to implement corresponding Web resource.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: AbstractResourceDescriptor.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: AbstractResourceDescriptor.java 285 2009-10-15 16:21:30Z
+ *          aparfonov $
  */
 public interface AbstractResourceDescriptor extends ResourceDescriptor, ObjectModel
 {
@@ -61,8 +62,8 @@ public interface AbstractResourceDescriptor extends ResourceDescriptor, ObjectMo
    UriPattern getUriPattern();
 
    /**
-    * @return true if resource is root resource false otherwise. Root resource is
-    *         class which has own {@link javax.ws.rs.Path} annotation
+    * @return true if resource is root resource false otherwise. Root resource
+    *         is class which has own {@link javax.ws.rs.Path} annotation
     */
    boolean isRootResource();
 

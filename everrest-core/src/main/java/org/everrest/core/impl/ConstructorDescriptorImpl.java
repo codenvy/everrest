@@ -48,7 +48,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ConstructorDescriptorImpl.java -1   $
+ * @version $Id: ConstructorDescriptorImpl.java -1 $
  */
 public class ConstructorDescriptorImpl implements ConstructorDescriptor
 {
@@ -240,10 +240,10 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
          else
          {
             // XXX need to use @Inject annotation here ??? 
-            
+
             // If parameter not has not annotation then get constructor parameter
             // from DependencyInjector, this is out of scope JAX-RS specification.
-            
+
             if (context.getDependencySupplier() == null)
             {
                String msg =

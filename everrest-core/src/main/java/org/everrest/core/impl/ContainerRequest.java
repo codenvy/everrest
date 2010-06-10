@@ -46,7 +46,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContainerRequest.java -1   $
+ * @version $Id: ContainerRequest.java -1 $
  */
 public class ContainerRequest implements GenericContainerRequest
 {
@@ -104,7 +104,7 @@ public class ContainerRequest implements GenericContainerRequest
    private URI requestUri;
 
    /**
-    * Base URI, e.g. servlet path.  
+    * Base URI, e.g. servlet path.
     */
    private URI baseUri;
 
@@ -366,8 +366,9 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * If accept-language header does not present or its length is null then
-    * default language list will be returned. This list contains only one element
-    * Locale with language '*', and it minds any language accepted. {@inheritDoc}
+    * default language list will be returned. This list contains only one
+    * element Locale with language '*', and it minds any language accepted.
+    * {@inheritDoc}
     */
    public List<Locale> getAcceptableLanguages()
    {
@@ -387,8 +388,8 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /**
-    * If accept header does not presents or its length is null then list with one
-    * element will be returned. That one element is default media type, see
+    * If accept header does not presents or its length is null then list with
+    * one element will be returned. That one element is default media type, see
     * {@link AcceptMediaType#DEFAULT} . {@inheritDoc}
     */
    public List<MediaType> getAcceptableMediaTypes()
@@ -503,9 +504,9 @@ public class ContainerRequest implements GenericContainerRequest
     * 
     * @param etag the ETag
     * @return ResponseBuilder with status 412 (precondition failed) if
-    *         If-None-Match header is MATCH to ETag and HTTP method is not GET or
-    *         HEAD. If method is GET or HEAD and If-None-Match is MATCH to ETag
-    *         then ResponseBuilder with status 304 (not modified) will be
+    *         If-None-Match header is MATCH to ETag and HTTP method is not GET
+    *         or HEAD. If method is GET or HEAD and If-None-Match is MATCH to
+    *         ETag then ResponseBuilder with status 304 (not modified) will be
     *         returned.
     */
    private ResponseBuilder evaluateIfNoneMatch(EntityTag etag)
@@ -574,9 +575,9 @@ public class ContainerRequest implements GenericContainerRequest
     * Comparison for lastModified and modifiedSince times.
     * 
     * @param lastModified the last modified time
-    * @return ResponseBuilder with status 304 (not modified) if lastModified time
-    *         is greater then modifiedSince otherwise return null. If date format
-    *         in header If-Modified-Since is wrong also null returned
+    * @return ResponseBuilder with status 304 (not modified) if lastModified
+    *         time is greater then modifiedSince otherwise return null. If date
+    *         format in header If-Modified-Since is wrong also null returned
     */
    private ResponseBuilder evaluateIfUnmodified(long lastModified)
    {

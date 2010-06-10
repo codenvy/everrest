@@ -53,7 +53,8 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: StartableApplicationPublisherTest.java 436 2009-10-28 06:47:29Z aparfonov $
+ * @version $Id: StartableApplicationPublisherTest.java 436 2009-10-28 06:47:29Z
+ *          aparfonov $
  */
 public class StartableApplicationPublisherTest extends BaseTest
 {

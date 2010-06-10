@@ -40,7 +40,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContainerResponse.java -1   $
+ * @version $Id: ContainerResponse.java -1 $
  */
 public class ContainerResponse implements GenericContainerResponse
 {

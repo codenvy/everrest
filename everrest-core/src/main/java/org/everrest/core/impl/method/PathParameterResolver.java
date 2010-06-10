@@ -47,8 +47,7 @@ public class PathParameterResolver extends ParameterResolver<PathParam>
     * {@inheritDoc}
     */
    @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception
+   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String param = this.pathParam.value();
       TypeProducer typeProducer =

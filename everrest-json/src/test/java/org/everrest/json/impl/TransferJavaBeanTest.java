@@ -24,11 +24,6 @@ import org.everrest.json.Book;
 import org.everrest.json.JsonHandler;
 import org.everrest.json.JsonParser;
 import org.everrest.json.JsonWriter;
-import org.everrest.json.impl.BeanBuilder;
-import org.everrest.json.impl.JsonDefaultHandler;
-import org.everrest.json.impl.JsonGeneratorImpl;
-import org.everrest.json.impl.JsonParserImpl;
-import org.everrest.json.impl.JsonWriterImpl;
 import org.everrest.json.value.JsonValue;
 
 import java.io.ByteArrayInputStream;

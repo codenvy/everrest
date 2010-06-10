@@ -19,7 +19,6 @@
 package org.everrest.core.impl.uri;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.uri.UriComponent;
 
 import java.util.List;
 

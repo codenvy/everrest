@@ -55,8 +55,8 @@ public class XSLTStreamingOutput implements StreamingOutput
     * XSLTStreamingOutput constructor.
     * 
     * @param schemeName XLST scheme name. Must be registered in
-    *          {@link org.exoplatform.services.xml.transform.impl.trax.TRAXTemplatesLoaderPlugin
-    *          TRAXTemplatesLoaderPlugin }
+    *        {@link org.exoplatform.services.xml.transform.impl.trax.TRAXTemplatesLoaderPlugin
+    *        TRAXTemplatesLoaderPlugin }
     * @param source entity to write into output stream.
     */
    public XSLTStreamingOutput(String schemeName, Source source)

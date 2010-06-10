@@ -34,7 +34,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * Read only case insensitive {@link MultivaluedMap}.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: InputHeadersMap.java -1   $
+ * @version $Id: InputHeadersMap.java -1 $
  */
 // TODO this implementation is not efficient, probably can be better extend
 // java.util.AbstractMap
@@ -254,7 +254,7 @@ public final class InputHeadersMap extends HashMap<String, List<String>> impleme
    {
       throw new UnsupportedOperationException();
    }
-   
+
    /**
     * {@inheritDoc}
     */

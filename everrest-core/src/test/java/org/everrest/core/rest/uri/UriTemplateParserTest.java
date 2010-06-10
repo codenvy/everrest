@@ -18,10 +18,10 @@
  */
 package org.everrest.core.rest.uri;
 
+import junit.framework.TestCase;
+
 import org.everrest.core.uri.UriPattern;
 import org.everrest.core.uri.UriTemplateParser;
-
-import junit.framework.TestCase;
 
 import java.util.List;
 

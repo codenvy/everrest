@@ -19,11 +19,6 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.ContainerResponseWriter;
-import org.everrest.core.impl.ContainerRequest;
-import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.impl.EnvironmentContext;
-import org.everrest.core.impl.InputHeadersMap;
-import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.DummyContainerResponseWriter;
 import org.everrest.test.mock.MockHttpServletRequest;
 
@@ -37,7 +32,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: AbstractResourceTest.java -1   $
+ * @version $Id: AbstractResourceTest.java -1 $
  */
 public abstract class AbstractResourceTest extends BaseTest
 {

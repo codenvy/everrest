@@ -25,7 +25,8 @@ import java.lang.reflect.Method;
  * <code>valueOf</code> with single String argument.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: CollectionStringValueOfProducer.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: CollectionStringValueOfProducer.java 285 2009-10-15 16:21:30Z
+ *          aparfonov $
  */
 public final class CollectionStringValueOfProducer extends BaseCollectionProducer
 {
@@ -40,7 +41,7 @@ public final class CollectionStringValueOfProducer extends BaseCollectionProduce
     * 
     * @param collectionClass class of collection which must be created
     * @param valueOfMethod this method will be used for produce elements of
-    *          collection
+    *        collection
     */
    CollectionStringValueOfProducer(Class<?> collectionClass, Method valueOfMethod)
    {

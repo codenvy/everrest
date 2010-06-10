@@ -72,6 +72,7 @@ import java.util.Vector;
  * AuthorizationModule only, i.e. should not be invoked by the application
  * (those methods are only public because implementing the
  * <var>AuthorizationHandler</var> interface requires them to be).
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.2
@@ -117,12 +118,13 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
    /**
     * returns the requested authorization, or null if none was given.
+    * 
     * @param challenge the parsed challenge from the server.
     * @param req the request which solicited this response
     * @param resp the full response received
     * @return a structure containing the necessary authorization info, or null
     * @exception AuthSchemeNotImplException if the authentication scheme in the
-    *              challenge cannot be handled.
+    *            challenge cannot be handled.
     */
    public AuthorizationInfo getAuthorization(AuthorizationInfo challenge, RoRequest req, RoResponse resp)
       throws AuthSchemeNotImplException, IOException
@@ -203,8 +205,8 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
    }
 
    /**
-    * We handle the "Authentication-Info" and "Proxy-Authentication-Info" headers
-    * here.
+    * We handle the "Authentication-Info" and "Proxy-Authentication-Info"
+    * headers here.
     */
    public void handleAuthHeaders(Response resp, RoRequest req, AuthorizationInfo prev, AuthorizationInfo prxy)
       throws IOException
@@ -918,6 +920,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
    /**
     * Generate <var>num</var> bytes of random data.
+    * 
     * @param num the number of bytes to generate
     * @return a byte array of random data
     */
@@ -976,6 +979,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
    /**
     * Return the value of the first NVPair whose name matches the key using a
     * case-insensitive search.
+    * 
     * @param list an array of NVPair's
     * @param key the key to search for
     * @return the value of the NVPair with that key, or null if not found.
@@ -994,6 +998,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
    /**
     * Return the index of the first NVPair whose name matches the key using a
     * case-insensitive search.
+    * 
     * @param list an array of NVPair's
     * @param key the key to search for
     * @return the index of the NVPair with that key, or -1 if not found.
@@ -1012,6 +1017,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
    /**
     * Sets the value of the NVPair with the name that matches the key
     * (case-insensitive). If no name matches, a new entry is created.
+    * 
     * @param list an array of NVPair's
     * @param key the name of the NVPair
     * @param val the value of the new NVPair
@@ -1078,8 +1084,9 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
    /**
     * Set a new username/password prompter.
+    * 
     * @param prompt the AuthorizationPrompter to use whenever a username and
-    *          password are needed; if null, no querying will be done
+    *        password are needed; if null, no querying will be done
     * @return the previous prompter
     */
    public static synchronized AuthorizationPrompter setAuthorizationPrompter(AuthorizationPrompter prompt)
@@ -1091,9 +1098,9 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
    }
 
    /**
-    * Set the default authorization prompter. It first tries to figure out if the
-    * AWT is running, and if it is then the GUI popup prompter is used; otherwise
-    * the command line prompter is used.
+    * Set the default authorization prompter. It first tries to figure out if
+    * the AWT is running, and if it is then the GUI popup prompter is used;
+    * otherwise the command line prompter is used.
     */
    private static void setDefaultPrompter()
    {
@@ -1306,6 +1313,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
 
    /**
     * the method called by DefaultAuthHandler.
+    * 
     * @return the username/password pair
     */
    public NVPair getUsernamePassword(AuthorizationInfo challenge, boolean forProxy)
@@ -1337,6 +1345,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
    /**
     * This class implements a simple popup that request username and password
     * used for the "basic" and "digest" authentication schemes.
+    * 
     * @version 0.3-3 06/05/2001
     * @author Ronald Tschal�r
     */
@@ -1458,6 +1467,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
 
       /**
        * the method called by SimpleAuthPopup.
+       * 
        * @return the username/password pair
        */
       synchronized NVPair getInput(String l1, String l2, String l3, String scheme)
@@ -1521,6 +1531,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
 /**
  * This class implements a simple command line prompter that request username
  * and password used for the "basic" and "digest" authentication schemes.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -1528,6 +1539,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter
 {
    /**
     * the method called by DefaultAuthHandler.
+    * 
     * @return the username/password pair
     */
    public NVPair getUsernamePassword(AuthorizationInfo challenge, boolean forProxy)

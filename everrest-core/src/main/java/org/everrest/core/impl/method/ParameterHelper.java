@@ -80,8 +80,8 @@ public class ParameterHelper
    public static final List<String> RESOURCE_CONSTRUCTOR_PARAMETER_ANNOTATIONS;
 
    /**
-    * Collections of annotation than allowed to be used on method's parameters of
-    * resource class.
+    * Collections of annotation than allowed to be used on method's parameters
+    * of resource class.
     */
    public static final List<String> RESOURCE_METHOD_PARAMETER_ANNOTATIONS;
 
@@ -255,7 +255,7 @@ public class ParameterHelper
     * for supplied class.
     * 
     * @param clazz class for discovering to have public static method with name
-    *          'valueOf' and single string argument
+    *        'valueOf' and single string argument
     * @return valueOf method or null if class has not it
     */
    static Method getStringValueOfMethod(Class<?> clazz)
@@ -275,9 +275,9 @@ public class ParameterHelper
     * Get constructor with single string argument for supplied class.
     * 
     * @param clazz class for discovering to have constructor with single string
-    *          argument
-    * @return constructor or null if class has not constructor with single string
-    *         argument
+    *        argument
+    * @return constructor or null if class has not constructor with single
+    *         string argument
     */
    static Constructor<?> getStringConstructor(Class<?> clazz)
    {

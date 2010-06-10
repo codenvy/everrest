@@ -54,9 +54,9 @@ import java.util.TimeZone;
  * <tt>{Thread-5} [20:14:03.244] Conn:  Sending Request</tt>
  * <P>
  * When the class is loaded, two java system properties are read:
- * <var>HTTPClient.log.file</var> and <var>HTTPClient.log.mask</var>. The
- * first one, if set, causes all logging to be redirected to the file with the
- * given name. The second one, if set, is used for setting which facilities are
+ * <var>HTTPClient.log.file</var> and <var>HTTPClient.log.mask</var>. The first
+ * one, if set, causes all logging to be redirected to the file with the given
+ * name. The second one, if set, is used for setting which facilities are
  * enabled; the value must be the bitwise OR ('|') of the values of the desired
  * enabled facilities. E.g. a value of 3 would enable logging for the
  * HTTPConnection and HTTPResponse, a value of 16 would enable cookie related
@@ -220,7 +220,7 @@ public class Log
     * 
     * @param facility the facility which is logging the message
     * @param prefix the string with which to prefix the buffer contents; may be
-    *          null
+    *        null
     * @param buf the buffer to dump
     */
    public static void write(int facility, String prefix, ByteArrayOutputStream buf)
@@ -289,10 +289,10 @@ public class Log
     * Enable or disable logging for the given facilities.
     * 
     * @param facilities the facilities for which to enable or disable logging.
-    *          This is bitwise OR ('|') of all the desired facilities; use
-    *          {@link #ALL ALL} to affect all facilities
+    *        This is bitwise OR ('|') of all the desired facilities; use
+    *        {@link #ALL ALL} to affect all facilities
     * @param enable if true, enable logging for the chosen facilities; if false,
-    *          disable logging for them.
+    *        disable logging for them.
     */
    public static void setLogging(int facilities, boolean enable)
    {
@@ -308,7 +308,7 @@ public class Log
     * 
     * @param log the writer to log to; if null, nothing is changed
     * @param closeWhenDone if true, close this stream when a new stream is set
-    *          again
+    *        again
     */
    public static void setLogWriter(Writer log, boolean closeWhenDone)
    {

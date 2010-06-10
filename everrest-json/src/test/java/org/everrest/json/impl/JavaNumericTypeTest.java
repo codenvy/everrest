@@ -21,8 +21,6 @@ package org.everrest.json.impl;
 import junit.framework.TestCase;
 
 import org.everrest.json.JsonHandler;
-import org.everrest.json.impl.JsonDefaultHandler;
-import org.everrest.json.impl.JsonParserImpl;
 import org.everrest.json.value.JsonValue;
 
 import java.io.ByteArrayInputStream;

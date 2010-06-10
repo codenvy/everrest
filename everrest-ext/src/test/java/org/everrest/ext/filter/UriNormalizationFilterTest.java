@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.RuntimeDelegateImpl;
-import org.everrest.ext.filter.UriNormalizationFilter;
 
 import java.net.URI;
 

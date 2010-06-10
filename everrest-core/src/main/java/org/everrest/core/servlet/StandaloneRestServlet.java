@@ -23,6 +23,7 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;

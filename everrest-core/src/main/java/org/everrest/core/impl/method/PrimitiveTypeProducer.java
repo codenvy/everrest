@@ -35,8 +35,8 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer
 {
 
    /**
-    * Primitive types map, this map contains all primitive java types except char
-    * because {@link Character} has not static method valueOf with String
+    * Primitive types map, this map contains all primitive java types except
+    * char because {@link Character} has not static method valueOf with String
     * parameter.
     */
    static final Map<String, Class<?>> PRIMITIVE_TYPES_MAP;
@@ -94,8 +94,9 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer
       this.clazz = clazz;
 
       /**
-       * If class is represents primitive type then method {@link Class#getName()}
-       * return name of primitive type. See #PRIMITIVE_TYPES_MAP.
+       * If class is represents primitive type then method
+       * {@link Class#getName()} return name of primitive type. See
+       * #PRIMITIVE_TYPES_MAP.
        */
       this.defaultDefaultValue = PRIMITIVE_TYPE_DEFAULTS.get(clazz.getName());
    }
@@ -108,8 +109,9 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer
    {
 
       /**
-       * If class is represents primitive type then method {@link Class#getName()}
-       * return name of primitive type. See #PRIMITIVE_TYPES_MAP.
+       * If class is represents primitive type then method
+       * {@link Class#getName()} return name of primitive type. See
+       * #PRIMITIVE_TYPES_MAP.
        */
       Class<?> c = PRIMITIVE_TYPES_MAP.get(clazz.getName());
       Method method = ParameterHelper.getStringValueOfMethod(c);

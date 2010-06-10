@@ -29,9 +29,9 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,16 +90,11 @@ public class MockHttpServletRequest implements HttpServletRequest
    /**
     * Instantiates a new mock http servlet request.
     * 
-    * @param url
-    *           the url
-    * @param data
-    *           the data
-    * @param length
-    *           the length
-    * @param method
-    *           the method
-    * @param headers
-    *           the headers
+    * @param url the url
+    * @param data the data
+    * @param length the length
+    * @param method the method
+    * @param headers the headers
     */
    public MockHttpServletRequest(String url, InputStream data, int length, String method,
       Map<String, List<String>> headers)
@@ -623,10 +618,8 @@ public class MockHttpServletRequest implements HttpServletRequest
    /**
     * Sets the parameter.
     * 
-    * @param name
-    *           the name
-    * @param value
-    *           the value
+    * @param name the name
+    * @param value the value
     */
    public void setParameter(String name, String value)
    {

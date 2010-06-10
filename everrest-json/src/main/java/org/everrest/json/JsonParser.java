@@ -31,7 +31,8 @@ public interface JsonParser
 {
 
    /**
-    * Parse given character stream and build object.  
+    * Parse given character stream and build object.
+    * 
     * @param reader the Stream Reader.
     * @param handler JsonHandler, @see {@link JsonHandler}.
     * @throws JsonException if any error occurs during parsing.
@@ -39,7 +40,8 @@ public interface JsonParser
    void parse(Reader reader, JsonHandler handler) throws JsonException;
 
    /**
-    * Parse given character stream and build object.  
+    * Parse given character stream and build object.
+    * 
     * @param in the Input Stream.
     * @param handler JsonHandler, @see {@link JsonHandler}.
     * @throws JsonException if any error occurs during parsing.

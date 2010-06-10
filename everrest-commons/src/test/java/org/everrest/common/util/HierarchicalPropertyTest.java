@@ -18,14 +18,13 @@
  */
 package org.everrest.common.util;
 
-import org.everrest.common.util.HierarchicalProperty;
-
 import junit.framework.TestCase;
 
 import javax.xml.namespace.QName;
 
 /**
- * Created by The eXo Platform SAS        .
+ * Created by The eXo Platform SAS .
+ * 
  * @author Gennady Azarenkov
  * @version $Id: $
  */

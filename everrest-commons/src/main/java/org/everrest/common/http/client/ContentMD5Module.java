@@ -44,6 +44,7 @@ import java.io.IOException;
  * The MD5InputStream keeps a running digest and checks this against the
  * expected digest from the Content-MD5 header the stream is closed. An
  * IOException is thrown at that point if the digests don't match.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

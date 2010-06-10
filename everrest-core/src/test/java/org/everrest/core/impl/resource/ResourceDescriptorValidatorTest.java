@@ -20,8 +20,6 @@ package org.everrest.core.impl.resource;
 
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.resource.ResourceMethodMap;

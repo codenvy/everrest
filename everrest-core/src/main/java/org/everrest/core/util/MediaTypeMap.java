@@ -55,6 +55,7 @@ public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
 
       /**
        * Compare two {@link MediaType}.
+       * 
        * @param o1 first MediaType to be compared
        * @param o2 second MediaType to be compared
        * @return result of comparison

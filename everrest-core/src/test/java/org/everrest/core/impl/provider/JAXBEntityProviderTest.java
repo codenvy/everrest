@@ -18,6 +18,12 @@
  */
 package org.everrest.core.impl.provider;
 
+import org.everrest.core.generated.Book;
+import org.everrest.core.generated.MemberPrice;
+import org.everrest.core.generated.Price;
+import org.everrest.core.impl.BaseTest;
+import org.everrest.core.impl.MultivaluedMapImpl;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -35,12 +41,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-
-import org.everrest.core.generated.Book;
-import org.everrest.core.generated.MemberPrice;
-import org.everrest.core.generated.Price;
-import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.MultivaluedMapImpl;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>

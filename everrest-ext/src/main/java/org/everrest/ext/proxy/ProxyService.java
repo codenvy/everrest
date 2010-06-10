@@ -18,6 +18,12 @@
  */
 package org.everrest.ext.proxy;
 
+import org.everrest.common.http.client.HTTPResponse;
+import org.everrest.common.http.client.ModuleException;
+import org.everrest.common.http.client.ParseException;
+import org.everrest.common.http.client.ProtocolNotSuppException;
+import org.everrest.core.resource.ResourceContainer;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Enumeration;
@@ -34,12 +40,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.everrest.common.http.client.HTTPResponse;
-import org.everrest.common.http.client.ModuleException;
-import org.everrest.common.http.client.ParseException;
-import org.everrest.common.http.client.ProtocolNotSuppException;
-import org.everrest.core.resource.ResourceContainer;
-
 /**
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
  * @version $Id: ProxyService.java 1886 2010-02-18 10:34:09Z max_shaposhnik $
@@ -52,7 +52,7 @@ public class ProxyService implements ResourceContainer
     * 
     * @param httpRequestHttpServletRequest
     * @param url the url to request
-    * @return  response Response
+    * @return response Response
     */
    @GET
    public Response doProxyGet(@Context HttpServletRequest httpRequest, @QueryParam("url") String url)
@@ -96,7 +96,7 @@ public class ProxyService implements ResourceContainer
     * 
     * @param httpRequestHttpServletRequest
     * @param url the url to request
-    * @return  response Response
+    * @return response Response
     */
    @POST
    public Response doProxyPost(@Context HttpServletRequest httpRequest, @QueryParam("url") String url)
@@ -139,7 +139,7 @@ public class ProxyService implements ResourceContainer
     * 
     * @param httpRequestHttpServletRequest
     * @param url the url to request
-    * @return  response Response
+    * @return response Response
     */
    @PUT
    public Response doProxyPut(@Context HttpServletRequest httpRequest, @QueryParam("url") String url)
@@ -183,7 +183,7 @@ public class ProxyService implements ResourceContainer
     * 
     * @param httpRequestHttpServletRequest
     * @param url the url to request
-    * @return  response Response
+    * @return response Response
     */
    @DELETE
    public Response doProxyDelete(@Context HttpServletRequest httpRequest, @QueryParam("url") String url)
@@ -236,7 +236,7 @@ public class ProxyService implements ResourceContainer
          responseBuilder = Response.status(httpResponse.getStatusCode());
          for (Enumeration<String> en = httpResponse.listHeaders(); en.hasMoreElements();)
          {
-            String headerName = (String)en.nextElement();
+            String headerName = en.nextElement();
             responseBuilder.header(headerName, httpResponse.getHeader(headerName));
          }
          return responseBuilder.entity(httpResponse.getInputStream()).build();

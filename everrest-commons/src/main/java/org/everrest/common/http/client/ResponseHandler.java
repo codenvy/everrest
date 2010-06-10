@@ -37,6 +37,7 @@ import java.io.IOException;
 /**
  * This holds various information about an active response. Used by the
  * StreamDemultiplexor and RespInputStream.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.2
@@ -63,6 +64,7 @@ final class ResponseHandler
 
    /**
     * Creates a new handler. This also allocates the response input stream.
+    * 
     * @param resp the reponse
     * @param request the request
     * @param demux our stream demultiplexor.
@@ -87,7 +89,9 @@ final class ResponseHandler
    /**
     * return the boundary string for this response. Set's up the InputStream
     * buffer if neccessary.
-    * @param MasterStream the input stream from which the stream demux is reading.
+    * 
+    * @param MasterStream the input stream from which the stream demux is
+    *        reading.
     * @return the boundary string.
     */
    byte[] getEndBoundary(BufferedInputStream MasterStream) throws IOException, ParseException
@@ -101,7 +105,9 @@ final class ResponseHandler
    /**
     * return the compilation of the boundary string for this response. Set's up
     * the InputStream buffer if neccessary.
-    * @param MasterStream the input stream from which the stream demux is reading.
+    * 
+    * @param MasterStream the input stream from which the stream demux is
+    *        reading.
     * @return the compiled boundary string.
     */
    int[] getEndCompiled(BufferedInputStream MasterStream) throws IOException, ParseException

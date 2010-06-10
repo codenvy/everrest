@@ -19,9 +19,6 @@
 package org.everrest.core.impl.header;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.header.AcceptMediaType;
-import org.everrest.core.impl.header.AcceptMediaTypeHeaderDelegate;
-import org.everrest.core.impl.header.HeaderHelper;
 
 import java.util.List;
 

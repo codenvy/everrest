@@ -25,7 +25,6 @@ import org.everrest.json.Book;
 import org.everrest.json.BookStorage;
 import org.everrest.json.BookWrapper;
 import org.everrest.json.JavaMapBean;
-import org.everrest.json.impl.JsonGeneratorImpl;
 import org.everrest.json.value.JsonValue;
 
 import java.util.ArrayList;

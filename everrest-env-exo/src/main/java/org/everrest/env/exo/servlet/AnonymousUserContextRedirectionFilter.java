@@ -35,15 +35,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Checks out if username present in HttpServletRequest then initializes 
- * SessionProvider by getting current credentials from AuthenticationService
- * and keeps SessionProvider in ThreadLocalSessionProviderService.
- * Otherwise redirect request to alternative URL. Alternative web application
- * can ask about authentication again or not and gives or denies access to
- * requested resource. 
- * Filter requires parameter <code>context-name</code>, otherwise 
+ * Checks out if username present in HttpServletRequest then initializes
+ * SessionProvider by getting current credentials from AuthenticationService and
+ * keeps SessionProvider in ThreadLocalSessionProviderService. Otherwise
+ * redirect request to alternative URL. Alternative web application can ask
+ * about authentication again or not and gives or denies access to requested
+ * resource. Filter requires parameter <code>context-name</code>, otherwise
  * ServletException will be thrown.
- *   
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -120,6 +119,7 @@ public class AnonymousUserContextRedirectionFilter implements Filter
 
    /**
     * Encode URL by URLEncoder#encode(url), then replace all '+' by '%20' .
+    * 
     * @param url source String.
     * @return encoded String.
     * @throws UnsupportedEncodingException if encoding is unsupported.
@@ -144,8 +144,7 @@ public class AnonymousUserContextRedirectionFilter implements Filter
    }
 
    /**
-    * Get context name. It must be specified as init parameter.
-    * {@inheritDoc}
+    * Get context name. It must be specified as init parameter. {@inheritDoc}
     */
    public void init(FilterConfig filterConfig) throws ServletException
    {

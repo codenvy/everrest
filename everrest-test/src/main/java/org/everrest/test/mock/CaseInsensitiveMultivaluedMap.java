@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: CaseInsensitiveMap.java 2822 2009-08-27 14:14:41Z andrew00x $
@@ -67,7 +66,7 @@ public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>>
    {
       return super.remove(getKey(key));
    }
-   
+
    public T getFirst(String key)
    {
       List<T> l = getList(key);
@@ -75,7 +74,7 @@ public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>>
          return null;
       return l.get(0);
    }
-   
+
    private List<T> getList(String key)
    {
       List<T> l = super.get(getKey(key));

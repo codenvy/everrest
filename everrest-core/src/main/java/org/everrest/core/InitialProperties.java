@@ -21,11 +21,12 @@ package org.everrest.core;
 import java.util.Map;
 
 /**
- * Container for properties, that may be injected in resource by &#64Context annotation.
- *   
+ * Container for properties, that may be injected in resource by &#64Context
+ * annotation.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: InitialProperties.java -1   $
- *
+ * @version $Id: InitialProperties.java -1 $
+ * 
  */
 public interface InitialProperties
 {
@@ -39,7 +40,7 @@ public interface InitialProperties
     * Get property.
     * 
     * @param name property name
-    * @return value of property with specified name or null 
+    * @return value of property with specified name or null
     */
    String getProperty(String name);
 

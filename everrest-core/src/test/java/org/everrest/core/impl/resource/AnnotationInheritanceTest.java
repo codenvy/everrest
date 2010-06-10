@@ -20,7 +20,6 @@ package org.everrest.core.impl.resource;
 
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.GET;
@@ -115,8 +114,7 @@ public class AnnotationInheritanceTest extends BaseTest
 
       assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
       assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
-      assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/a", "", null, null, null)
-         .getContentType());
+      assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/a", "", null, null, null).getContentType());
 
       unregistry(resource1);
 

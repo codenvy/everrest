@@ -34,6 +34,7 @@ package org.everrest.common.http.client;
 
 /**
  * This interface defines various global constants.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3

@@ -35,8 +35,7 @@ public abstract class JsonValue
    // It will be overridden.
 
    /**
-    * @return true if value is 'object', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'object', false otherwise. Should be overridden.
     */
    public boolean isObject()
    {
@@ -44,8 +43,7 @@ public abstract class JsonValue
    }
 
    /**
-    * @return true if value is 'array', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'array', false otherwise. Should be overridden.
     */
    public boolean isArray()
    {
@@ -53,8 +51,7 @@ public abstract class JsonValue
    }
 
    /**
-    * @return true if value is 'numeric', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'numeric', false otherwise. Should be overridden.
     */
    public boolean isNumeric()
    {
@@ -62,8 +59,7 @@ public abstract class JsonValue
    }
 
    /**
-    * @return true if value is 'long', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'long', false otherwise. Should be overridden.
     */
    public boolean isLong()
    {
@@ -71,8 +67,7 @@ public abstract class JsonValue
    }
 
    /**
-    * @return true if value is 'double', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'double', false otherwise. Should be overridden.
     */
    public boolean isDouble()
    {
@@ -80,8 +75,7 @@ public abstract class JsonValue
    }
 
    /**
-    * @return true if value is 'String', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'String', false otherwise. Should be overridden.
     */
    public boolean isString()
    {
@@ -89,8 +83,7 @@ public abstract class JsonValue
    }
 
    /**
-    * @return true if value is 'boolean', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'boolean', false otherwise. Should be overridden.
     */
    public boolean isBoolean()
    {
@@ -98,8 +91,7 @@ public abstract class JsonValue
    }
 
    /**
-    * @return true if value is 'null', false otherwise.
-    * Should be overridden.
+    * @return true if value is 'null', false otherwise. Should be overridden.
     */
    public boolean isNull()
    {
@@ -107,7 +99,8 @@ public abstract class JsonValue
    }
 
    /**
-    * Add child value. This method must be used if isArray() gives true. 
+    * Add child value. This method must be used if isArray() gives true.
+    * 
     * @param child the child value.
     */
    public void addElement(JsonValue child)
@@ -116,7 +109,8 @@ public abstract class JsonValue
    }
 
    /**
-    * Add child value. This method must be used if isObject() gives true. 
+    * Add child value. This method must be used if isObject() gives true.
+    * 
     * @param key the key.
     * @param child the child value.
     */
@@ -127,7 +121,8 @@ public abstract class JsonValue
 
    /**
     * Get all element of this value.
-    * @return Iterator. 
+    * 
+    * @return Iterator.
     */
    public Iterator<JsonValue> getElements()
    {
@@ -136,6 +131,7 @@ public abstract class JsonValue
 
    /**
     * Get all keys for access values.
+    * 
     * @return Iterator.
     */
    public Iterator<String> getKeys()
@@ -145,6 +141,7 @@ public abstract class JsonValue
 
    /**
     * Get value by key.
+    * 
     * @param key the key.
     * @return JsonVAlue with specified key.
     */
@@ -246,6 +243,7 @@ public abstract class JsonValue
 
    /**
     * Write value in given writer.
+    * 
     * @param writer Writer.
     * @throws JsonException if any errors occurs.
     */

@@ -38,7 +38,7 @@ public final class MediaTypeHelper
 {
 
    /**
-    * Constructor. 
+    * Constructor.
     */
    private MediaTypeHelper()
    {

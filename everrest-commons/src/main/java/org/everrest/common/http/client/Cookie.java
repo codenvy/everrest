@@ -61,6 +61,7 @@ import java.util.Date;
  * <LI>Commas and other delimiters: Netscape just parses until the next ';'.
  * This means will allow commas etc inside values.
  * </ul>
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3
@@ -86,6 +87,7 @@ public class Cookie implements Serializable
 
    /**
     * Create a cookie.
+    * 
     * @param name the cookie name
     * @param value the cookie value
     * @param domain the host this cookie will be sent to
@@ -93,7 +95,7 @@ public class Cookie implements Serializable
     * @param epxires the Date this cookie expires, null if at end of session
     * @param secure if true this cookie will only be over secure connections
     * @exception NullPointerException if <var>name</var>, <var>value</var>,
-    *              <var>domain</var>, or <var>path</var> is null
+    *            <var>domain</var>, or <var>path</var> is null
     * @since V0.3-1
     */
    public Cookie(String name, String value, String domain, String path, Date expires, boolean secure)
@@ -120,6 +122,7 @@ public class Cookie implements Serializable
 
    /**
     * Use <code>parse()</code> to create cookies.
+    * 
     * @see #parse(java.lang.String, HTTPClient.RoRequest)
     */
    protected Cookie(RoRequest req)
@@ -144,6 +147,7 @@ public class Cookie implements Serializable
 
    /**
     * Parses the Set-Cookie header into an array of Cookies.
+    * 
     * @param set_cookie the Set-Cookie header received from the server
     * @param req the request used
     * @return an array of Cookies as parsed from the Set-Cookie header
@@ -303,6 +307,7 @@ public class Cookie implements Serializable
 
    /**
     * Set the given attribute, if valid.
+    * 
     * @param cookie the cookie on which to set the value
     * @param name the name of the attribute
     * @param value the value of the attribute

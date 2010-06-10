@@ -47,7 +47,8 @@ import javax.ws.rs.ext.Provider;
  * Processing multipart data based on apache fileupload.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MultipartFormDataEntityProvider.java 497 2009-11-08 13:19:25Z aparfonov $
+ * @version $Id: MultipartFormDataEntityProvider.java 497 2009-11-08 13:19:25Z
+ *          aparfonov $
  */
 @Provider
 @Consumes({"multipart/*"})
@@ -100,8 +101,9 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
             context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
                ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt((String)context.getProperties().get(
                   RequestHandler.WS_RS_BUFFER_SIZE));
-         
-         DefaultFileItemFactory factory = new DefaultFileItemFactory(bufferSize, FileCollector.getInstance().getStore());
+
+         DefaultFileItemFactory factory =
+            new DefaultFileItemFactory(bufferSize, FileCollector.getInstance().getStore());
          FileUpload upload = new FileUpload(factory);
          return upload.parseRequest(httpRequest).iterator();
       }

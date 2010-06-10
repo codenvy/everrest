@@ -35,6 +35,7 @@ package org.everrest.common.http.client;
 /**
  * This class holds a Name/Value pair of strings. It's used for headers,
  * form-data, attribute-lists, etc. This class is immutable.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -51,6 +52,7 @@ public final class NVPair
    /**
     * Creates a new name/value pair and initializes it to the specified name and
     * value.
+    * 
     * @param name the name
     * @param value the value
     */
@@ -62,6 +64,7 @@ public final class NVPair
 
    /**
     * Creates a copy of a given name/value pair.
+    * 
     * @param p the name/value pair to copy
     */
    public NVPair(NVPair p)
@@ -73,6 +76,7 @@ public final class NVPair
 
    /**
     * Get the name.
+    * 
     * @return the name
     */
    public final String getName()
@@ -82,6 +86,7 @@ public final class NVPair
 
    /**
     * Get the value.
+    * 
     * @return the value
     */
    public final String getValue()
@@ -91,6 +96,7 @@ public final class NVPair
 
    /**
     * Produces a string containing the name and value of this instance.
+    * 
     * @return a string containing the class name and the name and value
     */
    public String toString()

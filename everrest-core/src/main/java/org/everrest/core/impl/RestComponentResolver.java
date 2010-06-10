@@ -41,7 +41,7 @@ public final class RestComponentResolver
    private ResourceBinder resources;
 
    private ProviderBinder providers;
-   
+
    public RestComponentResolver(ResourceBinder resources, ProviderBinder providers)
    {
       this.resources = resources;

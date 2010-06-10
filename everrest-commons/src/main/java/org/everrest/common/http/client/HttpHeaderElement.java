@@ -35,6 +35,7 @@ package org.everrest.common.http.client;
 /**
  * This class holds a description of an http header element. It is used by
  * {@link Util#parseHeader(java.lang.String) Util.parseHeader}.
+ * 
  * @see Util#parseHeader(java.lang.String)
  * @see Util#getElement(java.util.Vector, java.lang.String)
  * @see Util#assembleHeader(java.util.Vector)
@@ -58,6 +59,7 @@ public class HttpHeaderElement
     * Construct an element with the given name. The value and parameters are set
     * to null. This can be used when a dummy element is constructed for
     * comparison or retrieval purposes.
+    * 
     * @param name the name of the element
     */
    public HttpHeaderElement(String name)
@@ -114,6 +116,7 @@ public class HttpHeaderElement
    /**
     * Two elements are equal if they have the same name. The comparison is
     * <em>case-insensitive</em>.
+    * 
     * @param obj the object to compare with
     * @return true if <var>obj</var> is an HttpHeaderElement with the same name
     *         as this element.
@@ -144,6 +147,7 @@ public class HttpHeaderElement
     * Append this header element to the given buffer. This is basically a more
     * efficient version of <code>toString()</code> for assembling multiple
     * elements.
+    * 
     * @param buf the StringBuffer to append this header to
     * @see #toString()
     */

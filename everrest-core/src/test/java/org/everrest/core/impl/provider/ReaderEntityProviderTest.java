@@ -22,16 +22,13 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.header.MediaTypeHelper;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -71,23 +68,23 @@ public class ReaderEntityProviderTest extends BaseTest
       assertFalse(TEST_CYR.equals(resstr));
    }
 
-//   [WS-201] Test fails on systems which use not UTF-8 encoding.
-//   
-//   @SuppressWarnings("unchecked")
-//   public void testWrite() throws Exception
-//   {
-//      MessageBodyWriter writer = providers.getMessageBodyWriter(Reader.class, null, null, MediaTypeHelper.DEFAULT_TYPE);
-//      assertNotNull(writer);
-//      assertNotNull(providers.getMessageBodyWriter(Reader.class, null, null, null));
-//      assertTrue(writer.isWriteable(Reader.class, null, null, null));
-//      Reader source =
-//         new InputStreamReader(new ByteArrayInputStream(TEST_CYR.getBytes("windows-1251")), "windows-1251");
-//      ByteArrayOutputStream out = new ByteArrayOutputStream();
-//      writer.writeTo(source, source.getClass(), null, null, null, null, out);
-//      int b = out.size();
-//      String resstr = new String(out.toByteArray(), 0, b, "UTF-8");
-//      System.out.println(getClass().getName() + " : " + resstr);
-//      assertEquals(TEST_CYR, resstr);
-//   }
+   //   [WS-201] Test fails on systems which use not UTF-8 encoding.
+   //   
+   //   @SuppressWarnings("unchecked")
+   //   public void testWrite() throws Exception
+   //   {
+   //      MessageBodyWriter writer = providers.getMessageBodyWriter(Reader.class, null, null, MediaTypeHelper.DEFAULT_TYPE);
+   //      assertNotNull(writer);
+   //      assertNotNull(providers.getMessageBodyWriter(Reader.class, null, null, null));
+   //      assertTrue(writer.isWriteable(Reader.class, null, null, null));
+   //      Reader source =
+   //         new InputStreamReader(new ByteArrayInputStream(TEST_CYR.getBytes("windows-1251")), "windows-1251");
+   //      ByteArrayOutputStream out = new ByteArrayOutputStream();
+   //      writer.writeTo(source, source.getClass(), null, null, null, null, out);
+   //      int b = out.size();
+   //      String resstr = new String(out.toByteArray(), 0, b, "UTF-8");
+   //      System.out.println(getClass().getName() + " : " + resstr);
+   //      assertEquals(TEST_CYR, resstr);
+   //   }
 
 }

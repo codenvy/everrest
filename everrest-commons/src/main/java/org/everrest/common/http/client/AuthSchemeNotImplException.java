@@ -34,6 +34,7 @@ package org.everrest.common.http.client;
 
 /**
  * Signals that the handling of a authorization scheme is not implemented.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -53,6 +54,7 @@ public class AuthSchemeNotImplException extends ModuleException
     * Constructs an AuthSchemeNotImplException class with the specified detail
     * message. A detail message is a String that describes this particular
     * exception.
+    * 
     * @param msg the String containing a detail message
     */
    public AuthSchemeNotImplException(String msg)

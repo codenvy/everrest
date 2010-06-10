@@ -35,7 +35,7 @@ import javax.ws.rs.core.Variant;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: VariantsHandler.java -1   $
+ * @version $Id: VariantsHandler.java -1 $
  */
 public final class VariantsHandler
 {
@@ -48,8 +48,8 @@ public final class VariantsHandler
    }
 
    /**
-    * For extract discovered parameter from variant and compare it with parameter
-    * from one of accept headers, e. g. 'Accept', 'Accept-Language',
+    * For extract discovered parameter from variant and compare it with
+    * parameter from one of accept headers, e. g. 'Accept', 'Accept-Language',
     * 'Accept-Charset', 'Accept-Encoding'.
     * 
     * @param <T> accept parameter from headers
@@ -81,6 +81,7 @@ public final class VariantsHandler
 
    /**
     * Checker for accept media type and media type from variant.
+    * 
     * @see CompatibleChecker
     */
    private static final CompatibleChecker<AcceptMediaType, MediaType> MEDIATYPE_CHECKER =
@@ -107,6 +108,7 @@ public final class VariantsHandler
 
    /**
     * Checker for accept language and language from variant.
+    * 
     * @see CompatibleChecker
     */
    private static final CompatibleChecker<AcceptLanguage, Locale> LANGUAGE_CHECKER =
@@ -133,6 +135,7 @@ public final class VariantsHandler
 
    /**
     * Checker for accept character-set and character-set from variant.
+    * 
     * @see CompatibleChecker
     */
    private static final CompatibleChecker<AcceptToken, String> CHARSET_CHECKER =
@@ -160,6 +163,7 @@ public final class VariantsHandler
 
    /**
     * Checker for accept encoding and encoding from variant.
+    * 
     * @see CompatibleChecker
     */
    private static final CompatibleChecker<AcceptToken, String> ENCODING_CHECKER =
@@ -226,8 +230,8 @@ public final class VariantsHandler
    }
 
    /**
-    * @param <T>  type of acceptable parameters
-    * @param <V>  type of discovered parameter from variant
+    * @param <T> type of acceptable parameters
+    * @param <V> type of discovered parameter from variant
     * @param accept list of acceptable parameters
     * @param variants list of variants it will be modified
     * @param ch see {@link CompatibleChecker}

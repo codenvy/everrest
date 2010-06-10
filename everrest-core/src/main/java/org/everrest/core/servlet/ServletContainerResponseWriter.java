@@ -18,6 +18,10 @@
  */
 package org.everrest.core.servlet;
 
+import org.everrest.core.ContainerResponseWriter;
+import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.impl.header.HeaderHelper;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -26,15 +30,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.everrest.core.ContainerResponseWriter;
-import org.everrest.core.GenericContainerResponse;
-import org.everrest.core.impl.header.HeaderHelper;
-
 /**
  * See {@link ContainerResponseWriter}.
  * 
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: ServletContainerResponseWriter.java 279 2009-10-14 15:58:06Z aparfonov $
+ * @version $Id: ServletContainerResponseWriter.java 279 2009-10-14 15:58:06Z
+ *          aparfonov $
  */
 public class ServletContainerResponseWriter implements ContainerResponseWriter
 {

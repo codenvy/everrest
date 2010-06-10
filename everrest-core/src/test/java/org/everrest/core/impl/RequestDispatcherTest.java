@@ -18,6 +18,12 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.Inject;
+import org.everrest.core.Property;
+import org.everrest.core.tools.ResourceLauncher;
+import org.everrest.test.mock.MockHttpServletRequest;
+
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -35,20 +41,9 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.everrest.core.GenericContainerResponse;
-import org.everrest.core.Inject;
-import org.everrest.core.Property;
-import org.everrest.core.impl.EnvironmentContext;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RequestHandlerImpl;
-import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.SimpleDependencySupplier;
-import org.everrest.core.tools.ResourceLauncher;
-import org.everrest.test.mock.MockHttpServletRequest;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestDispatcherTest.java -1   $
+ * @version $Id: RequestDispatcherTest.java -1 $
  */
 public class RequestDispatcherTest extends BaseTest
 {
@@ -184,8 +179,7 @@ public class RequestDispatcherTest extends BaseTest
       assertEquals("m0", launcher.service("POST", "/", "", null, null, null).getEntity());
       assertEquals("m1", launcher.service("POST", "/a", "", null, null, null).getEntity());
       assertEquals("#x y", launcher.service("POST", "/1/a/b%20/c/%23x%20y", "", null, null, null).getEntity());
-      assertEquals("%23x%20y", launcher.service("POST", "/2/a/b%20/c/%23x%20y", "", null, null, null)
-         .getEntity());
+      assertEquals("%23x%20y", launcher.service("POST", "/2/a/b%20/c/%23x%20y", "", null, null, null).getEntity());
       unregistry(r2);
    }
 

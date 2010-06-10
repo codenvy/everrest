@@ -30,9 +30,11 @@ public interface JsonGenerator
 
    /**
     * Get HashMap representation for Java Bean object.
+    * 
     * @param bean the source object.
     * @return the HashMap which represented give JavaBean.
-    * @throws JsonException if Object can't be transformed in JSON representation.
+    * @throws JsonException if Object can't be transformed in JSON
+    *         representation.
     */
    JsonValue createJsonObject(Object bean) throws JsonException;
 

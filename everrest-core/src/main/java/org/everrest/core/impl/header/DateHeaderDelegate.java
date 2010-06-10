@@ -40,10 +40,8 @@ public class DateHeaderDelegate extends AbstractHeaderDelegate<Date>
 
    /**
     * Parse date header, header string must be in one of HTTP-date format see
-    * {@link <a
-    * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1"
-    * >HTTP/1.1 documentation</a>} otherwise IllegalArgumentException will be
-    * thrown. {@inheritDoc}
+    * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>}
+    * otherwise IllegalArgumentException will be thrown. {@inheritDoc}
     */
    public Date fromString(String header)
    {

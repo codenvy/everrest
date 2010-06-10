@@ -21,7 +21,8 @@ package org.everrest.test.mock;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: CaseInsensetiveMap.java 167 2009-09-10 13:14:45Z max_shaposhnik $
+ * @version $Id: CaseInsensetiveMap.java 167 2009-09-10 13:14:45Z max_shaposhnik
+ *          $
  */
 public class CaseInsensetiveMap<T> extends java.util.HashMap<String, T>
 {

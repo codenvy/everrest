@@ -18,16 +18,13 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.core.ExtHttpHeaders;
+import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
-import org.everrest.core.impl.AbstractResourceTest;
-import org.everrest.core.ExtHttpHeaders;
-import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.impl.UnhandledException;
-import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 
 /**
  * Created by The eXo Platform SAS. <br/>
@@ -98,7 +95,7 @@ public class ExceptionsTest extends AbstractResourceTest
       unregistry(resource);
       super.tearDown();
    }
-   
+
    public void testErrorResponse() throws Exception
    {
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();

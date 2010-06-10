@@ -258,8 +258,8 @@ public class JsonGeneratorImpl implements JsonGenerator
    }
 
    /**
-    * Check fields in class which marked as 'transient'. Transient fields will be
-    * not serialized in JSON representation.
+    * Check fields in class which marked as 'transient'. Transient fields will
+    * be not serialized in JSON representation.
     * 
     * @param clazz the class.
     * @return list of fields which must be skiped.

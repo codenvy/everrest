@@ -27,15 +27,17 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
- * Created by The eXo Platform SAS .<br/> Servlet context initializer that
- * initializes standalone container at the context startup time. To activate
- * this your web.xml have to be configured like:<br/>
+ * Created by The eXo Platform SAS .<br/>
+ * Servlet context initializer that initializes standalone container at the
+ * context startup time. To activate this your web.xml have to be configured
+ * like:<br/>
  * &lt;listener&gt;<br/>
- * &lt;listener-class&gt;org.exoplatform.frameworks.web.common.StandaloneContainerInitializedListener&lt;/listener-class&gt;<br/>
+ * &lt;listener-class&gt;org.exoplatform.frameworks.web.common.
+ * StandaloneContainerInitializedListener&lt;/listener-class&gt;<br/>
  * &lt;/listener&gt;<br/>
- * You may also specify an URL to the
- * configuration.xml stored the configuration for StandaloneContainer as
- * servlet's init parameter called 'org.exoplatform.container.standalone.config'
+ * You may also specify an URL to the configuration.xml stored the configuration
+ * for StandaloneContainer as servlet's init parameter called
+ * 'org.exoplatform.container.standalone.config'
  * 
  * @author <a href="mailto:gennady.azarenkov@exoplatform.com">Gennady
  *         Azarenkov</a>

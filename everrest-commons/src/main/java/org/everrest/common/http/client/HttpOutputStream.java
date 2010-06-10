@@ -89,6 +89,7 @@ import java.io.OutputStream;
  * things as authorization and retrying of requests won't be done by the
  * HTTPClient for such requests. But see {@link HTTPResponse#retryRequest()
  * HTTPResponse.retryRequest} for a partial solution.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3
@@ -133,6 +134,7 @@ public class HttpOutputStream extends OutputStream
     * Creates an output stream of unspecified length. Note that it is
     * <strong>highly</strong> recommended that this constructor be avoided where
     * possible and <code>HttpOutputStream(int)</code> used instead.
+    * 
     * @see HttpOutputStream#HttpOutputStream(int)
     */
    public HttpOutputStream()
@@ -143,6 +145,7 @@ public class HttpOutputStream extends OutputStream
    /**
     * This creates an output stream which will take <var>length</var> bytes of
     * data.
+    * 
     * @param length the number of bytes which will be sent over this stream
     */
    public HttpOutputStream(int length)
@@ -158,9 +161,10 @@ public class HttpOutputStream extends OutputStream
     * Associates this stream with a request and the actual output stream. No
     * other methods in this class may be invoked until this method has been
     * invoked by the HTTPConnection.
+    * 
     * @param req the request this stream is to be associated with
     * @param os the underlying output stream to write our data to, or null if we
-    *          should write to a ByteArrayOutputStream instead.
+    *        should write to a ByteArrayOutputStream instead.
     * @param con_to connection timeout to use in sendRequest()
     */
    void goAhead(Request req, OutputStream os, int con_to)
@@ -181,8 +185,9 @@ public class HttpOutputStream extends OutputStream
    }
 
    /**
-    * Setup this stream to dump the data to the great bit-bucket in the sky. This
-    * is needed for when a module handles the request directly.
+    * Setup this stream to dump the data to the great bit-bucket in the sky.
+    * This is needed for when a module handles the request directly.
+    * 
     * @param req the request this stream is to be associated with
     */
    void ignoreData(Request req)
@@ -192,8 +197,9 @@ public class HttpOutputStream extends OutputStream
    }
 
    /**
-    * Return the response we got from sendRequest(). This waits until the request
-    * has actually been sent.
+    * Return the response we got from sendRequest(). This waits until the
+    * request has actually been sent.
+    * 
     * @return the response returned by sendRequest()
     */
    synchronized Response getResponse()
@@ -213,6 +219,7 @@ public class HttpOutputStream extends OutputStream
    /**
     * Returns the number of bytes this stream is willing to accept, or -1 if it
     * is unbounded.
+    * 
     * @return the number of bytes
     */
    public int getLength()
@@ -222,6 +229,7 @@ public class HttpOutputStream extends OutputStream
 
    /**
     * Gets the trailers which were set with <code>setTrailers()</code>.
+    * 
     * @return an array of header fields
     * @see #setTrailers(HTTPClient.NVPair[])
     */
@@ -232,16 +240,17 @@ public class HttpOutputStream extends OutputStream
 
    /**
     * Sets the trailers to be sent if the output is sent with the chunked
-    * transfer encoding. These must be set before the output stream is closed for
-    * them to be sent.
+    * transfer encoding. These must be set before the output stream is closed
+    * for them to be sent.
     * <P>
     * Any trailers set here <strong>should</strong> be mentioned in a
     * <var>Trailer</var> header in the request (see section 14.40 of
     * draft-ietf-http-v11-spec-rev-06.txt).
     * <P>
-    * This method (and its related <code>getTrailers()</code>)) are in this class
-    * and not in <var>Request</var> because setting trailers is something an
-    * application may want to do, not only modules.
+    * This method (and its related <code>getTrailers()</code>)) are in this
+    * class and not in <var>Request</var> because setting trailers is something
+    * an application may want to do, not only modules.
+    * 
     * @param trailers an array of header fields
     */
    public void setTrailers(NVPair[] trailers)
@@ -271,6 +280,7 @@ public class HttpOutputStream extends OutputStream
    /**
     * Writes a single byte on the stream. It is subject to the same rules as
     * <code>write(byte[], int, int)</code>.
+    * 
     * @param b the byte to write
     * @exception IOException if any exception is thrown by the socket
     * @see #write(byte[], int, int)
@@ -285,14 +295,15 @@ public class HttpOutputStream extends OutputStream
     * Writes an array of bytes on the stream. This method may not be used until
     * this stream has been passed to one of the methods in HTTPConnection (i.e.
     * until it has been associated with a request).
+    * 
     * @param buf an array containing the data to write
     * @param off the offset of the data whithin the buffer
     * @param len the number bytes (starting at <var>off</var>) to write
     * @exception IOException if any exception is thrown by the socket, or if
-    *              writing <var>len</var> bytes would cause more bytes to be
-    *              written than this stream is willing to accept.
-    * @exception IllegalAccessError if this stream has not been associated with a
-    *              request yet
+    *            writing <var>len</var> bytes would cause more bytes to be
+    *            written than this stream is willing to accept.
+    * @exception IllegalAccessError if this stream has not been associated with
+    *            a request yet
     */
    public synchronized void write(byte[] buf, int off, int len) throws IOException, IllegalAccessError
    {
@@ -330,13 +341,14 @@ public class HttpOutputStream extends OutputStream
    }
 
    /**
-    * Closes the stream and causes the data to be sent if it has not already been
-    * done so. This method <strong>must</strong> be invoked when all data has
-    * been written.
-    * @exception IOException if any exception is thrown by the underlying socket,
-    *              or if too few bytes were written.
-    * @exception IllegalAccessError if this stream has not been associated with a
-    *              request yet.
+    * Closes the stream and causes the data to be sent if it has not already
+    * been done so. This method <strong>must</strong> be invoked when all data
+    * has been written.
+    * 
+    * @exception IOException if any exception is thrown by the underlying
+    *            socket, or if too few bytes were written.
+    * @exception IllegalAccessError if this stream has not been associated with
+    *            a request yet.
     */
    public synchronized void close() throws IOException, IllegalAccessError
    {
@@ -435,6 +447,7 @@ public class HttpOutputStream extends OutputStream
 
    /**
     * produces a string describing this stream.
+    * 
     * @return a string containing the name and the length
     */
    public String toString()

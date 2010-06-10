@@ -29,7 +29,7 @@ import javax.ws.rs.core.SecurityContext;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GenericContainerRequest.java -1   $
+ * @version $Id: GenericContainerRequest.java -1 $
  */
 public interface GenericContainerRequest extends Request, SecurityContext, ExtHttpHeaders
 {
@@ -42,8 +42,8 @@ public interface GenericContainerRequest extends Request, SecurityContext, ExtHt
    List<String> getCookieHeaders();
 
    /**
-    * Select the first media type, from a given list of media types, that is most
-    * acceptable according to the requested acceptable media types.
+    * Select the first media type, from a given list of media types, that is
+    * most acceptable according to the requested acceptable media types.
     * 
     * @param mediaTypes the list of media types
     * @return the most acceptable media type, or null if no media type was found

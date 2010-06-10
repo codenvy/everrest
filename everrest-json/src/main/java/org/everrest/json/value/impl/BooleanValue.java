@@ -36,6 +36,7 @@ public class BooleanValue extends JsonValue
 
    /**
     * Constructs new BooleanValue.
+    * 
     * @param value value.
     */
    public BooleanValue(boolean value)

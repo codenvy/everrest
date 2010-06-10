@@ -28,7 +28,7 @@ import java.util.HashMap;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: SimpleDependencySupplier.java -1   $
+ * @version $Id: SimpleDependencySupplier.java -1 $
  */
 public class SimpleDependencySupplier extends HashMap<Class<?>, Object> implements DependencySupplier
 {

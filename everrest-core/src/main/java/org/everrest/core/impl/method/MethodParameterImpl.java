@@ -43,7 +43,8 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
    private final Annotation annotation;
 
    /**
-    * Parameter type. See {@link java.lang.reflect.Method#getGenericParameterTypes()} .
+    * Parameter type. See
+    * {@link java.lang.reflect.Method#getGenericParameterTypes()} .
     */
    private final Type type;
 
@@ -53,8 +54,9 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
    private final Class<?> clazz;
 
    /**
-    * Default value for this parameter, default value can be used if there is not
-    * found required parameter in request. See {@link javax.ws.rs.DefaultValue}.
+    * Default value for this parameter, default value can be used if there is
+    * not found required parameter in request. See
+    * {@link javax.ws.rs.DefaultValue}.
     */
    private final String defaultValue;
 
@@ -71,7 +73,7 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
     * @param clazz parameter class
     * @param type generic parameter type
     * @param defaultValue default value for parameter. See
-    *          {@link javax.ws.rs.DefaultValue}.
+    *        {@link javax.ws.rs.DefaultValue}.
     * @param encoded true if parameter must not be decoded false otherwise
     */
    public MethodParameterImpl(Annotation annotation, Annotation[] additional, Class<?> clazz, Type type,

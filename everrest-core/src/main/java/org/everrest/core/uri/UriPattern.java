@@ -39,10 +39,10 @@ public class UriPattern
     * Sort the templates according to the string comparison of the template
     * regular expressions.
     * <p>
-    * JSR-311 specification: "Sort the set of matching resource classes using the
-    * number of characters in the regular expression not resulting from template
-    * variables as the primary key and the number of matching groups as a
-    * secondary key"
+    * JSR-311 specification: "Sort the set of matching resource classes using
+    * the number of characters in the regular expression not resulting from
+    * template variables as the primary key and the number of matching groups as
+    * a secondary key"
     * </p>
     */
    public static final Comparator<UriPattern> URIPATTERN_COMPARATOR = new UriPatternComparator();
@@ -299,7 +299,7 @@ public class UriPattern
     * @param fragment the fragment URI part
     * @param values the values which must be used instead templates parameters
     * @param encode if true then encode value before add it in URI, otherwise
-    *          value must be validate to legal characters
+    *        value must be validate to legal characters
     * @return the URI string
     */
    public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
@@ -366,7 +366,7 @@ public class UriPattern
     * @param fragment the fragment URI part
     * @param values the values which must be used instead templates parameters
     * @param encode if true then encode value before add it in URI, otherwise
-    *          value must be validate to legal characters
+    *        value must be validate to legal characters
     * @return the URI string
     */
    public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
@@ -431,7 +431,7 @@ public class UriPattern
     * @param component the URI component
     * @param values values map
     * @param encode if true then encode value before add it in URI, otherwise
-    *          value must be validate to legal characters
+    *        value must be validate to legal characters
     */
    private static void appendUriPart(StringBuffer sb, String uriPart, int component,
       Map<String, ? extends Object> values, boolean encode)
@@ -471,17 +471,17 @@ public class UriPattern
     * @param component the URI component
     * @param sourceValues the source array of values
     * @param offset the offset in array
-    * @param values values map, keep parameter/value pair which have been already
-    *          found. From java docs:
-    *          <p>
-    *          All instances of the same template parameter will be replaced by
-    *          the same value that corresponds to the position of the first
-    *          instance of the template parameter. e.g. the template
-    *          "{a}/{b}/{a}" with values {"x", "y", "z"} will result in the the
-    *          URI "x/y/x", <i>not</i> "x/y/z".
-    *          </p>
+    * @param values values map, keep parameter/value pair which have been
+    *        already found. From java docs:
+    *        <p>
+    *        All instances of the same template parameter will be replaced by
+    *        the same value that corresponds to the position of the first
+    *        instance of the template parameter. e.g. the template "{a}/{b}/{a}"
+    *        with values {"x", "y", "z"} will result in the the URI "x/y/x",
+    *        <i>not</i> "x/y/z".
+    *        </p>
     * @param encode if true then encode value before add it in URI, otherwise
-    *          value must be validate to legal characters
+    *        value must be validate to legal characters
     * @return offset
     */
    private static int appendUriPart(StringBuffer sb, String uriPart, int component, Object[] sourceValues, int offset,

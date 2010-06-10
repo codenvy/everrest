@@ -21,7 +21,8 @@ package org.everrest.core.header;
 /**
  * Implementation of this interface is useful for sort accepted media type and
  * languages by quality factor. For example see
- * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">HTTP/1.1 documentation</a>}.
+ * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">HTTP/1.1 documentation</a>}
+ * .
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: QualityValue.java 285 2009-10-15 16:21:30Z aparfonov $

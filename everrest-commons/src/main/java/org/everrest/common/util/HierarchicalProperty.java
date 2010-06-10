@@ -29,8 +29,8 @@ import java.util.TimeZone;
 import javax.xml.namespace.QName;
 
 /**
- * Created by The eXo Platform SAS .<br/> DOM - like (but lighter) property
- * representation
+ * Created by The eXo Platform SAS .<br/>
+ * DOM - like (but lighter) property representation
  * 
  * @author Gennady Azarenkov
  * @version $Id: $
@@ -45,7 +45,7 @@ public class HierarchicalProperty
    protected List<HierarchicalProperty> children;
 
    /**
-    * Property name. 
+    * Property name.
     */
    protected QName name;
 
@@ -60,10 +60,8 @@ public class HierarchicalProperty
     * Constructor accepting String as property name, both prefixed (i.e.
     * prefix:local) and not (i.e. local) are accepted
     * 
-    * @param name
-    *          property name
-    * @param value
-    *          property value (can be null)
+    * @param name property name
+    * @param value property value (can be null)
     */
    public HierarchicalProperty(String name, String value, String namespaceURI)
    {

@@ -20,7 +20,8 @@ package org.everrest.json;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BeanWithTransientField.java 34417 2009-07-23 14:42:56Z dkatayev $
+ * @version $Id: BeanWithTransientField.java 34417 2009-07-23 14:42:56Z dkatayev
+ *          $
  */
 public class BeanWithTransientField
 {

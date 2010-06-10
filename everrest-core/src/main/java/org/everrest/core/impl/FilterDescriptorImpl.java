@@ -35,7 +35,7 @@ import javax.ws.rs.Path;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: FilterDescriptorImpl.java -1   $
+ * @version $Id: FilterDescriptorImpl.java -1 $
  */
 public class FilterDescriptorImpl implements FilterDescriptor
 {

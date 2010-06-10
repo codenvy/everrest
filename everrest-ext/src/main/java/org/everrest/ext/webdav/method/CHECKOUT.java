@@ -27,8 +27,8 @@ import javax.ws.rs.HttpMethod;
 
 /**
  * Created by The eXo Platform SAS.
- * @author <a href="mailto:dkatayev@gmail.com">Dmytro Katayev</a>
- * 22 Oct 2008  
+ * 
+ * @author <a href="mailto:dkatayev@gmail.com">Dmytro Katayev</a> 22 Oct 2008
  */
 
 @Target(ElementType.METHOD)

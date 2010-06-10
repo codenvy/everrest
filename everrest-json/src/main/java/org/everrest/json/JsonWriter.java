@@ -28,80 +28,92 @@ public interface JsonWriter
 {
 
    /**
-    * Write the start of JSON object '{'.  
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * Write the start of JSON object '{'.
+    * 
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeStartObject() throws JsonException;
 
    /**
     * Write the end of JSON object '}'.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * 
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeEndObject() throws JsonException;
 
    /**
-    * Write the start of JSON array '['.  
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * Write the start of JSON array '['.
+    * 
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeStartArray() throws JsonException;
 
    /**
-    * Write the key. After key will go the value.
-    * In this way data represented in JSON object.
+    * Write the key. After key will go the value. In this way data represented
+    * in JSON object.
+    * 
     * @param key the key.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeKey(String key) throws JsonException;
 
    /**
     * Write the end of JSON array ']'.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * 
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeEndArray() throws JsonException;
 
    /**
     * Write the String to stream.
+    * 
     * @param value the String.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeString(String value) throws JsonException;
 
    /**
     * Write the value of long type to stream.
+    * 
     * @param value the value of long type.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeValue(long value) throws JsonException;
 
    /**
     * Write the value of double type to stream.
+    * 
     * @param value the value of double type.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeValue(double value) throws JsonException;
 
    /**
     * Write the value of boolean type to stream.
+    * 
     * @param value the value of boolean type.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeValue(boolean value) throws JsonException;
 
    /**
     * Write the null data to stream.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * 
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void writeNull() throws JsonException;
 
    /**
     * Flush output writer.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * 
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void flush() throws JsonException;
 
    /**
     * Close output writer.
-    * @throws JsonException if any errors, include i/o errors occurs.  
+    * 
+    * @throws JsonException if any errors, include i/o errors occurs.
     */
    void close() throws JsonException;
 }

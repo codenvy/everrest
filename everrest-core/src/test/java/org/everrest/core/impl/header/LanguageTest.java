@@ -19,7 +19,6 @@
 package org.everrest.core.impl.header;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.header.Language;
 
 import java.util.Locale;
 

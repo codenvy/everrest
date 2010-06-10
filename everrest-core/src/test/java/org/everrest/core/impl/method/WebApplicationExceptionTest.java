@@ -18,13 +18,13 @@
  */
 package org.everrest.core.impl.method;
 
+import org.everrest.core.impl.AbstractResourceTest;
+import org.everrest.core.impl.method.MethodExceptionTest.UncheckedException;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
-import org.everrest.core.impl.AbstractResourceTest;
-import org.everrest.core.impl.method.MethodExceptionTest.UncheckedException;
 
 /**
  * Created by The eXo Platform SAS. <br/>

@@ -18,16 +18,6 @@
  */
 package org.everrest.ext.proxy;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-
 import org.everrest.common.http.client.Codecs;
 import org.everrest.common.http.client.HTTPConnection;
 import org.everrest.common.http.client.HTTPResponse;
@@ -37,6 +27,16 @@ import org.everrest.common.http.client.ParseException;
 import org.everrest.common.http.client.ProtocolNotSuppException;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 
 /**
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
@@ -171,14 +171,15 @@ public class BaseConnector extends Connector
       {
          NVPair pair = null;
          String headerName = (String)en.nextElement();
-         if (!headerName.equalsIgnoreCase(HttpHeaders.HOST)) {  //Do not need to send host
-         for (Enumeration<String> en2 = httpRequest.getHeaders(headerName); en2.hasMoreElements();)
-         {
-            pair = new NVPair(headerName, en2.nextElement());
-         }
-         hds.add(pair);
-         this.headers = new NVPair[hds.size()];
-         this.headers = hds.toArray(headers);
+         if (!headerName.equalsIgnoreCase(HttpHeaders.HOST))
+         { //Do not need to send host
+            for (Enumeration<String> en2 = httpRequest.getHeaders(headerName); en2.hasMoreElements();)
+            {
+               pair = new NVPair(headerName, en2.nextElement());
+            }
+            hds.add(pair);
+            this.headers = new NVPair[hds.size()];
+            this.headers = hds.toArray(headers);
          }
       }
    }

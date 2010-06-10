@@ -18,8 +18,6 @@
  */
 package org.everrest.core.impl.method;
 
-import org.everrest.core.impl.method.ParameterHelper;
-
 import junit.framework.TestCase;
 
 import java.lang.reflect.Method;

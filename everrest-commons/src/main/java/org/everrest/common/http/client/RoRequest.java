@@ -36,6 +36,7 @@ package org.everrest.common.http.client;
  * This interface represents the read-only interface of an http request. It is
  * the compile-time type passed to various handlers which might need the request
  * info but musn't modify the request.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

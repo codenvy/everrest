@@ -28,7 +28,8 @@ import javax.ws.rs.core.MediaType;
  * and has not {@link javax.ws.rs.Path} annotation.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceMethodDescriptor.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: ResourceMethodDescriptor.java 285 2009-10-15 16:21:30Z
+ *          aparfonov $
  */
 public interface ResourceMethodDescriptor extends ResourceDescriptor, GenericMethodResource
 {

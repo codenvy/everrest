@@ -65,7 +65,7 @@ public class HeaderParameterParser
     * @param header source header string
     * @return header parameter
     * @throws ParseException if string can't be parsed or contains illegal
-    *           characters
+    *         characters
     */
    public Map<String, String> parse(String header) throws ParseException
    {
@@ -163,6 +163,7 @@ public class HeaderParameterParser
 
    /**
     * Process quoted string, it minds remove escape characters for quotes.
+    * 
     * @see HeaderHelper#filterEscape(String)
     * 
     * @return processed string

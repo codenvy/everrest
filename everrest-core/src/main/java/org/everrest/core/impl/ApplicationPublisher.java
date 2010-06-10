@@ -18,15 +18,15 @@
  */
 package org.everrest.core.impl;
 
-import java.util.Set;
-
 import org.everrest.core.ResourceBinder;
+
+import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: ApplicationPublisher.java -1   $
+ * @version $Id: ApplicationPublisher.java -1 $
  */
 public class ApplicationPublisher
 {

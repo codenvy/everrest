@@ -34,9 +34,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
- * Created by The eXo Platform SAS .<br/> 
- * Servlet Filter that is used to initialize and remove the portal container from the ThreadLocal
- * of PortalContainer, it relies on PortalContainer.getCurrentInstance to retrieve the right portal container. 
+ * Created by The eXo Platform SAS .<br/>
+ * Servlet Filter that is used to initialize and remove the portal container
+ * from the ThreadLocal of PortalContainer, it relies on
+ * PortalContainer.getCurrentInstance to retrieve the right portal container.
  * 
  * @author Gennady Azarenkov
  * @version $Id: $
@@ -62,7 +63,7 @@ public class PortalContainerInitializedFilter extends AbstractFilter
          if (container == null)
          {
             throw new ServletException("Could not initialize PortalContainer." + "Current ExoContainer is: "
-               + ExoContainerContext.getCurrentContainer());            
+               + ExoContainerContext.getCurrentContainer());
          }
       }
       PortalContainer pcontainer = (PortalContainer)container;

@@ -183,7 +183,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public void addCookie(Cookie cookie)
    {
-         cookies.add(cookie);
+      cookies.add(cookie);
    }
 
    /**
@@ -199,21 +199,21 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public void addHeader(String name, String value)
    {
-         Iterator it = headers.keySet().iterator();
-         while (it.hasNext())
+      Iterator it = headers.keySet().iterator();
+      while (it.hasNext())
+      {
+         String key = (String)it.next();
+         if (key.equals(name))
          {
-            String key = (String)it.next();
-            if (key.equals(name))
+            List<String> values = (ArrayList<String>)headers.get(key);
+            if (values != null)
             {
-               List<String> values = (ArrayList<String>)headers.get(key);
-               if (values != null)
-               {
-                  values = new ArrayList<String>();
-                  headers.put(name, values);
-               }
-               values.add(value);
+               values = new ArrayList<String>();
+               headers.put(name, values);
             }
+            values.add(value);
          }
+      }
    }
 
    /**
@@ -229,7 +229,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public boolean containsHeader(String name)
    {
-         return (headers.get(name) != null);
+      return (headers.get(name) != null);
    }
 
    /**
@@ -425,8 +425,7 @@ public class MockHttpServletResponse implements HttpServletResponse
       /**
        * Instantiates a new byte array servlet output stream.
        * 
-       * @param baos
-       *           the baos
+       * @param baos the baos
        */
       public ByteArrayServletOutputStream(ByteArrayOutputStream baos)
       {

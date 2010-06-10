@@ -25,7 +25,8 @@ import java.lang.reflect.Constructor;
  * single String argument.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: CollectionStringConstructorProducer.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id: CollectionStringConstructorProducer.java 285 2009-10-15
+ *          16:21:30Z aparfonov $
  */
 public final class CollectionStringConstructorProducer extends BaseCollectionProducer
 {
@@ -40,7 +41,7 @@ public final class CollectionStringConstructorProducer extends BaseCollectionPro
     * 
     * @param collectionClass class of collection which must be created
     * @param constructor this constructor will be used for produce elements of
-    *          collection
+    *        collection
     */
    CollectionStringConstructorProducer(Class<?> collectionClass, Constructor<?> constructor)
    {

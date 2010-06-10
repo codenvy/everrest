@@ -30,7 +30,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * @param <V> value
  * @see #getList(Object)
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ExtMultivaluedMap.java -1   $
+ * @version $Id: ExtMultivaluedMap.java -1 $
  */
 public interface ExtMultivaluedMap<K, V> extends MultivaluedMap<K, V>
 {

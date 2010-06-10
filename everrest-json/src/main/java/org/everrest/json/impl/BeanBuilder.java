@@ -303,7 +303,8 @@ public class BeanBuilder
    }
 
    /**
-    * Create array of Java Object from Json Source include multi-dimension array.
+    * Create array of Java Object from Json Source include multi-dimension
+    * array.
     * 
     * @param clazz the Class of target Object.
     * @param jsonValue the Json representation.

@@ -38,7 +38,8 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ProviderDescriptorImpl.java 292 2009-10-19 07:03:07Z aparfonov $
+ * @version $Id: ProviderDescriptorImpl.java 292 2009-10-19 07:03:07Z aparfonov
+ *          $
  */
 public class ProviderDescriptorImpl implements ProviderDescriptor
 {

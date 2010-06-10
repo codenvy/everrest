@@ -31,7 +31,7 @@ import org.everrest.core.uri.UriPattern;
  * @see ResponseFilter
  * @see MethodInvokerFilter
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: FilterDescriptor.java -1   $
+ * @version $Id: FilterDescriptor.java -1 $
  */
 public interface FilterDescriptor extends ResourceDescriptor, ObjectModel
 {

@@ -18,16 +18,16 @@
  */
 package org.everrest.deploy.impl;
 
-import java.lang.annotation.Annotation;
-
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Parameter;
-import org.everrest.deploy.impl.BaseTest;
 import org.everrest.core.impl.ConstructorParameterImpl;
+
+import java.lang.annotation.Annotation;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: DependencySupplierTest.java 436 2009-10-28 06:47:29Z aparfonov $
+ * @version $Id: DependencySupplierTest.java 436 2009-10-28 06:47:29Z aparfonov
+ *          $
  */
 public class DependencySupplierTest extends BaseTest
 {

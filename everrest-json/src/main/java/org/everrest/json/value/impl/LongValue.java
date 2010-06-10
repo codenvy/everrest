@@ -35,6 +35,7 @@ public class LongValue extends NumericValue
 
    /**
     * Constructs new LongValue.
+    * 
     * @param value the value.
     */
    public LongValue(long value)

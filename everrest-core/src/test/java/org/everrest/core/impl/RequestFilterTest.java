@@ -18,17 +18,15 @@
  */
 package org.everrest.core.impl;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.List;
-
 import org.everrest.core.Filter;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.RequestFilter;
-import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
+
+import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -42,7 +40,7 @@ import javax.ws.rs.ext.Providers;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestFilterTest.java -1   $
+ * @version $Id: RequestFilterTest.java -1 $
  */
 public class RequestFilterTest extends BaseTest
 {
@@ -136,8 +134,8 @@ public class RequestFilterTest extends BaseTest
       // add filter that can change method
       providers.addRequestFilter(RequestFilter1.class);
       EnvironmentContext env = new EnvironmentContext();
-      env.put(HttpServletRequest.class, new MockHttpServletRequest("", new ByteArrayInputStream(new byte[0]), 0,
-         "GET", new HashMap<String, List<String>>()));
+      env.put(HttpServletRequest.class, new MockHttpServletRequest("", new ByteArrayInputStream(new byte[0]), 0, "GET",
+         new HashMap<String, List<String>>()));
 
       // should get status 204
       ContainerResponse resp = launcher.service("GET", "/a", "", null, null, env);

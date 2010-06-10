@@ -23,7 +23,6 @@ import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.header.MediaTypeHelper;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;

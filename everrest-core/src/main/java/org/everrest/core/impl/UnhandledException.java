@@ -25,7 +25,7 @@ package org.everrest.core.impl;
  * container (e.g. Servlet Container)
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: UnhandledException.java -1   $
+ * @version $Id: UnhandledException.java -1 $
  */
 public class UnhandledException extends RuntimeException
 {

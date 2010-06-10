@@ -52,7 +52,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RuntimeDelegateImpl.java -1   $
+ * @version $Id: RuntimeDelegateImpl.java -1 $
  */
 public class RuntimeDelegateImpl extends RuntimeDelegate
 {

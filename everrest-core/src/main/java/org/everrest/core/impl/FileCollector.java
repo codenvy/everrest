@@ -23,7 +23,7 @@ import java.io.IOException;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: FileCollector.java -1   $
+ * @version $Id: FileCollector.java -1 $
  */
 public final class FileCollector
 {
@@ -66,7 +66,7 @@ public final class FileCollector
 
    /**
     * Create file with specified <code>fileName</code> in storage.
-    *  
+    * 
     * @param fileName file name
     * @return newly created file
     * @throws IOException if any i/o error occurs
@@ -78,7 +78,7 @@ public final class FileCollector
 
    /**
     * Create new file with generated name in storage.
-    *  
+    * 
     * @param fileName file name
     * @return newly created file
     * @throws IOException if any i/o error occurs
@@ -87,7 +87,7 @@ public final class FileCollector
    {
       return File.createTempFile("jaxrs", ".tmp", store);
    }
-   
+
    public File getStore()
    {
       return store;

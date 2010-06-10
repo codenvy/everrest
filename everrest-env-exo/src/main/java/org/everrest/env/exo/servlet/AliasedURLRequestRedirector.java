@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
  * Created by The eXo Platform SAS.
+ * 
  * @author <a href="mailto:vitaly.parfonov@gmail.com">Vitaly Parfonov</a>
  * @version $Id: $
  */
@@ -61,7 +62,7 @@ public class AliasedURLRequestRedirector implements Filter
 
    /**
     * Filter initialization method.
-    *
+    * 
     * @param conf filter configuration
     * @throws ServletException exception
     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
@@ -82,7 +83,7 @@ public class AliasedURLRequestRedirector implements Filter
 
    /**
     * Filter finalization method.
-    *
+    * 
     * @see javax.servlet.Filter#destroy()
     */
    public void destroy()
@@ -90,14 +91,16 @@ public class AliasedURLRequestRedirector implements Filter
    }
 
    /**
-    * The main filter method. Wraps the original http request with the custom wrapper and calls chain.
-    *
+    * The main filter method. Wraps the original http request with the custom
+    * wrapper and calls chain.
+    * 
     * @param req original request
     * @param res original response
     * @param chain filter chain
     * @throws IOException exception
     * @throws ServletException exception
-    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+    *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
     */
    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
       ServletException
@@ -106,9 +109,10 @@ public class AliasedURLRequestRedirector implements Filter
    }
 
    /**
-    * Locates PageProvider component in the container, gets map of the URL parameters to replace,
-    * then creates the custom wrapper and passes the map to it.
-    *
+    * Locates PageProvider component in the container, gets map of the URL
+    * parameters to replace, then creates the custom wrapper and passes the map
+    * to it.
+    * 
     * @param req original request
     * @return
     */
@@ -119,9 +123,10 @@ public class AliasedURLRequestRedirector implements Filter
    }
 
    /**
-    * The custom http request wrapper that is designed to substitute given parameters in URLs
-    * with corresponding values. Parameters are marked at an URL in the form: {$parameter-name}
-    *
+    * The custom http request wrapper that is designed to substitute given
+    * parameters in URLs with corresponding values. Parameters are marked at an
+    * URL in the form: {$parameter-name}
+    * 
     */
    public class UrlReplacerWrapper extends HttpServletRequestWrapper
    {
@@ -165,7 +170,7 @@ public class AliasedURLRequestRedirector implements Filter
 
       /**
        * Actual URL substitution method.
-       *
+       * 
        * @param path
        * @return
        */
@@ -198,7 +203,7 @@ public class AliasedURLRequestRedirector implements Filter
 
       /**
        * Overridden method.
-       *
+       * 
        * @return actual path info
        * @see javax.servlet.http.HttpServletRequestWrapper#getPathInfo()
        */
@@ -209,7 +214,7 @@ public class AliasedURLRequestRedirector implements Filter
 
       /**
        * Overridden method.
-       *
+       * 
        * @return actual URI
        * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURI()
        */
@@ -220,7 +225,7 @@ public class AliasedURLRequestRedirector implements Filter
 
       /**
        * Overridden method.
-       *
+       * 
        * @return actual URL
        * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURL()
        */

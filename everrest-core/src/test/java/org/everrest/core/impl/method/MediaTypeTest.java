@@ -34,10 +34,11 @@ import javax.ws.rs.core.MultivaluedMap;
 /**
  * Created by The eXo Platform SAS.
  * 
- * <br/>Date: 22 Jan 2009
- *
+ * <br/>
+ * Date: 22 Jan 2009
+ * 
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
- * @version $Id: MediaTypeTest.java 
+ * @version $Id: MediaTypeTest.java
  */
 public class MediaTypeTest extends BaseTest
 {
@@ -101,23 +102,19 @@ public class MediaTypeTest extends BaseTest
 
       assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
       assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
-      assertEquals(MediaType.WILDCARD_TYPE, launcher.service("GET", "/a", "", null, null, null)
-         .getContentType());
+      assertEquals(MediaType.WILDCARD_TYPE, launcher.service("GET", "/a", "", null, null, null).getContentType());
 
       assertEquals(200, launcher.service("GET", "/b/c", "", null, null, null).getStatus());
-      assertEquals(MediaType.TEXT_PLAIN_TYPE, launcher.service("GET", "/b/c", "", null, null, null)
-         .getContentType());
+      assertEquals(MediaType.TEXT_PLAIN_TYPE, launcher.service("GET", "/b/c", "", null, null, null).getContentType());
 
       assertEquals(200, launcher.service("GET", "/b/d", "", null, null, null).getStatus());
-      assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/b/d", "", null, null, null)
-         .getContentType());
+      assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/b/d", "", null, null, null).getContentType());
 
       MultivaluedMap<String, String> headers = new MultivaluedMapImpl();
       headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
 
       assertEquals(406, launcher.service("GET", "/b/d", "", headers, null, null).getStatus());
-      assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/b/d", "", null, null, null)
-         .getContentType());
+      assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/b/d", "", null, null, null).getContentType());
 
       unregistry(resource1);
       unregistry(resource2);

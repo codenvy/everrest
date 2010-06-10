@@ -44,6 +44,7 @@ import java.net.SocketException;
 /**
  * This class handles the demultiplexing of input stream. This is needed for
  * things like keep-alive in HTTP/1.0, persist in HTTP/1.1 and in HTTP-NG.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -114,6 +115,7 @@ class StreamDemultiplexor implements GlobalConstants
 
    /**
     * a simple contructor.
+    * 
     * @param protocol the protocol used on this stream.
     * @param sock the socket which we're to demux.
     * @param connection the http-connection this socket belongs to.
@@ -128,6 +130,7 @@ class StreamDemultiplexor implements GlobalConstants
 
    /**
     * Initializes the demultiplexor with a new socket.
+    * 
     * @param stream the stream to demultiplex
     */
    private void init(Socket sock) throws IOException
@@ -164,6 +167,7 @@ class StreamDemultiplexor implements GlobalConstants
 
    /**
     * creates an input stream for the response.
+    * 
     * @param resp the response structure requesting the stream
     * @return an InputStream
     */
@@ -439,15 +443,17 @@ class StreamDemultiplexor implements GlobalConstants
     * Closes the socket and all associated streams. If <var>exception</var> is
     * not null then all active requests are retried.
     * <P>
-    * There are five ways this method may be activated. 1) if an exception occurs
-    * during read or write. 2) if the stream is marked for close but no responses
-    * are outstanding (e.g. due to a timeout). 3) when the markedForClose
-    * response is closed. 4) if all response streams up until and including the
-    * markedForClose response have been closed. 5) if this demux is finalized.
+    * There are five ways this method may be activated. 1) if an exception
+    * occurs during read or write. 2) if the stream is marked for close but no
+    * responses are outstanding (e.g. due to a timeout). 3) when the
+    * markedForClose response is closed. 4) if all response streams up until and
+    * including the markedForClose response have been closed. 5) if this demux
+    * is finalized.
+    * 
     * @param exception the IOException to be sent to the streams.
     * @param was_reset if true then the exception is due to a connection reset;
-    *          otherwise it means we generated the exception ourselves and this
-    *          is a "normal" close.
+    *        otherwise it means we generated the exception ourselves and this is
+    *        a "normal" close.
     */
    synchronized void close(IOException exception, boolean was_reset)
    {
@@ -493,10 +499,11 @@ class StreamDemultiplexor implements GlobalConstants
     * Retries outstanding requests. Well, actually the RetryModule does that.
     * Here we just throw a RetryException for each request so that the
     * RetryModule can catch and handle them.
+    * 
     * @param exception the exception that led to this call.
     * @param was_reset this flag is passed to the RetryException and is used by
-    *          the RetryModule to distinguish abnormal closes from expected
-    *          closes.
+    *        the RetryModule to distinguish abnormal closes from expected
+    *        closes.
     */
    private void retry_requests(IOException exception, boolean was_reset)
    {
@@ -562,13 +569,13 @@ class StreamDemultiplexor implements GlobalConstants
    /**
     * Close the socket if all the streams have been closed.
     * <P>
-    * When a stream reaches eof it is removed from the response handler list, but
-    * when somebody close()'s the response stream it is just marked as such. This
-    * means that all responses in the list have either not been read at all or
-    * only partially read, but they might have been close()'d meaning that nobody
-    * is interested in the data. So If all the response streams up till and
-    * including the one markedForClose have been close()'d then we can remove
-    * them from our list and close the socket.
+    * When a stream reaches eof it is removed from the response handler list,
+    * but when somebody close()'s the response stream it is just marked as such.
+    * This means that all responses in the list have either not been read at all
+    * or only partially read, but they might have been close()'d meaning that
+    * nobody is interested in the data. So If all the response streams up till
+    * and including the one markedForClose have been close()'d then we can
+    * remove them from our list and close the socket.
     * <P>
     * Note: if the response list is emtpy or if no response is markedForClose
     * then this method does nothing. Specifically it does not close the socket.
@@ -625,6 +632,7 @@ class StreamDemultiplexor implements GlobalConstants
     * Mark this demux to not accept any more request and to close the stream
     * after this <var>resp</var>onse or all requests have been processed, or
     * close immediately if no requests are registered.
+    * 
     * @param response the Response after which the connection should be closed.
     */
    synchronized void markForClose(Response resp)
@@ -678,6 +686,7 @@ class StreamDemultiplexor implements GlobalConstants
    /**
     * Emergency stop. Closes the socket and notifies the responses that the
     * requests are aborted.
+    * 
     * @since V0.3
     */
    void abort()
@@ -757,6 +766,7 @@ class StreamDemultiplexor implements GlobalConstants
 
    /**
     * produces a string.
+    * 
     * @return a string containing the class name and protocol number
     */
    public String toString()
@@ -795,10 +805,10 @@ class SocketTimeout extends Thread
    private boolean alive = true;
 
    /**
-    * This class represents a timer entry. It is used to close an inactive socket
-    * after n seconds. Once running, the timer may be suspended (hyber()),
-    * restarted (reset()), or aborted (kill()). When the timer expires it invokes
-    * markForClose() on the associated stream demultipexer.
+    * This class represents a timer entry. It is used to close an inactive
+    * socket after n seconds. Once running, the timer may be suspended
+    * (hyber()), restarted (reset()), or aborted (kill()). When the timer
+    * expires it invokes markForClose() on the associated stream demultipexer.
     */
    class TimeoutEntry
    {

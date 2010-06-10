@@ -85,7 +85,8 @@ public final class IOHelper
     * Read String from given {@link InputStream}.
     * 
     * @param in source stream for reading
-    * @param cs character set, if null then {@link #DEFAULT_CHARSET} will be used
+    * @param cs character set, if null then {@link #DEFAULT_CHARSET} will be
+    *        used
     * @return resulting String
     * @throws IOException if i/o errors occurs
     */
@@ -118,7 +119,8 @@ public final class IOHelper
     * 
     * @param s String
     * @param out See {@link OutputStream}
-    * @param cs character set, if null then {@link #DEFAULT_CHARSET} will be used
+    * @param cs character set, if null then {@link #DEFAULT_CHARSET} will be
+    *        used
     * @throws IOException if i/o errors occurs
     */
    static void writeString(String s, OutputStream out, String cs) throws IOException

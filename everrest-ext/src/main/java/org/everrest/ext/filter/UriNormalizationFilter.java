@@ -31,7 +31,8 @@ import javax.ws.rs.core.UriBuilder;
  * details see http://www.unix.com.ua/rfc/rfc3986.html#s6.2.2 .
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: UriNormalizationFilter.java 301 2009-10-19 14:41:18Z aparfonov $
+ * @version $Id: UriNormalizationFilter.java 301 2009-10-19 14:41:18Z aparfonov
+ *          $
  */
 @Filter
 public final class UriNormalizationFilter implements RequestFilter

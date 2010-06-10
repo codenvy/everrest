@@ -18,8 +18,6 @@
  */
 package org.everrest.core.impl.method;
 
-import org.everrest.core.impl.method.PrimitiveTypeProducer;
-
 import junit.framework.TestCase;
 
 /**

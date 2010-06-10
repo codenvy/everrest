@@ -27,7 +27,6 @@ import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.exoplatform.services.log.ExoLogger;
-
 import org.exoplatform.services.log.Log;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
@@ -46,10 +45,12 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Initialize required components of JAX-RS framework and deploy single JAX-RS application.
+ * Initialize required components of JAX-RS framework and deploy single JAX-RS
+ * application.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RestInitializedListener.java 436 2009-10-28 06:47:29Z aparfonov $
+ * @version $Id: RestInitializedListener.java 436 2009-10-28 06:47:29Z aparfonov
+ *          $
  */
 public class RestInitializedListener implements ServletContextListener
 {

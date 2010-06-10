@@ -35,6 +35,7 @@ package org.everrest.common.http.client;
 /**
  * This interface defines the return codes that the handlers in modules may
  * return.
+ * 
  * @see HTTPClientModule
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r

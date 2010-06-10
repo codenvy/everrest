@@ -97,7 +97,7 @@ public class JsonParserImpl implements JsonParser
     * Read JSON object token, it minds all characters from '{' to '}'.
     * 
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private void readObject() throws JsonException
    {
@@ -162,7 +162,7 @@ public class JsonParserImpl implements JsonParser
     * Read JSON array token, it minds all characters from '[' to ']'.
     * 
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private void readArray() throws JsonException
    {
@@ -207,7 +207,7 @@ public class JsonParserImpl implements JsonParser
     * Read key from stream.
     * 
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private void readKey() throws JsonException
    {
@@ -226,7 +226,7 @@ public class JsonParserImpl implements JsonParser
     * Read value from stream.
     * 
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private void readValue() throws JsonException
    {
@@ -262,7 +262,7 @@ public class JsonParserImpl implements JsonParser
     * 
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private char next() throws JsonException
    {
@@ -323,7 +323,7 @@ public class JsonParserImpl implements JsonParser
     * 
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private char nextAny() throws JsonException
    {
@@ -344,7 +344,7 @@ public class JsonParserImpl implements JsonParser
     * @param c the expected char.
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private char next(char c) throws JsonException
    {
@@ -355,12 +355,13 @@ public class JsonParserImpl implements JsonParser
    }
 
    /**
-    * Get next char from stream. And check is this char presents in given string.
+    * Get next char from stream. And check is this char presents in given
+    * string.
     * 
     * @param s the string.
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private char next(String s) throws JsonException
    {
@@ -388,7 +389,7 @@ public class JsonParserImpl implements JsonParser
     * @param n the number of characters.
     * @return the array of characters.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private char[] next(int n) throws JsonException
    {
@@ -411,7 +412,7 @@ public class JsonParserImpl implements JsonParser
     * 
     * @return the char array.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private char[] nextString() throws JsonException
    {
@@ -471,7 +472,7 @@ public class JsonParserImpl implements JsonParser
     * 
     * @param c the char for pushing back.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *           occurs.
+    *         occurs.
     */
    private void back(char c) throws JsonException
    {

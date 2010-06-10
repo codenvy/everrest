@@ -19,7 +19,7 @@
 package org.everrest.common.http;
 
 /**
- * Created by The eXo Platform SARL        .<br/>
+ * Created by The eXo Platform SARL .<br/>
  * HTTP methods
  * 
  * @author Gennady Azarenkov

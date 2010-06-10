@@ -73,7 +73,7 @@ import javax.ws.rs.ext.Providers;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ProviderBinder.java -1   $
+ * @version $Id: ProviderBinder.java -1 $
  */
 public class ProviderBinder implements Providers
 {
@@ -798,10 +798,10 @@ public class ProviderBinder implements Providers
    /**
     * @param <T> context resolver actual type argument
     * @param pm MediaTypeMap that contains ProviderFactories that may produce
-    *          objects that are instance of T
+    *        objects that are instance of T
     * @param contextType context type
     * @param mediaType media type that can be used to restrict context resolver
-    *          choose
+    *        choose
     * @return ContextResolver or null if nothing was found
     */
    @SuppressWarnings("unchecked")

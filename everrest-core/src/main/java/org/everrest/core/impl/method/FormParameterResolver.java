@@ -60,8 +60,7 @@ public class FormParameterResolver extends ParameterResolver<FormParam>
     */
    @SuppressWarnings("unchecked")
    @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
-      throws Exception
+   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String param = this.formParam.value();
       TypeProducer typeProducer =

@@ -34,6 +34,7 @@ package org.everrest.common.http.client;
 
 /**
  * This class implements a singly linked list.
+ * 
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -47,6 +48,7 @@ class LinkedList
 
    /**
     * Add the specified element to the head of the list.
+    * 
     * @param elem the object to add to the list.
     */
    public synchronized void addToHead(Object elem)
@@ -59,6 +61,7 @@ class LinkedList
 
    /**
     * Add the specified element to the end of the list.
+    * 
     * @param elem the object to add to the list.
     */
    public synchronized void addToEnd(Object elem)
@@ -72,6 +75,7 @@ class LinkedList
    /**
     * Remove the specified element from the list. Does nothing if the element is
     * not in the list.
+    * 
     * @param elem the object to remove from the list.
     */
    public synchronized void remove(Object elem)
@@ -101,6 +105,7 @@ class LinkedList
 
    /**
     * Return the first element in the list. The list is not modified in any way.
+    * 
     * @return the first element
     */
    public synchronized Object getFirst()
@@ -115,6 +120,7 @@ class LinkedList
    /**
     * Starts an enumeration of all the elements in this list. Note that only one
     * enumeration can be active at any time.
+    * 
     * @return the first element, or null if the list is empty
     */
    public synchronized Object enumerate()
@@ -129,6 +135,7 @@ class LinkedList
    /**
     * Gets the next element in the enumeration. The enumeration must have been
     * first initalized with a call to <code>enumerate()</code>.
+    * 
     * @return the next element, or null if none left
     * @see #enumerate()
     */

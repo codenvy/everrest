@@ -46,8 +46,8 @@ public class JsonWriterImpl implements JsonWriter
    private final Writer writer;
 
    /**
-    * Indicate is current value is the first, if not before value must be written
-    * comma.
+    * Indicate is current value is the first, if not before value must be
+    * written comma.
     */
    private boolean commaFirst = false;
 
@@ -65,7 +65,7 @@ public class JsonWriterImpl implements JsonWriter
     * Constructs JsonWriter.
     * 
     * @param out OutputStream.
-    * @throws UnsupportedEncodingException 
+    * @throws UnsupportedEncodingException
     */
    public JsonWriterImpl(OutputStream out)
    {
