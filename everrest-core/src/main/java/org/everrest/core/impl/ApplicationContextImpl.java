@@ -484,7 +484,7 @@ public class ApplicationContextImpl implements ApplicationContext
    /**
     * {@inheritDoc}
     */
-   public void setDependencyInjector(DependencySupplier depInjector)
+   public void setDependencySupplier(DependencySupplier depInjector)
    {
       this.depInjector = depInjector;
    }

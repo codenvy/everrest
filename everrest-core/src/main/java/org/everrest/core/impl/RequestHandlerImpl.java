@@ -142,7 +142,7 @@ public final class RequestHandlerImpl implements RequestHandler
       {
          ApplicationContext context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
          context.getProperties().putAll(properties);
-         context.setDependencyInjector(depInjector);
+         context.setDependencySupplier(depInjector);
          ApplicationContextImpl.setCurrent(context);
 
          for (ObjectFactory<FilterDescriptor> factory : ProviderBinder.getInstance().getRequestFilters(
