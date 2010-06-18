@@ -124,7 +124,7 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     */
    UriInfo getUriInfo();
 
-   void setDependencyInjector(DependencySupplier depInjector);
+   void setDependencySupplier(DependencySupplier depInjector);
 
    /**
     * Pass in context list of path template parameters @see {@link UriPattern}.
