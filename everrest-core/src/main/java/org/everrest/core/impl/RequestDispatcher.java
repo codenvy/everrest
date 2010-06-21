@@ -56,7 +56,7 @@ import javax.ws.rs.core.Response.Status;
 
 /**
  * Lookup resource which can serve request.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: RequestDispatcher.java -1 $
  */
@@ -75,7 +75,7 @@ public final class RequestDispatcher
 
    /**
     * Constructs new instance of RequestDispatcher.
-    * 
+    *
     * @param resourceBinder See {@link ResourceBinder}
     */
    public RequestDispatcher(ResourceBinder resourceBinder)
@@ -85,7 +85,7 @@ public final class RequestDispatcher
 
    /**
     * Dispatch {@link ContainerRequest} to resource which can serve request.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     */
@@ -131,7 +131,8 @@ public final class RequestDispatcher
             LOG.debug("Root resource not found for " + requestPath);
 
          // Stop here, there is no matched root resource
-         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(
+            "There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN).build());
       }
 
       // Take the tail of the request path, the tail will be requested path
@@ -152,7 +153,7 @@ public final class RequestDispatcher
    /**
     * Get last element from path parameters. This element will be used as
     * request path for child resources.
-    * 
+    *
     * @param parameterValues See
     *        {@link ApplicationContextImpl#getParameterValues()}
     * @return last element from given list or empty string if last element is
@@ -167,7 +168,7 @@ public final class RequestDispatcher
    /**
     * Process resource methods, sub-resource methods and sub-resource locators
     * to find the best one for serve request.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param context See {@link ApplicationContextImpl}
@@ -257,7 +258,7 @@ public final class RequestDispatcher
 
    /**
     * Invoke resource methods.
-    * 
+    *
     * @param rmd See {@link ResourceMethodDescriptor}
     * @param resource instance of resource class
     * @param context See {@link ApplicationContextImpl}
@@ -279,7 +280,7 @@ public final class RequestDispatcher
 
    /**
     * Invoke sub-resource methods.
-    * 
+    *
     * @param requestPath request path
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param resource instance of resource class
@@ -307,7 +308,7 @@ public final class RequestDispatcher
 
    /**
     * Invoke sub-resource locators.
-    * 
+    *
     * @param requestPath request path
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @param resource instance of resource class
@@ -353,7 +354,7 @@ public final class RequestDispatcher
     * SubResourceLocatorDescriptor has higher priority. And finally if zero was
     * returned then UriPattern is equals, in this case
     * SubResourceMethodDescriptor must be selected.
-    * 
+    *
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @return result of comparison sub-resources
@@ -370,7 +371,7 @@ public final class RequestDispatcher
    /**
     * Process result of invoked method, and set {@link Response} parameters
     * dependent of returned object.
-    * 
+    *
     * @param o result of invoked method
     * @param returnType type of returned object
     * @param request See {@link GenericContainerRequest}
@@ -417,7 +418,7 @@ public final class RequestDispatcher
 
    /**
     * Process resource methods.
-    * 
+    *
     * @param <T> ResourceMethodDescriptor extension
     * @param rmm See {@link ResourceMethodMap}
     * @param request See {@link GenericContainerRequest}
@@ -432,7 +433,7 @@ public final class RequestDispatcher
       if (rmds == null || rmds.size() == 0)
       {
          response.setResponse(Response.status(405).header("Allow", HeaderHelper.convertToString(rmm.getAllow()))
-            .build());
+            .entity("Method not allowed.").type(MediaType.TEXT_PLAIN).build());
          return false;
       }
       MediaType contentType = request.getMediaType();
@@ -451,7 +452,8 @@ public final class RequestDispatcher
 
       if (methods.isEmpty())
       {
-         response.setResponse(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+         response.setResponse(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(
+            "Media type " + contentType + " is not supported.").type(MediaType.TEXT_PLAIN).build());
          return false;
       }
 
@@ -491,13 +493,14 @@ public final class RequestDispatcher
          return true;
       }
 
-      response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).build());
+      response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).entity("Not Acceptable").type(
+         MediaType.TEXT_PLAIN).build());
       return false;
    }
 
    /**
     * Process sub-resource methods.
-    * 
+    *
     * @param srmm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param request See {@link GenericContainerRequest}
@@ -528,7 +531,8 @@ public final class RequestDispatcher
 
       if (rmm == null)
       {
-         response.setResponse(Response.status(Status.NOT_FOUND).build());
+         response.setResponse(Response.status(Status.NOT_FOUND).entity(
+            "There is no any resources matched to request path " + requestedPath).type(MediaType.TEXT_PLAIN).build());
          return false;
       }
 
@@ -548,7 +552,7 @@ public final class RequestDispatcher
 
    /**
     * Process sub-resource locators.
-    * 
+    *
     * @param srlm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param capturingValues the list for keeping template values
