@@ -77,6 +77,14 @@ public class StartableApplicationPublisher extends ApplicationPublisher implemen
    /**
     * {@inheritDoc}
     */
+   public Object getComponent(Class<?> type)
+   {
+      return container.getComponentInstanceOfType(type);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
    @SuppressWarnings("unchecked")
    public void start()
    {

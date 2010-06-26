@@ -37,4 +37,12 @@ public interface DependencySupplier
     */
    Object getComponent(Parameter parameter);
 
+   /**
+    * Get instance of <code>type</code>.
+    * 
+    * @param parameter required parameter description
+    * @return object of required type or null if instance described by
+    *         <code>type</code> may not be produced
+    */
+   Object getComponent(Class<?> type);
 }

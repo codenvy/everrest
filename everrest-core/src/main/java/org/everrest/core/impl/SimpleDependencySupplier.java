@@ -54,4 +54,11 @@ public class SimpleDependencySupplier extends HashMap<Class<?>, Object> implemen
       return get(parameter.getParameterClass());
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   public Object getComponent(Class<?> type)
+   {
+      return get(type);
+   }
 }
