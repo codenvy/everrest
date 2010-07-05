@@ -31,12 +31,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MultivaluedMap;
-
 /**
  * This class may be useful for running test and should not be used for
  * launching services in real environment, Servlet Container for example.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ResourceLauncher.java 497 2009-11-08 13:19:25Z aparfonov $
  */
@@ -95,7 +93,7 @@ public class ResourceLauncher
     * @throws Exception if any error occurs
     */
    public ContainerResponse service(String method, String requestURI, String baseURI,
-      MultivaluedMap<String, String> headers, byte[] data, EnvironmentContext env) throws Exception
+      Map<String, List<String>> headers, byte[] data, EnvironmentContext env) throws Exception
    {
       return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter(), env);
    }

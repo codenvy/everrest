@@ -76,7 +76,7 @@ public class UriPattern
          if (o1.getNumberOfLiteralCharacters() > o2.getNumberOfLiteralCharacters())
             return -1;
 
-         // pattern with two variables less the pattern with four variables 
+         // pattern with two variables less the pattern with four variables
          if (o1.getParameterNames().size() < o2.getParameterNames().size())
             return 1;
          if (o1.getParameterNames().size() > o2.getParameterNames().size())
@@ -129,7 +129,7 @@ public class UriPattern
 
    /**
     * Constructs UriPattern.
-    * 
+    *
     * @param template the source template
     * @see {@link javax.ws.rs.Path}
     */
@@ -185,7 +185,7 @@ public class UriPattern
 
    /**
     * Get the regex pattern.
-    * 
+    *
     * @return the regex pattern
     */
    public Pattern getPattern()
@@ -195,7 +195,7 @@ public class UriPattern
 
    /**
     * Get the URI template as a String.
-    * 
+    *
     * @return the URI template
     */
    public String getTemplate()
@@ -205,7 +205,7 @@ public class UriPattern
 
    /**
     * Get the regular expression.
-    * 
+    *
     * @return the regular expression
     */
    public String getRegex()
@@ -215,7 +215,7 @@ public class UriPattern
 
    /**
     * Get the number of literal characters in the template.
-    * 
+    *
     * @return number of literal characters in the template
     */
    public int getNumberOfLiteralCharacters()
@@ -237,7 +237,7 @@ public class UriPattern
     * greater then number of keys. It can be used for check is resource is
     * matching to requested. If resource is match the last element in list must
     * be '/' or null.
-    * 
+    *
     * @param uri the URI string
     * @param parameters target list
     * @return true if URI string is match to pattern, false otherwise
@@ -289,7 +289,7 @@ public class UriPattern
 
    /**
     * Create URI from URI part. Each URI part can contains templates.
-    * 
+    *
     * @param schema the schema URI part
     * @param userInfo the user info URI part
     * @param host the host name URI part
@@ -356,7 +356,7 @@ public class UriPattern
 
    /**
     * Create URI from URI part. Each URI part can contains templates.
-    * 
+    *
     * @param schema the schema URI part
     * @param userInfo the user info URI part
     * @param host the host name URI part
@@ -404,7 +404,7 @@ public class UriPattern
 
       if (path != null)
       {
-         if (sb.length() > 0 && path.charAt(0) != '/')
+         if (sb.length() > 0 && path.length() > 0 && path.charAt(0) != '/')
             sb.append('/');
          p = appendUriPart(sb, path, UriComponent.PATH, values, p, m, encode);
       }
@@ -539,7 +539,7 @@ public class UriPattern
 
    /**
     * Check does given URI string has templates.
-    * 
+    *
     * @param uri the URI which must be checked
     * @return true if URI has templates false otherwise
     */
