@@ -334,7 +334,7 @@ public class UriPattern
 
       if (path != null)
       {
-         if (sb.length() > 0 && path.charAt(0) != '/')
+         if (sb.length() > 0 && path.length() > 0 && path.charAt(0) != '/')
             sb.append('/');
          appendUriPart(sb, path, UriComponent.PATH, values, encode);
       }
