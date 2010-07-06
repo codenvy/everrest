@@ -26,7 +26,7 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
@@ -54,18 +54,18 @@ import java.util.Vector;
  * used by the "Basic" scheme and derivatives, and the one used by the "Digest"
  * scheme and derivatives. The first form contains just the the scheme and a
  * "cookie":
- * 
+ *
  * <PRE>
  *     Authorization: Basic aGVsbG86d29ybGQ=
  * </PRE>
- * 
+ *
  * The second form contains the scheme followed by a number of parameters in the
  * form of name=value pairs:
- * 
+ *
  * <PRE>
  *     Authorization: Digest username=&quot;hello&quot;, realm=&quot;test&quot;, nonce=&quot;42&quot;, ...
  * </PRE>
- * 
+ *
  * The two fields "cookie" and "params" correspond to these two forms. <A
  * HREF="#toString()">toString()</A> is used by the AuthorizationModule when
  * generating the Authorization header and will format the info accordingly.
@@ -85,7 +85,7 @@ import java.util.Vector;
  * methods manipulate and query an internal list of AuthorizationInfo instances.
  * There can be only one instance per host, port, scheme, and realm combination
  * (see <A HREF="#equals">equals()</A>).
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.1
@@ -141,7 +141,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Creates an new info structure for the specified host and port.
-    * 
+    *
     * @param host the host
     * @param port the port
     */
@@ -154,7 +154,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Creates a new info structure for the specified host and port with the
     * specified scheme, realm, params. The cookie is set to null.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -180,7 +180,7 @@ public class AuthorizationInfo implements Cloneable
     * Creates a new info structure for the specified host and port with the
     * specified scheme, realm and cookie. The params is set to a zero-length
     * array, and the extra_info is set to null.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -203,7 +203,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Creates a new copy of the given AuthorizationInfo.
-    * 
+    *
     * @param templ the info to copy
     */
    AuthorizationInfo(AuthorizationInfo templ)
@@ -233,7 +233,7 @@ public class AuthorizationInfo implements Cloneable
     * <P>
     * The default handler can be disabled by setting the auth handler to
     * <var>null</var>.
-    * 
+    *
     * @param handler the new authorization handler
     * @return the old authorization handler
     * @see AuthorizationHandler
@@ -248,7 +248,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get's the current authorization handler.
-    * 
+    *
     * @return the current authorization handler, or null if none is set.
     * @see AuthorizationHandler
     */
@@ -260,7 +260,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Searches for the authorization info using the given host, port, scheme and
     * realm. The context is the default context.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -275,7 +275,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Searches for the authorization info in the given context using the given
     * host, port, scheme and realm.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -296,7 +296,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Queries the AuthHandler for authorization info. It also adds this info to
     * the list.
-    * 
+    *
     * @param auth_info any info needed by the AuthHandler; at a minimum the
     *        host, scheme and realm should be set.
     * @param req the request which initiated this query
@@ -328,7 +328,7 @@ public class AuthorizationInfo implements Cloneable
     * Searches for the authorization info using the host, port, scheme and realm
     * from the given info struct. If not found it queries the AuthHandler (if
     * set).
-    * 
+    *
     * @param auth_info the AuthorizationInfo
     * @param req the request which initiated this query
     * @param resp the full response
@@ -347,6 +347,11 @@ public class AuthorizationInfo implements Cloneable
 
       AuthorizationInfo new_info = (AuthorizationInfo)AuthList.get(auth_info);
 
+      if (new_info == null)
+         new_info =
+            (AuthorizationInfo)AuthList.get(new AuthorizationInfo(auth_info.getHost(), auth_info.getPort(), auth_info
+               .getScheme(), null, auth_info.getParams(), auth_info.getExtraInfo()));
+
       if (new_info == null && query_auth_h)
          new_info = queryAuthHandler(auth_info, req, resp);
 
@@ -356,7 +361,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Searches for the authorization info given a host, port, scheme and realm.
     * Queries the AuthHandler if not found in list.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -378,7 +383,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry to the list using the default context. If an
     * entry for the specified scheme and realm already exists then its cookie
     * and params are replaced with the new data.
-    * 
+    *
     * @param auth_info the AuthorizationInfo to add
     */
    public static void addAuthorization(AuthorizationInfo auth_info)
@@ -390,7 +395,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry to the list. If an entry for the specified
     * scheme and realm already exists then its cookie and params are replaced
     * with the new data.
-    * 
+    *
     * @param auth_info the AuthorizationInfo to add
     * @param context the context to associate this info with
     */
@@ -420,7 +425,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry to the list using the default context. If an
     * entry for the specified scheme and realm already exists then its cookie
     * and params are replaced with the new data.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -439,7 +444,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry to the list. If an entry for the specified
     * scheme and realm already exists then its cookie and params are replaced
     * with the new data.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -464,7 +469,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry for the "Basic" authorization scheme to the
     * list using the default context. If an entry already exists for the "Basic"
     * scheme and the specified realm then it is overwritten.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param realm the realm
@@ -480,7 +485,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry for the "Basic" authorization scheme to the
     * list. If an entry already exists for the "Basic" scheme and the specified
     * realm then it is overwritten.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param realm the realm
@@ -499,7 +504,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry for the "Digest" authorization scheme to the
     * list using the default context. If an entry already exists for the
     * "Digest" scheme and the specified realm then it is overwritten.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param realm the realm
@@ -515,7 +520,7 @@ public class AuthorizationInfo implements Cloneable
     * Adds an authorization entry for the "Digest" authorization scheme to the
     * list. If an entry already exists for the "Digest" scheme and the specified
     * realm then it is overwritten.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param realm the realm
@@ -559,7 +564,7 @@ public class AuthorizationInfo implements Cloneable
     * Removes an authorization entry from the list using the default context. If
     * no entry for the specified host, port, scheme and realm exists then this
     * does nothing.
-    * 
+    *
     * @param auth_info the AuthorizationInfo to remove
     */
    public static void removeAuthorization(AuthorizationInfo auth_info)
@@ -570,7 +575,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Removes an authorization entry from the list. If no entry for the
     * specified host, port, scheme and realm exists then this does nothing.
-    * 
+    *
     * @param auth_info the AuthorizationInfo to remove
     * @param context the context this info is associated with
     */
@@ -584,7 +589,7 @@ public class AuthorizationInfo implements Cloneable
     * Removes an authorization entry from the list using the default context. If
     * no entry for the specified host, port, scheme and realm exists then this
     * does nothing.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -598,7 +603,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Removes an authorization entry from the list. If no entry for the
     * specified host, port, scheme and realm exists then this does nothing.
-    * 
+    *
     * @param host the host
     * @param port the port
     * @param scheme the scheme
@@ -615,7 +620,7 @@ public class AuthorizationInfo implements Cloneable
     * request. The paths associated with each auth info are examined, and the
     * one with either the nearest direct parent or child is chosen. This is used
     * for preemptively sending auth info.
-    * 
+    *
     * @param req the Request
     * @return an AuthorizationInfo containing the info for the best match, or
     *         null if none found.
@@ -701,7 +706,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Adds the path from the given resource to our path list. The path list is
     * used for deciding when to preemptively send auth info.
-    * 
+    *
     * @param resource the resource from which to extract the path
     */
    public synchronized void addPath(String resource)
@@ -721,7 +726,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Parses the authentication challenge(s) into an array of new info
     * structures for the specified host and port.
-    * 
+    *
     * @param challenge a string containing authentication info. This must have
     *        the same format as value part of a WWW-authenticate response header
     *        field, and may contain multiple authentication challenges.
@@ -915,7 +920,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get the host.
-    * 
+    *
     * @return a string containing the host name.
     */
    public final String getHost()
@@ -925,7 +930,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get the port.
-    * 
+    *
     * @return an int containing the port number.
     */
    public final int getPort()
@@ -935,7 +940,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get the scheme.
-    * 
+    *
     * @return a string containing the scheme.
     */
    public final String getScheme()
@@ -945,7 +950,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get the realm.
-    * 
+    *
     * @return a string containing the realm.
     */
    public final String getRealm()
@@ -955,7 +960,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get the cookie
-    * 
+    *
     * @return the cookie String
     * @since V0.3-1
     */
@@ -966,7 +971,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Set the cookie
-    * 
+    *
     * @param cookie the new cookie
     * @since V0.3-1
     */
@@ -977,7 +982,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get the authentication parameters.
-    * 
+    *
     * @return an array of name/value pairs.
     */
    public final NVPair[] getParams()
@@ -987,7 +992,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Set the authentication parameters.
-    * 
+    *
     * @param an array of name/value pairs.
     */
    public final void setParams(NVPair[] params)
@@ -1000,7 +1005,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Get the extra info.
-    * 
+    *
     * @return the extra_info object
     */
    public final Object getExtraInfo()
@@ -1010,7 +1015,7 @@ public class AuthorizationInfo implements Cloneable
 
    /**
     * Set the extra info.
-    * 
+    *
     * @param info the extra info
     */
    public final void setExtraInfo(Object info)
@@ -1021,7 +1026,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Constructs a string containing the authorization info. The format is that
     * of the http Authorization header.
-    * 
+    *
     * @return a String containing all info.
     */
    public String toString()
@@ -1064,7 +1069,7 @@ public class AuthorizationInfo implements Cloneable
     * Produces a hash code based on host, scheme and realm. Port is not included
     * for simplicity (and because it probably won't make much difference). Used
     * in the AuthorizationInfo.AuthList hash table.
-    * 
+    *
     * @return the hash code
     */
    public int hashCode()
@@ -1075,7 +1080,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Two AuthorizationInfos are considered equal if their host, port, scheme
     * and realm match. Used in the AuthorizationInfo.AuthList hash table.
-    * 
+    *
     * @param obj another AuthorizationInfo against which this one is to be
     *        compared.
     * @return true if they match in the above mentioned fields; false otherwise.
@@ -1086,7 +1091,7 @@ public class AuthorizationInfo implements Cloneable
       {
          AuthorizationInfo auth = (AuthorizationInfo)obj;
          if (host.equals(auth.host) && (port == auth.port) && scheme.equalsIgnoreCase(auth.scheme)
-            && realm.equals(auth.realm))
+            && ((realm == null && auth.realm == null) || (realm != null && realm.equals(auth.realm))))
             return true;
       }
       return false;
