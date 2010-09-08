@@ -108,7 +108,7 @@ public class RestInitializedListener implements ServletContextListener
          URL[] libs = WarUrlFinder.findWebInfLibClasspaths(event);
          AnnotationDB annotationDB = new AnnotationDB();
          // Disable processing of API, implementation and JAX-RS packages
-         annotationDB.setIgnoredPackages(new String[]{"org.exoplatform.services.rest", "javax.ws.rs"});
+         annotationDB.setIgnoredPackages(new String[]{"org.everrest.core", "javax.ws.rs"});
          try
          {
             if (classes != null)
