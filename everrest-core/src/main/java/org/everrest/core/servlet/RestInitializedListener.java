@@ -34,10 +34,13 @@ import org.scannotation.WarUrlFinder;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Path;
@@ -69,13 +72,14 @@ public class RestInitializedListener implements ServletContextListener
     */
    public void contextInitialized(ServletContextEvent event)
    {
-      boolean scan = Boolean.parseBoolean(event.getServletContext().getInitParameter("ws.rs.scan.components"));
-      String dependencyInjectorFQN = event.getServletContext().getInitParameter(DependencySupplier.class.getName());
+      ServletContext sctx = event.getServletContext();
+      boolean scan = Boolean.parseBoolean(sctx.getInitParameter("ws.rs.scan.components"));
+      String dependencyInjectorFQN = sctx.getInitParameter(DependencySupplier.class.getName());
 
       ResourceBinder resources = new ResourceBinderImpl();
       ApplicationPublisher publisher = new ApplicationPublisher(resources, ProviderBinder.getInstance());
 
-      String applicationFQN = event.getServletContext().getInitParameter("javax.ws.rs.Application");
+      String applicationFQN = sctx.getInitParameter("javax.ws.rs.Application");
       if (applicationFQN != null)
       {
          if (scan)
@@ -107,8 +111,22 @@ public class RestInitializedListener implements ServletContextListener
          URL classes = WarUrlFinder.findWebInfClassesPath(event);
          URL[] libs = WarUrlFinder.findWebInfLibClasspaths(event);
          AnnotationDB annotationDB = new AnnotationDB();
+         
+         List<String> skip = new ArrayList<String>();
+         String sskip = sctx.getInitParameter("ws.rs.scan.skip.packages");
+         if (sskip != null)
+         {
+            for (String s : sskip.split(","))
+            {
+               skip.add(s.trim());
+            }
+         }
          // Disable processing of API, implementation and JAX-RS packages
-         annotationDB.setIgnoredPackages(new String[]{"org.everrest.core", "javax.ws.rs"});
+         skip.add("org.everrest.core");
+         skip.add("javax.ws.rs");
+         
+         annotationDB.setIgnoredPackages(skip.toArray(new String[skip.size()]));
+         
          try
          {
             if (classes != null)
@@ -181,5 +199,5 @@ public class RestInitializedListener implements ServletContextListener
       RequestHandler handler = new RequestHandlerImpl(resources, dependencySupplier);
       event.getServletContext().setAttribute(RequestHandler.class.getName(), handler);
    }
-
+   
 }

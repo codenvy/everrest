@@ -183,7 +183,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
          {
             fields.add(new FieldInjectorImpl(resourceClass, jfield));
          }
-         Class<?> sc = resourceClass;
+         Class<?> sc = resourceClass.getSuperclass();
          while (sc != Object.class)
          {
             for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
