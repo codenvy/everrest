@@ -84,7 +84,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
       InputStream entityStream) throws IOException
    {
       ApplicationContext context = ApplicationContextImpl.getCurrent();
-      Object o = context.getAttributes().get("org.exoplatform.ws.rs.entity.form");
+      Object o = context.getAttributes().get("ws.rs.provider.entity.form");
       if (o != null)
          return (MultivaluedMap<String, String>)o;
 
@@ -108,7 +108,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
          // keep the last part
          addPair(sb.toString(), form);
 
-         context.getAttributes().put("org.exoplatform.ws.rs.entity.form", form);
+         context.getAttributes().put("ws.rs.provider.entity.form", form);
 
          return form;
       }
@@ -120,7 +120,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
 
    /**
     * Parse string and add key/value pair in the {@link MultivaluedMap}.
-    * 
+    *
     * @param s string for processing
     * @param f {@link MultivaluedMap} to add result of parsing
     * @throws UnsupportedEncodingException if supplied string can't be decoded
