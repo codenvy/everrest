@@ -41,9 +41,6 @@ import javax.xml.stream.XMLStreamWriter;
  * @version $Id: RestServicesList.java 2143 2010-03-25 16:33:34Z yakimenko $
  */
 @Path("/")
-// NOTE : Class do not implement org.exoplatform.services.rest.resource.ResourceContainer
-// and must never be binded to RESTful framework by using eXoContainer.
-// This service must works as per-request resource.
 public class RestServicesList
 {
 
@@ -79,7 +76,7 @@ public class RestServicesList
       }
    }
 
-   // 
+   //
 
    public static class RootResourcesList
    {
@@ -127,7 +124,7 @@ public class RestServicesList
          xsw.writeEndElement(); // </title>
          xsw.writeEndElement(); // </head>
          xsw.writeStartElement("body");
-         // 
+         //
          xsw.writeStartElement("h3");
          xsw.writeAttribute("style", "text-align:center;");
          xsw.writeCharacters("Root resources");

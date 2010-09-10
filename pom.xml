@@ -32,7 +32,6 @@
 		<exo.product.specification>1.0</exo.product.specification>
 
 		<org.exoplatform.kernel.version>2.2.0-GA</org.exoplatform.kernel.version>
-		<org.exoplatform.core.version>2.3.0-GA</org.exoplatform.core.version>
 		<org.everrest.version>1.0-SNAPSHOT</org.everrest.version>
 
 		<javax.ws.rs.version>1.0</javax.ws.rs.version>
@@ -129,11 +128,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- eXo dependencies -->
-			<dependency>
-				<groupId>org.exoplatform.core</groupId>
-				<artifactId>exo.core.component.xml-processing</artifactId>
-				<version>${org.exoplatform.core.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.exoplatform.kernel</groupId>
 				<artifactId>exo.kernel.commons</artifactId>

@@ -38,10 +38,6 @@
 			<artifactId>exo.kernel.commons</artifactId>
 		</dependency>
       <dependency>
-         <groupId>org.exoplatform.core</groupId>
-         <artifactId>exo.core.component.xml-processing</artifactId>
-      </dependency>
-      <dependency>
          <groupId>javax.ws.rs</groupId>
          <artifactId>jsr311-api</artifactId>
       </dependency>
