@@ -69,11 +69,11 @@ public class XSLTStreamingOutput implements StreamingOutput
       }
       catch (TransformerConfigurationException tce)
       {
-         throw new IOException(tce.getMessage(), tce);
+         throw new IOException(tce.getMessage());
       }
       catch (TransformerException tre)
       {
-         throw new IOException(tre.getMessage(), tre);
+         throw new IOException(tre.getMessage());
       }
    }
 
