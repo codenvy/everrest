@@ -1,0 +1,19 @@
+grant codeBase "@MAVEN_REPO@-" {
+   permission java.security.AllPermission;
+};
+
+grant codeBase "@MAIN_CLASSES@-" {
+   permission java.security.AllPermission;
+};
+
+grant codeBase "@TEST_CLASSES@-" {
+   permission java.security.AllPermission;
+};
+grant codeBase "@PARENT@-" {
+   permission java.security.AllPermission;
+};
+
+grant codeBase "file:/groovy/script" {
+// be sure only  /groovy/script/jaxrs is restricted
+   permission java.security.AllPermission;
+};

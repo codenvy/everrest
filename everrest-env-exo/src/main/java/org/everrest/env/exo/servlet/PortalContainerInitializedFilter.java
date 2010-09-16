@@ -18,13 +18,12 @@
  */
 package org.everrest.env.exo.servlet;
 
+import org.everrest.common.util.Logger;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.RootContainer;
 import org.exoplatform.container.web.AbstractFilter;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.io.IOException;
 
@@ -45,7 +44,7 @@ import javax.servlet.ServletResponse;
 public class PortalContainerInitializedFilter extends AbstractFilter
 {
 
-   private static final Log LOG = ExoLogger.getLogger("PortatContainerInitializedFilter");
+   private static final Logger LOG = Logger.getLogger(PortalContainerInitializedFilter.class);
 
    /**
     * initializes PortalContainer instance.

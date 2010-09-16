@@ -18,7 +18,6 @@
  */
 package org.everrest.json;
 
-import org.everrest.json.impl.JsonException;
 
 import java.io.InputStream;
 import java.io.Reader;

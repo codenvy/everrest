@@ -18,6 +18,7 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.GenericContainerRequest;
@@ -37,8 +38,6 @@ import org.everrest.core.resource.SubResourceLocatorMap;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodMap;
 import org.everrest.core.uri.UriPattern;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -66,7 +65,7 @@ public final class RequestDispatcher
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(RequestDispatcher.class.getName());
+   private static final Logger LOG = Logger.getLogger(RequestDispatcher.class);
 
    /**
     * See {@link ResourceBinder}.

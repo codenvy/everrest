@@ -35,7 +35,7 @@ public abstract class BaseTest extends TestCase
 
    public void setUp() throws Exception
    {
-      StandaloneContainer.addConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
+      StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
       container = StandaloneContainer.getInstance();
    }
 

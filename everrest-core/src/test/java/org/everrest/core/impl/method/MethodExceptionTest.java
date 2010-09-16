@@ -19,7 +19,6 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.UnhandledException;
 import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.GET;
@@ -95,14 +94,16 @@ public class MethodExceptionTest extends BaseTest
 
       assertEquals(500, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
       assertEquals(500, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
-      try
-      {
-         assertEquals(500, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
-         fail();
-      }
-      catch (UnhandledException e)
-      {
-      }
+
+      assertEquals(500, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
+      //      try
+      //      {
+      //         assertEquals(500, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
+      //         fail();
+      //      }
+      //      catch (UnhandledException e)
+      //      {
+      //      }
       unregistry(resource);
    }
 

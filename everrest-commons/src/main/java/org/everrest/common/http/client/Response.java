@@ -31,8 +31,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -144,7 +143,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
    /** should the request be retried by the application? */
    boolean retry = false;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.Response");
+   private static final Logger log = Logger.getLogger(Response.class);
 
    static
    {

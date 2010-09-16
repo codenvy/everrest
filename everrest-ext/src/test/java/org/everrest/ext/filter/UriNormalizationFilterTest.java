@@ -18,10 +18,9 @@
  */
 package org.everrest.ext.filter;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.RuntimeDelegateImpl;
+import org.everrest.ext.BaseTest;
 
 import java.net.URI;
 
@@ -31,7 +30,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
  * Created by The eXo Platform SAS Author : Dmytro Katayev
  * work.visor.ck@gmail.com 25 Sep 2008
  */
-public class UriNormalizationFilterTest extends TestCase
+public class UriNormalizationFilterTest extends BaseTest
 {
 
    private String[] testUris =

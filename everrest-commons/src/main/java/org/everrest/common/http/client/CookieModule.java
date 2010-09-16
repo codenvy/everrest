@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.awt.Button;
 import java.awt.Color;
@@ -114,7 +113,7 @@ public class CookieModule implements HTTPClientModule
    /** the cookie policy handler */
    private static CookiePolicyHandler cookie_handler = new DefaultCookiePolicyHandler();
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpClient.CookieModule");
+   private static final Logger log = Logger.getLogger(CookieModule.class);
 
    // read in cookies from disk at startup
 

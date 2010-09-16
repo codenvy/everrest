@@ -34,16 +34,21 @@
 
    <dependencies>
       <dependency>
-         <groupId>org.exoplatform.kernel</groupId>
-         <artifactId>exo.kernel.commons</artifactId>
-      </dependency>
-      <dependency>
          <groupId>com.sun.xml.stream</groupId>
          <artifactId>sjsxp</artifactId>
       </dependency>
       <dependency>
          <groupId>stax</groupId>
          <artifactId>stax-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>junit</groupId>

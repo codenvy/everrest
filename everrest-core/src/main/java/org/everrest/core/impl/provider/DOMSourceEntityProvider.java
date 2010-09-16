@@ -18,9 +18,8 @@
  */
 package org.everrest.core.impl.provider;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.provider.EntityProvider;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -59,7 +58,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(DOMSourceEntityProvider.class.getName());
+   private static final Logger LOG = Logger.getLogger(DOMSourceEntityProvider.class);
 
    /**
     * {@inheritDoc}

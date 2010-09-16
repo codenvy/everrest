@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -66,6 +67,9 @@ public class FilterDescriptorImpl implements FilterDescriptor
     * Filter class fields.
     */
    private final List<FieldInjector> fields;
+
+   /** Optional data. */
+   private MultivaluedMap<String, String> properties;
 
    /**
     * @param filterClass filter class
@@ -144,6 +148,30 @@ public class FilterDescriptorImpl implements FilterDescriptor
    public Class<?> getObjectClass()
    {
       return filterClass;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public MultivaluedMap<String, String> getProperties()
+   {
+      if (properties == null)
+      {
+         properties = new MultivaluedMapImpl();
+      }
+      return properties;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public List<String> getProperty(String key)
+   {
+      if (properties != null)
+      {
+         return properties.get(key);
+      }
+      return null;
    }
 
    /**

@@ -18,14 +18,13 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.method.ParameterHelper;
 import org.everrest.core.impl.method.ParameterResolver;
 import org.everrest.core.impl.method.ParameterResolverFactory;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
@@ -51,7 +50,7 @@ public class FieldInjectorImpl implements FieldInjector
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(FieldInjectorImpl.class.getName());
+   private static final Logger LOG = Logger.getLogger(FieldInjectorImpl.class);
 
    /**
     * All annotations including JAX-RS annotation.

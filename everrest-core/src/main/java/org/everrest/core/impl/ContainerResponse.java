@@ -18,11 +18,10 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -48,7 +47,7 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(ContainerResponse.class.getName());
+   private static final Logger LOG = Logger.getLogger(ContainerResponse.class);
 
    /**
     * See {@link ContainerResponseWriter}.

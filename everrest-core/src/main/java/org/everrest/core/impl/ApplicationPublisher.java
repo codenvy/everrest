@@ -50,7 +50,7 @@ public class ApplicationPublisher
       Set<Class<?>> perRequests = application.getClasses();
       if (perRequests != null)
       {
-         for (Class clazz : perRequests)
+         for (Class<?> clazz : perRequests)
             resolver.addPerRequest(clazz);
       }
    }

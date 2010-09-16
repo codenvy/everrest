@@ -20,6 +20,8 @@ package org.everrest.core;
 
 import java.util.List;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 /**
  * Abstract description of object.
  * 
@@ -49,5 +51,20 @@ public interface ObjectModel
     * @return {@link Class} of object
     */
    Class<?> getObjectClass();
+
+   /**
+    * @param key
+    * @return property by key
+    * @see #getProperties()
+    */
+   List<String> getProperty(String key);
+
+   /**
+    * Optional attributes.
+    *
+    * @return all properties. If there is no any optional attributes then empty
+    *         map returned never <code>null</code>
+    */
+   MultivaluedMap<String, String> getProperties();
 
 }

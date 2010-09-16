@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -144,7 +143,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
    /** the output stream used for POST and PUT */
    private OutputStream output_stream;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.HttpURLConnection");
+   private static final Logger log = Logger.getLogger(HttpURLConnection.class);
 
    static
    {

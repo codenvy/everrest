@@ -18,7 +18,6 @@
  */
 package org.everrest.json;
 
-import org.everrest.json.impl.JsonException;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>

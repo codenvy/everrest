@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.Serializable;
 import java.net.ProtocolException;
@@ -71,7 +70,7 @@ public class Cookie implements Serializable
    /** Make this compatible with V0.3-2 */
    private static final long serialVersionUID = 8599975325569296615L;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.Cookie");
+   private static final Logger log = Logger.getLogger(Cookie.class);
 
    protected String name;
 

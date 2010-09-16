@@ -74,11 +74,14 @@ public class MethodAccessFilter implements MethodInvokerFilter
          }
          if (ac == RolesAllowed.class)
          {
-
             SecurityContext context = ApplicationContextImpl.getCurrent().getSecurityContext();
             for (String role : getAllowedRoles(a))
+            {
                if (context.isUserInRole(role))
+               {
                   return;
+               }
+            }
 
             // user is not in allowed roles
             throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).build());

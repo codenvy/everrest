@@ -18,6 +18,7 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.ObjectFactory;
@@ -51,8 +52,6 @@ import org.everrest.core.uri.UriPattern;
 import org.everrest.core.util.MediaTypeMap;
 import org.everrest.core.util.MediaTypeMultivaluedMap;
 import org.everrest.core.util.UriPatternMap;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -81,7 +80,7 @@ public class ProviderBinder implements Providers
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(ProviderBinder.class.getName());
+   private static final Logger LOG = Logger.getLogger(ProviderBinder.class);
 
    /**
     * Providers instance.
@@ -180,6 +179,8 @@ public class ProviderBinder implements Providers
 
       // JAXB context
       addContextResolver(new JAXBContextResolver());
+      
+      addExceptionMapper(new DefaultExceptionMapper());
 
    }
 

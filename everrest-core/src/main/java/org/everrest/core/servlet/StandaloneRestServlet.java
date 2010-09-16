@@ -18,11 +18,10 @@
  */
 package org.everrest.core.servlet;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.io.IOException;
 
@@ -42,7 +41,7 @@ public class StandaloneRestServlet extends HttpServlet
 
    private static final long serialVersionUID = -8234561611241680339L;
 
-   private static final Log LOG = ExoLogger.getLogger(StandaloneRestServlet.class.getName());
+   private static final Logger LOG = Logger.getLogger(StandaloneRestServlet.class.getName());
 
    private RequestHandler requestHandler;
 
@@ -78,7 +77,7 @@ public class StandaloneRestServlet extends HttpServlet
       }
       catch (Exception e)
       {
-         LOG.error(e);
+         LOG.error(e.getMessage(), e);
          throw new ServletException(e);
       }
       finally

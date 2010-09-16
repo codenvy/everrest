@@ -18,8 +18,8 @@
  */
 package org.everrest.json.value;
 
+import org.everrest.json.JsonException;
 import org.everrest.json.JsonWriter;
-import org.everrest.json.impl.JsonException;
 
 import java.util.ArrayList;
 import java.util.Iterator;

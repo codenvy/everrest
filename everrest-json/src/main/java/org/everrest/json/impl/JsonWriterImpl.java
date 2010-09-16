@@ -18,6 +18,7 @@
  */
 package org.everrest.json.impl;
 
+import org.everrest.json.JsonException;
 import org.everrest.json.JsonWriter;
 import org.everrest.json.impl.JsonUtils.JsonToken;
 

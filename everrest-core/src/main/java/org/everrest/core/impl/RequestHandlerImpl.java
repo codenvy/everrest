@@ -18,6 +18,7 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ExtHttpHeaders;
@@ -29,8 +30,6 @@ import org.everrest.core.RequestFilter;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -40,8 +39,8 @@ import java.util.Map;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
@@ -84,7 +83,7 @@ public final class RequestHandlerImpl implements RequestHandler
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(RequestHandlerImpl.class.getName());
+   private static final Logger LOG = Logger.getLogger(RequestHandlerImpl.class);
 
    /**
     * Application properties. Properties from this map will be copied to

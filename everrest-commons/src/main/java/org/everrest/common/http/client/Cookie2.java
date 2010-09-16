@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.ProtocolException;
@@ -55,7 +54,7 @@ public class Cookie2 extends Cookie
    /** Make this compatible with V0.3-2 */
    private static final long serialVersionUID = 2208203902820875917L;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.Cookie2");
+   private static final Logger log = Logger.getLogger(Cookie2.class);
 
    protected int version;
 

@@ -19,21 +19,12 @@
 
 package org.everrest.ext.provider;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RequestHandlerImpl;
-import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.SimpleDependencySupplier;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
-import org.everrest.core.tools.ResourceLauncher;
-import org.exoplatform.services.log.LogConfigurator;
-import org.exoplatform.services.log.impl.Log4JConfigurator;
+import org.everrest.ext.BaseTest;
 
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -50,7 +41,7 @@ import javax.xml.transform.stream.StreamSource;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class XSLTTransformationTest extends TestCase
+public class XSLTTransformationTest extends BaseTest
 {
 
    public static class Application0 extends javax.ws.rs.core.Application
@@ -99,26 +90,6 @@ public class XSLTTransformationTest extends TestCase
       }
    }
 
-   protected ProviderBinder providers;
-
-   protected ResourceBinderImpl resources;
-
-   protected RequestHandlerImpl requestHandler;
-
-   private ResourceLauncher launcher;
-
-   public void setUp() throws Exception
-   {
-      LogConfigurator lc = new Log4JConfigurator();
-      Properties props = new Properties();
-      props.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/log4j.properties"));
-      lc.configure(props);
-
-      this.resources = new ResourceBinderImpl();
-      this.requestHandler = new RequestHandlerImpl(resources, new SimpleDependencySupplier());
-      this.providers = ProviderBinder.getInstance();
-      this.launcher = new ResourceLauncher(requestHandler);
-   }
 
    public void testTransformToHtml() throws Exception
    {

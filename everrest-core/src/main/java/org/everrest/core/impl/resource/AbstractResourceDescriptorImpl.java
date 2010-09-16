@@ -18,11 +18,13 @@
  */
 package org.everrest.core.impl.resource;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.ConstructorDescriptorImpl;
 import org.everrest.core.impl.FieldInjectorImpl;
+import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.impl.method.MethodParameterImpl;
@@ -38,8 +40,6 @@ import org.everrest.core.resource.SubResourceLocatorMap;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodMap;
 import org.everrest.core.uri.UriPattern;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -66,6 +66,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -78,7 +79,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(AbstractResourceDescriptorImpl.class.getName());
+   private static final Logger LOG = Logger.getLogger(AbstractResourceDescriptorImpl.class);
 
    /**
     * @see PathValue
@@ -123,10 +124,11 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     */
    private final List<ConstructorDescriptor> constructors;
 
-   /**
-    * Resource class fields.
-    */
+   /** Resource class fields. */
    private final List<FieldInjector> fields;
+
+   /** Optional data. */
+   private MultivaluedMap<String, String> properties;
 
    /**
     * Constructs new instance of AbstractResourceDescriptor without path
@@ -253,6 +255,30 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    /**
     * {@inheritDoc}
     */
+   public MultivaluedMap<String, String> getProperties()
+   {
+      if (properties == null)
+      {
+         properties = new MultivaluedMapImpl();
+      }
+      return properties;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public List<String> getProperty(String key)
+   {
+      if (properties != null)
+      {
+         return properties.get(key);
+      }
+      return null;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
    public ResourceMethodMap<ResourceMethodDescriptor> getResourceMethods()
    {
       return resourceMethods;
@@ -345,8 +371,8 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
                      new ResourceMethodDescriptorImpl(method, httpMethod.value(), params, this, consumes, produces,
                         new DefaultMethodInvoker());
                   ResourceMethodDescriptor exist =
-                     findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(), res
-                        .produces());
+                     findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(),
+                        res.produces());
                   if (exist == null)
                   {
                      resourceMethods.add(httpMethod.value(), res);
@@ -606,7 +632,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     * @param resourceClass class that contains discovered method
     * @param annotationClass annotation type what we are looking for
     * @param metaAnnotation false if annotation should be on method and true in
-    *        method should contain annotations that has supplied annotation
+    *           method should contain annotations that has supplied annotation
     * @return annotation from class or its ancestor or null if nothing found
     */
    protected <T extends Annotation> T getMethodAnnotation(Method method, Class<?> resourceClass,
@@ -730,8 +756,8 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    public String toString()
    {
       StringBuffer sb = new StringBuffer("[ AbstractResourceDescriptorImpl: ");
-      sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource()).append(
-         "; class: " + getObjectClass()).append(" ]");
+      sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource())
+         .append("; class: " + getObjectClass()).append(" ]");
       return sb.toString();
    }
 

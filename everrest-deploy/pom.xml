@@ -35,11 +35,25 @@
    <dependencies>
       <dependency>
          <groupId>org.everrest</groupId>
+         <artifactId>everrest-commons</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.everrest</groupId>
          <artifactId>everrest-core</artifactId>
       </dependency>
       <dependency>
          <groupId>org.exoplatform.kernel</groupId>
          <artifactId>exo.kernel.container</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
       </dependency>
    </dependencies>
 </project>

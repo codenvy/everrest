@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -126,7 +125,7 @@ public class HttpOutputStream extends OutputStream
    /** just ignore all the data if told to do so */
    private boolean ignore = false;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.HttpOutputStream");
+   private static final Logger log = Logger.getLogger(HttpOutputStream.class);
 
    // Constructors
 

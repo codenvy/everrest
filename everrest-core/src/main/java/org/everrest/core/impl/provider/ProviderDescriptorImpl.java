@@ -23,6 +23,7 @@ import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.ConstructorDescriptorImpl;
 import org.everrest.core.impl.FieldInjectorImpl;
+import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
@@ -35,6 +36,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -72,6 +74,9 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
     * {@link javax.ws.rs.Produces} .
     */
    private final List<MediaType> produces;
+
+   /** Optional data. */
+   private MultivaluedMap<String, String> properties;
 
    /**
     * @param providerClass provider class
@@ -148,6 +153,30 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
    public Class<?> getObjectClass()
    {
       return providerClass;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public MultivaluedMap<String, String> getProperties()
+   {
+      if (properties == null)
+      {
+         properties = new MultivaluedMapImpl();
+      }
+      return properties;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public List<String> getProperty(String key)
+   {
+      if (properties != null)
+      {
+         return properties.get(key);
+      }
+      return null;
    }
 
    /**

@@ -18,6 +18,7 @@
  */
 package org.everrest.json.impl;
 
+import org.everrest.json.JsonException;
 import org.everrest.json.impl.JsonUtils.Types;
 import org.everrest.json.value.JsonValue;
 

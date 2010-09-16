@@ -2,7 +2,7 @@
  * @(#)SocksClient.java					0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
- *  Copyright (C) 1996-2001 Ronald Tschal�r
+ *  Copyright (C) 1996-2001 Ronald Tschalпњљr
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,7 +55,7 @@ import java.net.UnknownHostException;
  * all.
  * 
  * @version 0.3-3 06/05/2001
- * @author Ronald Tschal�r
+ * @author Ronald Tschalпњљr
  */
 class SocksClient
 {
@@ -78,7 +77,7 @@ class SocksClient
    /** socks version 5 address types */
    private final static byte IP_V4 = 1, DMNAME = 3, IP_V6 = 4;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.SocksClient");
+   private static final Logger log = Logger.getLogger(SocksClient.class);
 
    // Constructors
 

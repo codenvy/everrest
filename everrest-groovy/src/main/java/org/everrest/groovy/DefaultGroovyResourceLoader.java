@@ -29,8 +29,9 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -42,7 +43,10 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 
    protected URL[] roots;
 
-   protected Map<String, URL> resources = Collections.synchronizedMap(new HashMap<String, URL>());
+   // TODO need configurable ?
+   private int maxEntries = 512;
+
+   protected final Map<String, URL> resources;
 
    public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
    {
@@ -59,6 +63,13 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
             this.roots[i] = roots[i];
          }
       }
+      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>()
+      {
+         protected boolean removeEldestEntry(Entry<String, URL> eldest)
+         {
+            return size() > maxEntries;
+         }
+      });
    }
 
    public DefaultGroovyResourceLoader(URL root) throws MalformedURLException
@@ -86,9 +97,13 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       {
          Throwable cause = e.getCause();
          if (cause instanceof Error)
+         {
             throw (Error)cause;
+         }
          if (cause instanceof RuntimeException)
+         {
             throw (RuntimeException)cause;
+         }
          throw (MalformedURLException)cause;
       }
    }

@@ -20,11 +20,6 @@ package org.everrest.core.impl;
 
 import junit.framework.TestCase;
 
-import org.exoplatform.services.log.LogConfigurator;
-import org.exoplatform.services.log.impl.Log4JConfigurator;
-
-import java.util.Properties;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
@@ -47,10 +42,10 @@ public abstract class BaseTest extends TestCase
       ProviderBinder.setInstance(new ProviderBinder());
       providers = ProviderBinder.getInstance();
 
-      LogConfigurator lc = new Log4JConfigurator();
-      Properties props = new Properties();
-      props.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/log4j.properties"));
-      lc.configure(props);
+//      LogConfigurator lc = new Log4JConfigurator();
+//      Properties props = new Properties();
+//      props.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/log4j.properties"));
+//      lc.configure(props);
    }
 
    protected void setContext()

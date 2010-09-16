@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -66,7 +65,7 @@ class RedirectionModule implements HTTPClientModule
    /** used for deferred redirection retries */
    private Request saved_req;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.RedirectionModule");
+   private static final Logger log = Logger.getLogger(RedirectionModule.class);
 
    // Constructors
 

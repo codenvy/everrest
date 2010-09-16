@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -93,7 +92,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
    private static boolean prompterSet = false;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.DefaultAuthHandler");
+   private static final Logger log = Logger.getLogger(DefaultAuthHandler.class);
 
    /**
     * For Digest authentication we need to set the uri, response and opaque

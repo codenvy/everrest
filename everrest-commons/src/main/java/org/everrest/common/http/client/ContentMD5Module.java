@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.IOException;
 
@@ -51,7 +50,7 @@ import java.io.IOException;
 class ContentMD5Module implements HTTPClientModule
 {
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.ContentMD5Module");
+   private static final Logger log = Logger.getLogger(ContentMD5Module.class);
 
    // Constructors
 

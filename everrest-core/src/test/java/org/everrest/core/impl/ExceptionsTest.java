@@ -109,15 +109,22 @@ public class ExceptionsTest extends AbstractResourceTest
    public void testUncheckedException() throws Exception
    {
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      try
-      {
-         service("GET", "/a/3", "", null, null, writer);
-         fail("UnhandledException should be throw by RequstHandlerImpl");
-      }
-      catch (UnhandledException e)
-      {
-         // OK
-      }
+
+      ContainerResponse response = service("GET", "/a/3", "", null, null, writer);
+      assertEquals(500, response.getStatus() );
+      String entity = new String(writer.getBody());
+      assertEquals("Runtime exception", entity);
+      assertNotNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
+      
+      //      try
+      //      {
+      //         service("GET", "/a/3", "", null, null, writer);
+      //         fail("UnhandledException should be throw by RequstHandlerImpl");
+      //      }
+      //      catch (UnhandledException e)
+      //      {
+      //         // OK
+      //      }
    }
 
    public void testWebApplicationExceptionWithCause() throws Exception

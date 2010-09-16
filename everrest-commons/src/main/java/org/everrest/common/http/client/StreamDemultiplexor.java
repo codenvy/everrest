@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -83,7 +82,7 @@ class StreamDemultiplexor implements GlobalConstants
    /** the currently set timeout for the socket */
    private int cur_timeout = 0;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.StreamDemultiplexor");
+   private static final Logger log = Logger.getLogger(StreamDemultiplexor.class);
 
    static
    {

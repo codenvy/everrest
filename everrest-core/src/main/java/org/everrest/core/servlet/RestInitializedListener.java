@@ -18,6 +18,7 @@
  */
 package org.everrest.core.servlet;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.RequestHandler;
@@ -26,8 +27,6 @@ import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 
@@ -58,7 +57,7 @@ import javax.ws.rs.ext.Provider;
 public class RestInitializedListener implements ServletContextListener
 {
 
-   private static final Log LOG = ExoLogger.getLogger(RestInitializedListener.class);
+   private static final Logger LOG = Logger.getLogger(RestInitializedListener.class);
 
    /**
     * {@inheritDoc}

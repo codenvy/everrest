@@ -19,9 +19,8 @@
 package org.everrest.ext.provider;
 
 import org.everrest.common.util.HierarchicalProperty;
+import org.everrest.common.util.Logger;
 import org.everrest.core.provider.EntityProvider;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -61,7 +60,7 @@ public class HierarchicalPropertyEntityProvider implements EntityProvider<Hierar
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(HierarchicalPropertyEntityProvider.class.getName());
+   private static final Logger LOG = Logger.getLogger(HierarchicalPropertyEntityProvider.class);
 
    /**
     * {@inheritDoc}

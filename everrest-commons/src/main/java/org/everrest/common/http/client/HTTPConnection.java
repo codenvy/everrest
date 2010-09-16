@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.applet.Applet;
 import java.io.ByteArrayOutputStream;
@@ -327,7 +326,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /** controls whether modules are allowed to interact with user */
    private boolean allowUI;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.HTTPConnection");
+   private static final Logger log = Logger.getLogger(HTTPConnection.class);
 
    static
    {

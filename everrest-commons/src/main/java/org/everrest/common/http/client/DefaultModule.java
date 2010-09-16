@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -50,7 +49,7 @@ class DefaultModule implements HTTPClientModule
    /** number of times the request will be retried */
    private int req_timeout_retries;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.DefaultModule");
+   private static final Logger log = Logger.getLogger(DefaultModule.class);
 
    // Constructors
 

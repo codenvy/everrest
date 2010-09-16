@@ -18,8 +18,7 @@
  */
 package org.everrest.env.exo.servlet;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,7 +56,7 @@ public class AnonymousUserContextRedirectionFilter implements Filter
    /**
     * Logger.
     */
-   private final static Log LOG = ExoLogger.getLogger("ws.AnonymousUserContextRedirectionFilter");
+   private final static Logger LOG = Logger.getLogger(AnonymousUserContextRedirectionFilter.class);
 
    /**
     * The name of context.

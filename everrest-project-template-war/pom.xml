@@ -1,42 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+   <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.everrest</groupId>
-		<artifactId>everrest-parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
-	</parent>
+   <parent>
+      <groupId>org.everrest</groupId>
+      <artifactId>everrest-parent</artifactId>
+      <version>1.0-SNAPSHOT</version>
+   </parent>
 
-	<artifactId>everrest-project-template-war</artifactId>
-	<packaging>war</packaging>
+   <artifactId>everrest-project-template-war</artifactId>
+   <packaging>war</packaging>
 
-	<name>eXo EverRest :: WAR</name>
+   <name>eXo EverRest :: WAR</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.everrest</groupId>
-			<artifactId>everrest-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.everrest</groupId>
-			<artifactId>everrest-json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.everrest</groupId>
-			<artifactId>everrest-ext</artifactId>
-		</dependency>
+   <dependencies>
       <dependency>
          <groupId>org.everrest</groupId>
          <artifactId>everrest-commons</artifactId>
       </dependency>
-		<dependency>
-			<groupId>org.everrest</groupId>
-			<artifactId>everrest-json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.exoplatform.kernel</groupId>
-			<artifactId>exo.kernel.commons</artifactId>
-		</dependency>
+      <dependency>
+         <groupId>org.everrest</groupId>
+         <artifactId>everrest-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.everrest</groupId>
+         <artifactId>everrest-json</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.everrest</groupId>
+         <artifactId>everrest-ext</artifactId>
+      </dependency>
+      <!-- ***** -->
       <dependency>
          <groupId>javax.ws.rs</groupId>
          <artifactId>jsr311-api</artifactId>
@@ -62,10 +55,10 @@
          <groupId>javax.annotation</groupId>
          <artifactId>jsr250-api</artifactId>
       </dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-		</dependency>
+      <dependency>
+         <groupId>com.sun.xml.bind</groupId>
+         <artifactId>jaxb-impl</artifactId>
+      </dependency>
       <dependency>
          <groupId>com.sun.xml.stream</groupId>
          <artifactId>sjsxp</artifactId>
@@ -74,31 +67,31 @@
          <groupId>commons-fileupload</groupId>
          <artifactId>commons-fileupload</artifactId>
       </dependency>
-		<dependency>
-			<groupId>org.jvnet.jaxb2.maven2</groupId>
-			<artifactId>maven-jaxb2-plugin</artifactId>
-			<scope>test</scope>
-		</dependency>
+      <dependency>
+         <groupId>org.jvnet.jaxb2.maven2</groupId>
+         <artifactId>maven-jaxb2-plugin</artifactId>
+         <scope>test</scope>
+      </dependency>
       <dependency>
          <groupId>stax</groupId>
          <artifactId>stax-api</artifactId>
       </dependency>
-	</dependencies>
+   </dependencies>
 
-	<build>
-		<finalName>everrest</finalName>
-		<plugins>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>false</addClasspath>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+   <build>
+      <finalName>everrest</finalName>
+      <plugins>
+         <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+               <archive>
+                  <manifest>
+                     <addClasspath>false</addClasspath>
+                  </manifest>
+               </archive>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 
 </project>

@@ -18,12 +18,11 @@
  */
 package org.everrest.deploy.impl;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.resource.ResourceContainer;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 import org.picocontainer.Startable;
 
 import java.util.HashSet;
@@ -41,7 +40,7 @@ public class ExoJAXRSApplication extends Application implements Startable
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(ExoJAXRSApplication.class);
+   private static final Logger LOG = Logger.getLogger(ExoJAXRSApplication.class);
 
    private ExoContainer container;
 
@@ -91,7 +90,9 @@ public class ExoJAXRSApplication extends Application implements Startable
    public void start()
    {
       for (Object resource : container.getComponentInstancesOfType(ResourceContainer.class))
+      {
          singletons.add(resource);
+      }
    }
 
    /**

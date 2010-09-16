@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.IOException;
 
@@ -55,7 +54,7 @@ import java.io.IOException;
 class RetryModule implements HTTPClientModule, GlobalConstants
 {
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.RetryModule");
+   private static final Logger log = Logger.getLogger(RetryModule.class);
 
    // Constructors
 

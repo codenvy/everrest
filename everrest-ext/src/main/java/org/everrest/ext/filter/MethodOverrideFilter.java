@@ -41,7 +41,9 @@ public class MethodOverrideFilter implements RequestFilter
    {
       String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
       if (method != null)
+      {
          request.setMethod(method);
+      }
    }
 
 }

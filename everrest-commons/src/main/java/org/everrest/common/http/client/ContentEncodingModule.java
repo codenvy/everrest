@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -50,7 +49,7 @@ import java.util.zip.InflaterInputStream;
 class ContentEncodingModule implements HTTPClientModule
 {
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.ContentEncodingModule");
+   private static final Logger log = Logger.getLogger(ContentEncodingModule.class);
 
    // Methods
 

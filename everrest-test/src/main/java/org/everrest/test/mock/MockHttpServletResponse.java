@@ -441,4 +441,15 @@ public class MockHttpServletResponse implements HttpServletResponse
       }
    }
 
+   public String getContentType()
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   public void setCharacterEncoding(String encoding)
+   {
+      this.encoding = encoding;
+   }
+
 }

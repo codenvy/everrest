@@ -19,12 +19,12 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.provider.EntityProvider;
+import org.everrest.json.JsonException;
 import org.everrest.json.JsonHandler;
 import org.everrest.json.JsonParser;
 import org.everrest.json.JsonWriter;
 import org.everrest.json.impl.BeanBuilder;
 import org.everrest.json.impl.JsonDefaultHandler;
-import org.everrest.json.impl.JsonException;
 import org.everrest.json.impl.JsonGeneratorImpl;
 import org.everrest.json.impl.JsonParserImpl;
 import org.everrest.json.impl.JsonWriterImpl;

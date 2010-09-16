@@ -18,10 +18,9 @@
  */
 package org.everrest.core.impl.provider;
 
+import org.everrest.common.util.Logger;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.EntityProvider;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +53,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class JAXBObjectEntityProvider implements EntityProvider<Object>
 {
 
-   /**
-    * Logger.
-    */
-   private static final Log LOG = ExoLogger.getLogger(JAXBObjectEntityProvider.class.getName());
+   /** Logger. */
+   private static final Logger LOG = Logger.getLogger(JAXBObjectEntityProvider.class);
 
    /**
     * @see Providers

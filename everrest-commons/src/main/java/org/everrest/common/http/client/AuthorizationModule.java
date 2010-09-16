@@ -32,8 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.everrest.common.util.Logger;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -82,7 +81,7 @@ class AuthorizationModule implements HTTPClientModule
 
    private Response saved_resp;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.AuthorizationModule");
+   private static final Logger log = Logger.getLogger(AuthorizationModule.class);
 
    // Constructors
 
