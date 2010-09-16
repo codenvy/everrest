@@ -90,7 +90,7 @@ public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType>
     */
    public String toString(MediaType mime)
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append(mime.getType()).append('/').append(mime.getSubtype());
 
       for (Entry<String, String> entry : mime.getParameters().entrySet())

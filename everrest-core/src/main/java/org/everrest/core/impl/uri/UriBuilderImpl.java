@@ -59,12 +59,12 @@ public class UriBuilderImpl extends UriBuilder
    /**
     * Path.
     */
-   private StringBuffer path = new StringBuffer();
+   private StringBuilder path = new StringBuilder();
 
    /**
     * Query string.
     */
-   private StringBuffer query = new StringBuffer();
+   private StringBuilder query = new StringBuilder();
 
    /**
     * Fragment.
@@ -251,8 +251,8 @@ public class UriBuilderImpl extends UriBuilder
       this.userInfo = cloned.userInfo;
       this.host = cloned.host;
       this.port = cloned.port;
-      this.path = new StringBuffer().append(cloned.path);
-      this.query = new StringBuffer().append(cloned.query);
+      this.path = new StringBuilder().append(cloned.path);
+      this.query = new StringBuilder().append(cloned.query);
       this.fragment = cloned.fragment;
    }
 
@@ -628,7 +628,7 @@ public class UriBuilderImpl extends UriBuilder
       if (ssp == null)
          throw new IllegalArgumentException("Scheme specific part (ssp) is null");
 
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
 
       if (schema != null)
          sb.append(schema).append(':').append(UriComponent.recognizeEncode(ssp, UriComponent.SSP, true));

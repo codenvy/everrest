@@ -161,7 +161,7 @@ public final class UriComponent
     */
    private static String fillTable(String statement)
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       if (statement.length() != 3 || statement.charAt(1) != '-')
          throw new IllegalArgumentException("Illegal format of source string, e. g. A-Z");
 
@@ -241,7 +241,7 @@ public final class UriComponent
     */
    private static String encodingInt(String str, int component, boolean containsUriParams, boolean recognizeEncoded)
    {
-      StringBuffer sb = null;
+      StringBuilder sb = null;
       int l = str.length();
       for (int i = 0; i < l; i++)
       {
@@ -261,7 +261,7 @@ public final class UriComponent
 
                if (sb == null)
                {
-                  sb = new StringBuffer();
+                  sb = new StringBuilder();
                   sb.append(str.substring(0, i));
                }
                addPercentEncoded(ch, sb); // in fact add '%25'
@@ -290,7 +290,7 @@ public final class UriComponent
 
                if (sb == null)
                {
-                  sb = new StringBuffer();
+                  sb = new StringBuilder();
                   sb.append(str.substring(0, i));
                }
 
@@ -324,7 +324,7 @@ public final class UriComponent
 
       int p = 0;
       int l = str.length();
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
 
       /* NOTE spaces can be encoded with '+' */
       //    if ((p = str.indexOf('%')) < 0)
@@ -388,12 +388,12 @@ public final class UriComponent
    }
 
    /**
-    * Append percent encoded character in StringBuffer.
+    * Append percent encoded character in StringBuilder.
     * 
     * @param c character which must be encoded
-    * @param sb StringBuffer to add character
+    * @param sb StringBuilder to add character
     */
-   private static void addPercentEncoded(int c, StringBuffer sb)
+   private static void addPercentEncoded(int c, StringBuilder sb)
    {
       sb.append('%');
       sb.append(HEX_DIGITS.charAt(c >> 4));
@@ -401,12 +401,12 @@ public final class UriComponent
    }
 
    /**
-    * Append UTF-8 encoded character in StringBuffer.
+    * Append UTF-8 encoded character in StringBuilder.
     * 
     * @param c character which must be encoded
-    * @param sb StringBuffer to add character
+    * @param sb StringBuilder to add character
     */
-   private static void addUTF8Encoded(char c, StringBuffer sb)
+   private static void addUTF8Encoded(char c, StringBuilder sb)
    {
       ByteBuffer buf = UTF8.encode("" + c);
       while (buf.hasRemaining())
@@ -490,12 +490,12 @@ public final class UriComponent
 
    /**
     * Decodes bytes to characters using the UTF-8 decoding and add them to a
-    * StringBuffer.
+    * StringBuilder.
     * 
     * @param buff source bytes
-    * @param sb StringBuffer for append characters
+    * @param sb StringBuilder for append characters
     */
-   private static void addUTF8Decoded(byte[] buff, StringBuffer sb)
+   private static void addUTF8Decoded(byte[] buff, StringBuilder sb)
    {
       CharBuffer cbuff = UTF8.decode(ByteBuffer.wrap(buff));
       sb.append(cbuff.toString());

@@ -96,7 +96,7 @@ public class VariantsHandlerTest extends BaseTest
 
    private static String glue(String... s)
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (String _s : s)
       {
          if (sb.length() > 0)

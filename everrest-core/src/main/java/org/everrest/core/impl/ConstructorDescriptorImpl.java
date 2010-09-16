@@ -312,7 +312,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ ConstructorInjectorImpl: ");
+      StringBuilder sb = new StringBuilder("[ ConstructorInjectorImpl: ");
       sb.append("constructor: " + getConstructor().getName() + "; ");
       for (ConstructorParameter cp : getParameters())
          sb.append(cp.toString()).append(" ");

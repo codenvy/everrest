@@ -306,7 +306,7 @@ public class UriPattern
       String query, String fragment, Map<String, ? extends Object> values, boolean encode)
    {
 
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       if (schema != null)
       {
          appendUriPart(sb, schema, UriComponent.SCHEME, values, false);
@@ -374,7 +374,7 @@ public class UriPattern
    {
 
       Map<String, String> m = new HashMap<String, String>();
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       int p = 0;
 
       if (schema != null)
@@ -426,14 +426,14 @@ public class UriPattern
    }
 
    /**
-    * @param sb the StringBuffer for appending URI part
+    * @param sb the StringBuilder for appending URI part
     * @param uriPart URI part
     * @param component the URI component
     * @param values values map
     * @param encode if true then encode value before add it in URI, otherwise
     *        value must be validate to legal characters
     */
-   private static void appendUriPart(StringBuffer sb, String uriPart, int component,
+   private static void appendUriPart(StringBuilder sb, String uriPart, int component,
       Map<String, ? extends Object> values, boolean encode)
    {
 
@@ -466,7 +466,7 @@ public class UriPattern
    }
 
    /**
-    * @param sb the StringBuffer for appending URI part
+    * @param sb the StringBuilder for appending URI part
     * @param uriPart URI part
     * @param component the URI component
     * @param sourceValues the source array of values
@@ -484,7 +484,7 @@ public class UriPattern
     *        value must be validate to legal characters
     * @return offset
     */
-   private static int appendUriPart(StringBuffer sb, String uriPart, int component, Object[] sourceValues, int offset,
+   private static int appendUriPart(StringBuilder sb, String uriPart, int component, Object[] sourceValues, int offset,
       Map<String, String> values, boolean encode)
    {
 

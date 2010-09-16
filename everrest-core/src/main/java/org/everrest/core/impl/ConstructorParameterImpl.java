@@ -141,7 +141,7 @@ public class ConstructorParameterImpl implements ConstructorParameter
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ ConstructorParameterImpl : ");
+      StringBuilder sb = new StringBuilder("[ ConstructorParameterImpl : ");
       sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass()).append(
          "; generic-type : " + getGenericType()).append("; default-value: " + getDefaultValue()).append(
          "; encoded: " + isEncoded()).append(" ]");

@@ -90,7 +90,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
 
       MultivaluedMap<String, String> form = new MultivaluedMapImpl();
       int r = -1;
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       try
       {
          while ((r = entityStream.read()) != -1)

@@ -18,6 +18,7 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.core.BaseObjectModel;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.FieldInjector;
@@ -38,13 +39,8 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: FilterDescriptorImpl.java -1 $
  */
-public class FilterDescriptorImpl implements FilterDescriptor
+public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescriptor
 {
-
-   /**
-    * Filter class.
-    */
-   private final Class<?> filterClass;
 
    /**
     * @see PathValue
@@ -68,9 +64,6 @@ public class FilterDescriptorImpl implements FilterDescriptor
     */
    private final List<FieldInjector> fields;
 
-   /** Optional data. */
-   private MultivaluedMap<String, String> properties;
-
    /**
     * @param filterClass filter class
     * @param scope filter scope
@@ -78,6 +71,7 @@ public class FilterDescriptorImpl implements FilterDescriptor
     */
    public FilterDescriptorImpl(Class<?> filterClass, ComponentLifecycleScope scope)
    {
+      super(filterClass);
       final Path p = filterClass.getAnnotation(Path.class);
       if (p != null)
       {
@@ -89,8 +83,6 @@ public class FilterDescriptorImpl implements FilterDescriptor
          this.path = null;
          this.uriPattern = null;
       }
-
-      this.filterClass = filterClass;
 
       this.constructors = new ArrayList<ConstructorDescriptor>();
       this.fields = new ArrayList<FieldInjector>();
@@ -145,38 +137,6 @@ public class FilterDescriptorImpl implements FilterDescriptor
    /**
     * {@inheritDoc}
     */
-   public Class<?> getObjectClass()
-   {
-      return filterClass;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public MultivaluedMap<String, String> getProperties()
-   {
-      if (properties == null)
-      {
-         properties = new MultivaluedMapImpl();
-      }
-      return properties;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<String> getProperty(String key)
-   {
-      if (properties != null)
-      {
-         return properties.get(key);
-      }
-      return null;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public PathValue getPathValue()
    {
       return path;
@@ -196,7 +156,7 @@ public class FilterDescriptorImpl implements FilterDescriptor
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ FilterDescriptorImpl: ");
+      StringBuilder sb = new StringBuilder("[ FilterDescriptorImpl: ");
       sb.append("path: " + getPathValue() + "; ").append("filter class: " + getObjectClass() + "; ").append(
          getConstructorDescriptors() + "; ").append(getFieldInjectors()).append(" ]");
       return sb.toString();

@@ -207,7 +207,7 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ SubResourceMethodDescriptorImpl: ");
+      StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");
       sb.append("resource: " + getParentResource() + "; ").append("path: " + getPathValue() + "; ").append(
          "HTTP method: " + getHttpMethod() + "; ").append("produces media type: " + produces() + "; ").append(
          "consumes media type: " + consumes() + "; ").append("return type: " + getResponseType() + "; ").append(

@@ -24,6 +24,7 @@ import org.everrest.common.http.client.HttpOutputStream;
 import org.everrest.common.http.client.ModuleException;
 import org.everrest.common.http.client.NVPair;
 import org.everrest.common.http.client.ProtocolNotSuppException;
+import org.everrest.common.util.CaselessStringWrapper;
 import org.everrest.common.util.Logger;
 import org.everrest.core.resource.ResourceContainer;
 
@@ -78,7 +79,7 @@ public class ProxyService implements ResourceContainer
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
-            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
+            Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -134,7 +135,7 @@ public class ProxyService implements ResourceContainer
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
-            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
+            Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -192,7 +193,7 @@ public class ProxyService implements ResourceContainer
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
-            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
+            Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -267,7 +268,7 @@ public class ProxyService implements ResourceContainer
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
-            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
+            Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -390,12 +391,12 @@ public class ProxyService implements ResourceContainer
       return credentials;
    }
 
-   private NVPair[] toNVPair(MultivaluedMap<String, String> map, Set<CaseInsensitiveStringWrapper> skip)
+   private NVPair[] toNVPair(MultivaluedMap<String, String> map, Set<CaselessStringWrapper> skip)
    {
       List<NVPair> hds = new ArrayList<NVPair>();
       for (Entry<String, List<String>> e : map.entrySet())
       {
-         if (!skip.contains(new CaseInsensitiveStringWrapper(e.getKey())))
+         if (!skip.contains(new CaselessStringWrapper(e.getKey())))
          {
             for (String v : e.getValue())
             {
@@ -404,51 +405,6 @@ public class ProxyService implements ResourceContainer
          }
       }
       return hds.toArray(new NVPair[hds.size()]);
-   }
-
-   private class CaseInsensitiveStringWrapper
-   {
-
-      private final String string;
-
-      private final String caselessString;
-
-      CaseInsensitiveStringWrapper(String string)
-      {
-         this.string = string;
-         if (string != null)
-         {
-            this.caselessString = string.toLowerCase();
-         }
-         else
-         {
-            this.caselessString = null;
-         }
-      }
-
-      public String toString()
-      {
-         return string == null ? "null" : string;
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == null)
-            return false;
-         if (obj.getClass() != getClass())
-            return false;
-         CaseInsensitiveStringWrapper other = (CaseInsensitiveStringWrapper)obj;
-         return (caselessString == null && other.caselessString == null)
-            || (caselessString != null && caselessString.equals(other.caselessString));
-      }
-
-      @Override
-      public int hashCode()
-      {
-         return caselessString == null ? 0 : caselessString.hashCode();
-      }
-
    }
 
 }

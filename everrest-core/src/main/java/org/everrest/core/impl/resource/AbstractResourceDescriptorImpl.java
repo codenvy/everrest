@@ -19,12 +19,12 @@
 package org.everrest.core.impl.resource;
 
 import org.everrest.common.util.Logger;
+import org.everrest.core.BaseObjectModel;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.ConstructorDescriptorImpl;
 import org.everrest.core.impl.FieldInjectorImpl;
-import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.impl.method.MethodParameterImpl;
@@ -66,14 +66,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: AbstractResourceDescriptorImpl.java 292 2009-10-19 07:03:07Z
  *          aparfonov $
  */
-public class AbstractResourceDescriptorImpl implements AbstractResourceDescriptor
+public class AbstractResourceDescriptorImpl extends BaseObjectModel implements AbstractResourceDescriptor
 {
 
    /**
@@ -90,11 +89,6 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     * @see UriPattern
     */
    private final UriPattern uriPattern;
-
-   /**
-    * Resource class.
-    */
-   private final Class<?> resourceClass;
 
    /**
     * Sub-resource methods. Sub-resource method has path annotation.
@@ -127,9 +121,6 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    /** Resource class fields. */
    private final List<FieldInjector> fields;
 
-   /** Optional data. */
-   private MultivaluedMap<String, String> properties;
-
    /**
     * Constructs new instance of AbstractResourceDescriptor without path
     * (sub-resource).
@@ -149,6 +140,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     */
    private AbstractResourceDescriptorImpl(Path path, Class<?> resourceClass, ComponentLifecycleScope scope)
    {
+      super(resourceClass);
       if (path != null)
       {
          this.path = new PathValue(path.value());
@@ -159,8 +151,6 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
          this.path = null;
          uriPattern = null;
       }
-
-      this.resourceClass = resourceClass;
 
       this.constructors = new ArrayList<ConstructorDescriptor>();
       this.fields = new ArrayList<FieldInjector>();
@@ -239,41 +229,9 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    /**
     * {@inheritDoc}
     */
-   public Class<?> getObjectClass()
-   {
-      return resourceClass;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public PathValue getPathValue()
    {
       return path;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public MultivaluedMap<String, String> getProperties()
-   {
-      if (properties == null)
-      {
-         properties = new MultivaluedMapImpl();
-      }
-      return properties;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<String> getProperty(String key)
-   {
-      if (properties != null)
-      {
-         return properties.get(key);
-      }
-      return null;
    }
 
    /**
@@ -755,7 +713,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ AbstractResourceDescriptorImpl: ");
+      StringBuilder sb = new StringBuilder("[ AbstractResourceDescriptorImpl: ");
       sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource())
          .append("; class: " + getObjectClass()).append(" ]");
       return sb.toString();

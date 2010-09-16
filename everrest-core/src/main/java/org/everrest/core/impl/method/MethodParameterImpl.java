@@ -141,7 +141,7 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ MethodParameter: ");
+      StringBuilder sb = new StringBuilder("[ MethodParameter: ");
       sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass()).append(
          "; generic-type: " + getGenericType()).append("; default-value: " + getDefaultValue()).append(
          "; encoded: " + isEncoded()).append(" ]");

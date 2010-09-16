@@ -98,7 +98,7 @@ public final class UriNormalizationFilter implements RequestFilter
    {
       String inputBuffer = path;
 
-      StringBuffer outputBuffer = new StringBuffer();
+      StringBuilder outputBuffer = new StringBuilder();
 
       if (inputBuffer.contains("//"))
       {

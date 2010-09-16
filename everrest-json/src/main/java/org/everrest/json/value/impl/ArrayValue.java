@@ -80,7 +80,7 @@ public class ArrayValue extends JsonValue
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append('[');
       int i = 0;
       for (JsonValue v : children)

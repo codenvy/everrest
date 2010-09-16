@@ -157,7 +157,7 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ SubResourceMethodDescriptorImpl: ");
+      StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");
       sb.append("resource: " + getParentResource() + "; ").append("path: " + getPathValue() + "; ").append(
          "return type: " + getResponseType() + "; ").append("invoker: " + getMethodInvoker()).append(" ]");
       return sb.toString();

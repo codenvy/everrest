@@ -52,7 +52,7 @@ public class NewCookieHeaderDelegate extends AbstractHeaderDelegate<NewCookie>
     */
    public String toString(NewCookie cookie)
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append(cookie.getName()).append('=').append(HeaderHelper.addQuotesIfHasWhitespace(cookie.getValue()));
 
       sb.append(';').append("Version=").append(cookie.getVersion());

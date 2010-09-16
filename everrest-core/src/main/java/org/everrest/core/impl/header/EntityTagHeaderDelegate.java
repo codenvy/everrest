@@ -67,7 +67,7 @@ public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag>
     */
    public String toString(EntityTag entityTag)
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       if (entityTag.isWeak())
          sb.append('W').append('/');
 

@@ -531,7 +531,7 @@ public final class HeaderHelper
       if (collection.size() == 0)
          return "";
 
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (String t : collection)
       {
          if (sb.length() > 0)
@@ -549,7 +549,7 @@ public final class HeaderHelper
     * @param sb string buffer
     * @param s string
     */
-   static void appendWithQuote(StringBuffer sb, String s)
+   static void appendWithQuote(StringBuilder sb, String s)
    {
       if (s == null)
          return;
@@ -573,7 +573,7 @@ public final class HeaderHelper
     * @param sb string buffer
     * @param s string
     */
-   static void appendEscapeQuote(StringBuffer sb, String s)
+   static void appendEscapeQuote(StringBuilder sb, String s)
    {
       for (int i = 0; i < s.length(); i++)
       {
@@ -694,7 +694,7 @@ public final class HeaderHelper
     */
    static String filterEscape(String token)
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       //    boolean escape = false;
       int strlen = token.length();
 

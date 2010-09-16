@@ -18,12 +18,12 @@
  */
 package org.everrest.core.impl.provider;
 
+import org.everrest.core.BaseObjectModel;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.ConstructorDescriptorImpl;
 import org.everrest.core.impl.FieldInjectorImpl;
-import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
@@ -36,20 +36,14 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ProviderDescriptorImpl.java 292 2009-10-19 07:03:07Z aparfonov
  *          $
  */
-public class ProviderDescriptorImpl implements ProviderDescriptor
+public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderDescriptor
 {
-
-   /**
-    * Provider class.
-    */
-   private final Class<?> providerClass;
 
    /**
     * Resource class constructors.
@@ -75,17 +69,13 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
     */
    private final List<MediaType> produces;
 
-   /** Optional data. */
-   private MultivaluedMap<String, String> properties;
-
    /**
     * @param providerClass provider class
     * @param scope provider scope
     */
    public ProviderDescriptorImpl(Class<?> providerClass, ComponentLifecycleScope scope)
    {
-      this.providerClass = providerClass;
-
+      super(providerClass);
       this.constructors = new ArrayList<ConstructorDescriptor>();
       this.fields = new ArrayList<FieldInjector>();
       if (scope == ComponentLifecycleScope.PER_REQUEST)
@@ -150,38 +140,6 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
    /**
     * {@inheritDoc}
     */
-   public Class<?> getObjectClass()
-   {
-      return providerClass;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public MultivaluedMap<String, String> getProperties()
-   {
-      if (properties == null)
-      {
-         properties = new MultivaluedMapImpl();
-      }
-      return properties;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<String> getProperty(String key)
-   {
-      if (properties != null)
-      {
-         return properties.get(key);
-      }
-      return null;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public List<MediaType> produces()
    {
       return produces;
@@ -192,7 +150,7 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
     */
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ ProviderDescriptorImpl: ");
+      StringBuilder sb = new StringBuilder("[ ProviderDescriptorImpl: ");
       sb.append("provider class: " + getObjectClass() + "; ").append("produces media type: " + produces() + "; ")
          .append("consumes media type: " + consumes() + "; ").append(getConstructorDescriptors() + "; ").append(
             getFieldInjectors()).append(" ]");

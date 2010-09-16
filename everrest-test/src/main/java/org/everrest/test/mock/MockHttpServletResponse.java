@@ -18,6 +18,8 @@
  */
 package org.everrest.test.mock;
 
+import org.everrest.common.util.CaseInsensitiveMultivaluedMap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;

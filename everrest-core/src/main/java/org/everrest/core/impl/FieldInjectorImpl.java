@@ -262,7 +262,7 @@ public class FieldInjectorImpl implements FieldInjector
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ FieldInjectorImpl: ");
+      StringBuilder sb = new StringBuilder("[ FieldInjectorImpl: ");
       sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass()).append(
          "; generic-type : " + getGenericType()).append("; default-value: " + getDefaultValue()).append(
          "; encoded: " + isEncoded()).append(" ]");

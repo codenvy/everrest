@@ -106,7 +106,7 @@ public final class IOHelper
       }
       Reader r = new InputStreamReader(in, charset);
       char[] buf = new char[1024];
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       int rd = -1;
       while ((rd = r.read(buf)) != -1)
          sb.append(buf, 0, rd);

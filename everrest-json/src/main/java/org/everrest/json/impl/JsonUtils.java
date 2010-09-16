@@ -244,7 +244,7 @@ public final class JsonUtils
    {
       if (string == null || string.length() == 0)
          return "\"\"";
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append("\"");
       char[] charArray = string.toCharArray();
       for (char c : charArray)

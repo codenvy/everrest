@@ -55,7 +55,7 @@ public class CacheControlHeaderDelegate extends AbstractHeaderDelegate<CacheCont
     */
    public String toString(CacheControl header)
    {
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       if (!header.isPrivate())
       {
          appendString(buff, "public");
@@ -100,12 +100,12 @@ public class CacheControlHeaderDelegate extends AbstractHeaderDelegate<CacheCont
    }
 
    /**
-    * Add single <code>String</code> to <code>StringBuffer</code> .
+    * Add single <code>String</code> to <code>StringBuilder</code> .
     * 
-    * @param buff the StringBuffer
+    * @param buff the StringBuilder
     * @param s single String
     */
-   private static void appendString(StringBuffer buff, String s)
+   private static void appendString(StringBuilder buff, String s)
    {
       if (buff.length() > 0)
          buff.append(',').append(' ');
@@ -114,16 +114,16 @@ public class CacheControlHeaderDelegate extends AbstractHeaderDelegate<CacheCont
    }
 
    /**
-    * Add single pair key=value to <code>StringBuffer</code> . If value contains
+    * Add single pair key=value to <code>StringBuilder</code> . If value contains
     * whitespace then quotes will be added.
     * 
-    * @param buff the StringBuffer
+    * @param buff the StringBuilder
     * @param key the key
     * @param value the value
     */
-   private static void appendWithSingleParameter(StringBuffer buff, String key, String value)
+   private static void appendWithSingleParameter(StringBuilder buff, String key, String value)
    {
-      StringBuffer localBuff = new StringBuffer();
+      StringBuilder localBuff = new StringBuilder();
       localBuff.append(key);
 
       if (value != null && value.length() > 0)
@@ -133,18 +133,18 @@ public class CacheControlHeaderDelegate extends AbstractHeaderDelegate<CacheCont
    }
 
    /**
-    * Add to pair key="value1, value2" to <code>StringBuffer</code> .
+    * Add to pair key="value1, value2" to <code>StringBuilder</code> .
     * 
-    * @param buff the StringBuffer
+    * @param buff the StringBuilder
     * @param key the key
     * @param values the collection of values
     */
-   private static void appendWithParameters(StringBuffer buff, String key, List<String> values)
+   private static void appendWithParameters(StringBuilder buff, String key, List<String> values)
    {
       appendString(buff, key);
       if (values.size() > 0)
       {
-         StringBuffer localBuff = new StringBuffer();
+         StringBuilder localBuff = new StringBuilder();
          buff.append('=');
          buff.append('"');
 

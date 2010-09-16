@@ -177,7 +177,7 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer("[ ResourceMethodDescriptorImpl: ");
+      StringBuilder sb = new StringBuilder("[ ResourceMethodDescriptorImpl: ");
       sb.append("resource: " + getParentResource() + "; ").append("HTTP method: " + getHttpMethod() + "; ").append(
          "produces media type: " + produces() + "; ").append("consumes media type: " + consumes() + "; ").append(
          "return type: " + getResponseType() + "; ").append("invoker: " + getMethodInvoker()).append("] ]");

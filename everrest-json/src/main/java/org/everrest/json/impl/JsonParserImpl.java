@@ -372,7 +372,7 @@ public class JsonParserImpl implements JsonParser
          return n;
       // else error
       char[] ch = s.toCharArray();
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       int i = 0;
       for (char c : ch)
       {

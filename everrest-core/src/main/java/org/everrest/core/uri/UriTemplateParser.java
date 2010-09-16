@@ -55,12 +55,12 @@ public class UriTemplateParser
    /**
     * Regular expression buffer.
     */
-   private StringBuffer regex = new StringBuffer();
+   private StringBuilder regex = new StringBuilder();
 
    /**
     * Normalized template, whitespace must be removed.
     */
-   private StringBuffer normalizedTemplate = new StringBuffer();
+   private StringBuilder normalizedTemplate = new StringBuilder();
 
    /**
     * Number of explicit characters in URI template, all characters except
@@ -230,7 +230,7 @@ public class UriTemplateParser
     */
    private int parseName(String str, int p, int length)
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (; p < length; p++)
       {
          char ch = str.charAt(p);

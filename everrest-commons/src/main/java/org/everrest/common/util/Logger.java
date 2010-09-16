@@ -1,5 +1,3 @@
-package org.everrest.common.util;
-
 /*
  * Copyright (C) 2003-2009 eXo Platform SAS.
  *
@@ -18,6 +16,8 @@ package org.everrest.common.util;
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
+package org.everrest.common.util;
 
 import java.util.concurrent.ConcurrentHashMap;
 

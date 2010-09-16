@@ -524,7 +524,7 @@ public final class ResponseImpl extends Response
             acceptEncoding |= v.getEncoding() != null;
          }
 
-         StringBuffer sb = new StringBuffer();
+         StringBuilder sb = new StringBuilder();
          if (acceptMediaType)
             sb.append(HttpHeaders.ACCEPT);
          if (acceptLanguage)
