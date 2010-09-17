@@ -41,11 +41,6 @@ public abstract class BaseTest extends TestCase
       // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
       providers = ProviderBinder.getInstance();
-
-//      LogConfigurator lc = new Log4JConfigurator();
-//      Properties props = new Properties();
-//      props.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/log4j.properties"));
-//      lc.configure(props);
    }
 
    protected void setContext()

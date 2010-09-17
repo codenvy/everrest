@@ -19,25 +19,59 @@
 package org.everrest.core.servlet;
 
 import org.everrest.core.DependencySupplier;
+import org.everrest.core.FieldInjector;
+import org.everrest.core.Inject;
 import org.everrest.core.Parameter;
 
+import java.lang.annotation.Annotation;
+
+import javax.servlet.ServletContext;
+
 /**
+ * Resolve dependency by look up instance of object in {@link ServletContext}.
+ * Instance of object must be present in servlet context as attribute with name
+ * which is the same as class or interface name of requested parameter, e.g.
+ * instance of org.foo.bar.MyClass must be bound to attribute name
+ * org.foo.bar.MyClass
+ *
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
 public class ServletContextDependencySupplier implements DependencySupplier
 {
 
-   public Object getComponent(Parameter parameter)
+   private final ServletContext ctx;
+
+   public ServletContextDependencySupplier(ServletContext ctx)
    {
-      // TODO Auto-generated method stub
-      return null;
+      this.ctx = ctx;
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   public Object getComponent(Parameter parameter)
+   {
+      if (parameter instanceof FieldInjector)
+      {
+         for (Annotation a : parameter.getAnnotations())
+         {
+            // Do not process fields without annotation Inject
+            if (a.annotationType() == Inject.class)
+            {
+               return getComponent(parameter.getParameterClass());
+            }
+         }
+      }
+      return getComponent(parameter.getParameterClass());
+   }
+
+   /**
+    * {@inheritDoc}
+    */
    public Object getComponent(Class<?> type)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return ctx.getAttribute(type.getName());
    }
 
 }
