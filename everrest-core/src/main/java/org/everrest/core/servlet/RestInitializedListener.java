@@ -49,7 +49,7 @@ import javax.ws.rs.ext.Provider;
 /**
  * Initialize required components of JAX-RS framework and deploy single JAX-RS
  * application.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: RestInitializedListener.java 436 2009-10-28 06:47:29Z aparfonov
  *          $
@@ -110,7 +110,7 @@ public class RestInitializedListener implements ServletContextListener
          URL classes = WarUrlFinder.findWebInfClassesPath(event);
          URL[] libs = WarUrlFinder.findWebInfLibClasspaths(event);
          AnnotationDB annotationDB = new AnnotationDB();
-         
+
          List<String> skip = new ArrayList<String>();
          String sskip = sctx.getInitParameter("ws.rs.scan.skip.packages");
          if (sskip != null)
@@ -123,9 +123,9 @@ public class RestInitializedListener implements ServletContextListener
          // Disable processing of API, implementation and JAX-RS packages
          skip.add("org.everrest.core");
          skip.add("javax.ws.rs");
-         
+
          annotationDB.setIgnoredPackages(skip.toArray(new String[skip.size()]));
-         
+
          try
          {
             if (classes != null)
@@ -195,8 +195,13 @@ public class RestInitializedListener implements ServletContextListener
          }
       }
 
+      if (dependencySupplier == null)
+      {
+        dependencySupplier = new ServletContextDependencySupplier(sctx);
+      }
+
       RequestHandler handler = new RequestHandlerImpl(resources, dependencySupplier);
       event.getServletContext().setAttribute(RequestHandler.class.getName(), handler);
    }
-   
+
 }
