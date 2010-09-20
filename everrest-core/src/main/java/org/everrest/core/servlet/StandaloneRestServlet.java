@@ -75,6 +75,20 @@ public class StandaloneRestServlet extends HttpServlet
          ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
          getRequestHandler().handleRequest(request, response);
       }
+      catch (IOException ioe)
+      {
+         if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException"))
+         {
+            if (LOG.isDebugEnabled())
+            {
+               LOG.debug(ioe.getMessage(), ioe);
+            }
+         }
+         else
+         {
+            throw ioe;
+         }
+      }
       catch (Exception e)
       {
          LOG.error(e.getMessage(), e);
