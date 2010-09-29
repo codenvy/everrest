@@ -75,7 +75,6 @@
 
    <modules>
       <module>everrest-commons</module>
-      <module>everrest-json</module>
       <module>everrest-test</module>
       <module>everrest-core</module>
       <module>everrest-ext</module>
@@ -151,11 +150,6 @@
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-ext</artifactId>
-            <version>${org.everrest.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.everrest</groupId>
-            <artifactId>everrest-json</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <dependency>
