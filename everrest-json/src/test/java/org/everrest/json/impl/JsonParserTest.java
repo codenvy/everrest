@@ -213,6 +213,16 @@ public class JsonParserTest extends TestCase
       assertTrue(((BookStorage)o).getBooks().get(2).equals(sourceCollection_.get(2)));
    }
 
+   public void testArray() throws Exception
+   {
+      String source = "{\"array\":[\"a\",\"b\",\"c\"]}";
+      JsonParser parser = new JsonParserImpl();
+      JsonHandler jsonHandler = new JsonDefaultHandler();
+      parser.parse(new ByteArrayInputStream(source.getBytes()), jsonHandler);
+      JsonValue jsonValue = jsonHandler.getJsonObject();
+      System.out.println(jsonValue.getElement("array").isArray());
+   }
+
    public void testMultiDimensionArray() throws Exception
    {
       JsonParser jsonParser = new JsonParserImpl();

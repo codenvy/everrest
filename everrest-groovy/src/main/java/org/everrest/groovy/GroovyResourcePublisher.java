@@ -30,11 +30,8 @@ import org.everrest.core.ResourcePublicationException;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.uri.UriPattern;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -51,7 +48,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Manage via {@link ResourceBinder} Groovy based RESTful services.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: GroovyJaxrsPublisher.java 2762 2010-07-09 13:39:29Z aparfonov $
  */
@@ -86,7 +83,7 @@ public class GroovyResourcePublisher
     * singleton resources. Any required dependencies for per-request resource
     * injected by {@link PerRequestObjectFactory}, instance of singleton
     * resources will be created by {@link GroovyScriptInstantiator}.
-    * 
+    *
     * @param binder resource binder
     * @param dependencies dependencies resolver
     * @see DependencySupplier
@@ -110,7 +107,7 @@ public class GroovyResourcePublisher
 
    /**
     * Get resource corresponded to specified id <code>resourceId</code> .
-    * 
+    *
     * @param resourceId resource id
     * @return resource or <code>null</code>
     */
@@ -137,7 +134,7 @@ public class GroovyResourcePublisher
 
    /**
     * Check is groovy resource with specified id is published or not
-    * 
+    *
     * @param resourceId id of resource to be checked
     * @return <code>true</code> if resource is published and <code>false</code>
     *         otherwise
@@ -149,50 +146,54 @@ public class GroovyResourcePublisher
 
    /**
     * Parse given stream and publish result as per-request RESTful service.
-    * 
+    *
     * @param in stream which contains groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>
+    *        <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
    public void publishPerRequest(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      publishPerRequest(new BufferedReader(new InputStreamReader(in)), resourceId, properties);
-   }
-
-   /**
-    * Parse given source and publish result as per-request RESTful service.
-    * 
-    * @param in stream which contains groovy source code of RESTful service
-    * @param resourceId id to be assigned to resource
-    * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>
-    * @throws NullPointerException if <code>resourceId == null</code>
-    * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
-    */
-   public void publishPerRequest(Reader in, ResourceId resourceId, MultivaluedMap<String, String> properties)
-   {
+      // XXX fall back to groovy-1.6.5
+      //publishPerRequest(new BufferedReader(new InputStreamReader(in)), resourceId, properties);
       Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
       binder.addResource(rc, properties);
-      //binder.bind(rc);
       resources.put(resourceId, rc.getAnnotation(Path.class).value());
    }
+
+   // XXX fall back to groovy-1.6.5
+   //   /**
+   //    * Parse given source and publish result as per-request RESTful service.
+   //    *
+   //    * @param in stream which contains groovy source code of RESTful service
+   //    * @param resourceId id to be assigned to resource
+   //    * @param properties optional resource properties. This parameter may be
+   //    *           <code>null</code>
+   //    * @throws NullPointerException if <code>resourceId == null</code>
+   //    * @throws ResourcePublicationException see
+   //    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+   //    */
+   //   public void publishPerRequest(Reader in, ResourceId resourceId, MultivaluedMap<String, String> properties)
+   //   {
+   //      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
+   //      binder.addResource(rc, properties);
+   //      resources.put(resourceId, rc.getAnnotation(Path.class).value());
+   //   }
 
    /**
     * Parse given <code>source</code> and publish result as per-request RESTful
     * service.
-    * 
+    *
     * @param source groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>
+    *        <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
    public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
@@ -202,17 +203,17 @@ public class GroovyResourcePublisher
    /**
     * Parse given <code>source</code> and publish result as per-request RESTful
     * service.
-    * 
+    *
     * @param source groovy source code of RESTful service
     * @param charset source string charset. May be <code>null</code> than
-    *           default charset will be in use
+    *        default charset will be in use
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>.
+    *        <code>null</code>.
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
    public final void publishPerRequest(String source, String charset, ResourceId resourceId,
       MultivaluedMap<String, String> properties)
@@ -222,33 +223,19 @@ public class GroovyResourcePublisher
 
    /**
     * Parse given stream and publish result as singleton RESTful service.
-    * 
+    *
     * @param in stream which contains groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>
+    *        <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
    public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      publishSingleton(new BufferedReader(new InputStreamReader(in)), resourceId, properties);
-   }
-
-   /**
-    * Parse given source and publish result as singleton RESTful service.
-    * 
-    * @param in reader which contains groovy source code of RESTful service
-    * @param resourceId id to be assigned to resource
-    * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>
-    * @throws NullPointerException if <code>resourceId == null</code>
-    * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
-    */
-   public void publishSingleton(Reader in, ResourceId resourceId, MultivaluedMap<String, String> properties)
-   {
+      // XXX fall back to groovy-1.6.5
+      //publishSingleton(new BufferedReader(new InputStreamReader(in)), resourceId, properties);
       Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
       Object r = null;
 
@@ -299,17 +286,81 @@ public class GroovyResourcePublisher
       resources.put(resourceId, r.getClass().getAnnotation(Path.class).value());
    }
 
+   // XXX fall back to groovy-1.6.5
+   //   /**
+   //    * Parse given source and publish result as singleton RESTful service.
+   //    *
+   //    * @param in reader which contains groovy source code of RESTful service
+   //    * @param resourceId id to be assigned to resource
+   //    * @param properties optional resource properties. This parameter may be
+   //    *        <code>null</code>
+   //    * @throws NullPointerException if <code>resourceId == null</code>
+   //    * @throws ResourcePublicationException see
+   //    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+   //    */
+   //   public void publishSingleton(Reader in, ResourceId resourceId, MultivaluedMap<String, String> properties)
+   //   {
+   //      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
+   //      Object r = null;
+   //
+   //      Constructor<?>[] constructors = rc.getConstructors();
+   //      /* Sort constructors by number of parameters. With more parameters must be first. */
+   //      Arrays.sort(constructors, CONSTRUCTOR_COMPARATOR);
+   //
+   //      l : for (Constructor<?> c : constructors)
+   //      {
+   //         Class<?>[] parameterTypes = c.getParameterTypes();
+   //         if (parameterTypes.length == 0)
+   //         {
+   //            try
+   //            {
+   //               r = c.newInstance();
+   //               break;
+   //            }
+   //            catch (Exception e)
+   //            {
+   //               throw new RuntimeException("Unable instantiate object. " + e.getMessage(), e);
+   //            }
+   //         }
+   //
+   //         List<Object> parameters = new ArrayList<Object>(parameterTypes.length);
+   //
+   //         for (Class<?> parameterType : parameterTypes)
+   //         {
+   //            Object param = dependencies.getComponent(parameterType);
+   //            if (param == null)
+   //            {
+   //               continue l;
+   //            }
+   //            parameters.add(param);
+   //         }
+   //         try
+   //         {
+   //            r = c.newInstance(parameters.toArray(new Object[parameters.size()]));
+   //            break;
+   //         }
+   //         catch (Exception e)
+   //         {
+   //            throw new RuntimeException("Unable instantiate object." + e.getMessage(), e);
+   //         }
+   //      }
+   //
+   //      //binder.bind(r);
+   //      binder.addResource(r, properties);
+   //      resources.put(resourceId, r.getClass().getAnnotation(Path.class).value());
+   //   }
+
    /**
     * Parse given <code>source</code> and publish result as singleton RESTful
     * service.
-    * 
+    *
     * @param source groovy source code of RESTful service
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>.
+    *        <code>null</code>.
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
    public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
@@ -319,17 +370,17 @@ public class GroovyResourcePublisher
    /**
     * Parse given <code>source</code> and publish result as singleton RESTful
     * service.
-    * 
+    *
     * @param source groovy source code of RESTful service
     * @param charset source string charset. May be <code>null</code> than
-    *           default charset will be in use
+    *        default charset will be in use
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
-    *           <code>null</code>.
+    *        <code>null</code>.
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
    public final void publishSingleton(String source, String charset, ResourceId resourceId,
       MultivaluedMap<String, String> properties)
@@ -339,7 +390,7 @@ public class GroovyResourcePublisher
 
    /**
     * Set groovy class loader.
-    * 
+    *
     * @param gcl groovy class loader
     * @throws NullPointerException if <code>gcl == null</code>
     */
@@ -352,7 +403,7 @@ public class GroovyResourcePublisher
 
    /**
     * Unpublish resource with specified id.
-    * 
+    *
     * @param resourceId id of resource to be unpublished
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise, e.g. because there is not resource corresponded to
@@ -376,30 +427,28 @@ public class GroovyResourcePublisher
    private void publishPerRequest(String source, Charset charset, ResourceId resourceId,
       MultivaluedMap<String, String> properties)
    {
-      //byte[] bytes = source.getBytes(charset);
-      // TODO
-      byte[] bytes = source.getBytes();
+      byte[] bytes = source.getBytes(charset);
       publishPerRequest(new ByteArrayInputStream(bytes), resourceId, properties);
    }
 
    private void publishSingleton(String source, Charset charset, ResourceId resourceId,
       MultivaluedMap<String, String> properties)
    {
-      //byte[] bytes = source.getBytes(charset);
-      // TODO
-      byte[] bytes = source.getBytes();
+      byte[] bytes = source.getBytes(charset);
       publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties);
    }
 
    /**
     * Create {@link GroovyCodeSource} from given stream and name. Code base
     * 'file:/groovy/script/jaxrs' will be used.
-    * 
+    *
     * @param in groovy source code stream
     * @param name code source name
     * @return GroovyCodeSource
     */
-   protected GroovyCodeSource createCodeSource(Reader in, String name)
+   // XXX fall back to groovy-1.6.5
+   // protected GroovyCodeSource createCodeSource(Reader in, String name)
+   protected GroovyCodeSource createCodeSource(InputStream in, String name)
    {
       GroovyCodeSource gcs = new GroovyCodeSource(in, name, "/groovy/script/jaxrs");
       gcs.setCachable(false);
