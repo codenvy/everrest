@@ -27,31 +27,12 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Manages root resources.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ResourceBinder.java -1 $
  */
 public interface ResourceBinder
 {
-   /**
-    * @param resourceClass class of candidate to be root resource
-    * @return true if resource was bound and false if resource was not bound
-    *         cause it is not root resource
-    * @deprecated
-    */
-   boolean bind(Class<?> resourceClass);
-
-   /**
-    * Register supplied Object as root resource if it has valid JAX-RS
-    * annotations and no one resource with the same UriPattern already
-    * registered.
-    * 
-    * @param resource candidate to be root resource
-    * @return true if resource was bound and false if resource was not bound
-    *         cause it is not root resource
-    * @deprecated
-    */
-   boolean bind(Object resource);
 
    /**
     * @return all registered root resources
@@ -64,26 +45,10 @@ public interface ResourceBinder
    int getSize();
 
    /**
-    * Remove root resource of supplied class from root resource collection.
-    * 
-    * @param clazz root resource class
-    * @return true if resource was unbound false otherwise
-    * @deprecated
-    */
-   boolean unbind(Class<?> clazz);
-
-   /**
-    * @param uriTemplate
-    * @return
-    * @deprecated
-    */
-   boolean unbind(String uriTemplate);
-
-   /**
     * Register supplied class as per-request root resource if it has valid
     * JAX-RS annotations and no one resource with the same UriPattern already
     * registered.
-    * 
+    *
     * @param resourceClass class of candidate to be root resource
     * @param properties optional resource properties. It may contains additional
     *           info about resource, e.g. description of resource, its
@@ -108,7 +73,7 @@ public interface ResourceBinder
     * Register supplied Object as singleton root resource if it has valid JAX-RS
     * annotations and no one resource with the same UriPattern already
     * registered.
-    * 
+    *
     * @param resource candidate to be root resource
     * @param properties optional resource properties. It may contains additional
     *           info about resource, e.g. description of resource, its
@@ -132,7 +97,7 @@ public interface ResourceBinder
    /**
     * Register supplied root resource if no one resource with the same
     * UriPattern already registered.
-    * 
+    *
     * @param resourceFactory root resource
     * @throws ResourcePublicationException if resource can't be published
     *            because resource with the sane {@link UriPattern} already
@@ -142,7 +107,7 @@ public interface ResourceBinder
 
    /**
     * Remove root resource of supplied class from root resource collection.
-    * 
+    *
     * @param clazz root resource class
     * @return removed resource or <code>null</code> if resource of specified
     *         class not found
@@ -152,7 +117,7 @@ public interface ResourceBinder
    /**
     * Remove root resource with specified UriTemplate from root resource
     * collection.
-    * 
+    *
     * @param path root resource path
     * @return removed resource or <code>null</code> if resource for specified
     *         template not found

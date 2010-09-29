@@ -66,7 +66,7 @@ public class ResourceBinderImpl implements ResourceBinder
       {
          /**
           * Compare two ResourceClass for order.
-          * 
+          *
           * @param o1 first ResourceClass to be compared
           * @param o2 second ResourceClass to be compared
           * @return positive , zero or negative dependent of {@link UriPattern}
@@ -270,7 +270,7 @@ public class ResourceBinderImpl implements ResourceBinder
 
    /**
     * Register new resource listener.
-    * 
+    *
     * @param listener listener
     * @see ResourceListener
     */
@@ -279,52 +279,6 @@ public class ResourceBinderImpl implements ResourceBinder
       resourceListeners.add(listener);
       if (LOG.isDebugEnabled())
          LOG.debug("Resource listener added: " + listener);
-   }
-
-   /**
-    * Register root resource.
-    * 
-    * @param resourceClass class of candidate to be root resource
-    * @return true if resource was bound and false if resource was not bound
-    *         cause it is not root resource
-    * @deprecated use {@link #addResource(Class, MultivaluedMap)} instead
-    */
-   public boolean bind(final Class<?> resourceClass)
-   {
-      try
-      {
-         addResource(resourceClass, null);
-         return true;
-      }
-      catch (ResourcePublicationException e)
-      {
-         LOG.warn(e.getMessage());
-         return false;
-      }
-   }
-
-   /**
-    * Register supplied Object as singleton root resource if it has valid JAX-RS
-    * annotations and no one resource with the same UriPattern already
-    * registered.
-    * 
-    * @param resource candidate to be root resource
-    * @return true if resource was bound and false if resource was not bound
-    *         cause it is not root resource
-    * @deprecated use {@link #addResource(Object, MultivaluedMap)} instead
-    */
-   public boolean bind(final Object resource)
-   {
-      try
-      {
-         addResource(resource, null);
-         return true;
-      }
-      catch (ResourcePublicationException e)
-      {
-         LOG.warn(e.getMessage());
-         return false;
-      }
    }
 
    /**
@@ -340,7 +294,7 @@ public class ResourceBinderImpl implements ResourceBinder
 
    /**
     * Get root resource matched to <code>requestPath</code>.
-    * 
+    *
     * @param requestPath request path
     * @param parameterValues see {@link ApplicationContext#getParameterValues()}
     * @return root resource matched to <code>requestPath</code> or
@@ -406,6 +360,7 @@ public class ResourceBinderImpl implements ResourceBinder
             {
                iter.remove();
                resource = next;
+               break;
             }
          }
          if (resource != null)
@@ -436,6 +391,7 @@ public class ResourceBinderImpl implements ResourceBinder
             {
                iter.remove();
                resource = next;
+               break;
             }
          }
          if (resource != null)
@@ -449,32 +405,6 @@ public class ResourceBinderImpl implements ResourceBinder
          }
       }
       return resource;
-   }
-
-   /**
-    * Remove root resource of supplied class from root resource collection.
-    * 
-    * @param clazz root resource class
-    * @return true if resource was unbound false otherwise
-    * @deprecated use {@link #removeResource(Class)}
-    */
-   @SuppressWarnings("unchecked")
-   public boolean unbind(Class clazz)
-   {
-      return null != removeResource(clazz);
-   }
-
-   /**
-    * Remove root resource with specified UriTemplate from root resource
-    * collection.
-    * 
-    * @param path root resource path
-    * @return true if resource was unbound false otherwise
-    * @deprecated use {@link #removeResource(String)} instead
-    */
-   public boolean unbind(String path)
-   {
-      return null != removeResource(path);
    }
 
 }

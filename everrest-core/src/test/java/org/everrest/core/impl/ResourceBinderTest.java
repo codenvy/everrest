@@ -18,6 +18,8 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.core.ResourcePublicationException;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,14 +45,14 @@ public class ResourceBinderTest extends BaseTest
 
    public void testBind()
    {
-      resources.bind(Resource.class);
+      resources.addResource(Resource.class, null);
       assertEquals(1, resources.getSize());
    }
 
    public void testUnbind()
    {
-      resources.bind(Resource.class);
-      resources.unbind(Resource.class);
+      resources.addResource(Resource.class, null);
+      resources.removeResource(Resource.class);
       assertEquals(0, resources.getSize());
    }
 
@@ -93,24 +95,51 @@ public class ResourceBinderTest extends BaseTest
 
    public void testSameResourceURI()
    {
-      assertTrue(resources.bind(SameURIResource1.class));
+      resources.addResource(SameURIResource1.class, null);
       assertEquals(1, resources.getSize());
-      assertFalse(resources.bind(SameURIResource2.class));
+      try
+      {
+         resources.addResource(SameURIResource2.class, null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, resources.getSize());
+
       resources.clear();
-      assertTrue(resources.bind(SameURIResource2.class));
+      resources.addResource(SameURIResource2.class, null);
       assertEquals(1, resources.getSize());
-      assertFalse(resources.bind(SameURIResource1.class));
+      try
+      {
+         resources.addResource(SameURIResource1.class, null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, resources.getSize());
+
       resources.clear();
-      assertTrue(resources.bind(new SameURIResource1()));
+      resources.addResource(new SameURIResource1(), null);
       assertEquals(1, resources.getSize());
-      assertFalse(resources.bind(new SameURIResource2()));
+      try
+      {
+         resources.addResource(new SameURIResource2(), null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, resources.getSize());
+
       resources.clear();
-      assertTrue(resources.bind(new SameURIResource2()));
+      resources.addResource(new SameURIResource2(), null);
       assertEquals(1, resources.getSize());
-      assertFalse(resources.bind(new SameURIResource1()));
+      try
+      {
+         resources.addResource(new SameURIResource1(), null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, resources.getSize());
    }
 

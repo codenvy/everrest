@@ -91,7 +91,7 @@ public final class RestComponentResolver
       else if (clazz.getAnnotation(Path.class) != null)
       {
          // singleton resource
-         resources.bind(instance);
+         resources.addResource(instance, null);
       }
 
    }
@@ -138,7 +138,7 @@ public final class RestComponentResolver
       else if (clazz.getAnnotation(Path.class) != null)
       {
          // per-request resource
-         resources.bind(clazz);
+         resources.addResource(clazz, null);
       }
 
    }

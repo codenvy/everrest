@@ -20,6 +20,9 @@ package org.everrest.core.impl;
 
 import junit.framework.TestCase;
 
+import org.everrest.core.ObjectFactory;
+import org.everrest.core.resource.AbstractResourceDescriptor;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
@@ -52,24 +55,24 @@ public abstract class BaseTest extends TestCase
    {
    }
 
-   public boolean registry(Object resource) throws Exception
+   public void registry(Object resource) throws Exception
    {
-      return resources.bind(resource);
+      resources.addResource(resource, null);
    }
 
-   public boolean registry(Class<?> resourceClass) throws Exception
+   public void registry(Class<?> resourceClass) throws Exception
    {
-      return resources.bind(resourceClass);
+      resources.addResource(resourceClass, null);
    }
 
-   public boolean unregistry(Object resource)
+   public ObjectFactory<AbstractResourceDescriptor> unregistry(Object resource)
    {
-      return resources.unbind(resource.getClass());
+      return resources.removeResource(resource.getClass());
    }
 
-   public boolean unregistry(Class<?> resourceClass)
+   public ObjectFactory<AbstractResourceDescriptor> unregistry(Class<?> resourceClass)
    {
-      return resources.unbind(resourceClass);
+      return resources.removeResource(resourceClass);
    }
 
 }
