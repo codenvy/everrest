@@ -17,31 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.everrest.core.impl;
-
-import org.everrest.core.ExtHttpHeaders;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+package org.everrest.core.impl.provider.json;
 
 /**
- * Transform {@link java.lang.Exception} to JAX-RS response.
- *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: DefaultExceptionMapper.java 2262 2010-04-09 15:21:21Z aparfonov $
+ * @version $Id$
  */
-public class DefaultExceptionMapper implements ExceptionMapper<Exception>
-{
+public enum BookEnum {
+   JUNIT_IN_ACTION(new Book("Vincent Masson", "JUnit in Action", 19.37, 93011099534534L, 386, true, false)), //
+   BEGINNING_C(new Book("Christian Gross", "Beginning C# 2008 from novice to professional", 23.56, 9781590598696L, 511,
+      false, false));
+   private final Book book;
 
-   /**
-    * {@inheritDoc}
-    */
-   public Response toResponse(Exception exception)
+   private BookEnum(Book book)
    {
-      String message = exception.getMessage();
-      return Response.status(500).entity(message == null ? exception.getClass().getName() : message).type(
-         MediaType.TEXT_PLAIN).header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message").build();
+      this.book = book;
    }
 
+   @Override
+   public String toString()
+   {
+      return book.toString();
+   }
 }

@@ -18,17 +18,13 @@
  */
 package org.everrest.core.impl.provider;
 
+import org.everrest.core.impl.provider.json.BeanBuilder;
+import org.everrest.core.impl.provider.json.JsonException;
+import org.everrest.core.impl.provider.json.JsonGenerator;
+import org.everrest.core.impl.provider.json.JsonParser;
+import org.everrest.core.impl.provider.json.JsonValue;
+import org.everrest.core.impl.provider.json.JsonWriter;
 import org.everrest.core.provider.EntityProvider;
-import org.everrest.json.JsonException;
-import org.everrest.json.JsonHandler;
-import org.everrest.json.JsonParser;
-import org.everrest.json.JsonWriter;
-import org.everrest.json.impl.BeanBuilder;
-import org.everrest.json.impl.JsonDefaultHandler;
-import org.everrest.json.impl.JsonGeneratorImpl;
-import org.everrest.json.impl.JsonParserImpl;
-import org.everrest.json.impl.JsonWriterImpl;
-import org.everrest.json.value.JsonValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,13 +72,14 @@ public class JsonEntityProvider implements EntityProvider<Object>
    {
       try
       {
-         JsonParser jsonParser = new JsonParserImpl();
-         JsonHandler jsonHandler = new JsonDefaultHandler();
-         jsonParser.parse(entityStream, jsonHandler);
-         JsonValue jsonValue = jsonHandler.getJsonObject();
+         JsonParser jsonParser = new JsonParser();
+         jsonParser.parse(entityStream);
+         JsonValue jsonValue = jsonParser.getJsonObject();
          // jsonValue can be null if stream empty
          if (jsonValue == null)
+         {
             return null;
+         }
          return new BeanBuilder().createObject(type, jsonValue);
       }
       catch (Exception e)
@@ -116,8 +113,8 @@ public class JsonEntityProvider implements EntityProvider<Object>
    {
       try
       {
-         JsonValue jv = new JsonGeneratorImpl().createJsonObject(t);
-         JsonWriter jsonWriter = new JsonWriterImpl(entityStream);
+         JsonValue jv = new JsonGenerator().createJsonObject(t);
+         JsonWriter jsonWriter = new JsonWriter(entityStream);
          jv.writeTo(jsonWriter);
          jsonWriter.flush();
       }
@@ -125,7 +122,6 @@ public class JsonEntityProvider implements EntityProvider<Object>
       {
          throw new IOException("Can't write to output stream " + e);
       }
-
    }
 
 }

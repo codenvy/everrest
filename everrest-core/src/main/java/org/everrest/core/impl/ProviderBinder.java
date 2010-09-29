@@ -30,6 +30,7 @@ import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.impl.provider.ByteEntityProvider;
 import org.everrest.core.impl.provider.DOMSourceEntityProvider;
 import org.everrest.core.impl.provider.DataSourceEntityProvider;
+import org.everrest.core.impl.provider.DefaultExceptionMapper;
 import org.everrest.core.impl.provider.FileEntityProvider;
 import org.everrest.core.impl.provider.InputStreamEntityProvider;
 import org.everrest.core.impl.provider.JAXBContextResolver;
