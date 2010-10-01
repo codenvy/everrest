@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -54,7 +53,7 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
 
    /**
     * Filter class constructors.
-    * 
+    *
     * @see ConstructorDescriptor
     */
    private final List<ConstructorDescriptor> constructors;

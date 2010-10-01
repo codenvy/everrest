@@ -22,7 +22,6 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.provider.EntityProvider;
-import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
@@ -177,8 +176,6 @@ public class ProviderContextParameterInjectionTest extends BaseTest
 
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
@@ -186,7 +183,6 @@ public class ProviderContextParameterInjectionTest extends BaseTest
       providers.addMessageBodyWriter(EntityProviderChecker.class);
       providers.addExceptionMapper(ExceptionMapperChecker.class);
       providers.addContextResolver(ContextResolverChecker.class);
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void tearDown() throws Exception

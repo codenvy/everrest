@@ -48,8 +48,6 @@ import javax.ws.rs.core.UriInfo;
 public class RequestDispatcherTest extends BaseTest
 {
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       resources = new ResourceBinderImpl();
@@ -57,12 +55,13 @@ public class RequestDispatcherTest extends BaseTest
       depInjector.put(InjectableComponent1.class, new InjectableComponent1());
       depInjector.put(InjectableComponent2.class, new InjectableComponent2());
 
-      requestHandler = new RequestHandlerImpl(resources, depInjector);
+      requestHandler = new RequestHandlerImpl(resources, depInjector, new EverrestConfiguration());
 
       // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
       providers = ProviderBinder.getInstance();
-      this.launcher = new ResourceLauncher(requestHandler);
+
+      launcher = new ResourceLauncher(requestHandler);
    }
 
    @Path("/a")
@@ -298,7 +297,7 @@ public class RequestDispatcherTest extends BaseTest
    // --------------------------------------
    public static class Failure
    {
-      // may not be provided by DependencyInjector 
+      // may not be provided by DependencyInjector
    }
 
    @Path("/_a/b/{c}/{d}")

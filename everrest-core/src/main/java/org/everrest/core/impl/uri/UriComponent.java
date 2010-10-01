@@ -21,6 +21,7 @@ package org.everrest.core.impl.uri;
 import org.everrest.core.impl.MultivaluedMapImpl;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -155,7 +157,7 @@ public final class UriComponent
 
    /**
     * For processing statements such as 'a-z', '0-9', etc.
-    * 
+    *
     * @param statement statement
     * @return string abcd...zABCD...Z0123456789
     */
@@ -173,9 +175,134 @@ public final class UriComponent
       return sb.toString();
    }
 
+   // -------------------------------------------
+
+   /**
+    * Normalization URI according to rfc3986. For details see
+    * http://www.unix.com.ua/rfc/rfc3986.html#s6.2.2 .
+    *
+    * @param uri source URI
+    * @return normalized URI
+    */
+   public static URI normalize(URI uri)
+   {
+      String oldPath = uri.getRawPath();
+      String normalizedPath = normalize(oldPath);
+      if (normalizedPath.equals(oldPath))
+      {
+         // nothing to do, URI was normalized
+         return uri;
+      }
+      return UriBuilder.fromUri(uri).replacePath(normalizedPath).build();
+   }
+
+   private static String normalize(String path)
+   {
+      String inputBuffer = path;
+      StringBuilder outputBuffer = new StringBuilder();
+      if (inputBuffer.contains("//"))
+      {
+         inputBuffer = inputBuffer.replaceAll("//", "/");
+      }
+
+      while (inputBuffer.length() != 0)
+      {
+         // If the input buffer begins with a prefix of "../" or "./", then remove
+         // that prefix from the input buffer.
+         // http://www.unix.com.ua/rfc/rfc3986.html#sA.
+         if (inputBuffer.startsWith("../") || inputBuffer.startsWith("./"))
+         {
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/") + 1, inputBuffer.length());
+            continue;
+         }
+         else
+         // if the input buffer begins with a prefix of "/./" or "/.", where "." is
+         // a complete path segment, then replace that prefix with "/" in the input buffer.
+         // http://www.unix.com.ua/rfc/rfc3986.html#sB.
+         if (inputBuffer.startsWith("/./") || (inputBuffer.startsWith("/.") && isComplitePathSeg(".", inputBuffer)))
+         {
+            if (inputBuffer.equals("/."))
+            {
+               inputBuffer = "";
+               outputBuffer.append("/");
+               continue;
+            }
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/", 1), inputBuffer.length());
+            continue;
+         }
+         else
+         // if the input buffer begins with a prefix of "/../" or "/..", where ".."
+         // is a complete path segment, then replace that prefix with "/" in the input buffer and
+         // remove the last segment and its preceding "/" (if any) from the output buffer.
+         // http://www.unix.com.ua/rfc/rfc3986.html#sC.
+         if (inputBuffer.startsWith("/../") || (inputBuffer.startsWith("/..") && isComplitePathSeg("..", inputBuffer)))
+         {
+            if (inputBuffer.equals("/.."))
+            {
+               inputBuffer = "";
+               outputBuffer.delete(outputBuffer.lastIndexOf("/") + 1, outputBuffer.length());
+               continue;
+            }
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/", 1), inputBuffer.length());
+            outputBuffer.delete(outputBuffer.lastIndexOf("/"), outputBuffer.length());
+            continue;
+         }
+         else
+         // if the input buffer consists only of "." or "..", then remove that from
+         // the input buffer.
+         // http://www.unix.com.ua/rfc/rfc3986.html#sD.
+         if (inputBuffer.equals(".") || inputBuffer.equals(".."))
+         {
+            inputBuffer = "";
+            continue;
+         }
+         else
+         // move the first path segment in the input buffer to the end of the
+         // output buffer, including the initial "/" character (if any) and any subsequent
+         // characters up to, but not including, the next "/" character or the end of the
+         // input buffer.
+         // http://www.unix.com.ua/rfc/rfc3986.html#sE.
+         if (inputBuffer.indexOf("/") != inputBuffer.lastIndexOf('/'))
+         {
+            outputBuffer.append(inputBuffer.substring(0, inputBuffer.indexOf("/", 1)));
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/", 1));
+         }
+         else
+         {
+            outputBuffer.append(inputBuffer);
+            inputBuffer = "";
+         }
+         continue;
+      }
+      return outputBuffer.toString();
+   }
+
+   /**
+    * Checks if the segment is a complete path segment
+    * http://www.unix.com.ua/rfc/rfc3986.html#sB.
+    *
+    * @param segment path segment
+    * @param path whole path
+    * @return true if segment is complete path segment false otherwise
+    */
+   private static boolean isComplitePathSeg(String segment, String path)
+   {
+      boolean result = false;
+      int segPlace = path.indexOf(segment);
+      if (path.equals("/" + segment))
+      {
+         result = true;
+      }
+      else if ((path.charAt(segPlace + segment.length()) == '/'))
+      {
+         result = true;
+      }
+      return result;
+   }
+
    /**
     * Encode given URI string.
-    * 
+    *
     * @param str the URI string
     * @param containsUriParams true if the source string contains URI parameters
     * @param component component of URI, scheme, host, port, etc
@@ -191,7 +318,7 @@ public final class UriComponent
 
    /**
     * Validate content of percent-encoding string.
-    * 
+    *
     * @param str the string which must be validate
     * @param component component of URI, scheme, host, port, etc
     * @param containsUriParams true if the source string contains URI parameters
@@ -219,7 +346,7 @@ public final class UriComponent
     * following two character is valid hex numbers, if not then encode '%' to
     * '%25' otherwise keep characters without change, there is no double
     * encoding.
-    * 
+    *
     * @param str source string
     * @param component part of URI, e. g. schema, host, path
     * @param containsUriParams does string may contains URI templates
@@ -309,7 +436,7 @@ public final class UriComponent
 
    /**
     * Decode percent encoded URI string.
-    * 
+    *
     * @param str the source percent encoded string
     * @param component component of URI, scheme, host, port, etc. NOTE type of
     *        component is not used currently but will be used for decoding IPv6
@@ -377,7 +504,7 @@ public final class UriComponent
 
    /**
     * Check must charter be encoded.
-    * 
+    *
     * @param ch character
     * @param component the URI component
     * @return true if character must be encoded false otherwise
@@ -389,7 +516,7 @@ public final class UriComponent
 
    /**
     * Append percent encoded character in StringBuilder.
-    * 
+    *
     * @param c character which must be encoded
     * @param sb StringBuilder to add character
     */
@@ -402,7 +529,7 @@ public final class UriComponent
 
    /**
     * Append UTF-8 encoded character in StringBuilder.
-    * 
+    *
     * @param c character which must be encoded
     * @param sb StringBuilder to add character
     */
@@ -415,7 +542,7 @@ public final class UriComponent
 
    /**
     * Decode percent encoded string.
-    * 
+    *
     * @param str the source string
     * @param p start position in string
     * @param out output buffer for decoded characters
@@ -446,7 +573,7 @@ public final class UriComponent
    /**
     * Check does two next characters after '%' represent percent-encoded
     * character.
-    * 
+    *
     * @param s source string
     * @param p position of character in string
     * @return true is two characters after '%' represent percent-encoded
@@ -471,7 +598,7 @@ public final class UriComponent
    /**
     * Extract character from given string and check is it one of valid for hex
     * sequence.
-    * 
+    *
     * @param s source string
     * @param p position of character in string
     * @return character
@@ -491,7 +618,7 @@ public final class UriComponent
    /**
     * Decodes bytes to characters using the UTF-8 decoding and add them to a
     * StringBuilder.
-    * 
+    *
     * @param buff source bytes
     * @param sb StringBuilder for append characters
     */
@@ -503,7 +630,7 @@ public final class UriComponent
 
    /**
     * Parse path segments.
-    * 
+    *
     * @param path the relative path
     * @param decode true if character must be decoded false otherwise
     * @return List of {@link PathSegment}
@@ -536,7 +663,7 @@ public final class UriComponent
 
    /**
     * Parse encoded query string.
-    * 
+    *
     * @param rawQuery source query string
     * @param decode if true then query parameters will be decoded
     * @return {@link MultivaluedMap} with query parameters

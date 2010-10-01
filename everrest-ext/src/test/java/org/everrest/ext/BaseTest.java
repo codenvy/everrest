@@ -21,6 +21,7 @@ package org.everrest.ext;
 
 import junit.framework.TestCase;
 
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
@@ -29,7 +30,7 @@ import org.everrest.core.tools.ResourceLauncher;
 
 public abstract class BaseTest extends TestCase
 {
-   
+
    protected ProviderBinder providers;
 
    protected ResourceBinderImpl resources;
@@ -41,7 +42,8 @@ public abstract class BaseTest extends TestCase
    public void setUp() throws Exception
    {
       this.resources = new ResourceBinderImpl();
-      this.requestHandler = new RequestHandlerImpl(resources, new SimpleDependencySupplier());
+      this.requestHandler =
+         new RequestHandlerImpl(resources, new SimpleDependencySupplier(), new EverrestConfiguration());
       this.providers = ProviderBinder.getInstance();
       this.launcher = new ResourceLauncher(requestHandler);
    }

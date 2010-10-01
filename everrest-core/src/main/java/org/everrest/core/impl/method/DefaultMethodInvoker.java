@@ -43,11 +43,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 
 /**
  * Invoker for Resource Method, Sub-Resource Method and SubResource Locator.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: DefaultMethodInvoker.java 285 2009-10-15 16:21:30Z aparfonov $
  */
-public final class DefaultMethodInvoker implements MethodInvoker
+public class DefaultMethodInvoker implements MethodInvoker
 {
 
    /** Logger. */
@@ -57,14 +57,9 @@ public final class DefaultMethodInvoker implements MethodInvoker
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
+   public final Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
    {
-
-      for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getMethodInvokerFilters(context.getPath()))
-      {
-         MethodInvokerFilter f = (MethodInvokerFilter)factory.getInstance(context);
-         f.accept(methodResource);
-      }
+      beforeInvokeMethod(resource, methodResource, context);
 
       Object[] p = new Object[methodResource.getMethodParameters().size()];
       int i = 0;
@@ -80,22 +75,21 @@ public final class DefaultMethodInvoker implements MethodInvoker
             }
             catch (Exception e)
             {
-
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
+               {
                   throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
-
+               }
                throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
-
             }
-
          }
          else
          {
-
             InputStream entityStream = context.getContainerRequest().getEntityStream();
             if (entityStream == null)
+            {
                p[i++] = null;
+            }
             else
             {
                MediaType contentType = context.getContainerRequest().getMediaType();
@@ -107,30 +101,27 @@ public final class DefaultMethodInvoker implements MethodInvoker
                if (entityReader == null)
                {
                   if (LOG.isDebugEnabled())
+                  {
                      LOG.warn("Unsupported media type. ");
-
+                  }
                   throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
                }
-
                try
                {
-
                   p[i++] =
                      entityReader.readFrom(mp.getParameterClass(), mp.getGenericType(), mp.getAnnotations(),
                         contentType, headers, entityStream);
                }
                catch (IOException e)
                {
-
                   if (LOG.isDebugEnabled())
+                  {
                      e.printStackTrace();
-
+                  }
                   throw new InternalException(e);
-
                }
             }
          }
-
       }
       try
       {
@@ -149,14 +140,26 @@ public final class DefaultMethodInvoker implements MethodInvoker
       catch (InvocationTargetException invExc)
       {
          if (LOG.isDebugEnabled())
+         {
             invExc.printStackTrace();
+         }
          // get cause of exception that method produces
          Throwable cause = invExc.getCause();
          // if WebApplicationException than it may contain response
          if (WebApplicationException.class == cause.getClass())
+         {
             throw (WebApplicationException)cause;
-
+         }
          throw new InternalException(cause);
+      }
+   }
+
+   protected void beforeInvokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
+   {
+      for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getMethodInvokerFilters(context.getPath()))
+      {
+         MethodInvokerFilter f = (MethodInvokerFilter)factory.getInstance(context);
+         f.accept(methodResource);
       }
    }
 

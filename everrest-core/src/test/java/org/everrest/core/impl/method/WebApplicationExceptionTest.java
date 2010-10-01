@@ -18,7 +18,7 @@
  */
 package org.everrest.core.impl.method;
 
-import org.everrest.core.impl.AbstractResourceTest;
+import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.method.MethodExceptionTest.UncheckedException;
 
 import javax.ws.rs.GET;
@@ -29,11 +29,11 @@ import javax.ws.rs.core.Response;
 /**
  * Created by The eXo Platform SAS. <br/>
  * Date: 24 Dec 2009
- * 
+ *
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
  * @version $Id: WebApplicationExceptionTest.java
  */
-public class WebApplicationExceptionTest extends AbstractResourceTest
+public class WebApplicationExceptionTest extends BaseTest
 {
 
    @Path("/a")
@@ -69,12 +69,12 @@ public class WebApplicationExceptionTest extends AbstractResourceTest
       Resource1 resource = new Resource1();
       registry(resource);
 
-      assertEquals(500, service("GET", "/a/0", "", null, null).getStatus());
-      String entity = (String)service("GET", "/a/0", "", null, null).getEntity();
+      assertEquals(500, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
+      String entity = (String)launcher.service("GET", "/a/0", "", null, null, null).getEntity();
       assertTrue(entity.indexOf("testmsg") > 0);
 
-      assertEquals(500, service("GET", "/a/1", "", null, null).getStatus());
-      assertEquals(null, service("GET", "/a/1", "", null, null).getEntity());
+      assertEquals(500, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
+      assertEquals(null,launcher.service("GET", "/a/1", "", null, null, null).getEntity());
       unregistry(resource);
    }
 

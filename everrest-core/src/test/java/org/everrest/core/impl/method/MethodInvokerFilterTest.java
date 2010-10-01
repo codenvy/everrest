@@ -25,7 +25,6 @@ import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
-import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
@@ -131,12 +130,9 @@ public class MethodInvokerFilterTest extends BaseTest
       }
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testInvokerFilter() throws Exception

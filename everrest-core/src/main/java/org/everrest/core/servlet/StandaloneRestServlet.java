@@ -61,13 +61,11 @@ public class StandaloneRestServlet extends HttpServlet
    public void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
       ServletException
    {
-
       EnvironmentContext env = new EnvironmentContext();
       env.put(HttpServletRequest.class, httpRequest);
       env.put(HttpServletResponse.class, httpResponse);
       env.put(ServletConfig.class, servletConfig);
       env.put(ServletContext.class, servletConfig.getServletContext());
-
       try
       {
          EnvironmentContext.setCurrent(env);

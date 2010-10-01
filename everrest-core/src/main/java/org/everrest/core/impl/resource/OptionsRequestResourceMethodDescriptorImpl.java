@@ -22,6 +22,7 @@ import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -47,9 +48,9 @@ public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMe
     */
    public OptionsRequestResourceMethodDescriptorImpl(Method method, String httpMethod,
       List<MethodParameter> parameters, AbstractResourceDescriptor parentResource, List<MediaType> consumes,
-      List<MediaType> produces, MethodInvoker invoker)
+      List<MediaType> produces, Annotation[] additional, MethodInvoker invoker)
    {
-      super(method, httpMethod, parameters, parentResource, consumes, produces, invoker);
+      super(method, httpMethod, parameters, parentResource, consumes, produces, additional, invoker);
    }
 
    /**

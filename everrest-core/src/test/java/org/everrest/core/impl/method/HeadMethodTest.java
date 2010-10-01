@@ -19,7 +19,6 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -28,7 +27,7 @@ import javax.ws.rs.Path;
 /**
  * Created by The eXo Platform SAS. <br/>
  * Date: 21 Jan 2009
- * 
+ *
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
  * @version $Id: HeadMethodTest.java
  */
@@ -65,12 +64,9 @@ public class HeadMethodTest extends BaseTest
 
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testHeadMethod() throws Exception

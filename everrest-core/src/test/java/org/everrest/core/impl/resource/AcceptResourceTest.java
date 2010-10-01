@@ -20,7 +20,6 @@ package org.everrest.core.impl.resource;
 
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -147,12 +146,9 @@ public class AcceptResourceTest extends BaseTest
 
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testContentType() throws Exception

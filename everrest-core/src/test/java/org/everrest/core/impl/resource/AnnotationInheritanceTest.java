@@ -20,7 +20,6 @@ package org.everrest.core.impl.resource;
 
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * Created by The eXo Platform SAS. <br/>
  * Date: 23 Jan 2009
- * 
+ *
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
  * @version $Id: AnnotationInheritanceTest.java
  */
@@ -63,7 +62,7 @@ public class AnnotationInheritanceTest extends BaseTest
       }
    }
 
-   // 
+   //
 
    public static interface ResourceInterface1
    {
@@ -85,12 +84,9 @@ public class AnnotationInheritanceTest extends BaseTest
       }
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testFailedInheritance()

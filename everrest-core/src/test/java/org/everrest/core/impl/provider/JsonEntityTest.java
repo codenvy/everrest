@@ -23,7 +23,6 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
-import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -80,14 +79,11 @@ public class JsonEntityTest extends BaseTest
 
    private byte[] jsonData;
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
       jsonData =
          ("{\"title\":\"Hamlet\"," + "\"author\":\"William Shakespeare\"," + "\"sendByPost\":true}").getBytes("UTF-8");
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testJsonEntityParameter() throws Exception

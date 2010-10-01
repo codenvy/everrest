@@ -22,7 +22,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
@@ -31,7 +30,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -47,12 +45,9 @@ import javax.ws.rs.core.MultivaluedMap;
 public class FormEntityTest extends BaseTest
 {
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    @Path("/")
@@ -204,11 +199,11 @@ public class FormEntityTest extends BaseTest
       h.putSingle("content-type", "multipart/form-data; boundary=abcdef");
 
       byte[] data = out.toByteArray();
-      // NOTE In this test data will be red from HttpServletRequest, not from 
+      // NOTE In this test data will be red from HttpServletRequest, not from
       // byte array. See MultipartFormDataEntityProvider.
       EnvironmentContext env = new EnvironmentContext();
       env.put(HttpServletRequest.class, new MockHttpServletRequest("", new ByteArrayInputStream(data), data.length,
-         "POST", (Map<String, List<String>>)h));
+         "POST", h));
       assertEquals(204, launcher.service("POST", "/", "", h, data, env).getStatus());
       unregistry(r2);
    }

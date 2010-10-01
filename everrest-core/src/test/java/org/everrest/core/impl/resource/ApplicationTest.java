@@ -28,7 +28,6 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.resource.GenericMethodResource;
-import org.everrest.core.tools.ResourceLauncher;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -205,12 +204,9 @@ public class ApplicationTest extends BaseTest
 
    private static boolean invFilter = false;
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testAsResources() throws Exception

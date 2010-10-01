@@ -19,7 +19,6 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.tools.ResourceLauncher;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,7 +32,7 @@ import javax.ws.rs.Path;
 /**
  * Created by The eXo Platform SAS. <br/>
  * Date: 21 Jan 2009
- * 
+ *
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
  * @version $Id: OptionsMethodTest.java
  */
@@ -71,12 +70,9 @@ public class OptionsMethodTest extends BaseTest
 
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testOptionsMethod() throws Exception

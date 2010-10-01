@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.tools.ResourceLauncher;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -36,14 +37,17 @@ public abstract class BaseTest extends TestCase
 
    protected RequestHandlerImpl requestHandler;
 
+   protected ResourceLauncher launcher;
+
    public void setUp() throws Exception
    {
       resources = new ResourceBinderImpl();
-      requestHandler = new RequestHandlerImpl(resources, new SimpleDependencySupplier());
+      requestHandler = new RequestHandlerImpl(resources, new SimpleDependencySupplier(), new EverrestConfiguration());
 
       // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
       providers = ProviderBinder.getInstance();
+      launcher = new ResourceLauncher(requestHandler);
    }
 
    protected void setContext()

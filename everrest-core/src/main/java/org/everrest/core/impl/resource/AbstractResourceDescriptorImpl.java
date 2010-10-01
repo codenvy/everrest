@@ -52,6 +52,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -92,28 +95,28 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
    /**
     * Sub-resource methods. Sub-resource method has path annotation.
-    * 
+    *
     * @see SubResourceMethodDescriptor
     */
    private final SubResourceMethodMap subResourceMethods;
 
    /**
     * Sub-resource locators. Sub-resource locator has path annotation.
-    * 
+    *
     * @see SubResourceLocatorDescriptor
     */
    private final SubResourceLocatorMap subResourceLocators;
 
    /**
     * Resource methods. Resource method has not own path annotation.
-    * 
+    *
     * @see ResourceMethodDescriptor
     */
    private final ResourceMethodMap<ResourceMethodDescriptor> resourceMethods;
 
    /**
     * Resource class constructors.
-    * 
+    *
     * @see ConstructorDescriptor
     */
    private final List<ConstructorDescriptor> constructors;
@@ -124,7 +127,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /**
     * Constructs new instance of AbstractResourceDescriptor without path
     * (sub-resource).
-    * 
+    *
     * @param resourceClass resource class
     */
    public AbstractResourceDescriptorImpl(Class<?> resourceClass, ComponentLifecycleScope scope)
@@ -185,7 +188,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                if (Modifier.isPublic(modif) || Modifier.isProtected(modif))
                {
                   FieldInjector inj = new FieldInjectorImpl(resourceClass, jfield);
-                  // Skip not annotated field. They will be not injected from container.  
+                  // Skip not annotated field. They will be not injected from container.
                   if (inj.getAnnotation() != null)
                   {
                      fields.add(new FieldInjectorImpl(resourceClass, jfield));
@@ -307,9 +310,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          if (subPath != null || httpMethod != null)
          {
             List<MethodParameter> params = createMethodParametersList(resourceClass, method);
+
+            // Need only one type annotation at the moment
+            Annotation security = getSecurityAnnotation(method, resourceClass);
+            Annotation[] additional = security != null ? new Annotation[]{security} : new Annotation[0];
+
             if (httpMethod != null)
             {
-
                Produces p = getMethodAnnotation(method, resourceClass, Produces.class, false);
                if (p == null)
                   p = resourceClass.getAnnotation(Produces.class); // from resource
@@ -327,10 +334,10 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   // resource method
                   ResourceMethodDescriptor res =
                      new ResourceMethodDescriptorImpl(method, httpMethod.value(), params, this, consumes, produces,
-                        new DefaultMethodInvoker());
+                        additional, new DefaultMethodInvoker());
                   ResourceMethodDescriptor exist =
-                     findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(),
-                        res.produces());
+                     findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(), res
+                        .produces());
                   if (exist == null)
                   {
                      resourceMethods.add(httpMethod.value(), res);
@@ -348,11 +355,11 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   // sub-resource method
                   SubResourceMethodDescriptor subRes =
                      new SubResourceMethodDescriptorImpl(new PathValue(subPath.value()), method, httpMethod.value(),
-                        params, this, consumes, produces, new DefaultMethodInvoker());
+                        params, this, consumes, produces, additional, new DefaultMethodInvoker());
                   SubResourceMethodDescriptor exist = null;
                   ResourceMethodMap<SubResourceMethodDescriptor> rmm =
-                     (ResourceMethodMap<SubResourceMethodDescriptor>)subResourceMethods.getMethodMap(subRes
-                        .getUriPattern());
+                     subResourceMethods.getMethodMap(subRes
+                     .getUriPattern());
                   // rmm is never null, empty map instead
 
                   List<SubResourceMethodDescriptor> l = rmm.getList(httpMethod.value());
@@ -378,7 +385,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   // sub-resource locator
                   SubResourceLocatorDescriptor loc =
                      new SubResourceLocatorDescriptorImpl(new PathValue(subPath.value()), method, params, this,
-                        new DefaultMethodInvoker());
+                        additional, new DefaultMethodInvoker());
                   if (!subResourceLocators.containsKey(loc.getUriPattern()))
                   {
                      subResourceLocators.put(loc.getUriPattern(), loc);
@@ -411,12 +418,12 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
       resourceMethods.sort();
       subResourceMethods.sort();
-      // sub-resource locators already sorted 
+      // sub-resource locators already sorted
    }
 
    /**
     * Create list of {@link MethodParameter} .
-    * 
+    *
     * @param resourceClass class
     * @param method See {@link Method}
     * @return list of {@link MethodParameter}
@@ -509,11 +516,10 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       {
          if (findMethodResourceMediaType(headRes, rmd.consumes(), rmd.produces()) == null)
             headRes.add(new ResourceMethodDescriptorImpl(rmd.getMethod(), HttpMethod.HEAD, rmd.getMethodParameters(),
-               this, rmd.consumes(), rmd.produces(), rmd.getMethodInvoker()));
+               this, rmd.consumes(), rmd.produces(), rmd.getAnnotations(), rmd.getMethodInvoker()));
       }
       for (ResourceMethodMap<SubResourceMethodDescriptor> rmm : subResourceMethods.values())
       {
-
          List<SubResourceMethodDescriptor> getSubres = rmm.get(HttpMethod.GET);
          if (getSubres == null || getSubres.size() == 0)
             continue; // nothing to do, there is not 'GET' methods
@@ -525,12 +531,12 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          Iterator<SubResourceMethodDescriptor> i = getSubres.iterator();
          while (i.hasNext())
          {
-            SubResourceMethodDescriptor srmd = (SubResourceMethodDescriptor)i.next();
+            SubResourceMethodDescriptor srmd = i.next();
             if (findMethodResourceMediaType(headSubres, srmd.consumes(), srmd.produces()) == null)
             {
                headSubres.add(new SubResourceMethodDescriptorImpl(srmd.getPathValue(), srmd.getMethod(),
-                  HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(),
-                  new DefaultMethodInvoker()));
+                  HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(), srmd
+                     .getAnnotations(), new DefaultMethodInvoker()));
             }
          }
       }
@@ -555,16 +561,16 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          List<MediaType> produces = new ArrayList<MediaType>(1);
          produces.add(MediaTypeHelper.WADL_TYPE);
          o.add(new OptionsRequestResourceMethodDescriptorImpl(null, "OPTIONS", mps, this, consumes, produces,
-            new OptionsRequestMethodInvoker()));
+            new Annotation[0], new OptionsRequestMethodInvoker()));
       }
-      // TODO need process sub-resources ? 
+      // TODO need process sub-resources ?
    }
 
    /**
     * Get all method with at least one annotation which has annotation
     * <i>annotation</i>. It is useful for annotation {@link javax.ws.rs.GET},
     * etc. All HTTP method annotations has annotation {@link HttpMethod}.
-    * 
+    *
     * @param <T> annotation type
     * @param m method
     * @param annotation annotation class
@@ -584,13 +590,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /**
     * Tries to get JAX-RS annotation on method from the root resource class's
     * superclass or implemented interfaces.
-    * 
+    *
     * @param <T> annotation type
     * @param method method for discovering
     * @param resourceClass class that contains discovered method
     * @param annotationClass annotation type what we are looking for
     * @param metaAnnotation false if annotation should be on method and true in
-    *           method should contain annotations that has supplied annotation
+    *        method should contain annotations that has supplied annotation
     * @return annotation from class or its ancestor or null if nothing found
     */
    protected <T extends Annotation> T getMethodAnnotation(Method method, Class<?> resourceClass,
@@ -653,7 +659,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /**
     * Check is collection of {@link ResourceMethodDescriptor} already contains
     * ResourceMethodDescriptor with the same media types.
-    * 
+    *
     * @param rmds {@link Set} of {@link ResourceMethodDescriptor}
     * @param consumes resource method consumed media type
     * @param produces resource method produced media type
@@ -708,14 +714,96 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    }
 
    /**
+    * Get security annotation (DenyAll, RolesAllowed, PermitAll) from
+    * <code>method</code> or class <code>clazz</class> which contains method.
+    * Supper class or implemented interfaces will be also checked. Annotation
+    * on method has the advantage on annotation on class or interface.
+    *
+    * @param method method to be checked for security annotation
+    * @param clazz class which contains <code>method</code>
+    * @return one of security annotation or <code>null</code> is no such
+    *         annotation found
+    * @see DenyAll
+    * @see RolesAllowed
+    * @see PermitAll
+    */
+   @SuppressWarnings("unchecked")
+   private <T extends Annotation> T getSecurityAnnotation(java.lang.reflect.Method method, Class<?> clazz)
+   {
+      Class<T>[] aclasses = new Class[]{DenyAll.class, RolesAllowed.class, PermitAll.class};
+      T a = getAnnotation(method, aclasses);
+      if (a == null)
+      {
+         a = getAnnotation(clazz, aclasses);
+         if (a == null)
+         {
+            Class<?> superclass = clazz.getSuperclass();
+            java.lang.reflect.Method inhMethod = null;
+            try
+            {
+               inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
+               a = getAnnotation(inhMethod, aclasses);
+            }
+            catch (NoSuchMethodException e)
+            {
+            }
+            if (a == null)
+            {
+               a = getAnnotation(superclass, aclasses);
+               if (a == null)
+               {
+                  Class<?>[] interfaces = clazz.getInterfaces();
+                  for (int k = 0; a == null && k < interfaces.length; k++)
+                  {
+                     try
+                     {
+                        inhMethod = interfaces[k].getMethod(method.getName(), method.getParameterTypes());
+                        a = getAnnotation(inhMethod, aclasses);
+                     }
+                     catch (NoSuchMethodException exc)
+                     {
+                     }
+                     if (a == null)
+                     {
+                        a = getAnnotation(interfaces[k], aclasses);
+                     }
+                  }
+               }
+            }
+         }
+      }
+      return a;
+   }
+
+   private <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T>[] aclass)
+   {
+      T a = null;
+      for (int i = 0; a == null && i < aclass.length; i++)
+      {
+         a = clazz.getAnnotation(aclass[i]);
+      }
+      return a;
+   }
+
+   private <T extends Annotation> T getAnnotation(java.lang.reflect.Method method, Class<T>[] aclass)
+   {
+      T a = null;
+      for (int i = 0; a == null && i < aclass.length; i++)
+      {
+         a = method.getAnnotation(aclass[i]);
+      }
+      return a;
+   }
+
+   /**
     * {@inheritDoc}
     */
    @Override
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ AbstractResourceDescriptorImpl: ");
-      sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource())
-         .append("; class: " + getObjectClass()).append(" ]");
+      sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource()).append(
+         "; class: " + getObjectClass()).append(" ]");
       return sb.toString();
    }
 

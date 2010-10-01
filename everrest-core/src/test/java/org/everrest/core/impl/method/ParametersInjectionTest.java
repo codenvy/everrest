@@ -22,7 +22,6 @@ import org.everrest.core.Property;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.RequestHandlerImpl;
-import org.everrest.core.tools.ResourceLauncher;
 
 import java.util.List;
 import java.util.Set;
@@ -219,12 +218,9 @@ public class ParametersInjectionTest extends BaseTest
       }
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testParameterTypes() throws Exception

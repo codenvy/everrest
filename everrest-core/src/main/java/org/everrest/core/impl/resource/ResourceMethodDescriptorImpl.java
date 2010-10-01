@@ -24,6 +24,7 @@ import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -75,20 +76,23 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
     */
    private final MethodInvoker invoker;
 
+   private final Annotation[] additional;
+
    /**
     * Constructs new instance of {@link ResourceMethodDescriptor}.
-    * 
+    *
     * @param method See {@link Method}
     * @param httpMethod HTTP request method designator
     * @param parameters list of method parameters. See {@link MethodParameter}
     * @param parentResource parent resource for this method
     * @param consumes list of media types which this method can consume
     * @param produces list of media types which this method can produce
+    * @param additional set of additional (not JAX-RS annotations)
     * @param invoker method invoker
     */
    ResourceMethodDescriptorImpl(Method method, String httpMethod, List<MethodParameter> parameters,
       AbstractResourceDescriptor parentResource, List<MediaType> consumes, List<MediaType> produces,
-      MethodInvoker invoker)
+      Annotation[] additional, MethodInvoker invoker)
    {
       this.method = method;
       this.httpMethod = httpMethod;
@@ -96,6 +100,7 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
       this.parentResource = parentResource;
       this.consumes = consumes;
       this.produces = produces;
+      this.additional = additional;
       this.invoker = invoker;
    }
 
@@ -169,6 +174,14 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public Annotation[] getAnnotations()
+   {
+      return additional;
    }
 
    /**

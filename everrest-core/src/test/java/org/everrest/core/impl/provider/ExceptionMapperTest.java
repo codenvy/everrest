@@ -20,7 +20,6 @@ package org.everrest.core.impl.provider;
 
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -82,7 +81,6 @@ public class ExceptionMapperTest extends BaseTest
 
    }
 
-   private ResourceLauncher launcher;
 
    public void setUp() throws Exception
    {
@@ -91,7 +89,6 @@ public class ExceptionMapperTest extends BaseTest
       providers.addExceptionMapper(ExceptionMapper2.class);
       providers.addExceptionMapper(ExceptionMapper3.class);
       providers.addExceptionMapper(ExceptionMapper4.class);
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    @Path("a")
@@ -153,7 +150,7 @@ public class ExceptionMapperTest extends BaseTest
       assertEquals("WebApplicationException", resp.getEntity());
 
       resp = launcher.service("GET", "/a/4", "", null, null, null);
-      // WebApplicationException with entity - must not be overridden 
+      // WebApplicationException with entity - must not be overridden
       assertEquals(500, resp.getStatus());
       assertEquals("this exception must not be hidden by any ExceptionMapper", resp.getEntity());
 

@@ -20,6 +20,7 @@ package org.everrest.core.impl.uri;
 
 import org.everrest.core.impl.BaseTest;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -105,10 +106,41 @@ public class UriComponentTest extends BaseTest
    public void testRecognizeEncoding()
    {
       String str = "to be%23or not to%20be";
-      // double encoding here, %23 -> %2523 and %20 -> %2520 
+      // double encoding here, %23 -> %2523 and %20 -> %2520
       assertEquals("to%20be%2523or%20not%20to%2520be", UriComponent.encode(str, UriComponent.PATH_SEGMENT, false));
       // no double encoding here
       assertEquals("to%20be%23or%20not%20to%20be", UriComponent.recognizeEncode(str, UriComponent.PATH_SEGMENT, false));
+   }
+
+   public void testURINormalization() throws Exception
+   {
+      String[] testUris = {"http://localhost:8080/servlet/../1//2/3/./../../4", //
+         "http://localhost:8080/servlet/./1//2/3/./../../4", //
+         "http://localhost:8080/servlet/1//2/3/./../../4", //
+         "http://localhost:8080/servlet/1//2./3/./../4", //
+         "http://localhost:8080/servlet/1//.2/3/./../4", //
+         "http://localhost:8080/servlet/1..//.2/3/./../4", //
+         "http://localhost:8080/servlet/./1//2/3/./../../4", //
+         "http://localhost:8080/servlet/.", //
+         "http://localhost:8080/servlet/..", //
+         "http://localhost:8080/servlet/1"};
+
+      String[] normalizedUris = {"http://localhost:8080/1/4", //
+         "http://localhost:8080/servlet/1/4", //
+         "http://localhost:8080/servlet/1/4", //
+         "http://localhost:8080/servlet/1/2./4", //
+         "http://localhost:8080/servlet/1/.2/4", //
+         "http://localhost:8080/servlet/1../.2/4", //
+         "http://localhost:8080/servlet/1/4", //
+         "http://localhost:8080/servlet/", //
+         "http://localhost:8080/", //
+         "http://localhost:8080/servlet/1"};
+
+      for (int i = 0; i < testUris.length; i++)
+      {
+         URI requestUri = new URI(testUris[i]);
+         assertEquals(normalizedUris[i], UriComponent.normalize(requestUri).toString());
+      }
    }
 
 }

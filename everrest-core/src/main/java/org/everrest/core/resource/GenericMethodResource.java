@@ -21,6 +21,7 @@ package org.everrest.core.resource;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodParameter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import java.util.List;
  * Abstraction for method in resource, this essence is common for
  * {@link ResourceMethodDescriptor}, {@link SubResourceMethodDescriptor},
  * {@link SubResourceLocatorDescriptor} .
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: GenericMethodResource.java 285 2009-10-15 16:21:30Z aparfonov $
  */
@@ -60,4 +61,12 @@ public interface GenericMethodResource
     */
    Class<?> getResponseType();
 
+   /**
+    * Get set or additional (not JAX-RS specific) annotation. Set of annotations
+    * in implementation specific and it is not guaranteed this method will
+    * return all annotations applied to the method.
+    *
+    * @return addition annotation
+    */
+   Annotation[] getAnnotations();
 }

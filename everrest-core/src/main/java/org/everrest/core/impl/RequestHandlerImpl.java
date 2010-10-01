@@ -30,9 +30,9 @@ import org.everrest.core.RequestFilter;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
+import org.everrest.core.impl.uri.UriComponent;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +40,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
@@ -50,39 +49,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 public final class RequestHandlerImpl implements RequestHandler
 {
 
-   /**
-    * For writing error message.
-    */
-   static class ErrorStreaming implements StreamingOutput
-   {
-
-      /**
-       * Exception which should send to client.
-       */
-      private final Exception e;
-
-      /**
-       * @param e Exception for serialization
-       */
-      ErrorStreaming(Exception e)
-      {
-         this.e = e;
-      }
-
-      /**
-       * {@inheritDoc}
-       */
-      public void write(OutputStream output)
-      {
-         PrintWriter pw = new PrintWriter(output);
-         e.printStackTrace(pw);
-         pw.flush();
-      }
-   }
-
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Logger LOG = Logger.getLogger(RequestHandlerImpl.class);
 
    /**
@@ -92,35 +59,46 @@ public final class RequestHandlerImpl implements RequestHandler
     */
    private static final Map<String, String> properties = new HashMap<String, String>();
 
-   public static final String getProperty(String name)
+   public static String getProperty(String name)
    {
       return properties.get(name);
    }
 
-   public static final void setProperty(String name, String value)
+   public static void setProperty(String name, String value)
    {
       if (value == null)
+      {
          properties.remove(name);
-      properties.put(name, value);
+      }
+      else
+      {
+         properties.put(name, value);
+      }
    }
 
-   /**
-    * See {@link RequestDispatcher}.
-    */
+   /** See {@link RequestDispatcher}. */
    private final RequestDispatcher dispatcher;
 
-   /**
-    * ResourceBinder.
-    */
+   /** ResourceBinder. */
    private final ResourceBinder binder;
 
    private final DependencySupplier depInjector;
 
-   public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector)
+   private final EverrestConfiguration config;
+
+   public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector, EverrestConfiguration config)
    {
       this.binder = binder;
+      this.config = config;
       this.dispatcher = new RequestDispatcher(binder);
       this.depInjector = depInjector;
+      if (config.isCheckSecurity())
+         ProviderBinder.getInstance().addMethodInvokerFilter(new SecurityConstraint());
+   }
+
+   public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector)
+   {
+      this(binder, depInjector, new EverrestConfiguration());
    }
 
    /**
@@ -139,6 +117,19 @@ public final class RequestHandlerImpl implements RequestHandler
    {
       try
       {
+         if (config.isNormalizeUri())
+         {
+            request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
+         }
+         if (config.isHttpMethodOverride())
+         {
+            String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
+            if (method != null)
+            {
+               request.setMethod(method);
+            }
+         }
+
          ApplicationContext context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
          context.getProperties().putAll(properties);
          context.setDependencySupplier(depInjector);
@@ -153,7 +144,6 @@ public final class RequestHandlerImpl implements RequestHandler
 
          try
          {
-
             dispatcher.dispatch(request, response);
             if (response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
             {
@@ -168,7 +158,6 @@ public final class RequestHandlerImpl implements RequestHandler
          {
             if (e instanceof WebApplicationException)
             {
-
                Response errorResponse = ((WebApplicationException)e).getResponse();
                ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(WebApplicationException.class);
 
@@ -226,7 +215,9 @@ public final class RequestHandlerImpl implements RequestHandler
                {
                   excmap = ProviderBinder.getInstance().getExceptionMapper(causeClazz);
                   if (excmap == null)
+                  {
                      causeClazz = causeClazz.getSuperclass();
+                  }
                }
                if (excmap != null)
                {
@@ -254,9 +245,7 @@ public final class RequestHandlerImpl implements RequestHandler
             ResponseFilter f = (ResponseFilter)factory.getInstance(context);
             f.doFilter(response);
          }
-
          response.writeResponse();
-
       }
       finally
       {
@@ -267,7 +256,7 @@ public final class RequestHandlerImpl implements RequestHandler
 
    /**
     * Create error response with specified status and body message.
-    * 
+    *
     * @param status response status
     * @param message response message
     * @return response
@@ -279,8 +268,9 @@ public final class RequestHandlerImpl implements RequestHandler
       responseBuilder.entity(message).type(MediaType.TEXT_PLAIN);
       String jaxrsHeader = getJaxrsHeader(status);
       if (jaxrsHeader != null)
+      {
          responseBuilder.header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
-
+      }
       return responseBuilder.build();
    }
 
@@ -293,4 +283,5 @@ public final class RequestHandlerImpl implements RequestHandler
       // Add required behavior here.
       return null;
    }
+
 }

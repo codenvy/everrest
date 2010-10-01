@@ -22,7 +22,6 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
-import org.everrest.core.tools.ResourceLauncher;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -56,12 +55,9 @@ import javax.xml.transform.stream.StreamSource;
 public class OtherEntityTest extends BaseTest
 {
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    @Path("/")

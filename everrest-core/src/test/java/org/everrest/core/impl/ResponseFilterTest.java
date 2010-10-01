@@ -21,7 +21,6 @@ package org.everrest.core.impl;
 import org.everrest.core.Filter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.ResponseFilter;
-import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
@@ -45,12 +44,9 @@ import javax.ws.rs.ext.Providers;
 public class ResponseFilterTest extends BaseTest
 {
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    @Filter
@@ -108,7 +104,7 @@ public class ResponseFilterTest extends BaseTest
       @Produces("text/plain")
       public String m1()
       {
-         // text/plain will be overridden in response filter 
+         // text/plain will be overridden in response filter
          return "{\"name\":\"andrew\", \"password\":\"hello\"}";
       }
 

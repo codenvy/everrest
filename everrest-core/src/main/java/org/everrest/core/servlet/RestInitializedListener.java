@@ -24,6 +24,7 @@ import org.everrest.core.Filter;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationPublisher;
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
@@ -160,7 +161,6 @@ public class RestInitializedListener implements ServletContextListener
             }
             publisher.publish(new Application()
             {
-               @Override
                public Set<Class<?>> getClasses()
                {
                   return scanned;
@@ -200,8 +200,19 @@ public class RestInitializedListener implements ServletContextListener
         dependencySupplier = new ServletContextDependencySupplier(sctx);
       }
 
-      RequestHandler handler = new RequestHandlerImpl(resources, dependencySupplier);
-      event.getServletContext().setAttribute(RequestHandler.class.getName(), handler);
+      EverrestConfiguration config = new EverrestConfiguration();
+      String httpMethodOverrideParameter = sctx.getInitParameter(EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE);
+      if (httpMethodOverrideParameter != null)
+         config.setHttpMethodOverride(Boolean.parseBoolean(httpMethodOverrideParameter));
+      String normalizeUriParameter = sctx.getInitParameter(EverrestConfiguration.EVERREST_NORMALIZE_URI);
+      if (normalizeUriParameter != null)
+         config.setNormalizeUri(Boolean.parseBoolean(normalizeUriParameter));
+      String securityParameter = sctx.getInitParameter(EverrestConfiguration.EVERREST_CHECK_SECURITY);
+      if (securityParameter != null)
+         config.setCheckSecurity(Boolean.parseBoolean(securityParameter));
+
+      RequestHandler handler = new RequestHandlerImpl(resources, dependencySupplier, config);
+      sctx.setAttribute(RequestHandler.class.getName(), handler);
    }
 
 }

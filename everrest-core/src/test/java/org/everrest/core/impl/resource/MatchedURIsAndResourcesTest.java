@@ -20,7 +20,6 @@ package org.everrest.core.impl.resource;
 
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.header.HeaderHelper;
-import org.everrest.core.tools.ResourceLauncher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,12 +111,9 @@ public class MatchedURIsAndResourcesTest extends BaseTest
       }
    }
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    public void testLevel1() throws Exception

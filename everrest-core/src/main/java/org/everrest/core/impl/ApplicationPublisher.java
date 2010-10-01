@@ -38,7 +38,6 @@ public class ApplicationPublisher
       resolver = new RestComponentResolver(resources, providers);
    }
 
-   @SuppressWarnings("unchecked")
    public void publish(Application application)
    {
       Set<Object> singletons = application.getSingletons();

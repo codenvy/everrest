@@ -31,6 +31,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.SecurityContext;
+
 /**
  * This class may be useful for running test and should not be used for
  * launching services in real environment, Servlet Container for example.
@@ -75,8 +77,14 @@ public class ResourceLauncher
          env = new EnvironmentContext();
       EnvironmentContext.setCurrent(env);
 
+      if (writer == null)
+         writer = new DummyContainerResponseWriter();
+
+      SecurityContext sctx = (SecurityContext)env.get(SecurityContext.class);
+
       ContainerRequest request =
-         new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
+         new SecurityContextRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers),
+            sctx);
       ContainerResponse response = new ContainerResponse(writer);
       requestHandler.handleRequest(request, response);
       return response;

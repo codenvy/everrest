@@ -25,6 +25,7 @@ import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.resource.SubResourceLocatorDescriptor;
 import org.everrest.core.uri.UriPattern;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -67,23 +68,27 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
     */
    private final MethodInvoker invoker;
 
+   private final Annotation[] additional;
+
    /**
     * Constructs new instance of {@link SubResourceLocatorDescriptor}.
-    * 
+    *
     * @param path See {@link PathValue}
     * @param method See {@link Method}
     * @param parameters list of method parameters. See {@link MethodParameter}
     * @param parentResource parent resource for this method
+    * @param additional set of additional (not JAX-RS annotations)
     * @param invoker method invoker
     */
    SubResourceLocatorDescriptorImpl(PathValue path, Method method, List<MethodParameter> parameters,
-      AbstractResourceDescriptor parentResource, MethodInvoker invoker)
+      AbstractResourceDescriptor parentResource, Annotation[] additional, MethodInvoker invoker)
    {
       this.path = path;
       this.uriPattern = new UriPattern(path.getPath());
       this.method = method;
       this.parameters = parameters;
       this.parentResource = parentResource;
+      this.additional = additional;
       this.invoker = invoker;
    }
 
@@ -149,6 +154,14 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public Annotation[] getAnnotations()
+   {
+      return additional;
    }
 
    /**

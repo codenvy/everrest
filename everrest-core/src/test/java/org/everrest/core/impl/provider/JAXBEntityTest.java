@@ -23,7 +23,6 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
-import org.everrest.core.tools.ResourceLauncher;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -40,12 +39,9 @@ import javax.xml.bind.JAXBElement;
 public class JAXBEntityTest extends BaseTest
 {
 
-   private ResourceLauncher launcher;
-
    public void setUp() throws Exception
    {
       super.setUp();
-      this.launcher = new ResourceLauncher(requestHandler);
    }
 
    @Path("/")
@@ -88,7 +84,7 @@ public class JAXBEntityTest extends BaseTest
          book.setAuthor("William Shakespeare");
          book.setTitle("Hamlet");
          book.setSendByPost(true);
-         // ignore some fields 
+         // ignore some fields
          return book;
       }
 
@@ -100,7 +96,7 @@ public class JAXBEntityTest extends BaseTest
          book.setAuthor("William Shakespeare\n");
          book.setTitle("Hamlet\n");
          book.setSendByPost(false);
-         // ignore some fields 
+         // ignore some fields
          return book;
       }
    }
