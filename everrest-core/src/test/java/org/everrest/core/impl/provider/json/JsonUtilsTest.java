@@ -18,13 +18,12 @@
  */
 package org.everrest.core.impl.provider.json;
 
-import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class JsonUtilsTest extends TestCase
+public class JsonUtilsTest extends JsonTest
 {
 
    @Override

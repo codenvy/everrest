@@ -52,6 +52,23 @@ public class JsonEntityTest extends BaseTest
    }
 
    @Path("/")
+   public static class Resource11
+   {
+      @POST
+      @Consumes("application/json")
+      public void m1(Book[] b)
+      {
+         assertEquals("Hamlet", b[0].getTitle());
+         assertEquals("William Shakespeare", b[0].getAuthor());
+         assertTrue(b[0].isSendByPost());
+
+         assertEquals("Collected Stories", b[1].getTitle());
+         assertEquals("Gabriel Garcia Marquez", b[1].getAuthor());
+         assertTrue(b[1].isSendByPost());
+      }
+   }
+
+   @Path("/")
    public static class Resource2
    {
       @GET
@@ -77,16 +94,60 @@ public class JsonEntityTest extends BaseTest
       }
    }
 
-   private byte[] jsonData;
+   @Path("/")
+   public static class Resource22
+   {
+      @GET
+      @Produces("application/json")
+      public Book[] m1()
+      {
+         Book book1 = new Book();
+         book1.setTitle("Hamlet");
+         book1.setAuthor("William Shakespeare");
+         book1.setSendByPost(true);
+
+         Book book2 = new Book();
+         book2.setTitle("Collected Stories");
+         book2.setAuthor("Gabriel Garcia Marquez");
+         book2.setSendByPost(true);
+
+         return new Book[]{book1, book2};
+      }
+
+      // Without @Produces annotation also should work.
+      @POST
+      public Book[] m2()
+      {
+         Book book1 = new Book();
+         book1.setTitle("Hamlet\n");
+         book1.setAuthor("William Shakespeare\n");
+         book1.setSendByPost(false);
+
+         Book book2 = new Book();
+         book2.setTitle("Collected Stories\n");
+         book2.setAuthor("Gabriel Garcia Marquez\n");
+         book2.setSendByPost(false);
+
+         return new Book[]{book1, book2};
+      }
+   }
+
+   private byte[] jsonBookData;
+
+   private byte[] jsonArrayData;
 
    public void setUp() throws Exception
    {
       super.setUp();
-      jsonData =
-         ("{\"title\":\"Hamlet\"," + "\"author\":\"William Shakespeare\"," + "\"sendByPost\":true}").getBytes("UTF-8");
+      jsonBookData =
+         ("{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true}").getBytes("UTF-8");
+      jsonArrayData =
+         ("[{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true},"
+            + "{\"title\":\"Collected Stories\", \"author\":\"Gabriel Garcia Marquez\", \"sendByPost\":true}]")
+            .getBytes("UTF-8");
    }
 
-   public void testJsonEntityParameter() throws Exception
+   public void testJsonEntityBean() throws Exception
    {
       Resource1 r1 = new Resource1();
       registry(r1);
@@ -95,12 +156,24 @@ public class JsonEntityTest extends BaseTest
       h.putSingle("content-type", "application/json");
       // with JSON transformation for Book have restriction can't pass BigDecimal
       // (has not simple constructor and it is not in JSON known types)
-      h.putSingle("content-length", "" + jsonData.length);
-      assertEquals(204, launcher.service("POST", "/", "", h, jsonData, null).getStatus());
+      h.putSingle("content-length", "" + jsonBookData.length);
+      assertEquals(204, launcher.service("POST", "/", "", h, jsonBookData, null).getStatus());
       unregistry(r1);
    }
 
-   public void testJsonReturn() throws Exception
+   public void testJsonEntityArray() throws Exception
+   {
+      Resource11 r11 = new Resource11();
+      registry(r11);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      // Object is transfered via JSON
+      h.putSingle("content-type", "application/json");
+      h.putSingle("content-length", "" + jsonArrayData.length);
+      assertEquals(204, launcher.service("POST", "/", "", h, jsonArrayData, null).getStatus());
+      unregistry(r11);
+   }
+
+   public void testJsonReturnBean() throws Exception
    {
       Resource2 r2 = new Resource2();
       registry(r2);

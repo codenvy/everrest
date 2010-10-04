@@ -20,8 +20,10 @@ package org.everrest.core.impl.provider;
 
 import org.apache.commons.fileupload.FileItem;
 import org.everrest.core.impl.BaseTest;
+import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 import org.everrest.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
@@ -34,8 +36,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
@@ -70,10 +74,23 @@ public class FormEntityTest extends BaseTest
          assertEquals("to be or not to be", form.getFirst("foo"));
          assertEquals("hello world", form.getFirst("bar"));
       }
-
    }
 
-   public void testFormEntity() throws Exception
+   @Path("/")
+   public static class Resource11
+   {
+      @GET
+      @Path("a")
+      @Produces("application/x-www-form-urlencoded")
+      public MultivaluedMap<String,String> m1()
+      {
+         MultivaluedMap<String, String> m = new MultivaluedMapImpl();
+         m.putSingle("foo", "bar");
+         return m;
+      }
+   }
+
+   public void testFormEntityRead() throws Exception
    {
       Resource1 r1 = new Resource1();
       registry(r1);
@@ -83,6 +100,20 @@ public class FormEntityTest extends BaseTest
       h.putSingle("content-length", "" + data.length);
       assertEquals(204, launcher.service("POST", "/a", "", h, data, null).getStatus());
       assertEquals(204, launcher.service("POST", "/b", "", h, data, null).getStatus());
+      unregistry(r1);
+   }
+
+   public void testFormEntityWrite() throws Exception
+   {
+      Resource11 r1 = new Resource11();
+      registry(r1);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("accept", "application/x-www-form-urlencoded");
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+      ContainerResponse response = launcher.service("GET", "/a", "", h, null, writer, null);
+      assertEquals(200, response.getStatus());
+      //System.out.println(new String(writer.getBody()));
+      assertEquals("foo=bar", new String(writer.getBody()));
       unregistry(r1);
    }
 

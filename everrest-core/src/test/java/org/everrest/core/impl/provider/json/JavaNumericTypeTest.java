@@ -18,8 +18,6 @@
  */
 package org.everrest.core.impl.provider.json;
 
-import junit.framework.TestCase;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
@@ -28,7 +26,7 @@ import java.util.Iterator;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class JavaNumericTypeTest extends TestCase
+public class JavaNumericTypeTest extends JsonTest
 {
 
    @Override

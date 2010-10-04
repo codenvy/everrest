@@ -18,12 +18,14 @@
  */
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.provider.json.BeanBuilder;
 import org.everrest.core.impl.provider.json.JsonException;
 import org.everrest.core.impl.provider.json.JsonGenerator;
 import org.everrest.core.impl.provider.json.JsonParser;
+import org.everrest.core.impl.provider.json.JsonUtils;
 import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
+import org.everrest.core.impl.provider.json.ObjectBuilder;
+import org.everrest.core.impl.provider.json.JsonUtils.Types;
 import org.everrest.core.provider.EntityProvider;
 
 import java.io.IOException;
@@ -45,7 +47,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
-public class JsonEntityProvider implements EntityProvider<Object>
+public class JsonEntityProvider<T> implements EntityProvider<T>
 {
 
    // It is common task for #isReadable() and #isWriteable
@@ -67,7 +69,8 @@ public class JsonEntityProvider implements EntityProvider<Object>
    /**
     * {@inheritDoc}
     */
-   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+   @SuppressWarnings("unchecked")
+   public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       try
@@ -75,15 +78,29 @@ public class JsonEntityProvider implements EntityProvider<Object>
          JsonParser jsonParser = new JsonParser();
          jsonParser.parse(entityStream);
          JsonValue jsonValue = jsonParser.getJsonObject();
-         // jsonValue can be null if stream empty
-         if (jsonValue == null)
+         Types jtype = JsonUtils.getType(type);
+         if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
+            || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
+            || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
+            || jtype == Types.ARRAY_OBJECT)
          {
-            return null;
+            return (T)ObjectBuilder.createArray(type, jsonValue);
          }
-         return new BeanBuilder().createObject(type, jsonValue);
+         if (jtype == Types.COLLECTION)
+         {
+            Class c = type;
+            return (T)ObjectBuilder.createCollection(c, genericType, jsonValue);
+         }
+         if (jtype == Types.MAP)
+         {
+            Class c = type;
+            return (T)ObjectBuilder.createObject(c, genericType, jsonValue);
+         }
+         return ObjectBuilder.createObject(type, jsonValue);
       }
       catch (Exception e)
       {
+         //         e.printStackTrace();
          throw new IOException("Can't read from input stream " + e);
       }
    }
@@ -91,7 +108,7 @@ public class JsonEntityProvider implements EntityProvider<Object>
    /**
     * {@inheritDoc}
     */
-   public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
@@ -108,7 +125,7 @@ public class JsonEntityProvider implements EntityProvider<Object>
    /**
     * {@inheritDoc}
     */
-   public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+   public void writeTo(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       try

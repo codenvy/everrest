@@ -18,8 +18,6 @@
  */
 package org.everrest.core.impl.provider.json;
 
-import junit.framework.TestCase;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -27,7 +25,7 @@ import java.io.ByteArrayOutputStream;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class TransferJavaBeanTest extends TestCase
+public class TransferJavaBeanTest extends JsonTest
 {
 
    @Override
@@ -64,7 +62,7 @@ public class TransferJavaBeanTest extends TestCase
 
       jsonParser.parse(in);
       JsonValue jsonValue = jsonParser.getJsonObject();
-      Book newBook = (Book)new BeanBuilder().createObject(Book.class, jsonValue);
+      Book newBook = ObjectBuilder.createObject(Book.class, jsonValue);
       assertEquals(author, newBook.getAuthor());
       assertEquals(title, newBook.getTitle());
       assertEquals(pages, newBook.getPages());

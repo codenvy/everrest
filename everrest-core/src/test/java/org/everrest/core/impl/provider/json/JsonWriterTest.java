@@ -18,15 +18,13 @@
  */
 package org.everrest.core.impl.provider.json;
 
-import junit.framework.TestCase;
-
 import java.io.ByteArrayOutputStream;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class JsonWriterTest extends TestCase
+public class JsonWriterTest extends JsonTest
 {
 
    @Override

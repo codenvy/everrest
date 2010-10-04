@@ -37,17 +37,13 @@ import javax.ws.rs.ext.MessageBodyWriter;
 public class JsonEntityProviderTest extends BaseTest
 {
 
-   private static final String DATA = "{\"name\":\"andrew\", \"password\":\"hello\"}";
-
-   //   private RequestHandler requestHandler;
+   private static final String DATA = "{\"name\":\"andrew\",\"password\":\"hello\"}";
 
    private MediaType mediaType;
 
    public void setUp() throws Exception
    {
       super.setUp();
-      //      requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
-      //      assertNotNull(requestHandler);
       mediaType = new MediaType("application", "json");
    }
 
@@ -74,7 +70,9 @@ public class JsonEntityProviderTest extends BaseTest
       Bean bean = new Bean();
       bean.setName("andrew");
       bean.setPassword("test");
-      writer.writeTo(bean, Bean.class, Bean.class, null, mediaType, null, new ByteArrayOutputStream());
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      writer.writeTo(bean, Bean.class, Bean.class, null, mediaType, null, outputStream);
+      System.out.println(new String(outputStream.toByteArray()));
    }
 
    //

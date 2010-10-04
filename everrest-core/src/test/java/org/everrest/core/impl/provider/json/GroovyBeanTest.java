@@ -21,7 +21,6 @@ package org.everrest.core.impl.provider.json;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
-import junit.framework.TestCase;
 
 import java.io.InputStreamReader;
 import java.util.Iterator;
@@ -31,7 +30,7 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class GroovyBeanTest extends TestCase
+public class GroovyBeanTest extends JsonTest
 {
 
    public void testRestoreGroovyBean() throws Exception
@@ -41,7 +40,7 @@ public class GroovyBeanTest extends TestCase
       JsonValue ov = new ObjectValue();
       StringValue sv = new StringValue("test restore groovy bean");
       ov.addElement("value", sv);
-      assertEquals("test restore groovy bean", new BeanBuilder().createObject(c, ov).toString());
+      assertEquals("test restore groovy bean", ObjectBuilder.createObject(c, ov).toString());
    }
 
    public void testSerializeGroovyBean() throws Exception
@@ -82,7 +81,7 @@ public class GroovyBeanTest extends TestCase
       jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
          "BookStorage.txt")));
       JsonValue jv = jsonParser.getJsonObject();
-      GroovyObject o = (GroovyObject)new BeanBuilder().createObject(c, jv);
+      GroovyObject o = (GroovyObject)ObjectBuilder.createObject(c, jv);
       //System.out.println(o);
       List<GroovyObject> books = (List<GroovyObject>)o.getProperty("books");
       assertEquals(3, books.size());
