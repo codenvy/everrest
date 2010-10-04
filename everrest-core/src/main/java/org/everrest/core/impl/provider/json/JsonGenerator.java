@@ -53,7 +53,64 @@ public class JsonGenerator
    }
 
    /**
-    * {@inheritDoc}
+    * Create JSON array from specified collection.
+    * 
+    * @param collection source collection
+    * @return JSON representation of collection
+    * @throws JsonException if collection can't be transformed in JSON
+    *            representation
+    */
+   public JsonValue createJsonArray(Collection<?> collection) throws JsonException
+   {
+      return createJsonValue(collection);
+   }
+
+   /**
+    * Create JSON array from specified object. Parameter <code>array</code> must
+    * be array.
+    * 
+    * @param array source array
+    * @return JSON representation of array
+    * @throws JsonException if array can't be transformed in JSON representation
+    */
+   public JsonValue createJsonArray(Object array) throws JsonException
+   {
+      if (array == null)
+      {
+         return new NullValue();
+      }
+      Types t = JsonUtils.getType(array);
+      if (t == Types.ARRAY_BOOLEAN || t == Types.ARRAY_BYTE || t == Types.ARRAY_SHORT || t == Types.ARRAY_INT
+         || t == Types.ARRAY_LONG || t == Types.ARRAY_FLOAT || t == Types.ARRAY_DOUBLE || t == Types.ARRAY_CHAR
+         || t == Types.ARRAY_STRING || t == Types.ARRAY_OBJECT)
+      {
+         return createJsonValue(array);
+      }
+      else
+      {
+         throw new JsonException("Invalid argument, must be array.");
+      }
+   }
+
+   /**
+    * Create JSON object from specified map.
+    * 
+    * @param map source map
+    * @return JSON representation of map
+    * @throws JsonException if map can't be transformed in JSON representation
+    */
+   public JsonValue createJsonObjectFromMap(Map<String, ?> map) throws JsonException
+   {
+      return createJsonValue(map);
+   }
+
+   /**
+    * Create JSON object from specified object. Object must be conform with java
+    * bean structure.
+    * 
+    * @param object source object
+    * @return JSON representation of object
+    * @throws JsonException if map can't be transformed in JSON representation
     */
    public JsonValue createJsonObject(Object object) throws JsonException
    {
@@ -126,7 +183,7 @@ public class JsonGenerator
     * @throws JsonException if any errors occurs.
     */
    @SuppressWarnings("unchecked")
-   protected JsonValue createJsonValue(Object object) throws JsonException
+   private JsonValue createJsonValue(Object object) throws JsonException
    {
       Types type = JsonUtils.getType(object);
       switch (type)

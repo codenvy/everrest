@@ -85,7 +85,11 @@ public class JsonHandler
    public void startArray()
    {
       ArrayValue o = new ArrayValue();
-      if (current.isObject())
+      if (current == null)
+      {
+         current = o;
+      }
+      else if (current.isObject())
       {
          current.addElement(key, o);
       }

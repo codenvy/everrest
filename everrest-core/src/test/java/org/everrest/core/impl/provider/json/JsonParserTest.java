@@ -18,8 +18,6 @@
  */
 package org.everrest.core.impl.provider.json;
 
-import junit.framework.TestCase;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -30,39 +28,21 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class JsonParserTest extends TestCase
+public class JsonParserTest extends JsonTest
 {
 
-   ArrayList<Book> sourceCollection_;
+   ArrayList<Book> sourceCollection;
 
    @Override
    protected void setUp() throws Exception
    {
       super.setUp();
-      sourceCollection_ = new ArrayList<Book>(3);
-      Book book = new Book();
-      book.setAuthor("Vincent Masson");
-      book.setTitle("JUnit in Action");
-      book.setPages(386);
-      book.setPrice(19.37);
-      book.setIsdn(93011099534534L);
-      sourceCollection_.add(book);
-      Book book1 = new Book();
-      book1.setAuthor("Christian Gross");
-      book1.setTitle("Beginning C# 2008 from novice to professional");
-      book1.setPages(511);
-      book1.setPrice(23.56);
-      book1.setIsdn(9781590598696L);
-      sourceCollection_.add(book1);
-      Book book2 = new Book();
-      book2.setAuthor("Chuck Easttom");
-      book2.setTitle("Advanced JavaScript. Third Edition");
-      book2.setPages(617);
-      book2.setPrice(25.99);
-      book2.setIsdn(9781598220339L);
-      sourceCollection_.add(book2);
+      sourceCollection = new ArrayList<Book>(3);
+      sourceCollection.add(junitBook);
+      sourceCollection.add(csharpBook);
+      sourceCollection.add(javaScriptBook);
    }
-
+   
    public void testCollection() throws Exception
    {
       // test restore Collection of standard Java Object from JSON source
@@ -101,28 +81,28 @@ public class JsonParserTest extends TestCase
       Object o = new BeanBuilder().createObject(JavaCollectionBean.class, jsonValue);
 
       assertEquals(3, ((JavaCollectionBean)o).getArrayList().size());
-      assertTrue(((JavaCollectionBean)o).getArrayList().get(0).equals(sourceCollection_.get(0)));
-      assertTrue(((JavaCollectionBean)o).getArrayList().get(1).equals(sourceCollection_.get(1)));
-      assertTrue(((JavaCollectionBean)o).getArrayList().get(2).equals(sourceCollection_.get(2)));
+      assertTrue(((JavaCollectionBean)o).getArrayList().get(0).equals(sourceCollection.get(0)));
+      assertTrue(((JavaCollectionBean)o).getArrayList().get(1).equals(sourceCollection.get(1)));
+      assertTrue(((JavaCollectionBean)o).getArrayList().get(2).equals(sourceCollection.get(2)));
 
       assertEquals(3, ((JavaCollectionBean)o).getVector().size());
-      assertTrue(((JavaCollectionBean)o).getVector().get(0).equals(sourceCollection_.get(0)));
-      assertTrue(((JavaCollectionBean)o).getVector().get(1).equals(sourceCollection_.get(1)));
-      assertTrue(((JavaCollectionBean)o).getVector().get(2).equals(sourceCollection_.get(2)));
+      assertTrue(((JavaCollectionBean)o).getVector().get(0).equals(sourceCollection.get(0)));
+      assertTrue(((JavaCollectionBean)o).getVector().get(1).equals(sourceCollection.get(1)));
+      assertTrue(((JavaCollectionBean)o).getVector().get(2).equals(sourceCollection.get(2)));
 
       assertEquals(3, ((JavaCollectionBean)o).getLinkedList().size());
-      assertTrue(((JavaCollectionBean)o).getLinkedList().get(0).equals(sourceCollection_.get(0)));
-      assertTrue(((JavaCollectionBean)o).getLinkedList().get(1).equals(sourceCollection_.get(1)));
-      assertTrue(((JavaCollectionBean)o).getLinkedList().get(2).equals(sourceCollection_.get(2)));
+      assertTrue(((JavaCollectionBean)o).getLinkedList().get(0).equals(sourceCollection.get(0)));
+      assertTrue(((JavaCollectionBean)o).getLinkedList().get(1).equals(sourceCollection.get(1)));
+      assertTrue(((JavaCollectionBean)o).getLinkedList().get(2).equals(sourceCollection.get(2)));
 
       assertEquals(3, ((JavaCollectionBean)o).getLinkedHashSet().size());
 
       assertEquals(3, ((JavaCollectionBean)o).getHashSet().size());
 
       assertEquals(3, ((JavaCollectionBean)o).getList().size());
-      assertTrue(((JavaCollectionBean)o).getList().get(0).equals(sourceCollection_.get(0)));
-      assertTrue(((JavaCollectionBean)o).getList().get(1).equals(sourceCollection_.get(1)));
-      assertTrue(((JavaCollectionBean)o).getList().get(2).equals(sourceCollection_.get(2)));
+      assertTrue(((JavaCollectionBean)o).getList().get(0).equals(sourceCollection.get(0)));
+      assertTrue(((JavaCollectionBean)o).getList().get(1).equals(sourceCollection.get(1)));
+      assertTrue(((JavaCollectionBean)o).getList().get(2).equals(sourceCollection.get(2)));
 
       assertEquals(3, ((JavaCollectionBean)o).getSet().size());
 
@@ -131,9 +111,9 @@ public class JsonParserTest extends TestCase
       assertEquals(3, ((JavaCollectionBean)o).getCollection().size());
 
       assertEquals(3, ((JavaCollectionBean)o).getArray().length);
-      assertTrue(((JavaCollectionBean)o).getArray()[0].equals(sourceCollection_.get(0)));
-      assertTrue(((JavaCollectionBean)o).getArray()[1].equals(sourceCollection_.get(1)));
-      assertTrue(((JavaCollectionBean)o).getArray()[2].equals(sourceCollection_.get(2)));
+      assertTrue(((JavaCollectionBean)o).getArray()[0].equals(sourceCollection.get(0)));
+      assertTrue(((JavaCollectionBean)o).getArray()[1].equals(sourceCollection.get(1)));
+      assertTrue(((JavaCollectionBean)o).getArray()[2].equals(sourceCollection.get(2)));
    }
 
    public void testMap() throws Exception
@@ -166,21 +146,21 @@ public class JsonParserTest extends TestCase
       JsonValue jv = jsonParser.getJsonObject();
       Object o = new BeanBuilder().createObject(JavaMapBean.class, jv);
 
-      assertTrue(((JavaMapBean)o).getMap().get("JUnit").equals(sourceCollection_.get(0)));
-      assertTrue(((JavaMapBean)o).getMap().get("C#").equals(sourceCollection_.get(1)));
-      assertTrue(((JavaMapBean)o).getMap().get("JavaScript").equals(sourceCollection_.get(2)));
+      assertTrue(((JavaMapBean)o).getMap().get("JUnit").equals(sourceCollection.get(0)));
+      assertTrue(((JavaMapBean)o).getMap().get("C#").equals(sourceCollection.get(1)));
+      assertTrue(((JavaMapBean)o).getMap().get("JavaScript").equals(sourceCollection.get(2)));
 
-      assertTrue(((JavaMapBean)o).getHashMap().get("JUnit").equals(sourceCollection_.get(0)));
-      assertTrue(((JavaMapBean)o).getHashMap().get("C#").equals(sourceCollection_.get(1)));
-      assertTrue(((JavaMapBean)o).getHashMap().get("JavaScript").equals(sourceCollection_.get(2)));
+      assertTrue(((JavaMapBean)o).getHashMap().get("JUnit").equals(sourceCollection.get(0)));
+      assertTrue(((JavaMapBean)o).getHashMap().get("C#").equals(sourceCollection.get(1)));
+      assertTrue(((JavaMapBean)o).getHashMap().get("JavaScript").equals(sourceCollection.get(2)));
 
-      assertTrue(((JavaMapBean)o).getHashtable().get("JUnit").equals(sourceCollection_.get(0)));
-      assertTrue(((JavaMapBean)o).getHashtable().get("C#").equals(sourceCollection_.get(1)));
-      assertTrue(((JavaMapBean)o).getHashtable().get("JavaScript").equals(sourceCollection_.get(2)));
+      assertTrue(((JavaMapBean)o).getHashtable().get("JUnit").equals(sourceCollection.get(0)));
+      assertTrue(((JavaMapBean)o).getHashtable().get("C#").equals(sourceCollection.get(1)));
+      assertTrue(((JavaMapBean)o).getHashtable().get("JavaScript").equals(sourceCollection.get(2)));
 
-      assertTrue(((JavaMapBean)o).getLinkedHashMap().get("JUnit").equals(sourceCollection_.get(0)));
-      assertTrue(((JavaMapBean)o).getLinkedHashMap().get("C#").equals(sourceCollection_.get(1)));
-      assertTrue(((JavaMapBean)o).getLinkedHashMap().get("JavaScript").equals(sourceCollection_.get(2)));
+      assertTrue(((JavaMapBean)o).getLinkedHashMap().get("JUnit").equals(sourceCollection.get(0)));
+      assertTrue(((JavaMapBean)o).getLinkedHashMap().get("C#").equals(sourceCollection.get(1)));
+      assertTrue(((JavaMapBean)o).getLinkedHashMap().get("JavaScript").equals(sourceCollection.get(2)));
 
    }
 
@@ -191,9 +171,9 @@ public class JsonParserTest extends TestCase
          "BookStorage.txt")));
       JsonValue jv = jsonParser.getJsonObject();
       Object o = new BeanBuilder().createObject(BookStorage.class, jv);
-      assertTrue(((BookStorage)o).getBooks().get(0).equals(sourceCollection_.get(0)));
-      assertTrue(((BookStorage)o).getBooks().get(1).equals(sourceCollection_.get(1)));
-      assertTrue(((BookStorage)o).getBooks().get(2).equals(sourceCollection_.get(2)));
+      assertTrue(((BookStorage)o).getBooks().get(0).equals(sourceCollection.get(0)));
+      assertTrue(((BookStorage)o).getBooks().get(1).equals(sourceCollection.get(1)));
+      assertTrue(((BookStorage)o).getBooks().get(2).equals(sourceCollection.get(2)));
    }
 
    public void testArray() throws Exception
