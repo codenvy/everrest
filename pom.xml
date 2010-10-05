@@ -74,9 +74,9 @@
    </prerequisites>
 
    <modules>
-      <module>everrest-commons</module>
       <module>everrest-test</module>
       <module>everrest-core</module>
+      <module>everrest-httpclient</module>
       <module>everrest-ext</module>
       <module>everrest-groovy</module>
    </modules>
@@ -139,17 +139,17 @@
       <dependencies>
          <dependency>
             <groupId>org.everrest</groupId>
-            <artifactId>everrest-commons</artifactId>
-            <version>${org.everrest.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.everrest</groupId>
             <artifactId>everrest-test</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-core</artifactId>
+            <version>${org.everrest.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.everrest</groupId>
+            <artifactId>everrest-httpclient</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <dependency>
