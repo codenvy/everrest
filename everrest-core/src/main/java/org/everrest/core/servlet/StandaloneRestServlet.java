@@ -19,9 +19,9 @@
 package org.everrest.core.servlet;
 
 import org.everrest.common.util.Logger;
-import org.everrest.core.RequestHandler;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
+import org.everrest.core.impl.EverrestProcessor;
 
 import java.io.IOException;
 
@@ -43,19 +43,14 @@ public class StandaloneRestServlet extends HttpServlet
 
    private static final Logger LOG = Logger.getLogger(StandaloneRestServlet.class.getName());
 
-   private RequestHandler requestHandler;
+   protected EverrestProcessor processor;
 
-   private ServletConfig servletConfig;
-
-   protected RequestHandler getRequestHandler()
-   {
-      return requestHandler;
-   }
+   protected ServletConfig servletConfig;
 
    public void init(ServletConfig servletConfig)
    {
       this.servletConfig = servletConfig;
-      requestHandler = (RequestHandler)servletConfig.getServletContext().getAttribute(RequestHandler.class.getName());
+      processor = (EverrestProcessor)servletConfig.getServletContext().getAttribute(EverrestProcessor.class.getName());
    }
 
    public void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
@@ -68,10 +63,10 @@ public class StandaloneRestServlet extends HttpServlet
       env.put(ServletContext.class, servletConfig.getServletContext());
       try
       {
-         EnvironmentContext.setCurrent(env);
          ServletContainerRequest request = new ServletContainerRequest(httpRequest);
          ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
-         getRequestHandler().handleRequest(request, response);
+         processor.process(request, response, env);
+
       }
       catch (IOException ioe)
       {
@@ -91,10 +86,6 @@ public class StandaloneRestServlet extends HttpServlet
       {
          LOG.error(e.getMessage(), e);
          throw new ServletException(e);
-      }
-      finally
-      {
-         EnvironmentContext.setCurrent(null);
       }
    }
 

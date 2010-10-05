@@ -6,7 +6,7 @@
       <param-value>APPLICATION FQN</param-value>	
 	</context-param -->
 	<context-param>
-		<param-name>ws.rs.scan.components</param-name>
+		<param-name>org.everrest.scan.components</param-name>
 		<param-value>true</param-value>
 	</context-param>
 	<listener>

@@ -86,14 +86,20 @@ public final class RequestHandlerImpl implements RequestHandler
 
    private final EverrestConfiguration config;
 
-   public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector, EverrestConfiguration config)
+   public RequestHandlerImpl(ResourceBinder binder, RequestDispatcher dispatcher, DependencySupplier depInjector,
+      EverrestConfiguration config)
    {
       this.binder = binder;
       this.config = config;
-      this.dispatcher = new RequestDispatcher(binder);
+      this.dispatcher = dispatcher;
       this.depInjector = depInjector;
       if (config.isCheckSecurity())
          ProviderBinder.getInstance().addMethodInvokerFilter(new SecurityConstraint());
+   }
+
+   public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector, EverrestConfiguration config)
+   {
+      this(binder, new RequestDispatcher(binder), depInjector, config);
    }
 
    public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector)

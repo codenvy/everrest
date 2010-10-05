@@ -21,12 +21,11 @@ package org.everrest.core.servlet;
 import org.everrest.common.util.Logger;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
-import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
-import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RequestHandlerImpl;
+import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
@@ -35,6 +34,7 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +60,12 @@ public class RestInitializedListener implements ServletContextListener
 
    private static final Logger LOG = Logger.getLogger(RestInitializedListener.class);
 
+   public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
+
+   public static final String EVERREST_SCAN_SKIP_PACKAGES = "org.everrest.scan.skip.packages";
+
+   public static final String JAXRS_APPLICATION = "javax.ws.rs.Application";
+
    /**
     * {@inheritDoc}
     */
@@ -73,13 +79,14 @@ public class RestInitializedListener implements ServletContextListener
    public void contextInitialized(ServletContextEvent event)
    {
       ServletContext sctx = event.getServletContext();
-      boolean scan = Boolean.parseBoolean(sctx.getInitParameter("ws.rs.scan.components"));
+      boolean scan = Boolean.parseBoolean(sctx.getInitParameter(EVERREST_SCAN_COMPONENTS));
       String dependencyInjectorFQN = sctx.getInitParameter(DependencySupplier.class.getName());
 
       ResourceBinder resources = new ResourceBinderImpl();
-      ApplicationPublisher publisher = new ApplicationPublisher(resources, ProviderBinder.getInstance());
 
-      String applicationFQN = sctx.getInitParameter("javax.ws.rs.Application");
+      Application application = null;
+
+      String applicationFQN = sctx.getInitParameter(JAXRS_APPLICATION);
       if (applicationFQN != null)
       {
          if (scan)
@@ -90,8 +97,7 @@ public class RestInitializedListener implements ServletContextListener
          try
          {
             Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN.trim());
-            Application application = (Application)cl.newInstance();
-            publisher.publish(application);
+            application = (Application)cl.newInstance();
          }
          catch (ClassNotFoundException cnfe)
          {
@@ -113,7 +119,7 @@ public class RestInitializedListener implements ServletContextListener
          AnnotationDB annotationDB = new AnnotationDB();
 
          List<String> skip = new ArrayList<String>();
-         String sskip = sctx.getInitParameter("ws.rs.scan.skip.packages");
+         String sskip = sctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
          if (sskip != null)
          {
             for (String s : sskip.split(","))
@@ -121,6 +127,7 @@ public class RestInitializedListener implements ServletContextListener
                skip.add(s.trim());
             }
          }
+
          // Disable processing of API, implementation and JAX-RS packages
          skip.add("org.everrest.core");
          skip.add("javax.ws.rs");
@@ -159,13 +166,13 @@ public class RestInitializedListener implements ServletContextListener
                   }
                }
             }
-            publisher.publish(new Application()
+            application = new Application()
             {
                public Set<Class<?>> getClasses()
                {
                   return scanned;
                }
-            });
+            };
          }
          catch (IOException e)
          {
@@ -197,7 +204,7 @@ public class RestInitializedListener implements ServletContextListener
 
       if (dependencySupplier == null)
       {
-        dependencySupplier = new ServletContextDependencySupplier(sctx);
+         dependencySupplier = new ServletContextDependencySupplier(sctx);
       }
 
       EverrestConfiguration config = new EverrestConfiguration();
@@ -211,8 +218,15 @@ public class RestInitializedListener implements ServletContextListener
       if (securityParameter != null)
          config.setCheckSecurity(Boolean.parseBoolean(securityParameter));
 
-      RequestHandler handler = new RequestHandlerImpl(resources, dependencySupplier, config);
-      sctx.setAttribute(RequestHandler.class.getName(), handler);
-   }
+      RequestDispatcher dispatcher = (RequestDispatcher)sctx.getAttribute(RequestDispatcher.class.getName());
+      if (dispatcher == null)
+      {
+         dispatcher = new RequestDispatcher(resources);
+      }
 
+      EverrestProcessor processor =
+         new EverrestProcessor(resources, ProviderBinder.getInstance(), dispatcher, dependencySupplier, config,
+            application != null ? Arrays.asList(application) : new ArrayList<Application>());
+      sctx.setAttribute(EverrestProcessor.class.getName(), processor);
+   }
 }

@@ -106,6 +106,16 @@ public interface ResourceBinder
    void addResource(final ObjectFactory<AbstractResourceDescriptor> resourceFactory);
 
    /**
+    * Get root resource matched to <code>requestPath</code>.
+    *
+    * @param requestPath request path
+    * @param parameterValues see {@link ApplicationContext#getParameterValues()}
+    * @return root resource matched to <code>requestPath</code> or
+    *         <code>null</code>
+    */
+   ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues);
+
+   /**
     * Remove root resource of supplied class from root resource collection.
     *
     * @param clazz root resource class
