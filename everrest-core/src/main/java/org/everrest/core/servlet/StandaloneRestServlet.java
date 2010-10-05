@@ -18,10 +18,10 @@
  */
 package org.everrest.core.servlet;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 

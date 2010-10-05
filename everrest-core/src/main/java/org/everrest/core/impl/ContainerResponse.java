@@ -18,10 +18,10 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

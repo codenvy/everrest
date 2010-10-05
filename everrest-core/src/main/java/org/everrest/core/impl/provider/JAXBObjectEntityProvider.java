@@ -18,9 +18,9 @@
  */
 package org.everrest.core.impl.provider;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.EntityProvider;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;

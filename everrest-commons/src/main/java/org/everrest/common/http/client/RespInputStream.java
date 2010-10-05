@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ import java.io.InterruptedIOException;
  * This is the InputStream that gets returned to the user. The extensions
  * consist of the capability to have the data pushed into a buffer if the stream
  * demux needs to.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.2
@@ -112,7 +112,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
 
    /**
     * Reads a single byte.
-    * 
+    *
     * @return the byte read, or -1 if EOF.
     * @exception IOException if any exception occured on the connection.
     */
@@ -128,7 +128,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
    /**
     * Reads <var>len</var> bytes into <var>b</var>, starting at offset
     * <var>off</var>.
-    * 
+    *
     * @return the number of bytes actually read, or -1 if EOF.
     * @exception IOException if any exception occured on the connection.
     */
@@ -169,7 +169,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
 
    /**
     * skips <var>num</var> bytes.
-    * 
+    *
     * @return the number of bytes actually skipped.
     * @exception IOException if any exception occured on the connection.
     */
@@ -196,7 +196,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
 
    /**
     * gets the number of bytes available for reading without blocking.
-    * 
+    *
     * @return the number of bytes available.
     * @exception IOException if any exception occured on the connection.
     */
@@ -213,7 +213,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
 
    /**
     * closes the stream.
-    * 
+    *
     * @exception if any exception occured on the connection before or during
     *            close.
     */
@@ -271,7 +271,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
     * Response through the ResponseStream to the StreamDemultiplexor. This means
     * we need to be awfully careful about what is synchronized and what
     * parameters are passed to whom.
-    * 
+    *
     * @param timeout the timeout to use for reading from the demux
     * @exception IOException If any exception occurs while reading stream.
     */

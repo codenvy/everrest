@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -40,7 +40,7 @@ import java.net.ProtocolException;
 /**
  * This is the default module which gets called after all other modules have
  * done their stuff.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

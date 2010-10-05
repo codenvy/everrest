@@ -18,7 +18,6 @@
  */
 package org.everrest.core.servlet;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.ResourceBinder;
@@ -27,6 +26,7 @@ import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
+import org.everrest.core.util.Logger;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 

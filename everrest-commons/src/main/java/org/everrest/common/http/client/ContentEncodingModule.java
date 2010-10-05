@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -42,7 +42,7 @@ import java.util.zip.InflaterInputStream;
 /**
  * This module handles the Content-Encoding response header. It currently
  * handles the "gzip", "deflate", "compress" and "identity" tokens.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

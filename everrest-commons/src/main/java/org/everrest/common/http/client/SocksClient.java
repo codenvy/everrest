@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,7 +53,7 @@ import java.net.UnknownHostException;
  * <code>sock = socks_client.getSocket(host, port);</code> (where
  * <var>socks_client</var> is the above created SocksClient instance). That's
  * all.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschalпњљr
  */
@@ -85,7 +85,7 @@ class SocksClient
     * Creates a new SOCKS Client using the specified host and port for the
     * server. Will try to establish the SOCKS version used when establishing the
     * first connection.
-    * 
+    *
     * @param host the host the SOCKS server is sitting on.
     * @param port the port the SOCKS server is listening on.
     */
@@ -99,7 +99,7 @@ class SocksClient
    /**
     * Creates a new SOCKS Client using the specified host and port for the
     * server.
-    * 
+    *
     * @param host the host the SOCKS server is sitting on.
     * @param port the port the SOCKS server is listening on.
     * @param version the version the SOCKS server is using.
@@ -121,7 +121,7 @@ class SocksClient
    /**
     * Initiates a connection to the socks server, does the startup protocol and
     * returns a socket ready for talking.
-    * 
+    *
     * @param host the host you wish to connect to
     * @param port the port you wish to connect to
     * @return a Socket with a connection via socks to the desired host/port
@@ -135,7 +135,7 @@ class SocksClient
    /**
     * Initiates a connection to the socks server, does the startup protocol and
     * returns a socket ready for talking.
-    * 
+    *
     * @param host the host you wish to connect to
     * @param port the port you wish to connect to
     * @param localAddr the local address to bind to
@@ -216,7 +216,7 @@ class SocksClient
 
    /**
     * Connect to the host/port, trying all addresses assciated with that host.
-    * 
+    *
     * @param host the host you wish to connect to
     * @param port the port you wish to connect to
     * @param localAddr the local address to bind to
@@ -568,7 +568,7 @@ class SocksClient
 
    /**
     * produces a string.
-    * 
+    *
     * @return a string containing the host and port of the socks server
     */
    public String toString()

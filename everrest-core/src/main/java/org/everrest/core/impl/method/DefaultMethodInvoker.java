@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.method;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.ObjectFactory;
@@ -26,6 +25,7 @@ import org.everrest.core.impl.InternalException;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;

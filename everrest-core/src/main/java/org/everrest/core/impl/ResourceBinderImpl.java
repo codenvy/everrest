@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ObjectFactory;
@@ -33,6 +32,7 @@ import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.uri.UriPattern;
+import org.everrest.core.util.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;

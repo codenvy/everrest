@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.ConstructorParameter;
@@ -26,6 +25,7 @@ import org.everrest.core.impl.method.ParameterHelper;
 import org.everrest.core.impl.method.ParameterResolver;
 import org.everrest.core.impl.method.ParameterResolverFactory;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
+import org.everrest.core.util.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -238,7 +238,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
          }
          else
          {
-            // XXX need to use @Inject annotation here ??? 
+            // XXX need to use @Inject annotation here ???
 
             // If parameter not has not annotation then get constructor parameter
             // from DependencyInjector, this is out of scope JAX-RS specification.

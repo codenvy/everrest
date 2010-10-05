@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -41,7 +41,7 @@ import java.util.Hashtable;
 /**
  * This module handles the redirection status codes 301, 302, 303, 305, 306 and
  * 307.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -460,7 +460,7 @@ class RedirectionModule implements HTTPClientModule
 
    /**
     * Update the permanent redirection list.
-    * 
+    *
     * @param the original request
     * @param the new location
     */
@@ -487,7 +487,7 @@ class RedirectionModule implements HTTPClientModule
     * The Location header field must be an absolute URI, but too many broken
     * servers use relative URIs. So, we always resolve relative to the full
     * request URI.
-    * 
+    *
     * @param loc the Location header field
     * @param req the Request to resolve relative URI's relative to
     * @return an absolute URI corresponding to the Location header field

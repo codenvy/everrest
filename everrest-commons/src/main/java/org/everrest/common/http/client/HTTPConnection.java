@@ -32,7 +32,7 @@
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.applet.Applet;
 import java.io.ByteArrayOutputStream;
@@ -76,7 +76,7 @@ import javax.xml.stream.XMLStreamWriter;
  * examples.
  * <P>
  * If this is in an applet you can retrieve files from your server as follows:
- * 
+ *
  * <PRE>
  * try
  * {
@@ -107,7 +107,7 @@ import javax.xml.stream.XMLStreamWriter;
  *    System.err.println(&quot;Error handling request: &quot; + me.getMessage());
  * }
  * </PRE>
- * 
+ *
  * This will get the files "/my_file" and "/another_file" and put their contents
  * into byte[]'s accessible via <code>getData()</code>. Note that you need to
  * only create a new <var>HTTPConnection</var> when sending a request to a new
@@ -120,7 +120,7 @@ import javax.xml.stream.XMLStreamWriter;
  * To POST form data you would use something like this (assuming you have two
  * fields called <var>name</var> and <var>e-mail</var>, whose contents are
  * stored in the variables <var>name</var> and <var>email</var>):
- * 
+ *
  * <PRE>
  * try
  * {
@@ -146,13 +146,13 @@ import javax.xml.stream.XMLStreamWriter;
  *    System.err.println(&quot;Error handling request: &quot; + me.getMessage());
  * }
  * </PRE>
- * 
+ *
  * Here the response data is read at leasure via an <var>InputStream</var>
  * instead of all at once into a <var>byte[]</var>.
  * <P>
  * As another example, if you have a URL you're trying to send a request to you
  * would do something like the following:
- * 
+ *
  * <PRE>
  * try
  * {
@@ -194,7 +194,7 @@ import javax.xml.stream.XMLStreamWriter;
  * <li>Options ( file [, headers [, stream] ] )
  * <li>Trace ( file [, headers ] )
  * </ul>
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -586,7 +586,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Constructs a connection to the host from where the applet was loaded. Note
     * that current security policies only let applets connect home.
-    * 
+    *
     * @param applet the current applet
     */
    public HTTPConnection(Applet applet) throws ProtocolNotSuppException
@@ -596,7 +596,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Constructs a connection to the specified host on port 80
-    * 
+    *
     * @param host the host
     */
    public HTTPConnection(String host)
@@ -606,7 +606,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Constructs a connection to the specified host on the specified port
-    * 
+    *
     * @param host the host
     * @param port the port
     */
@@ -618,7 +618,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Constructs a connection to the specified host on the specified port, using
     * the specified protocol (currently only "http" is supported).
-    * 
+    *
     * @param prot the protocol
     * @param host the host
     * @param port the port, or -1 for the default port
@@ -633,7 +633,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Constructs a connection to the specified host on the specified port, using
     * the specified protocol (currently only "http" is supported), local
     * address, and local port.
-    * 
+    *
     * @param prot the protocol
     * @param host the host
     * @param port the port, or -1 for the default port
@@ -662,7 +662,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Constructs a connection to the host (port) as given in the url.
-    * 
+    *
     * @param url the url
     * @exception ProtocolNotSuppException if the protocol is not HTTP
     */
@@ -673,7 +673,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Constructs a connection to the host (port) as given in the uri.
-    * 
+    *
     * @param uri the uri
     * @exception ProtocolNotSuppException if the protocol is not HTTP
     */
@@ -684,7 +684,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Sets the class variables. Must not be public.
-    * 
+    *
     * @param prot the protocol
     * @param host the host
     * @param port the port
@@ -717,7 +717,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Determines if the given host matches any entry in the non-proxy list.
-    * 
+    *
     * @param host the host to match - must be trim()'d and lowercase
     * @return true if a match is found, false otherwise
     * @see #dontProxyFor(java.lang.String)
@@ -778,7 +778,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Sends the HEAD request. This request is just like the corresponding GET
     * except that it only returns the headers and no data.
-    * 
+    *
     * @see #Get(java.lang.String)
     * @param file the absolute path of the file
     * @return an HTTPResponse structure containing the response
@@ -794,7 +794,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Sends the HEAD request. This request is just like the corresponding GET
     * except that it only returns the headers and no data.
-    * 
+    *
     * @see #Get(java.lang.String, HTTPClient.NVPair[])
     * @param file the absolute path of the file
     * @param form_data an array of Name/Value pairs
@@ -811,7 +811,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Sends the HEAD request. This request is just like the corresponding GET
     * except that it only returns the headers and no data.
-    * 
+    *
     * @see #Get(java.lang.String, HTTPClient.NVPair[], HTTPClient.NVPair[])
     * @param file the absolute path of the file
     * @param form_data an array of Name/Value pairs
@@ -833,7 +833,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Sends the HEAD request. This request is just like the corresponding GET
     * except that it only returns the headers and no data.
-    * 
+    *
     * @see #Get(java.lang.String, java.lang.String)
     * @param file the absolute path of the file
     * @param query the query string; it will be urlencoded
@@ -850,7 +850,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Sends the HEAD request. This request is just like the corresponding GET
     * except that it only returns the headers and no data.
-    * 
+    *
     * @see #Get(java.lang.String, java.lang.String, HTTPClient.NVPair[])
     * @param file the absolute path of the file
     * @param query the query string; it will be urlencoded
@@ -871,7 +871,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * GETs the file.
-    * 
+    *
     * @param file the absolute path of the file
     * @return an HTTPResponse structure containing the response
     * @exception java.io.IOException when an exception is returned from the
@@ -887,7 +887,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * GETs the file with a query consisting of the specified form-data. The data
     * is urlencoded, turned into a string of the form
     * "name1=value1&name2=value2" and then sent as a query string.
-    * 
+    *
     * @param file the absolute path of the file
     * @param form_data an array of Name/Value pairs
     * @return an HTTPResponse structure containing the response
@@ -904,7 +904,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * GETs the file with a query consisting of the specified form-data. The data
     * is urlencoded, turned into a string of the form
     * "name1=value1&name2=value2" and then sent as a query string.
-    * 
+    *
     * @param file the absolute path of the file
     * @param form_data an array of Name/Value pairs
     * @param headers additional headers
@@ -925,7 +925,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * GETs the file using the specified query string. The query string is first
     * urlencoded.
-    * 
+    *
     * @param file the absolute path of the file
     * @param query the query
     * @return an HTTPResponse structure containing the response
@@ -941,7 +941,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * GETs the file using the specified query string. The query string is first
     * urlencoded.
-    * 
+    *
     * @param file the absolute path of the file
     * @param query the query string
     * @param headers additional headers
@@ -961,7 +961,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * POSTs to the specified file. No data is sent.
-    * 
+    *
     * @param file the absolute path of the file
     * @return an HTTPResponse structure containing the response
     * @exception java.io.IOException when an exception is returned from the
@@ -978,7 +978,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * then turned into a string of the form "name1=value1&name2=value2". A
     * <var>Content-type</var> header with the value
     * <var>application/x-www-form-urlencoded</var> is added.
-    * 
+    *
     * @param file the absolute path of the file
     * @param form_data an array of Name/Value pairs
     * @return an HTTPResponse structure containing the response
@@ -999,7 +999,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * "name1=value1&name2=value2". If no <var>Content-type</var> header is given
     * then one is added with a value of
     * <var>application/x-www-form-urlencoded</var>.
-    * 
+    *
     * @param file the absolute path of the file
     * @param form_data an array of Name/Value pairs
     * @param headers additional headers
@@ -1027,7 +1027,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * POSTs the data to the specified file. The data is converted to an array of
     * bytes using the default character converter. The request is sent using the
     * content-type "application/octet-stream".
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @return an HTTPResponse structure containing the response
@@ -1043,7 +1043,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * POSTs the data to the specified file using the specified headers.
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @param headers additional headers
@@ -1066,7 +1066,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * POSTs the raw data to the specified file. The request is sent using the
     * content-type "application/octet-stream"
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @return an HTTPResponse structure containing the response
@@ -1081,7 +1081,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * POSTs the raw data to the specified file using the specified headers.
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @param headers additional headers
@@ -1100,7 +1100,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * POSTs the data written to the output stream to the specified file. The
     * request is sent using the content-type "application/octet-stream"
-    * 
+    *
     * @param file the absolute path of the file
     * @param stream the output stream on which the data is written
     * @return an HTTPResponse structure containing the response
@@ -1116,7 +1116,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * POSTs the data written to the output stream to the specified file using
     * the specified headers.
-    * 
+    *
     * @param file the absolute path of the file
     * @param stream the output stream on which the data is written
     * @param headers additional headers
@@ -1134,7 +1134,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * PUTs the data into the specified file. The data is converted to an array
     * of bytes using the default character converter. The request ist sent using
     * the content-type "application/octet-stream".
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @return an HTTPResponse structure containing the response
@@ -1151,7 +1151,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * PUTs the data into the specified file using the additional headers for the
     * request.
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @param headers additional headers
@@ -1174,7 +1174,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * PUTs the raw data into the specified file. The request is sent using the
     * content-type "application/octet-stream".
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @return an HTTPResponse structure containing the response
@@ -1189,7 +1189,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PUTs the raw data into the specified file using the additional headers.
-    * 
+    *
     * @param file the absolute path of the file
     * @param data the data
     * @param headers any additional headers
@@ -1208,7 +1208,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * PUTs the data written to the output stream into the specified file. The
     * request is sent using the content-type "application/octet-stream".
-    * 
+    *
     * @param file the absolute path of the file
     * @param stream the output stream on which the data is written
     * @return an HTTPResponse structure containing the response
@@ -1224,7 +1224,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * PUTs the data written to the output stream into the specified file using
     * the additional headers.
-    * 
+    *
     * @param file the absolute path of the file
     * @param stream the output stream on which the data is written
     * @param headers any additional headers
@@ -1242,7 +1242,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Request OPTIONS from the server. If <var>file</var> is "*" then the
     * request applies to the server as a whole; otherwise it applies only to
     * that resource.
-    * 
+    *
     * @param file the absolute path of the resource, or "*"
     * @return an HTTPResponse structure containing the response
     * @exception java.io.IOException when an exception is returned from the
@@ -1258,7 +1258,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Request OPTIONS from the server. If <var>file</var> is "*" then the
     * request applies to the server as a whole; otherwise it applies only to
     * that resource.
-    * 
+    *
     * @param file the absolute path of the resource, or "*"
     * @param headers the headers containing optional info.
     * @return an HTTPResponse structure containing the response
@@ -1275,7 +1275,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Request OPTIONS from the server. If <var>file</var> is "*" then the
     * request applies to the server as a whole; otherwise it applies only to
     * that resource.
-    * 
+    *
     * @param file the absolute path of the resource, or "*"
     * @param headers the headers containing optional info.
     * @param data any data to be sent in the optional body
@@ -1293,7 +1293,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Request OPTIONS from the server. If <var>file</var> is "*" then the
     * request applies to the server as a whole; otherwise it applies only to
     * that resource.
-    * 
+    *
     * @param file the absolute path of the resource, or "*"
     * @param headers the headers containing optional info.
     * @param stream an output stream for sending the optional body
@@ -1310,7 +1310,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Requests that <var>file</var> be DELETEd from the server.
-    * 
+    *
     * @param file the absolute path of the resource
     * @return an HTTPResponse structure containing the response
     * @exception java.io.IOException when an exception is returned from the
@@ -1324,7 +1324,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Requests that <var>file</var> be DELETEd from the server.
-    * 
+    *
     * @param file the absolute path of the resource
     * @param headers additional headers
     * @return an HTTPResponse structure containing the response
@@ -1340,7 +1340,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Requests a TRACE. Headers of particular interest here are "Via" and
     * "Max-Forwards".
-    * 
+    *
     * @param file the absolute path of the resource
     * @param headers additional headers
     * @return an HTTPResponse structure containing the response
@@ -1355,7 +1355,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Requests a TRACE.
-    * 
+    *
     * @param file the absolute path of the resource
     * @return an HTTPResponse structure containing the response
     * @exception java.io.IOException when an exception is returned from the
@@ -1372,7 +1372,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Copy resource or colleaction to URL spesified in <code>destination</code>
     * parameter. If destination resource exist operation will be fail.
-    * 
+    *
     * @param source the source URL.
     * @param destination the destination URL.
     * @param override must destination resource be overwrite.
@@ -1395,7 +1395,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Copy resource or colleaction to URL spesified in <code>destination</code>
     * parameter. If destination resource exist operation will be fail.
-    * 
+    *
     * @param source the source URL.
     * @param destination the destination URL.
     * @return an HTTPResponse structure containing the response.
@@ -1411,7 +1411,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Move resource or colleaction to URL spesified in <code>destination</code>
     * parameter.
-    * 
+    *
     * @param source the source URL.
     * @param destination the destination URL.
     * @param override must destination resource be overwrite.
@@ -1430,7 +1430,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Move resource or colleaction to URL spesified in <code>destination</code>
     * parameter. If destination resource exist operation will be fail.
-    * 
+    *
     * @param source the source URL.
     * @param destination the destination URL.
     * @return an HTTPResponse structure containing the response.
@@ -1445,7 +1445,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Create new Collection.
-    * 
+    *
     * @param resource the URL for Collection creation.
     * @return an HTTPResponse structure containing the response.
     * @exception java.io.IOException when an exception is returned from the
@@ -1459,7 +1459,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PROPFIND allprop request with 'Depth' header specified as 'infinity'.
-    * 
+    *
     * @param resource resource's URL.
     * @param depth the depth of request, if specified as -1 then 'infinity' will
     *        be used.
@@ -1482,7 +1482,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PROPFIND allprop request with 'Depth' header specified as 'infinity'.
-    * 
+    *
     * @param resource resource's URL.
     * @return an HTTPResponse structure containing the response.
     * @exception java.io.IOException when an exception is returned from the
@@ -1496,7 +1496,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PROPFIND prop request.
-    * 
+    *
     * @param resource resource's URL.
     * @param props the List&lt;String&gt; of resource's properties.
     * @param depth the depth of request, if specified as -1 then 'infinity' will
@@ -1538,7 +1538,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PROPFIND prop request with 'Depth' header specified as 'infinity'.
-    * 
+    *
     * @param resource resource's URL.
     * @param props the List&lt;String&gt; of resource's properties.
     * @return an HTTPResponse structure containing the response.
@@ -1553,7 +1553,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PROPFIND propname request.
-    * 
+    *
     * @param resource resource's URL.
     * @param depth the depth of request, if specified as -1 then 'infinity' will
     *        be used.
@@ -1576,7 +1576,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PROPFIND propname request with 'Depth' header specified as 'infinity'.
-    * 
+    *
     * @param resource resource's URL.
     * @return an HTTPResponse structure containing the response.
     * @exception java.io.IOException when an exception is returned from the
@@ -1590,7 +1590,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * PROPPATCH request.
-    * 
+    *
     * @param resource resource's URL.
     * @param propsSet properties for set.
     * @param propsRemove properties for remove.
@@ -1664,7 +1664,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * LOCK request
-    * 
+    *
     * @param resource resource's URL.
     * @param isExclusive if true then exclusive type of lock will be set
     *        otherwise shared lock.
@@ -1726,7 +1726,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Refresh LOCK request.
-    * 
+    *
     * @param resource resource's URL.
     * @param timeout the timeout for lock, if -1 then 'infinity' will be send.
     * @param lockToken the locktoken.
@@ -1747,7 +1747,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Refresh LOCK request.
-    * 
+    *
     * @param resource resource's URL.
     * @param timeout the timeout for lock, if -1 then 'infinity' will be send.
     * @param lockToken the locktoken.
@@ -1769,7 +1769,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * This is here to allow an arbitrary, non-standard request to be sent. I'm
     * assuming you know what you are doing...
-    * 
+    *
     * @param method the extension method
     * @param file the absolute path of the resource, or null
     * @param data optional data, or null
@@ -1788,7 +1788,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * This is here to allow an arbitrary, non-standard request to be sent. I'm
     * assuming you know what you are doing...
-    * 
+    *
     * @param method the extension method
     * @param file the absolute path of the resource, or null
     * @param stream optional output stream, or null
@@ -1814,7 +1814,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * <code>Get()</code> may have been invoked but the request has not been
     * built and added to the list. Any request in this window will not be
     * aborted.
-    * 
+    *
     * @since V0.2-3
     */
    public void stop()
@@ -1844,7 +1844,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * <P>
     * Typical headers you might want to set here are "Accept" and its "Accept-*"
     * relatives, "Connection", "From", "User-Agent", etc.
-    * 
+    *
     * @param headers an array of header-name/value pairs (do not give the
     *        separating ':').
     */
@@ -1878,7 +1878,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Gets the current list of default http headers.
-    * 
+    *
     * @return an array of header/value pairs.
     */
    public NVPair[] getDefaultHeaders()
@@ -1891,7 +1891,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the protocol this connection is talking.
-    * 
+    *
     * @return a string containing the (lowercased) protocol
     */
    public String getProtocol()
@@ -1913,7 +1913,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the host this connection is talking to.
-    * 
+    *
     * @return a string containing the (lowercased) host name.
     */
    public String getHost()
@@ -1924,7 +1924,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Returns the port this connection connects to. This is always the actual
     * port number, never -1.
-    * 
+    *
     * @return the port number
     */
    public int getPort()
@@ -1934,7 +1934,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the host of the proxy this connection is using.
-    * 
+    *
     * @return a string containing the (lowercased) host name.
     */
    public String getProxyHost()
@@ -1944,7 +1944,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the port of the proxy this connection is using.
-    * 
+    *
     * @return the port number
     */
    public int getProxyPort()
@@ -1955,7 +1955,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * See if the given uri is compatible with this connection. Compatible means
     * that the given uri can be retrieved using this connection object.
-    * 
+    *
     * @param uri the URI to check
     * @return true if they're compatible, false otherwise
     * @since V0.3-2
@@ -1977,7 +1977,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * is turned off.
     * <P>
     * The default is false.
-    * 
+    *
     * @deprecated This is not really needed anymore; in V0.2 request were
     *             synchronous and therefore to do pipelining you needed to
     *             disable the processing of responses.
@@ -2010,7 +2010,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Sets the default timeout value to be used for each new HTTPConnection. The
     * default is 0.
-    * 
+    *
     * @param time the timeout in milliseconds.
     * @see #setTimeout(int)
     */
@@ -2021,7 +2021,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Gets the default timeout value to be used for each new HTTPConnection.
-    * 
+    *
     * @return the timeout in milliseconds.
     * @see #setTimeout(int)
     */
@@ -2053,7 +2053,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Read Timeouts are associated with responses, so that you may change this
     * value before each request and it won't affect the reading of responses to
     * previous requests.
-    * 
+    *
     * @param time the time in milliseconds. A time of 0 means wait indefinitely.
     * @see #stop()
     */
@@ -2064,7 +2064,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Gets the timeout used for reading response data.
-    * 
+    *
     * @return the current timeout value
     * @see #setTimeout(int)
     */
@@ -2076,7 +2076,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Controls whether modules are allowed to prompt the user or pop up dialogs
     * if neccessary.
-    * 
+    *
     * @param allow if true allows modules to interact with user.
     */
    public void setAllowUserInteraction(boolean allow)
@@ -2087,7 +2087,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * returns whether modules are allowed to prompt or popup dialogs if
     * neccessary.
-    * 
+    *
     * @return true if modules are allowed to interact with user.
     */
    public boolean getAllowUserInteraction()
@@ -2097,7 +2097,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Sets the default allow-user-action.
-    * 
+    *
     * @param allow if true allows modules to interact with user.
     */
    public static void setDefaultAllowUserInteraction(boolean allow)
@@ -2107,7 +2107,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Gets the default allow-user-action.
-    * 
+    *
     * @return true if modules are allowed to interact with user.
     */
    public static boolean getDefaultAllowUserInteraction()
@@ -2117,7 +2117,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the default list of modules.
-    * 
+    *
     * @return an array of classes
     */
    public static Class[] getDefaultModules()
@@ -2133,11 +2133,11 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * affect existing instances.
     * <P>
     * Example:
-    * 
+    *
     * <PRE>
     * HTTPConnection.addDefaultModule(Class.forName(&quot;HTTPClient.CookieModule&quot;), 1);
     * </PRE>
-    * 
+    *
     * adds the cookie module as the second module in the list.
     * <P>
     * The default list is created at class initialization time from the property
@@ -2147,7 +2147,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * HTTPClient.RedirectionModule | HTTPClient.AuthorizationModule |
     * HTTPClient.DefaultModule | HTTPClient.TransferEncodingModule |
     * HTTPClient.ContentMD5Module | HTTPClient.ContentEncodingModule"
-    * 
+    *
     * @see HTTPClientModule
     * @param module the module's Class object
     * @param pos the position of this module in the list; if <var>pos</var> >= 0
@@ -2173,7 +2173,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * it does nothing. This method only affects instances of HTTPConnection
     * created after this method has been invoked; it does not affect existing
     * instances.
-    * 
+    *
     * @param module the module's Class object
     * @return true if module was successfully removed; false otherwise
     */
@@ -2184,7 +2184,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the list of modules used currently.
-    * 
+    *
     * @return an array of classes
     */
    public Class[] getModules()
@@ -2196,7 +2196,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Adds a module to the current list. It must implement the
     * <var>HTTPClientModule</var> interface. If the module is already in the
     * list then this method does nothing.
-    * 
+    *
     * @see HTTPClientModule
     * @param module the module's Class object
     * @param pos the position of this module in the list; if <var>pos</var> >= 0
@@ -2220,7 +2220,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Removes a module from the current list. If the module is not in the list
     * it does nothing.
-    * 
+    *
     * @param module the module's Class object
     * @return true if module was successfully removed; false otherwise
     */
@@ -2315,7 +2315,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * immediately after a new HTTPConnection is created and before any request
     * method is invoked. Furthermore, this method may only be called once (i.e.
     * the context is "sticky").
-    * 
+    *
     * @param context the new context; must be non-null
     * @exception IllegalArgumentException if <var>context</var> is null
     * @exception IllegalStateException if the context has already been set
@@ -2332,7 +2332,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the current context.
-    * 
+    *
     * @see #setContext(java.lang.Object)
     * @return the current context, or the default context if
     *         <code>setContext()</code> hasn't been invoked
@@ -2347,7 +2347,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Returns the default context.
-    * 
+    *
     * @see #setContext(java.lang.Object)
     * @return the default context
     */
@@ -2363,7 +2363,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * <P>
     * This is a convenience method and just invokes the corresponding method in
     * AuthorizationInfo.
-    * 
+    *
     * @param realm the realm
     * @param user the username
     * @param passw the password
@@ -2382,7 +2382,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * <P>
     * This is a convenience method and just invokes the corresponding method in
     * AuthorizationInfo.
-    * 
+    *
     * @param realm the realm
     * @param user the username
     * @param passw the password
@@ -2413,7 +2413,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * you have not given any authorization info and the proxy server requires
     * authorization then you will be prompted for the necessary info via a popup
     * the first time you do a request.
-    * 
+    *
     * @see #setCurrentProxy(java.lang.String, int)
     * @param host the host on which the proxy server resides.
     * @param port the port the proxy server is listening on.
@@ -2438,7 +2438,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * request made over this connection is redirected to a different server,
     * then the connection used for new server will <em>not</em> pick this proxy
     * setting, but instead will use the default proxy settings.
-    * 
+    *
     * @see #setProxyServer(java.lang.String, int)
     * @param host the host the proxy runs on
     * @param port the port the proxy is listening on
@@ -2519,7 +2519,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * URLConnection. These properties must contain a "|" separated list of
     * entries which conform to the above rules for the <var>host</var> parameter
     * (e.g. "11.22.33.44|.disney.com").
-    * 
+    *
     * @param host a host name, domain name, IP-address or IP-subnet.
     * @exception ParseException if the length of the netmask does not match the
     *            length of the IP-address
@@ -2593,7 +2593,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Convenience method to add a number of hosts at once. If any one host is
     * null or cannot be parsed it is ignored.
-    * 
+    *
     * @param hosts The list of hosts to set
     * @see #dontProxyFor(java.lang.String)
     * @since V0.3-2
@@ -2622,7 +2622,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * not be used. This modifies the same list that <code>dontProxyFor()</code>
     * uses, i.e. this is used to undo a <code>dontProxyFor()</code> setting. The
     * syntax for <var>host</var> is specified in <code>dontProxyFor()</code>.
-    * 
+    *
     * @param host a host name, domain name, IP-address or IP-subnet.
     * @return true if the remove was sucessful, false otherwise
     * @exception ParseException if the length of the netmask does not match the
@@ -2690,7 +2690,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Turn an IP-address string into an array (e.g. "12.34.56.78" into { 12, 34,
     * 56, 78 }).
-    * 
+    *
     * @param ip IP-address
     * @return IP-address in network byte order
     */
@@ -2729,7 +2729,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * The code will try to determine the SOCKS version to use at connection
     * time. This might fail for a number of reasons, however, in which case you
     * must specify the version explicitly.
-    * 
+    *
     * @see #setSocksServer(java.lang.String, int, int)
     * @param host the host on which the proxy server resides. The port used is
     *        the default port 1080.
@@ -2748,7 +2748,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * The code will try to determine the SOCKS version to use at connection
     * time. This might fail for a number of reasons, however, in which case you
     * must specify the version explicitly.
-    * 
+    *
     * @see #setSocksServer(java.lang.String, int, int)
     * @param host the host on which the proxy server resides.
     * @param port the port the proxy server is listening on.
@@ -2794,16 +2794,16 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * <var>cookie</var> to null and the <var>params</var> to an array containing
     * a single <var>NVPair</var> in turn containing the username and password.
     * Example:
-    * 
+    *
     * <PRE>
     * NVPair[] up = {new NVPair(username, password)};
     * AuthorizationInfo.addAuthorization(host, port, &quot;SOCKS5&quot;, &quot;USER/PASS&quot;, null, up);
     * </PRE>
-    * 
+    *
     * If you have not given any authorization info and the proxy server requires
     * authorization then you will be prompted for the necessary info via a popup
     * the first time you do a request.
-    * 
+    *
     * @param host the host on which the proxy server resides.
     * @param port the port the proxy server is listening on.
     * @param version the SOCKS version the server is running. Currently this
@@ -2824,7 +2824,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Removes the #... part. Returns the stripped name, or "" if either the
     * <var>file</var> is null or is the empty string (after stripping).
-    * 
+    *
     * @param file the name to strip
     * @return the stripped name
     */
@@ -2846,7 +2846,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Sets up the request, creating the list of headers to send and creating
     * instances of the modules. This may be invoked by subclasses which add
     * further methods (such as those from DAV and IPP).
-    * 
+    *
     * @param method GET, POST, etc.
     * @param resource the resource
     * @param headers an array of headers to be used
@@ -2881,7 +2881,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * method-specified headers. Method-specified take precedence over user
     * defaults, which take precedence over built-in defaults. The following
     * headers are removed if found: "Content-length".
-    * 
+    *
     * @param spec the headers specified in the call to the method
     * @return an array consisting of merged headers.
     */
@@ -2958,7 +2958,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * handles the Request. First the request handler for each module is is
     * invoked, and then if no response was generated the request is sent.
-    * 
+    *
     * @param req the Request
     * @param http_resp the HTTPResponse
     * @param resp the Response
@@ -3087,7 +3087,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * sends the request over the line.
-    * 
+    *
     * @param req the request
     * @param con_timeout the timeout to use when establishing a socket
     *        connection; an InterruptedIOException is thrown if the procedure
@@ -3439,7 +3439,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Gets a socket. Creates a socket to the proxy if set, or else to the actual
     * destination.
-    * 
+    *
     * @param con_timeout if not 0 then start a new thread to establish the the
     *        connection and join(con_timeout) it. If the join() times out an
     *        InteruptedIOException is thrown.
@@ -3519,7 +3519,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * Enable SSL Tunneling if we're talking to a proxy. See ietf draft
     * draft-luotonen-ssl-tunneling-03 for more info.
-    * 
+    *
     * @param sock the socket
     * @param req the request initiating this connection
     * @param timeout the timeout
@@ -3635,7 +3635,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * not touched.
     * </DL>
     * Furthermore, it escapes various characters in request-URI.
-    * 
+    *
     * @param req the Request
     * @param hdr_buf the buffer onto which to write the headers
     * @return an array of headers; the first element contains the the value of
@@ -3866,7 +3866,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /**
     * The very first request is special in that we use it to figure out the
     * protocol version the server (or proxy) is compliant with.
-    * 
+    *
     * @return true if all went fine, false if the request needs to be resent
     * @exception IOException if any exception is thrown by the response
     */
@@ -3989,7 +3989,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    /**
     * Generates a string of the form protocol://host.domain:port .
-    * 
+    *
     * @return the string
     */
    public String toString()

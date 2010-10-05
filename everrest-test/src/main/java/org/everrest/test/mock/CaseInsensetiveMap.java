@@ -16,34 +16,62 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.ext.filter;
 
-import org.everrest.core.ExtHttpHeaders;
-import org.everrest.core.Filter;
-import org.everrest.core.GenericContainerRequest;
-import org.everrest.core.RequestFilter;
+package org.everrest.test.mock;
 
 /**
- * Override HTTP request method by method specified in X-HTTP-Method-Override
- * header.
- * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MethodOverrideFilter.java 301 2009-10-19 14:41:18Z aparfonov $
+ * @version $Id: CaseInsensetiveMap.java 167 2009-09-10 13:14:45Z max_shaposhnik
+ *          $
  */
-@Filter
-public class MethodOverrideFilter implements RequestFilter
+public class CaseInsensetiveMap<T> extends java.util.HashMap<String, T>
 {
+
+   private static final long serialVersionUID = -8562529039657285360L;
 
    /**
     * {@inheritDoc}
     */
-   public void doFilter(GenericContainerRequest request)
+   @Override
+   public boolean containsKey(Object key)
    {
-      String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
-      if (method != null)
+      return super.containsKey(getKey(key));
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public T get(Object key)
+   {
+      return super.get(getKey(key));
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public T put(String key, T value)
+   {
+      return super.put(getKey(key), value);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public T remove(Object key)
+   {
+      return super.remove(getKey(key));
+   }
+
+   private String getKey(Object key)
+   {
+      if (key == null)
       {
-         request.setMethod(method);
+         return null;
       }
+      return key.toString().toLowerCase();
    }
 
 }

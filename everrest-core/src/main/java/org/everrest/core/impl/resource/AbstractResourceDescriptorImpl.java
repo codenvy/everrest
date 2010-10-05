@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.resource;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ConstructorDescriptor;
@@ -40,6 +39,7 @@ import org.everrest.core.resource.SubResourceLocatorMap;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodMap;
 import org.everrest.core.uri.UriPattern;
+import org.everrest.core.util.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

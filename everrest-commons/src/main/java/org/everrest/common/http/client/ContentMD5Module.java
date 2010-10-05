@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 
@@ -43,7 +43,7 @@ import java.io.IOException;
  * The MD5InputStream keeps a running digest and checks this against the
  * expected digest from the Content-MD5 header the stream is closed. An
  * IOException is thrown at that point if the digests don't match.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */

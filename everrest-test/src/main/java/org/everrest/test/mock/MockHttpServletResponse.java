@@ -18,8 +18,6 @@
  */
 package org.everrest.test.mock;
 
-import org.everrest.common.util.CaseInsensitiveMultivaluedMap;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * The Class MockHttpServletResponse.
- * 
+ *
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
  * @version $Id: $
  */
@@ -104,7 +102,7 @@ public class MockHttpServletResponse implements HttpServletResponse
 
    /**
     * Gets the output content.
-    * 
+    *
     * @return the output content
     */
    public String getOutputContent()
@@ -207,7 +205,7 @@ public class MockHttpServletResponse implements HttpServletResponse
          String key = (String)it.next();
          if (key.equals(name))
          {
-            List<String> values = (ArrayList<String>)headers.get(key);
+            List<String> values = headers.get(key);
             if (values != null)
             {
                values = new ArrayList<String>();
@@ -426,7 +424,7 @@ public class MockHttpServletResponse implements HttpServletResponse
 
       /**
        * Instantiates a new byte array servlet output stream.
-       * 
+       *
        * @param baos the baos
        */
       public ByteArrayServletOutputStream(ByteArrayOutputStream baos)

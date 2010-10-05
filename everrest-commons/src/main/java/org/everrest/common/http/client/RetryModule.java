@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 
@@ -46,7 +46,7 @@ import java.io.IOException;
  * necessary because this module will not only resend its request but it also
  * resend all other requests in the chain. Also, it rethrows the RetryException
  * in Phase1 to restart the processing of the modules.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3
@@ -239,7 +239,7 @@ class RetryModule implements HTTPClientModule, GlobalConstants
    /**
     * Add a token to the given header. If the header does not exist then create
     * it with the given token.
-    * 
+    *
     * @param req the request who's headers are to be modified
     * @param hdr the name of the header to add the token to (or to create)
     * @param tok the token to add

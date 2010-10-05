@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.ObjectFactory;
@@ -50,6 +49,7 @@ import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.uri.UriPattern;
+import org.everrest.core.util.Logger;
 import org.everrest.core.util.MediaTypeMap;
 import org.everrest.core.util.MediaTypeMultivaluedMap;
 import org.everrest.core.util.UriPatternMap;
@@ -180,7 +180,7 @@ public class ProviderBinder implements Providers
 
       // JAXB context
       addContextResolver(new JAXBContextResolver());
-      
+
       addExceptionMapper(new DefaultExceptionMapper());
 
    }

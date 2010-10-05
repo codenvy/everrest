@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.ProtocolException;
@@ -44,7 +44,7 @@ import java.util.Vector;
  * This class represents an http cookie as specified in the <A
  * HREF="http://www.ietf.org/rfc/rfc2965.txt">HTTP State Management Mechanism
  * spec</A> (also known as a version 1 cookie).
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3
@@ -76,7 +76,7 @@ public class Cookie2 extends Cookie
 
    /**
     * Create a cookie.
-    * 
+    *
     * @param name the cookie name
     * @param value the cookie value
     * @param domain the host this cookie will be sent to
@@ -125,7 +125,7 @@ public class Cookie2 extends Cookie
 
    /**
     * Use <code>parse()</code> to create cookies.
-    * 
+    *
     * @see #parse(java.lang.String, HTTPClient.RoRequest)
     */
    protected Cookie2(RoRequest req)
@@ -153,7 +153,7 @@ public class Cookie2 extends Cookie
 
    /**
     * Parses the Set-Cookie2 header into an array of Cookies.
-    * 
+    *
     * @param set_cookie the Set-Cookie2 header received from the server
     * @param req the request used
     * @return an array of Cookies as parsed from the Set-Cookie2 header

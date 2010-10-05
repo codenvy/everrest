@@ -144,17 +144,17 @@
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
+            <artifactId>everrest-test</artifactId>
+            <version>${org.everrest.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.everrest</groupId>
             <artifactId>everrest-core</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-ext</artifactId>
-            <version>${org.everrest.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.everrest</groupId>
-            <artifactId>everrest-test</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <!-- Third part dependencies -->

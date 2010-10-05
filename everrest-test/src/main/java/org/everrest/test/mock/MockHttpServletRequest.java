@@ -19,8 +19,6 @@
 
 package org.everrest.test.mock;
 
-import org.everrest.common.util.CaseInsensitiveMultivaluedMap;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +43,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * The Class MockHttpServletRequest.
- * 
+ *
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
  * @version $Id: $
  */
@@ -91,7 +89,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
    /**
     * Instantiates a new mock http servlet request.
-    * 
+    *
     * @param url the url
     * @param data the data
     * @param length the length
@@ -249,7 +247,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
    /**
     * Gets the local addr.
-    * 
+    *
     * @return the local addr
     */
    public String getLocalAddr()
@@ -275,7 +273,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
    /**
     * Gets the local name.
-    * 
+    *
     * @return the local name
     */
    public String getLocalName()
@@ -285,7 +283,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
    /**
     * Gets the local port.
-    * 
+    *
     * @return the local port
     */
    public int getLocalPort()
@@ -348,7 +346,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
          String pname = (String)it.next();
          if (pname.equalsIgnoreCase(name))
-            arr.add((String)parameters.get(name).get(0));
+            arr.add(parameters.get(name).get(0));
       }
       return arr.toArray(new String[arr.size()]);
 
@@ -434,7 +432,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
    /**
     * Gets the remote port.
-    * 
+    *
     * @return the remote port
     */
    public int getRemotePort()
@@ -619,7 +617,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
    /**
     * Sets the parameter.
-    * 
+    *
     * @param name the name
     * @param value the value
     */

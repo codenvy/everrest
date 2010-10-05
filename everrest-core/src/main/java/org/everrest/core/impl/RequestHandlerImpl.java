@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ExtHttpHeaders;
@@ -32,6 +31,7 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.uri.UriComponent;
+import org.everrest.core.util.Logger;
 
 import java.util.HashMap;
 import java.util.Map;

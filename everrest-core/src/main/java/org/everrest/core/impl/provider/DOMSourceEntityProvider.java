@@ -18,8 +18,8 @@
  */
 package org.everrest.core.impl.provider;
 
-import org.everrest.common.util.Logger;
 import org.everrest.core.provider.EntityProvider;
+import org.everrest.core.util.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;

@@ -26,13 +26,13 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
 package org.everrest.common.http.client;
 
-import org.everrest.common.util.Logger;
+import org.everrest.core.util.Logger;
 
 import java.awt.Button;
 import java.awt.Color;
@@ -88,7 +88,7 @@ import java.util.Vector;
  * defaults to a system dependent name. The reading and saving of cookies is
  * enabled by setting the system property <var>HTTPClient.cookies.save</var> to
  * <var>true</var>.
- * 
+ *
  * @see <a
  *      href="http://home.netscape.com/newsref/std/cookie_spec.html">Netscape's
  *      cookie spec</a>
@@ -162,7 +162,7 @@ public class CookieModule implements HTTPClientModule
          if (cookie_jar.isFile() && cookie_jar.canRead())
          {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cookie_jar));
-            cookie_cntxt_list.put(HTTPConnection.getDefaultContext(), (Hashtable)ois.readObject());
+            cookie_cntxt_list.put(HTTPConnection.getDefaultContext(), ois.readObject());
             ois.close();
          }
       }
@@ -483,7 +483,7 @@ public class CookieModule implements HTTPClientModule
    /**
     * Discard all cookies for the given context. Cookies stored in persistent
     * storage are not affected.
-    * 
+    *
     * @param context the context Object
     */
    public static void discardAllCookies(Object context)
@@ -494,7 +494,7 @@ public class CookieModule implements HTTPClientModule
 
    /**
     * List all stored cookies for all contexts.
-    * 
+    *
     * @return an array of all Cookies
     * @since V0.3-1
     */
@@ -524,7 +524,7 @@ public class CookieModule implements HTTPClientModule
 
    /**
     * List all stored cookies for a given context.
-    * 
+    *
     * @param context the context Object.
     * @return an array of Cookies
     * @since V0.3-1
@@ -550,7 +550,7 @@ public class CookieModule implements HTTPClientModule
     * Add the specified cookie to the list of cookies in the default context. If
     * a compatible cookie (as defined by <var>Cookie.equals()</var>) already
     * exists in the list then it is replaced with the new cookie.
-    * 
+    *
     * @param cookie the Cookie to add
     * @since V0.3-1
     */
@@ -564,7 +564,7 @@ public class CookieModule implements HTTPClientModule
     * Add the specified cookie to the list of cookies for the specified context.
     * If a compatible cookie (as defined by <var>Cookie.equals()</var>) already
     * exists in the list then it is replaced with the new cookie.
-    * 
+    *
     * @param cookie the cookie to add
     * @param context the context Object.
     * @since V0.3-1
@@ -579,7 +579,7 @@ public class CookieModule implements HTTPClientModule
     * Remove the specified cookie from the list of cookies in the default
     * context. If the cookie is not found in the list then this method does
     * nothing.
-    * 
+    *
     * @param cookie the Cookie to remove
     * @since V0.3-1
     */
@@ -593,7 +593,7 @@ public class CookieModule implements HTTPClientModule
     * Remove the specified cookie from the list of cookies for the specified
     * context. If the cookie is not found in the list then this method does
     * nothing.
-    * 
+    *
     * @param cookie the cookie to remove
     * @param context the context Object
     * @since V0.3-1
@@ -639,7 +639,7 @@ public class CookieModule implements HTTPClientModule
     * determine when a request is verifiable and when not. You are therefore
     * encouraged to provide your own handler which implements section 3.3.6 (use
     * the <code>CookiePolicyHandler.sendCookie</code> method for this).
-    * 
+    *
     * @param handler the new policy handler
     * @return the previous policy handler
     */
@@ -699,7 +699,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
     * returns whether this cookie should be accepted. First checks the stored
     * lists of accept and reject domains, and if it is neither accepted nor
     * rejected by these then query the user via a popup.
-    * 
+    *
     * @param cookie the cookie in question
     * @param req the request
     * @param resp the response
@@ -743,7 +743,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
    /**
     * This handler just allows all cookies to be sent which were accepted (i.e.
     * no further restrictions are placed on the sending of cookies).
-    * 
+    *
     * @return true
     */
    public boolean sendCookie(Cookie cookie, RoRequest req)
@@ -794,7 +794,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
 /**
  * A simple popup that asks whether the cookie should be accepted or rejected,
  * or if cookies from whole domains should be silently accepted or rejected.
- * 
+ *
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  */
@@ -1002,7 +1002,7 @@ class BasicCookieBox extends Frame
 
    /**
     * the method called by the DefaultCookiePolicyHandler.
-    * 
+    *
     * @return true if the cookie should be accepted
     */
    public synchronized boolean accept(Cookie cookie, DefaultCookiePolicyHandler h, String server)

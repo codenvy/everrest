@@ -24,9 +24,9 @@ import org.everrest.common.http.client.HttpOutputStream;
 import org.everrest.common.http.client.ModuleException;
 import org.everrest.common.http.client.NVPair;
 import org.everrest.common.http.client.ProtocolNotSuppException;
-import org.everrest.common.util.CaselessStringWrapper;
-import org.everrest.common.util.Logger;
 import org.everrest.core.resource.ResourceContainer;
+import org.everrest.core.util.CaselessStringWrapper;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -50,8 +50,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
@@ -329,7 +329,7 @@ public class ProxyService implements ResourceContainer
 
    /**
     * Creates the error response.
-    * 
+    *
     * @param t Throwable
     * @param status integer response status
     * @return response Response
@@ -341,7 +341,7 @@ public class ProxyService implements ResourceContainer
 
    /**
     * Creates the response from HTTP response.
-    * 
+    *
     * @param httpResponse the http response
     * @return response Response
     */
