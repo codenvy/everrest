@@ -58,12 +58,12 @@ public class ObjectBuilder
     * @param clazz the Class of target Object.
     * @param jsonArray the JSON representation of array
     * @return result array
-    * @throws Exception if any errors occurs
+    * @throws JsonException if any errors occurs
     */
-   public static Object createArray(Class<?> clazz, JsonValue jsonArray) throws Exception
+   public static Object createArray(Class<?> clazz, JsonValue jsonArray) throws JsonException
    {
       Object array = null;
-      if (jsonArray != null)
+      if (jsonArray != null && !jsonArray.isNull())
       {
          Class<?> componentType = clazz.getComponentType();
          array = Array.newInstance(componentType, jsonArray.size());
@@ -127,7 +127,7 @@ public class ObjectBuilder
       JsonValue jsonArray) throws JsonException
    {
       T collection = null;
-      if (jsonArray != null)
+      if (jsonArray != null && !jsonArray.isNull())
       {
          Class<?> actualType = null;
          if (genericType instanceof ParameterizedType)
@@ -235,7 +235,7 @@ public class ObjectBuilder
       throws JsonException
    {
       T map = null;
-      if (jsonObject != null)
+      if (jsonObject != null && !jsonObject.isNull())
       {
          Class<?> valueActualType = null;
          if (genericType instanceof ParameterizedType)
@@ -341,7 +341,7 @@ public class ObjectBuilder
    @SuppressWarnings("unchecked")
    public static <T> T createObject(Class<T> clazz, JsonValue jsonValue) throws JsonException
    {
-      if (jsonValue == null)
+      if (jsonValue == null || jsonValue.isNull())
       {
          return null;
       }
@@ -353,6 +353,11 @@ public class ObjectBuilder
          // This is used when enum is member of array or collection.
          Class c = clazz;
          return (T)Enum.valueOf(c, jsonValue.getStringValue());
+      }
+
+      if (!jsonValue.isObject())
+      {
+         throw new JsonException("Unsupported type of jsonValue. ");
       }
 
       T object = null;
@@ -380,11 +385,6 @@ public class ObjectBuilder
             String key = methodName.substring(3);
             // first letter to lower case
             key = (key.length() > 1) ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
-
-            if (!jsonValue.isObject())
-            {
-               throw new JsonException("Unsupported type of jsonValue. ");
-            }
 
             JsonValue childJsonValue = jsonValue.getElement(key);
             if (childJsonValue == null)
@@ -444,7 +444,6 @@ public class ObjectBuilder
             {
                throw new JsonException("Unable restore parameter via method " + clazz.getName() + "#"
                   + method.getName() + ". " + e.getMessage(), e);
-
             }
          }
       }

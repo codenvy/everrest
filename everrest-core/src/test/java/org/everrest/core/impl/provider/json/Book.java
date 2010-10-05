@@ -135,10 +135,33 @@ public class Book
       return sb.toString();
    }
 
-   public boolean equals(Book book)
+   public int hashCode()
    {
-      return book.getAuthor().equals(author) && book.getTitle().equals(title) && book.getIsdn() == isdn
-         && book.getPages() == pages && book.getPrice() == price && book.isAvailability() == availability
-         && book.getDelivery() == delivery;
+      int hash = 8;
+      hash = hash*31+(author != null ? author.hashCode() : 0);
+      hash = hash*31+(title != null ? title.hashCode() : 0);
+      hash = (int)(hash*31 + isdn);
+      hash = hash*31 + pages;
+      hash = (int)(hash*31 + Double.doubleToLongBits(pages));
+      hash = (int)(hash*31 + Double.doubleToLongBits(pages));
+      hash = hash + (availability ? 1:0);
+      hash = hash + (delivery ? 1:0);
+      return hash;
+   }
+
+   public boolean equals(Object other)
+   {
+      if (other == null)
+         return false;
+      if (other.getClass() != getClass())
+         return false;
+      Book book = (Book)other;
+      return (author != null && author.equals(book.getAuthor())) //
+         && (title != null && title.equals(book.getTitle())) //
+         && (isdn == book.getIsdn()) //
+         && (pages == book.getPages()) //
+         && (price == book.getPrice()) //
+         && (availability == book.isAvailability()) //
+         && (delivery == book.getDelivery());
    }
 }

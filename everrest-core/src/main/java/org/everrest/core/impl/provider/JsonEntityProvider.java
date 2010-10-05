@@ -22,10 +22,10 @@ import org.everrest.core.impl.provider.json.JsonException;
 import org.everrest.core.impl.provider.json.JsonGenerator;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.JsonUtils;
+import org.everrest.core.impl.provider.json.JsonUtils.Types;
 import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
-import org.everrest.core.impl.provider.json.JsonUtils.Types;
 import org.everrest.core.provider.EntityProvider;
 
 import java.io.IOException;
@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -98,7 +99,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
          }
          return ObjectBuilder.createObject(type, jsonValue);
       }
-      catch (Exception e)
+      catch (JsonException e)
       {
          //         e.printStackTrace();
          throw new IOException("Can't read from input stream " + e);
@@ -130,13 +131,35 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
    {
       try
       {
-         JsonValue jv = new JsonGenerator().createJsonObject(t);
+         JsonValue jsonValue = null;
+         Types jtype = JsonUtils.getType(type);
+         if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
+            || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
+            || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
+            || jtype == Types.ARRAY_OBJECT)
+         {
+            jsonValue = new JsonGenerator().createJsonArray(t);
+         }
+         else if (jtype == Types.COLLECTION)
+         {
+            jsonValue = new JsonGenerator().createJsonArray((Collection<?>)t);
+         }
+         else if (jtype == Types.MAP)
+         {
+         }
+         else
+         {
+            jsonValue = new JsonGenerator().createJsonObject(t);
+
+         }
+
          JsonWriter jsonWriter = new JsonWriter(entityStream);
-         jv.writeTo(jsonWriter);
+         jsonValue.writeTo(jsonWriter);
          jsonWriter.flush();
       }
       catch (JsonException e)
       {
+         e.printStackTrace();
          throw new IOException("Can't write to output stream " + e);
       }
    }

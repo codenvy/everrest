@@ -20,9 +20,9 @@ package org.everrest.core.impl.provider.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -31,217 +31,157 @@ import java.util.List;
 public class JsonParserTest extends JsonTest
 {
 
-   ArrayList<Book> sourceCollection;
-
    @Override
    protected void setUp() throws Exception
    {
       super.setUp();
-      sourceCollection = new ArrayList<Book>(3);
-      sourceCollection.add(junitBook);
-      sourceCollection.add(csharpBook);
-      sourceCollection.add(javaScriptBook);
    }
 
-
-
-
-   public void testCollection() throws Exception
+   public void testArrayString() throws Exception
    {
-      // test restore Collection of standard Java Object from JSON source
       JsonParser jsonParser = new JsonParser();
-      String jsonString =
-         "{" + "\"strings\":[\"JUnit in Action\",\"Advanced JavaScript\",\"Beginning C# 2008\"],"
-            + "\"chars\":[\"b\",\"o\",\"o\",\"k\"]," + "\"integers\":[386, 421, 565]" + "}";
+      String jsonString = "[\"JUnit in Action\",\"Advanced JavaScript\",\"Beginning C# 2008\"]";
       jsonParser.parse(new InputStreamReader(new ByteArrayInputStream(jsonString.getBytes())));
       JsonValue jsonValue = jsonParser.getJsonObject();
-      JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
-      List<String> s = o.getStrings();
+      assertTrue(jsonValue.isArray());
+      Set<String> s = new HashSet<String>();
+      for (Iterator<JsonValue> elements = jsonValue.getElements(); elements.hasNext();)
+      {
+         JsonValue next = elements.next();
+         assertTrue(next.isString());
+         s.add(next.getStringValue());
+      }
       assertEquals(3, s.size());
-      assertEquals("JUnit in Action", s.get(0));
-      assertEquals("Advanced JavaScript", s.get(1));
-      assertEquals("Beginning C# 2008", s.get(2));
-      List<Character> c = o.getChars();
-      assertEquals('b', c.get(0).charValue());
-      assertEquals('o', c.get(1).charValue());
-      assertEquals('o', c.get(2).charValue());
-      assertEquals('k', c.get(3).charValue());
-      List<Integer> i = o.getIntegers();
-      assertEquals(386, i.get(0).intValue());
-      assertEquals(421, i.get(1).intValue());
-      assertEquals(565, i.get(2).intValue());
-      // more testing for other type of Collection with custom object
+      assertTrue(s.contains("JUnit in Action"));
+      assertTrue(s.contains("Advanced JavaScript"));
+      assertTrue(s.contains("Beginning C# 2008"));
    }
 
-   public void testCollection2() throws Exception
+   public void testArrayLong() throws Exception
    {
-      // test restore Collection of other Java Object from JSON source
       JsonParser jsonParser = new JsonParser();
-      // check restore different type of Collection
-      jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
-         "CollectionTest.txt")));
+      String jsonString = "[1, 0xAA, 077, 123, 32765, 77787, 123456789, 0x123456, 0123456, -2387648, -123456789]";
+
+      jsonParser.parse(new InputStreamReader(new ByteArrayInputStream(jsonString.getBytes())));
       JsonValue jsonValue = jsonParser.getJsonObject();
-      JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
-
-      assertEquals(3, o.getArrayList().size());
-      assertTrue(o.getArrayList().get(0).equals(sourceCollection.get(0)));
-      assertTrue(o.getArrayList().get(1).equals(sourceCollection.get(1)));
-      assertTrue(o.getArrayList().get(2).equals(sourceCollection.get(2)));
-
-      assertEquals(3, o.getVector().size());
-      assertTrue(o.getVector().get(0).equals(sourceCollection.get(0)));
-      assertTrue(o.getVector().get(1).equals(sourceCollection.get(1)));
-      assertTrue(o.getVector().get(2).equals(sourceCollection.get(2)));
-
-      assertEquals(3, o.getLinkedList().size());
-      assertTrue(o.getLinkedList().get(0).equals(sourceCollection.get(0)));
-      assertTrue(o.getLinkedList().get(1).equals(sourceCollection.get(1)));
-      assertTrue(o.getLinkedList().get(2).equals(sourceCollection.get(2)));
-
-      assertEquals(3, o.getLinkedHashSet().size());
-
-      assertEquals(3, o.getHashSet().size());
-
-      assertEquals(3, o.getList().size());
-      assertTrue(o.getList().get(0).equals(sourceCollection.get(0)));
-      assertTrue(o.getList().get(1).equals(sourceCollection.get(1)));
-      assertTrue(o.getList().get(2).equals(sourceCollection.get(2)));
-
-      assertEquals(3, o.getSet().size());
-
-      assertEquals(3, o.getQueue().size());
-
-      assertEquals(3, o.getCollection().size());
-
-      assertEquals(3, o.getArray().length);
-      assertTrue(o.getArray()[0].equals(sourceCollection.get(0)));
-      assertTrue(o.getArray()[1].equals(sourceCollection.get(1)));
-      assertTrue(o.getArray()[2].equals(sourceCollection.get(2)));
+      assertTrue(jsonValue.isArray());
+      int i = 0;
+      for (Iterator<JsonValue> elements = jsonValue.getElements(); elements.hasNext(); i++)
+      {
+         JsonValue next = elements.next();
+         assertTrue(next.isNumeric());
+         assertTrue(next.isLong());
+         assertFalse(next.isDouble());
+         if (i == 0)
+            assertEquals(1L, next.getLongValue());
+         if (i == 3)
+            assertEquals(123L, next.getLongValue());
+         if (i == 6)
+            assertEquals(123456789L, next.getLongValue());
+      }
    }
 
-   public void testMap() throws Exception
+   public void testArrayDouble() throws Exception
    {
       JsonParser jsonParser = new JsonParser();
       String jsonString =
-         "{" + "\"strings\":{" + "\"book\":\"Beginning C# 2008\"," + "\"author\":\"Christian Gross\"" + "},"
-            + "\"integers\":{" + "\"one\":1," + "\"two\":2," + "\"three\":3" + "}," + "\"booleans\":{"
-            + "\"true\":true," + "\"false\":false" + "}" + "}";
+         "[1.0, 0.0006382746, 111111.2222222, 9999999999999.9999999999999,"
+            + "9827394873249.8, 1.23456789E8, 123456.789E8, 3215478352478651238.0,"
+            + "982.8, 0.00000000000023456789E8, 1.789E8, 0.0000000000000000000321547835247865123,"
+            + "982.8, -0.00000000000023456789E8, -1.789E-8, -0.0000000000000000000321547835247865123]";
+
       jsonParser.parse(new InputStreamReader(new ByteArrayInputStream(jsonString.getBytes())));
       JsonValue jsonValue = jsonParser.getJsonObject();
-      JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jsonValue);
-
-      assertEquals("Beginning C# 2008", o.getStrings().get("book"));
-      assertEquals("Christian Gross", o.getStrings().get("author"));
-
-      assertEquals(1, o.getIntegers().get("one").intValue());
-      assertEquals(2, o.getIntegers().get("two").intValue());
-      assertEquals(3, o.getIntegers().get("three").intValue());
-
-      assertTrue(o.getBooleans().get("true"));
-      assertFalse(o.getBooleans().get("false"));
+      assertTrue(jsonValue.isArray());
+      int i = 0;
+      for (Iterator<JsonValue> elements = jsonValue.getElements(); elements.hasNext(); i++)
+      {
+         JsonValue next = elements.next();
+         assertTrue(next.isNumeric());
+         assertFalse(next.isLong());
+         assertTrue(next.isDouble());
+         if (i == 0)
+            assertEquals(1.0, next.getDoubleValue());
+         if (i == 2)
+            assertEquals(111111.2222222, next.getDoubleValue());
+         if (i == 9)
+            assertEquals(0.00000000000023456789E8, next.getDoubleValue());
+      }
    }
 
-   public void testMap2() throws Exception
+   public void testArrayMixed() throws Exception
    {
       JsonParser jsonParser = new JsonParser();
-      jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
-         "MapTest.txt")));
-      JsonValue jv = jsonParser.getJsonObject();
-      JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
+      String jsonString = "[1.0, \"to be or not to be\", 111, true, {\"object\":{\"foo\":\"bar\"}}]";
 
-      assertTrue(o.getMap().get("JUnit").equals(sourceCollection.get(0)));
-      assertTrue(o.getMap().get("C#").equals(sourceCollection.get(1)));
-      assertTrue(o.getMap().get("JavaScript").equals(sourceCollection.get(2)));
-
-      assertTrue(o.getHashMap().get("JUnit").equals(sourceCollection.get(0)));
-      assertTrue(o.getHashMap().get("C#").equals(sourceCollection.get(1)));
-      assertTrue(o.getHashMap().get("JavaScript").equals(sourceCollection.get(2)));
-
-      assertTrue(o.getHashtable().get("JUnit").equals(sourceCollection.get(0)));
-      assertTrue(o.getHashtable().get("C#").equals(sourceCollection.get(1)));
-      assertTrue(o.getHashtable().get("JavaScript").equals(sourceCollection.get(2)));
-
-      assertTrue(o.getLinkedHashMap().get("JUnit").equals(sourceCollection.get(0)));
-      assertTrue(o.getLinkedHashMap().get("C#").equals(sourceCollection.get(1)));
-      assertTrue(o.getLinkedHashMap().get("JavaScript").equals(sourceCollection.get(2)));
-
-   }
-
-   public void testBean() throws Exception
-   {
-      JsonParser jsonParser = new JsonParser();
-      jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
-         "BookStorage.txt")));
-      JsonValue jv = jsonParser.getJsonObject();
-      BookStorage o = ObjectBuilder.createObject(BookStorage.class, jv);
-      assertTrue(o.getBooks().get(0).equals(sourceCollection.get(0)));
-      assertTrue(o.getBooks().get(1).equals(sourceCollection.get(1)));
-      assertTrue(o.getBooks().get(2).equals(sourceCollection.get(2)));
-   }
-
-   public void testArray() throws Exception
-   {
-      String source = "{\"array\":[\"a\",\"b\",\"c\"]}";
-      JsonParser jsonParser = new JsonParser();
-      jsonParser.parse(new ByteArrayInputStream(source.getBytes()));
+      jsonParser.parse(new InputStreamReader(new ByteArrayInputStream(jsonString.getBytes())));
       JsonValue jsonValue = jsonParser.getJsonObject();
-      System.out.println(jsonValue.getElement("array").isArray());
+      assertTrue(jsonValue.isArray());
+
+      ArrayValue exp = new ArrayValue();
+      exp.addElement(new DoubleValue(1.0D));
+      exp.addElement(new StringValue("to be or not to be"));
+      exp.addElement(new LongValue(111));
+      exp.addElement(new BooleanValue(true));
+      ObjectValue o = new ObjectValue();
+      o.addElement("foo", new StringValue("bar"));
+      ObjectValue o1 = new ObjectValue();
+      o1.addElement("object", o);
+      exp.addElement(o1);
+
+      Iterator<JsonValue> elements = jsonValue.getElements();
+      Iterator<JsonValue> expElements = jsonValue.getElements();
+      for (; elements.hasNext() && expElements.hasNext();)
+      {
+         JsonValue next = elements.next();
+         JsonValue expNext = expElements.next();
+         assertEquals(expNext.toString(), next.toString());
+      }
+      // Both must be empty 
+      assertFalse(elements.hasNext() || expElements.hasNext());
+   }
+
+   public void testObject() throws Exception
+   {
+      JsonParser jsonParser = new JsonParser();
+      String jsonString =
+         "{\"foo\":\"bar\", \"book\":{\"author\":\"Christian Gross\",\"title\":\"Beginning C# 2008\"}}";
+      jsonParser.parse(new InputStreamReader(new ByteArrayInputStream(jsonString.getBytes())));
+      JsonValue jsonValue = jsonParser.getJsonObject();
+      assertTrue(jsonValue.isObject());
+
+      JsonValue sValue = jsonValue.getElement("foo");
+      assertTrue(sValue.isString());
+      assertEquals("bar", sValue.getStringValue());
+
+      JsonValue bookValue = jsonValue.getElement("book");
+      assertTrue(bookValue.isObject());
+      assertEquals("Beginning C# 2008", bookValue.getElement("title").getStringValue());
+      assertEquals("Christian Gross", bookValue.getElement("author").getStringValue());
    }
 
    public void testMultiDimensionArray() throws Exception
    {
-      JsonParser jsonParser = new JsonParser();
-      jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
-         "MultiDimension.txt")));
-      JsonValue jsonValue = jsonParser.getJsonObject();
-      //    System.out.println(jsonValue);
-      assertTrue(jsonValue.isObject());
-      assertTrue(jsonValue.getElement("books").isArray());
-      assertTrue(jsonValue.getElement("books").getElements().next().isArray());
-      assertTrue(jsonValue.getElement("books").getElements().next().getElements().next().isArray());
-      assertTrue(jsonValue.getElement("books").getElements().next().getElements().next().getElements().next()
-         .isObject());
-      assertEquals("JUnit in Action", jsonValue.getElement("books").getElements().next().getElements().next()
-         .getElements().next().getElement("title").getStringValue());
-   }
+      String jsonString = "[\"foo0\", [\"foo1\", \"bar1\", [\"foo2\", \"bar2\"]], \"bar0\"]";
 
-   public void testEnumSerialization() throws Exception
-   {
-      String source =
-         "{\"countList\":[\"ONE\",\"TWO\",\"TREE\"], \"name\":\"andrew\",\"count\":\"TREE\",\"counts\":[\"TWO\",\"TREE\"]}";
       JsonParser jsonParser = new JsonParser();
-      jsonParser.parse(new ByteArrayInputStream(source.getBytes()));
+      jsonParser.parse(new InputStreamReader(new ByteArrayInputStream(jsonString.getBytes())));
       JsonValue jsonValue = jsonParser.getJsonObject();
       //System.out.println(jsonValue);
+      
+      ArrayValue exp = new ArrayValue();
+      exp.addElement(new StringValue("foo0"));
+      ArrayValue l1 = new ArrayValue();
+      exp.addElement(l1);
+      l1.addElement(new StringValue("foo1"));
+      l1.addElement(new StringValue("bar1"));
+      ArrayValue l2 = new ArrayValue();
+      l1.addElement(l2);
+      l2.addElement(new StringValue("foo2"));
+      l2.addElement(new StringValue("bar2"));
+      exp.addElement(new StringValue("bar0"));
 
-      BeanWithSimpleEnum o = ObjectBuilder.createObject(BeanWithSimpleEnum.class, jsonValue);
-
-      assertEquals("andrew", o.getName());
-
-      assertEquals(StringEnum.TREE, o.getCount());
-
-      StringEnum[] counts = o.getCounts();
-      assertEquals(2, counts.length);
-
-      List<StringEnum> tmp = Arrays.asList(counts);
-      assertTrue(tmp.contains(StringEnum.TWO));
-      assertTrue(tmp.contains(StringEnum.TREE));
-
-      tmp = o.getCountList();
-      assertEquals(3, tmp.size());
-      assertTrue(tmp.contains(StringEnum.ONE));
-      assertTrue(tmp.contains(StringEnum.TWO));
-      assertTrue(tmp.contains(StringEnum.TREE));
+      assertEquals(exp.toString(), jsonValue.toString());
    }
 
-   public void testEnumSerialization2() throws Exception
-   {
-      String source = "{\"book\":\"BEGINNING_C\"}";
-      JsonParser parser = new JsonParser();
-      parser.parse(new ByteArrayInputStream(source.getBytes()));
-      JsonValue jsonValue = parser.getJsonObject();
-      //System.out.println(jsonValue);
-      BeanWithBookEnum o = ObjectBuilder.createObject(BeanWithBookEnum.class, jsonValue);
-      assertEquals(BookEnum.BEGINNING_C, o.getBook());
-   }
 }

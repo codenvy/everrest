@@ -128,7 +128,8 @@ public class JsonWriter
    public void writeStartArray() throws JsonException
    {
       JsonToken token = stack.peek();
-      if (token != JsonToken.key && token != JsonToken.array)
+      //if (token != JsonToken.key && token != JsonToken.array)
+      if (token != null && token != JsonToken.key && token != JsonToken.array)
       {
          throw new JsonException("Sysntax error. Unexpected element '['.");
       }

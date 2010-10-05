@@ -22,7 +22,15 @@ import org.everrest.core.generated.Book;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.impl.provider.json.JsonParser;
+import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -39,7 +47,7 @@ public class JsonEntityTest extends BaseTest
 {
 
    @Path("/")
-   public static class Resource1
+   public static class ResourceBook
    {
       @POST
       @Consumes("application/json")
@@ -52,7 +60,7 @@ public class JsonEntityTest extends BaseTest
    }
 
    @Path("/")
-   public static class Resource11
+   public static class ResourceBookArray
    {
       @POST
       @Consumes("application/json")
@@ -61,7 +69,6 @@ public class JsonEntityTest extends BaseTest
          assertEquals("Hamlet", b[0].getTitle());
          assertEquals("William Shakespeare", b[0].getAuthor());
          assertTrue(b[0].isSendByPost());
-
          assertEquals("Collected Stories", b[1].getTitle());
          assertEquals("Gabriel Garcia Marquez", b[1].getAuthor());
          assertTrue(b[1].isSendByPost());
@@ -69,7 +76,23 @@ public class JsonEntityTest extends BaseTest
    }
 
    @Path("/")
-   public static class Resource2
+   public static class ResourceBookCollection
+   {
+      @POST
+      @Consumes("application/json")
+      public void m1(List<Book> b)
+      {
+         assertEquals("Hamlet", b.get(0).getTitle());
+         assertEquals("William Shakespeare", b.get(0).getAuthor());
+         assertTrue(b.get(0).isSendByPost());
+         assertEquals("Collected Stories", b.get(1).getTitle());
+         assertEquals("Gabriel Garcia Marquez", b.get(1).getAuthor());
+         assertTrue(b.get(1).isSendByPost());
+      }
+   }
+
+   @Path("/")
+   public static class ResourceBook2
    {
       @GET
       @Produces("application/json")
@@ -86,49 +109,69 @@ public class JsonEntityTest extends BaseTest
       @POST
       public Book m2()
       {
-         Book book = new Book();
-         book.setTitle("Hamlet\n");
-         book.setAuthor("William Shakespeare\n");
-         book.setSendByPost(false);
-         return book;
+         return m1();
       }
    }
 
    @Path("/")
-   public static class Resource22
+   public static class ResourceBookArray2
    {
       @GET
       @Produces("application/json")
       public Book[] m1()
       {
-         Book book1 = new Book();
-         book1.setTitle("Hamlet");
-         book1.setAuthor("William Shakespeare");
-         book1.setSendByPost(true);
-
-         Book book2 = new Book();
-         book2.setTitle("Collected Stories");
-         book2.setAuthor("Gabriel Garcia Marquez");
-         book2.setSendByPost(true);
-
-         return new Book[]{book1, book2};
+         return createArray();
       }
 
       // Without @Produces annotation also should work.
       @POST
       public Book[] m2()
       {
+         return createArray();
+      }
+
+      private Book[] createArray()
+      {
          Book book1 = new Book();
-         book1.setTitle("Hamlet\n");
-         book1.setAuthor("William Shakespeare\n");
-         book1.setSendByPost(false);
-
+         book1.setTitle("Hamlet");
+         book1.setAuthor("William Shakespeare");
+         book1.setSendByPost(true);
          Book book2 = new Book();
-         book2.setTitle("Collected Stories\n");
-         book2.setAuthor("Gabriel Garcia Marquez\n");
-         book2.setSendByPost(false);
-
+         book2.setTitle("Collected Stories");
+         book2.setAuthor("Gabriel Garcia Marquez");
+         book2.setSendByPost(true);
          return new Book[]{book1, book2};
+      }
+   }
+
+   @Path("/")
+   public static class ResourceBookCollection2
+   {
+      @GET
+      @Produces("application/json")
+      public List<Book> m1()
+      {
+         return createCollection();
+      }
+
+      // Without @Produces annotation also should work.
+      @POST
+      public List<Book> m2()
+      {
+         return createCollection();
+      }
+
+      private List<Book> createCollection()
+      {
+         Book book1 = new Book();
+         book1.setTitle("Hamlet");
+         book1.setAuthor("William Shakespeare");
+         book1.setSendByPost(true);
+         Book book2 = new Book();
+         book2.setTitle("Collected Stories");
+         book2.setAuthor("Gabriel Garcia Marquez");
+         book2.setSendByPost(true);
+         return Arrays.asList(book1, book2);
       }
    }
 
@@ -149,7 +192,7 @@ public class JsonEntityTest extends BaseTest
 
    public void testJsonEntityBean() throws Exception
    {
-      Resource1 r1 = new Resource1();
+      ResourceBook r1 = new ResourceBook();
       registry(r1);
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       // Object is transfered via JSON
@@ -163,43 +206,141 @@ public class JsonEntityTest extends BaseTest
 
    public void testJsonEntityArray() throws Exception
    {
-      Resource11 r11 = new Resource11();
-      registry(r11);
+      ResourceBookArray r1 = new ResourceBookArray();
+      registry(r1);
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       // Object is transfered via JSON
       h.putSingle("content-type", "application/json");
       h.putSingle("content-length", "" + jsonArrayData.length);
       assertEquals(204, launcher.service("POST", "/", "", h, jsonArrayData, null).getStatus());
-      unregistry(r11);
+      unregistry(r1);
+   }
+
+   public void testJsonEntityCollection() throws Exception
+   {
+      ResourceBookCollection r1 = new ResourceBookCollection();
+      registry(r1);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      // Object is transfered via JSON
+      h.putSingle("content-type", "application/json");
+      h.putSingle("content-length", "" + jsonArrayData.length);
+      assertEquals(204, launcher.service("POST", "/", "", h, jsonArrayData, null).getStatus());
+      unregistry(r1);
    }
 
    public void testJsonReturnBean() throws Exception
    {
-      Resource2 r2 = new Resource2();
+      ResourceBook2 r2 = new ResourceBook2();
       registry(r2);
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.putSingle("accept", "application/json");
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
 
-      // Resource2#m1()
+      // ResourceBook2#m1()
       ContainerResponse response = launcher.service("GET", "/", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/json", response.getContentType().toString());
-      Book book = (Book)response.getEntity();
+      JsonParser parser = new JsonParser();
+      parser.parse(new ByteArrayInputStream(writer.getBody()));
+      Book book = ObjectBuilder.createObject(Book.class, parser.getJsonObject());
       assertEquals("Hamlet", book.getTitle());
       assertEquals("William Shakespeare", book.getAuthor());
       assertTrue(book.isSendByPost());
 
-      // Resource2#m2()
+      // ResourceBook2#m2()
+      writer.reset();
       response = launcher.service("POST", "/", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/json", response.getContentType().toString());
-      book = (Book)response.getEntity();
-      assertEquals("Hamlet\n", book.getTitle());
-      assertEquals("William Shakespeare\n", book.getAuthor());
-      assertFalse(book.isSendByPost());
-      writer = new ByteArrayContainerResponseWriter();
+      parser.parse(new ByteArrayInputStream(writer.getBody()));
+      book = ObjectBuilder.createObject(Book.class, parser.getJsonObject());
+      assertEquals("Hamlet", book.getTitle());
+      assertEquals("William Shakespeare", book.getAuthor());
+      assertTrue(book.isSendByPost());
+
       unregistry(r2);
    }
 
+   public void testJsonReturnBeanArray() throws Exception
+   {
+      ResourceBookArray2 r2 = new ResourceBookArray2();
+      registry(r2);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("accept", "application/json");
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+
+      // ResourceBookArray2#m1()
+      ContainerResponse response = launcher.service("GET", "/", "", h, null, writer, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      JsonParser parser = new JsonParser();
+      parser.parse(new ByteArrayInputStream(writer.getBody()));
+      Book[] book = (Book[])ObjectBuilder.createArray(new Book[0].getClass(), parser.getJsonObject());
+      assertEquals("Hamlet", book[0].getTitle());
+      assertEquals("William Shakespeare", book[0].getAuthor());
+      assertTrue(book[0].isSendByPost());
+      assertEquals("Collected Stories", book[1].getTitle());
+      assertEquals("Gabriel Garcia Marquez", book[1].getAuthor());
+      assertTrue(book[1].isSendByPost());
+      //System.out.println("array: " + new String(writer.getBody()));
+
+      // ResourceBookArray2#m2()
+      writer.reset();
+      response = launcher.service("POST", "/", "", h, null, writer, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      parser.parse(new ByteArrayInputStream(writer.getBody()));
+      book = (Book[])ObjectBuilder.createArray(new Book[0].getClass(), parser.getJsonObject());
+      assertEquals("Hamlet", book[0].getTitle());
+      assertEquals("William Shakespeare", book[0].getAuthor());
+      assertTrue(book[0].isSendByPost());
+      assertEquals("Collected Stories", book[1].getTitle());
+      assertEquals("Gabriel Garcia Marquez", book[1].getAuthor());
+      assertTrue(book[1].isSendByPost());
+      //System.out.println("array: " + new String(writer.getBody()));
+
+      unregistry(r2);
+   }
+
+   public void testJsonReturnBeanCollection() throws Exception
+   {
+      ResourceBookCollection2 r2 = new ResourceBookCollection2();
+      registry(r2);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("accept", "application/json");
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+
+      // ResourceBookCollection2#m1()
+      ContainerResponse response = launcher.service("GET", "/", "", h, null, writer, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      JsonParser parser = new JsonParser();
+      parser.parse(new ByteArrayInputStream(writer.getBody()));
+      ParameterizedType genericType = (ParameterizedType)new ArrayList<Book>(){}.getClass().getGenericSuperclass();
+      //System.out.println(">>>>>"+genericType);
+      List<Book> book = (List<Book>)ObjectBuilder.createCollection(List.class, genericType, parser.getJsonObject());
+      assertEquals("Hamlet", book.get(0).getTitle());
+      assertEquals("William Shakespeare", book.get(0).getAuthor());
+      assertTrue(book.get(0).isSendByPost());
+      assertEquals("Collected Stories", book.get(1).getTitle());
+      assertEquals("Gabriel Garcia Marquez", book.get(1).getAuthor());
+      assertTrue(book.get(1).isSendByPost());
+      //System.out.println("collection: " + new String(writer.getBody()));
+
+      // ResourceBookCollection2#m2()
+      response = launcher.service("POST", "/", "", h, null, writer, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      parser.parse(new ByteArrayInputStream(writer.getBody()));
+      book = (List<Book>)ObjectBuilder.createCollection(List.class, genericType, parser.getJsonObject());
+      assertEquals("Hamlet", book.get(0).getTitle());
+      assertEquals("William Shakespeare", book.get(0).getAuthor());
+      assertTrue(book.get(0).isSendByPost());
+      assertEquals("Collected Stories", book.get(1).getTitle());
+      assertEquals("Gabriel Garcia Marquez", book.get(1).getAuthor());
+      assertTrue(book.get(1).isSendByPost());
+      //System.out.println("collection: " + new String(writer.getBody()));
+
+      unregistry(r2);
+   }
 }
