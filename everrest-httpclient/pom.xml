@@ -16,9 +16,9 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>everrest-commons</artifactId>
+   <artifactId>everrest-httpclient</artifactId>
 
-   <name>eXo EverRest :: Commons Utils</name>
+   <name>eXo EverRest :: HTTP :: Client</name>
 
    <dependencies>
       <dependency>

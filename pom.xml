@@ -77,7 +77,7 @@
       <module>everrest-test</module>
       <module>everrest-core</module>
       <module>everrest-httpclient</module>
-      <module>everrest-ext</module>
+      <module>everrest-proxy</module>
       <module>everrest-groovy</module>
    </modules>
 
@@ -154,7 +154,7 @@
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
-            <artifactId>everrest-ext</artifactId>
+            <artifactId>everrest-proxy</artifactId>
             <version>${org.everrest.version}</version>
          </dependency>
          <!-- Third part dependencies -->
