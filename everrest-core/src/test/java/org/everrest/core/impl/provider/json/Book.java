@@ -138,14 +138,14 @@ public class Book
    public int hashCode()
    {
       int hash = 8;
-      hash = hash*31+(author != null ? author.hashCode() : 0);
-      hash = hash*31+(title != null ? title.hashCode() : 0);
-      hash = (int)(hash*31 + isdn);
-      hash = hash*31 + pages;
-      hash = (int)(hash*31 + Double.doubleToLongBits(pages));
-      hash = (int)(hash*31 + Double.doubleToLongBits(pages));
-      hash = hash + (availability ? 1:0);
-      hash = hash + (delivery ? 1:0);
+      hash = hash * 31 + (author != null ? author.hashCode() : 0);
+      hash = hash * 31 + (title != null ? title.hashCode() : 0);
+      hash = (int)(hash * 31 + isdn);
+      hash = hash * 31 + pages;
+      hash = (int)(hash * 31 + Double.doubleToLongBits(pages));
+      hash = (int)(hash * 31 + Double.doubleToLongBits(pages));
+      hash = hash + (availability ? 1 : 0);
+      hash = hash + (delivery ? 1 : 0);
       return hash;
    }
 

@@ -22,10 +22,10 @@ import org.everrest.core.impl.provider.json.JsonException;
 import org.everrest.core.impl.provider.json.JsonGenerator;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.JsonUtils;
-import org.everrest.core.impl.provider.json.JsonUtils.Types;
 import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
+import org.everrest.core.impl.provider.json.JsonUtils.Types;
 import org.everrest.core.provider.EntityProvider;
 
 import java.io.IOException;
@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -126,6 +127,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public void writeTo(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
@@ -138,19 +140,19 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
             || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
             || jtype == Types.ARRAY_OBJECT)
          {
-            jsonValue = new JsonGenerator().createJsonArray(t);
+            jsonValue = JsonGenerator.createJsonArray(t);
          }
          else if (jtype == Types.COLLECTION)
          {
-            jsonValue = new JsonGenerator().createJsonArray((Collection<?>)t);
+            jsonValue = JsonGenerator.createJsonArray((Collection<?>)t);
          }
          else if (jtype == Types.MAP)
          {
+            jsonValue = JsonGenerator.createJsonObjectFromMap((Map<String, ?>)t);
          }
          else
          {
-            jsonValue = new JsonGenerator().createJsonObject(t);
-
+            jsonValue = JsonGenerator.createJsonObject(t);
          }
 
          JsonWriter jsonWriter = new JsonWriter(entityStream);

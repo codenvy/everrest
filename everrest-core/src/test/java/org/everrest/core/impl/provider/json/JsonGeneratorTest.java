@@ -40,7 +40,7 @@ public class JsonGeneratorTest extends JsonTest
 
    public void testBean() throws Exception
    {
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(junitBook);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(junitBook);
       assertTrue(jsonValue.isObject());
       assertEquals(junitBook.getAuthor(), jsonValue.getElement("author").getStringValue());
       assertEquals(junitBook.getTitle(), jsonValue.getElement("title").getStringValue());
@@ -54,7 +54,7 @@ public class JsonGeneratorTest extends JsonTest
    public void testArray() throws Exception
    {
       Book[] a = new Book[]{junitBook, csharpBook, javaScriptBook};
-      JsonValue jsonValue = new JsonGenerator().createJsonArray(a);
+      JsonValue jsonValue = JsonGenerator.createJsonArray(a);
       assertTrue(jsonValue.isArray());
       Iterator<JsonValue> iterator = jsonValue.getElements();
       assertEquals(a[0].getTitle(), iterator.next().getElement("title").getStringValue());
@@ -66,14 +66,14 @@ public class JsonGeneratorTest extends JsonTest
    public void testArrayNull() throws Exception
    {
       Book[] a = null;
-      JsonValue jsonValue = new JsonGenerator().createJsonArray(a);
+      JsonValue jsonValue = JsonGenerator.createJsonArray(a);
       assertTrue(jsonValue.isNull());
    }
 
    public void testCollection() throws Exception
    {
       List<Book> l = Arrays.asList(junitBook, csharpBook, javaScriptBook);
-      JsonValue jsonValue = new JsonGenerator().createJsonArray(l);
+      JsonValue jsonValue = JsonGenerator.createJsonArray(l);
       assertTrue(jsonValue.isArray());
       Iterator<JsonValue> iterator = jsonValue.getElements();
       assertEquals(l.get(0).getTitle(), iterator.next().getElement("title").getStringValue());
@@ -85,7 +85,7 @@ public class JsonGeneratorTest extends JsonTest
    public void testCollectionNull() throws Exception
    {
       List<Book> l = null;
-      JsonValue jsonValue = new JsonGenerator().createJsonArray(l);
+      JsonValue jsonValue = JsonGenerator.createJsonArray(l);
       assertTrue(jsonValue.isNull());
    }
 
@@ -95,7 +95,7 @@ public class JsonGeneratorTest extends JsonTest
       m.put("junit", junitBook);
       m.put("csharp", csharpBook);
       m.put("js", javaScriptBook);
-      JsonValue jsonValue = new JsonGenerator().createJsonObjectFromMap(m);
+      JsonValue jsonValue = JsonGenerator.createJsonObjectFromMap(m);
       assertTrue(jsonValue.isObject());
       assertEquals(junitBook.getTitle(), jsonValue.getElement("junit").getElement("title").getStringValue());
       assertEquals(csharpBook.getTitle(), jsonValue.getElement("csharp").getElement("title").getStringValue());
@@ -106,7 +106,7 @@ public class JsonGeneratorTest extends JsonTest
    public void testMapNull() throws Exception
    {
       Map<String, Book> m = null;
-      JsonValue jsonValue = new JsonGenerator().createJsonObjectFromMap(m);
+      JsonValue jsonValue = JsonGenerator.createJsonObjectFromMap(m);
       assertTrue(jsonValue.isNull());
    }
 
@@ -114,7 +114,7 @@ public class JsonGeneratorTest extends JsonTest
    {
       BookWrapper bookWrapper = new BookWrapper();
       bookWrapper.setBook(junitBook);
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(bookWrapper);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(bookWrapper);
       assertTrue(jsonValue.isObject());
       assertEquals(junitBook.getAuthor(), jsonValue.getElement("book").getElement("author").getStringValue());
       assertEquals(junitBook.getTitle(), jsonValue.getElement("book").getElement("title").getStringValue());
@@ -135,7 +135,7 @@ public class JsonGeneratorTest extends JsonTest
       BookStorage bookStorage = new BookStorage();
       bookStorage.setBooks(l);
 
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(bookStorage);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(bookStorage);
       assertTrue(jsonValue.isObject());
       Iterator<JsonValue> iterator = jsonValue.getElement("books").getElements();
       assertEquals(l.get(0).getTitle(), iterator.next().getElement("title").getStringValue());
@@ -168,7 +168,7 @@ public class JsonGeneratorTest extends JsonTest
       str.put("key3", "value3");
       mb.setStrings(str);
 
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(mb);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(mb);
 
       assertEquals(str.get("key2"), jsonValue.getElement("strings").getElement("key2").getStringValue());
       assertNotNull(jsonValue.getElement("hashMap"));
@@ -181,7 +181,7 @@ public class JsonGeneratorTest extends JsonTest
    public void testBeanTransientField() throws Exception
    {
       BeanWithTransientField trBean = new BeanWithTransientField();
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(trBean);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(trBean);
       assertEquals("visible", jsonValue.getElement("field").getStringValue());
       assertNull(jsonValue.getElement("transientField"));
    }
@@ -193,7 +193,7 @@ public class JsonGeneratorTest extends JsonTest
       be.setCount(StringEnum.TWO);
       be.setCounts(new StringEnum[]{StringEnum.ONE, StringEnum.TWO});
       be.setCountList(Arrays.asList(StringEnum.ONE, StringEnum.TWO, StringEnum.TREE));
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(be);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(be);
       //System.out.println(jsonValue);
 
       assertEquals("name", jsonValue.getElement("name").getStringValue());
@@ -226,7 +226,7 @@ public class JsonGeneratorTest extends JsonTest
    {
       BeanWithBookEnum be = new BeanWithBookEnum();
       be.setBook(BookEnum.JUNIT_IN_ACTION);
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(be);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(be);
       //System.out.println(jsonValue);
       assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
    }

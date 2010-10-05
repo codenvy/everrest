@@ -49,7 +49,7 @@ public class GroovyBeanTest extends JsonTest
       Class<?> c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("SimpleBean.groovy"));
       GroovyObject groovyObject = (GroovyObject)c.newInstance();
       groovyObject.invokeMethod("setValue", new Object[]{"test serialize groovy bean"});
-      assertEquals("{\"value\":\"test serialize groovy bean\"}", new JsonGenerator().createJsonObject(groovyObject)
+      assertEquals("{\"value\":\"test serialize groovy bean\"}", JsonGenerator.createJsonObject(groovyObject)
          .toString());
    }
 
@@ -61,7 +61,7 @@ public class GroovyBeanTest extends JsonTest
       GroovyObject groovyObject = (GroovyObject)c.newInstance();
       groovyObject.invokeMethod("initStorage", new Object[]{});
 
-      JsonValue jsonValue = new JsonGenerator().createJsonObject(groovyObject);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(groovyObject);
       //System.out.println(jsonValue);
       assertTrue(jsonValue.isObject());
       Iterator<JsonValue> iterator = jsonValue.getElement("books").getElements();

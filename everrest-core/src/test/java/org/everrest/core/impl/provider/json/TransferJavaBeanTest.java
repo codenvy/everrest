@@ -51,7 +51,7 @@ public class TransferJavaBeanTest extends JsonTest
       book.setPrice(price);
       book.setIsdn(isdn);
 
-      JsonValue jv = new JsonGenerator().createJsonObject(book);
+      JsonValue jv = JsonGenerator.createJsonObject(book);
       JsonWriter jsonWriter = new JsonWriter(out);
       jv.writeTo(jsonWriter);
       jsonWriter.flush();

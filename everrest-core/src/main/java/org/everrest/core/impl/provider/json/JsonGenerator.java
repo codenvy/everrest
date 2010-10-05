@@ -54,13 +54,13 @@ public class JsonGenerator
 
    /**
     * Create JSON array from specified collection.
-    * 
+    *
     * @param collection source collection
     * @return JSON representation of collection
     * @throws JsonException if collection can't be transformed in JSON
     *            representation
     */
-   public JsonValue createJsonArray(Collection<?> collection) throws JsonException
+   public static JsonValue createJsonArray(Collection<?> collection) throws JsonException
    {
       return createJsonValue(collection);
    }
@@ -68,12 +68,12 @@ public class JsonGenerator
    /**
     * Create JSON array from specified object. Parameter <code>array</code> must
     * be array.
-    * 
+    *
     * @param array source array
     * @return JSON representation of array
     * @throws JsonException if array can't be transformed in JSON representation
     */
-   public JsonValue createJsonArray(Object array) throws JsonException
+   public static JsonValue createJsonArray(Object array) throws JsonException
    {
       if (array == null)
       {
@@ -94,12 +94,12 @@ public class JsonGenerator
 
    /**
     * Create JSON object from specified map.
-    * 
+    *
     * @param map source map
     * @return JSON representation of map
     * @throws JsonException if map can't be transformed in JSON representation
     */
-   public JsonValue createJsonObjectFromMap(Map<String, ?> map) throws JsonException
+   public static JsonValue createJsonObjectFromMap(Map<String, ?> map) throws JsonException
    {
       return createJsonValue(map);
    }
@@ -107,12 +107,12 @@ public class JsonGenerator
    /**
     * Create JSON object from specified object. Object must be conform with java
     * bean structure.
-    * 
+    *
     * @param object source object
     * @return JSON representation of object
     * @throws JsonException if map can't be transformed in JSON representation
     */
-   public JsonValue createJsonObject(Object object) throws JsonException
+   public static JsonValue createJsonObject(Object object) throws JsonException
    {
       Class<?> clazz = object.getClass();
       Method[] methods = clazz.getMethods();
@@ -177,13 +177,13 @@ public class JsonGenerator
 
    /**
     * Create JsonValue corresponding to Java object.
-    * 
+    *
     * @param object source object.
     * @return JsonValue.
     * @throws JsonException if any errors occurs.
     */
    @SuppressWarnings("unchecked")
-   private JsonValue createJsonValue(Object object) throws JsonException
+   private static JsonValue createJsonValue(Object object) throws JsonException
    {
       Types type = JsonUtils.getType(object);
       switch (type)
@@ -350,7 +350,7 @@ public class JsonGenerator
    /**
     * Check fields in class which marked as 'transient'. Transient fields will
     * be not serialized in JSON representation.
-    * 
+    *
     * @param clazz the class.
     * @return set of fields which must be skiped.
     */
