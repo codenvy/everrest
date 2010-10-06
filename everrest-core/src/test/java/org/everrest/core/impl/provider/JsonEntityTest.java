@@ -39,7 +39,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -106,6 +108,17 @@ public class JsonEntityTest extends BaseTest
          assertEquals("Collected Stories", b.get("54321").getTitle());
          assertEquals("Gabriel Garcia Marquez", b.get("54321").getAuthor());
          assertTrue(b.get("54321").isSendByPost());
+      }
+   }
+
+   @Path("/")
+   public static class ResourceString
+   {
+      @POST
+      @Consumes("application/json")
+      public void m1(String b)
+      {
+         assertEquals(jsonBook, b);
       }
    }
 
@@ -227,6 +240,33 @@ public class JsonEntityTest extends BaseTest
       }
    }
 
+   @Path("/")
+   public static class ResourceString2
+   {
+      @GET
+      @Produces("application/json")
+      public String m1()
+      {
+         return jsonBook;
+      }
+
+      @POST
+      public Response m2()
+      {
+         return Response.ok(jsonBook).type(MediaType.APPLICATION_JSON).build();
+      }
+   }
+
+   private static String jsonBook = "{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true}";
+
+   private static String jsonArray =
+      "[{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true},"
+         + "{\"title\":\"Collected Stories\", \"author\":\"Gabriel Garcia Marquez\", \"sendByPost\":true}]";
+
+   private static String jsonMap =
+      "{\"12345\":{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true},"
+         + "\"54321\":{\"title\":\"Collected Stories\", \"author\":\"Gabriel Garcia Marquez\", \"sendByPost\":true}}";
+
    private byte[] jsonBookData;
 
    private byte[] jsonArrayData;
@@ -236,16 +276,9 @@ public class JsonEntityTest extends BaseTest
    public void setUp() throws Exception
    {
       super.setUp();
-      jsonBookData =
-         ("{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true}").getBytes("UTF-8");
-      jsonArrayData =
-         ("[{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true},"
-            + "{\"title\":\"Collected Stories\", \"author\":\"Gabriel Garcia Marquez\", \"sendByPost\":true}]")
-            .getBytes("UTF-8");
-      jsonMapData =
-         ("{\"12345\":{\"title\":\"Hamlet\", \"author\":\"William Shakespeare\", \"sendByPost\":true},"
-            + "\"54321\":{\"title\":\"Collected Stories\", \"author\":\"Gabriel Garcia Marquez\", \"sendByPost\":true}}")
-            .getBytes("UTF-8");
+      jsonBookData = jsonBook.getBytes("UTF-8");
+      jsonArrayData = jsonArray.getBytes("UTF-8");
+      jsonMapData = jsonMap.getBytes("UTF-8");
    }
 
    public void testJsonEntityBean() throws Exception
@@ -295,6 +328,17 @@ public class JsonEntityTest extends BaseTest
       h.putSingle("content-type", "application/json");
       h.putSingle("content-length", "" + jsonMapData.length);
       assertEquals(204, launcher.service("POST", "/", "", h, jsonMapData, null).getStatus());
+      unregistry(r1);
+   }
+
+   public void testJsonEntityString() throws Exception
+   {
+      ResourceString r1 = new ResourceString();
+      registry(r1);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("content-type", "application/json");
+      h.putSingle("content-length", "" + jsonBookData.length);
+      assertEquals(204, launcher.service("POST", "/", "", h, jsonBookData, null).getStatus());
       unregistry(r1);
    }
 
@@ -458,6 +502,32 @@ public class JsonEntityTest extends BaseTest
       assertEquals("Gabriel Garcia Marquez", book.get("54321").getAuthor());
       assertTrue(book.get("54321").isSendByPost());
       //System.out.println("map: " + new String(writer.getBody()));
+
+      unregistry(r2);
+   }
+
+   public void testJsonReturnString() throws Exception
+   {
+      ResourceString2 r2 = new ResourceString2();
+      registry(r2);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("accept", "application/json");
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+
+      // ResourceString2#m1()
+      ContainerResponse response = launcher.service("GET", "/", "", h, null, writer, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      assertEquals(jsonBook, response.getEntity());
+      //System.out.println("string: " + new String(writer.getBody()));
+
+      // ResourceString2#m2()
+      writer.reset();
+      response = launcher.service("POST", "/", "", h, null, writer, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      assertEquals(jsonBook, response.getEntity());
+      //System.out.println("string: " + new String(writer.getBody()));
 
       unregistry(r2);
    }
