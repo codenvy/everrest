@@ -20,6 +20,7 @@ package org.everrest.core.impl.provider.json;
 
 import org.everrest.core.impl.provider.json.JsonUtils.Types;
 
+import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -102,6 +103,21 @@ public class JsonGenerator
    public static JsonValue createJsonObjectFromMap(Map<String, ?> map) throws JsonException
    {
       return createJsonValue(map);
+   }
+
+   /**
+    * Create JSON object from specified string imply it is JSON object in String
+    * format.
+    *
+    * @param s source string
+    * @return JSON representation of map
+    * @throws JsonException if map can't be transformed in JSON representation
+    */
+   public JsonValue createJsonObjectFromString(String s) throws JsonException
+   {
+      JsonParser parser = new JsonParser();
+      parser.parse(new StringReader(s));
+      return parser.getJsonObject();
    }
 
    /**
