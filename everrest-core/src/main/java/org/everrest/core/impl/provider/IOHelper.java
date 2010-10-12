@@ -53,7 +53,7 @@ public final class IOHelper
 
    /**
     * Write data from {@link InputStream} to {@link OutputStream}.
-    * 
+    *
     * @param in See {@link InputStream}
     * @param out See {@link OutputStream}
     * @throws IOException if i/o errors occurs
@@ -68,7 +68,7 @@ public final class IOHelper
 
    /**
     * Write data from {@link Reader} to {@link Writer}.
-    * 
+    *
     * @param in See {@link Reader}
     * @param out See {@link Writer}
     * @throws IOException if i/o errors occurs
@@ -83,7 +83,7 @@ public final class IOHelper
 
    /**
     * Read String from given {@link InputStream}.
-    * 
+    *
     * @param in source stream for reading
     * @param cs character set, if null then {@link #DEFAULT_CHARSET} will be
     *        used
@@ -116,7 +116,7 @@ public final class IOHelper
 
    /**
     * Write String to {@link OutputStream}.
-    * 
+    *
     * @param s String
     * @param out See {@link OutputStream}
     * @param cs character set, if null then {@link #DEFAULT_CHARSET} will be
@@ -145,7 +145,7 @@ public final class IOHelper
       finally
       {
          w.flush();
-         w.close();
+         //w.close();
       }
    }
 

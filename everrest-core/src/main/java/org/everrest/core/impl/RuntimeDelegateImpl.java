@@ -29,6 +29,8 @@ import org.everrest.core.impl.header.EntityTagHeaderDelegate;
 import org.everrest.core.impl.header.LocaleHeaderDelegate;
 import org.everrest.core.impl.header.MediaTypeHeaderDelegate;
 import org.everrest.core.impl.header.NewCookieHeaderDelegate;
+import org.everrest.core.impl.header.RangeHeaderDelegate;
+import org.everrest.core.impl.header.Ranges;
 import org.everrest.core.impl.header.StringHeaderDelegate;
 import org.everrest.core.impl.header.URIHeaderDelegate;
 import org.everrest.core.impl.uri.UriBuilderImpl;
@@ -65,7 +67,7 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
 
    /**
     * Should be used only once for initialize.
-    * 
+    *
     * @see RuntimeDelegate#setInstance(RuntimeDelegate)
     * @see RuntimeDelegate#getInstance()
     */
@@ -84,6 +86,7 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
       headerDelegates.put(String.class, new StringHeaderDelegate());
       headerDelegates.put(URI.class, new URIHeaderDelegate());
       headerDelegates.put(Locale.class, new LocaleHeaderDelegate());
+      headerDelegates.put(Ranges.class, new RangeHeaderDelegate());
    }
 
    /**
@@ -103,7 +106,7 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type)
    {
       // TODO mechanism for use external HeaderDelegate
-      return (HeaderDelegate<T>)headerDelegates.get(type);
+      return headerDelegates.get(type);
    }
 
    /**
