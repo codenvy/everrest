@@ -66,7 +66,6 @@ public class StandaloneRestServlet extends HttpServlet
          ServletContainerRequest request = new ServletContainerRequest(httpRequest);
          ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
          processor.process(request, response, env);
-
       }
       catch (IOException ioe)
       {

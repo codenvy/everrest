@@ -61,7 +61,7 @@ public class ApplicationContextImpl implements ApplicationContext
 
    /**
     * Set ApplicationContext for current thread.
-    * 
+    *
     * @param context the ApplicationContext.
     */
    public static void setCurrent(ApplicationContext context)
@@ -87,7 +87,7 @@ public class ApplicationContextImpl implements ApplicationContext
    /**
     * List of decoded matched URIs.
     */
-   private List<String> matchedURIs = new ArrayList<String>();
+   private List<String> matchedURIs;
 
    /**
     * Mutable runtime attributes.
@@ -163,7 +163,7 @@ public class ApplicationContextImpl implements ApplicationContext
 
    /**
     * Constructs new instance of ApplicationContext.
-    * 
+    *
     * @param request See {@link GenricContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param providers See {@link ProviderBinder}
@@ -190,7 +190,6 @@ public class ApplicationContextImpl implements ApplicationContext
    public void addMatchedURI(String uri)
    {
       encodedMatchedURIs.add(0, uri);
-      matchedURIs.add(0, UriComponent.decode(uri, UriComponent.PATH_SEGMENT));
    }
 
    /**
@@ -297,7 +296,14 @@ public class ApplicationContextImpl implements ApplicationContext
     */
    public List<String> getMatchedURIs(boolean decode)
    {
-      return decode ? matchedURIs : encodedMatchedURIs;
+      if (decode)
+      {
+         if (matchedURIs == null)
+            matchedURIs = new ArrayList<String>();
+         for (String seg : encodedMatchedURIs)
+            matchedURIs.add(0, UriComponent.decode(seg, UriComponent.PATH_SEGMENT));
+      }
+      return encodedMatchedURIs;
    }
 
    /**

@@ -19,6 +19,7 @@
 package org.everrest.core.impl.uri;
 
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.util.NoSyncByteArrayOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
@@ -47,61 +48,40 @@ public final class UriComponent
    }
 
    // Components of URI, see http://gbiv.com/protocols/uri/rfc/rfc3986.htm
-   /**
-    * Scheme URI component.
-    */
+   /** Scheme URI component. */
    public static final int SCHEME = 0;
 
-   /**
-    * UserInfo URI component.
-    */
+   /** UserInfo URI component. */
    public static final int USER_INFO = 1;
 
-   /**
-    * Host URI component.
-    */
+   /** Host URI component. */
    public static final int HOST = 2;
 
-   /**
-    * Port URI component.
-    */
+   /** Port URI component. */
    public static final int PORT = 3;
 
-   /**
-    * Path segment URI sub-component, it can't contains '/'.
-    */
+   /** Path segment URI sub-component, it can't contains '/'. */
    public static final int PATH_SEGMENT = 4;
 
-   /**
-    * Path URI components, consists of path-segments.
-    */
+   /** Path URI components, consists of path-segments. */
    public static final int PATH = 5;
 
-   /**
-    * Query string.
-    */
+   /** Query string. */
    public static final int QUERY = 6;
 
-   /**
-    * Fragment.
-    */
+   /** Fragment. */
    public static final int FRAGMENT = 7;
 
-   /**
-    * Scheme-specific part.
-    */
+   /** Scheme-specific part. */
    public static final int SSP = 8;
 
-   // very mess :( part
+   /** Encoded '%' character. */
+   public static final String PERCENT = "%25";
 
-   /**
-    * The letters of the basic Latin alphabet.
-    */
+   /** The letters of the basic Latin alphabet. */
    private static final String ALPHA = fillTable("A-Z") + fillTable("a-z");
 
-   /**
-    * Digits.
-    */
+   /** Digits. */
    private static final String DIGIT = fillTable("0-9");
 
    /**
@@ -119,22 +99,18 @@ public final class UriComponent
     */
    private static final String GEN_DELIM = ":/?#[]@";
 
-   /**
-    * Sub-delims characters.
-    */
+   /** Sub-delims characters. */
    private static final String SUB_DELIM = "!$&'()*+,;=";
 
    // --------------------
 
-   /**
-    * Characters that used for percent encoding.
-    */
+   /** Characters that used for percent encoding. */
    private static final String HEX_DIGITS = "0123456789ABCDEF";
 
-   /**
-    * Array of legal characters for each component of URI.
-    */
+   /** Array of legal characters for each component of URI. */
    private static final String[] ENCODING = new String[9];
+
+   private static final String[][] ENCODED = new String[9][128];
 
    // fill table
    static
@@ -148,6 +124,19 @@ public final class UriComponent
       ENCODING[QUERY] = ENCODING[PATH] + "?";
       ENCODING[FRAGMENT] = ENCODING[QUERY];
       ENCODING[SSP] = UNRESERVED + SUB_DELIM + GEN_DELIM;
+
+      for (int i = SCHEME; i <= SSP; i++)
+      {
+         for (int j = 0; j < 128; j++)
+         {
+            if (ENCODING[i].indexOf(j) < 0)
+            {
+               StringBuilder sb = new StringBuilder();
+               addPercentEncoded(j, sb);
+               ENCODED[i][j] = sb.toString();
+            }
+         }
+      }
    }
 
    /**
@@ -376,61 +365,59 @@ public final class UriComponent
 
          if (ch == '%' && recognizeEncoded)
          {
-            if (UriComponent.checkHexCharacters(str, i))
+            if (checkHexCharacters(str, i))
             {
-
                if (sb != null)
+               {
                   sb.append(ch).append(str.charAt(++i)).append(str.charAt(++i));
-
+               }
             }
             else
             {
-
                if (sb == null)
                {
                   sb = new StringBuilder();
                   sb.append(str.substring(0, i));
                }
-               addPercentEncoded(ch, sb); // in fact add '%25'
-
+               //               addPercentEncoded(ch, sb); // in fact add '%25'
+               sb.append(PERCENT);
             }
          }
          else if (ch < 128 && !needEncode(ch, component))
          {
-
             if (sb != null)
+            {
                sb.append(ch);
-
+            }
          }
          else
          {
-
             if ((ch == '{' || ch == '}') && containsUriParams)
             {
-
                if (sb != null)
+               {
                   sb.append(ch);
-
+               }
             }
             else
             {
-
                if (sb == null)
                {
                   sb = new StringBuilder();
                   sb.append(str.substring(0, i));
                }
-
                if (ch < 128)
-                  addPercentEncoded(ch, sb);
+               {
+                  //                  addPercentEncoded(ch, sb);
+                  sb.append(ENCODED[component][ch]);
+               }
                else
+               {
                   addUTF8Encoded(ch, sb);
-
+               }
             }
-
          }
       }
-
       return sb != null ? sb.toString() : str;
    }
 
@@ -453,28 +440,19 @@ public final class UriComponent
       int l = str.length();
       StringBuilder sb = new StringBuilder();
 
-      /* NOTE spaces can be encoded with '+' */
-      //    if ((p = str.indexOf('%')) < 0)
-      //      return str; // nothing to do
-
-      //    if (l < 3)
       if (l < 3 && str.indexOf('%') > 0)
          throw new IllegalArgumentException("Mailformed string " + str);
 
-      //    if ((p = str.lastIndexOf('%')) > l - 3)
       p = str.lastIndexOf('%');
       if (p > 0 && p > l - 3)
          throw new IllegalArgumentException("Mailformed string at index " + p);
 
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
       p = 0; // reset pointer
       while (p < l)
       {
          char c = str.charAt(p);
-
          if (c != '%')
          {
-
             // NOTE can be potential problem but we can't ignore this
             if (c == '+')
                sb.append(' ');
@@ -482,20 +460,17 @@ public final class UriComponent
                sb.append(c);
 
             p++;
-
          }
          else
          {
-
+            ByteArrayOutputStream out = new NoSyncByteArrayOutputStream(4);
             p = percentDecode(str, p, out);
-
             byte[] buff = out.toByteArray();
 
             if (buff.length == 1 && (buff[0] & 0xFF) < 128)
                sb.append((char)buff[0]);
             else
                addUTF8Decoded(buff, sb);
-
             out.reset();
          }
       }
@@ -606,13 +581,11 @@ public final class UriComponent
    private static char getHexCharacter(String s, int p)
    {
       char c = s.charAt(p);
-      if (Character.isLetter(c))
-         c = Character.toUpperCase(c);
-
-      if (HEX_DIGITS.indexOf(c) == -1)
-         throw new IllegalArgumentException("Mailformed string at index " + p);
-
-      return c;
+      if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'))
+         return c;
+      if (c >= 'a' && c <= 'f')
+         return Character.toUpperCase(c);
+      throw new IllegalArgumentException("Mailformed string at index " + p);
    }
 
    /**

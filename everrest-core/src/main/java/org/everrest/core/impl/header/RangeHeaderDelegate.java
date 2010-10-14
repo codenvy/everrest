@@ -45,6 +45,10 @@ public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges>
     */
    public Ranges fromString(String value) throws IllegalArgumentException
    {
+      if (value == null)
+      {
+         throw new IllegalArgumentException("null");
+      }
       if (!value.startsWith("bytes"))
       {
          throw new IllegalArgumentException("Invalid byte range.");

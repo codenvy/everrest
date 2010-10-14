@@ -25,8 +25,6 @@ import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 
-import java.util.Collection;
-
 import javax.ws.rs.core.Application;
 
 /**
@@ -38,14 +36,14 @@ public class EverrestProcessor
    private final RequestHandler requestHandler;
 
    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
-      DependencySupplier dependencies, EverrestConfiguration config, Collection<Application> apps)
+      DependencySupplier dependencies, EverrestConfiguration config, Application application)
    {
       ApplicationPublisher appInitializer = new ApplicationPublisher(resources, providers);
-      for (Application app : apps)
+      if (application != null)
       {
-         appInitializer.publish(app);
+         appInitializer.publish(application);
       }
-      requestHandler = new RequestHandlerImpl(resources, dispatcher, dependencies, config);
+      requestHandler = new RequestHandlerImpl(resources, providers, dispatcher, dependencies, config);
    }
 
    public void process(GenericContainerRequest request, GenericContainerResponse response, EnvironmentContext envCtx)

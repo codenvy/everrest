@@ -76,7 +76,7 @@ public class UriBuilderTest extends BaseTest
       assertEquals(URI.create("http://localhost:8080/x/y/z"), u);
    }
 
-   public void testReplaceNatrixParam()
+   public void testReplaceMatrixParam()
    {
       URI u = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y;a=z").replaceMatrixParam("a", "b", "c").build();
       assertEquals(URI.create("http://localhost:8080/a/b/c;b=y;a=b;a=c"), u);

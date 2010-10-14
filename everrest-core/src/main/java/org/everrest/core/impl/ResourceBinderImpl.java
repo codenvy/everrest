@@ -55,7 +55,7 @@ public class ResourceBinderImpl implements ResourceBinder
     * Name of property which may contains resource expiration date. Date
     * expected as string representation of java.util.Date in long format.
     */
-   public static final String RESOURCE_EXPIRED = "resource.expiration.date";
+   public static final String RESOURCE_EXPIRED = "org.everrest.resource.expiration.date";
 
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(ResourceBinderImpl.class);

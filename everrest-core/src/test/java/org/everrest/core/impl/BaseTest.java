@@ -42,11 +42,12 @@ public abstract class BaseTest extends TestCase
    public void setUp() throws Exception
    {
       resources = new ResourceBinderImpl();
-      requestHandler = new RequestHandlerImpl(resources, new SimpleDependencySupplier(), new EverrestConfiguration());
-
       // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
-      providers = ProviderBinder.getInstance();
+      //providers = ProviderBinder.getInstance();
+      providers = new ApplicationProviderBinder();
+      requestHandler =
+         new RequestHandlerImpl(resources, providers, new SimpleDependencySupplier(), new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
    }
 

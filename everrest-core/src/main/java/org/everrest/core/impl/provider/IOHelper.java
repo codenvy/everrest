@@ -58,7 +58,7 @@ public final class IOHelper
     * @param out See {@link OutputStream}
     * @throws IOException if i/o errors occurs
     */
-   static void write(InputStream in, OutputStream out) throws IOException
+   public static void write(InputStream in, OutputStream out) throws IOException
    {
       byte[] buf = new byte[1024];
       int rd = -1;
@@ -73,7 +73,7 @@ public final class IOHelper
     * @param out See {@link Writer}
     * @throws IOException if i/o errors occurs
     */
-   static void write(Reader in, Writer out) throws IOException
+   public static void write(Reader in, Writer out) throws IOException
    {
       char[] buf = new char[1024];
       int rd = -1;
@@ -90,7 +90,7 @@ public final class IOHelper
     * @return resulting String
     * @throws IOException if i/o errors occurs
     */
-   static String readString(InputStream in, String cs) throws IOException
+   public static String readString(InputStream in, String cs) throws IOException
    {
       Charset charset;
       // Must respect application specified character set.
@@ -123,7 +123,7 @@ public final class IOHelper
     *        used
     * @throws IOException if i/o errors occurs
     */
-   static void writeString(String s, OutputStream out, String cs) throws IOException
+   public static void writeString(String s, OutputStream out, String cs) throws IOException
    {
       Charset charset;
       // Must respect application specified character set.

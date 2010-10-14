@@ -105,4 +105,18 @@ public class ResponseImplTest extends BaseTest
       assertEquals(1, response.getMetadata().get("foo1").size());
       assertEquals("to be or not to be", response.getMetadata().getFirst("foo1"));
    }
+
+   public void testRemoveHeaders2()
+   {
+      Response response =
+         Response.ok().header("content-type", "text/plain").header("content-type", "text/*").header("content-type",
+            null).build();
+      assertNull(response.getMetadata().get("content-type"));
+      response =
+         Response.ok().header("content-type", "text/plain").header("content-length", "10").header("content-type", null)
+            .build();
+      assertNull(response.getMetadata().get("content-type"));
+      assertEquals(1, response.getMetadata().get("content-length").size());
+      assertEquals("10", response.getMetadata().getFirst("content-length"));
+   }
 }

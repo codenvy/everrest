@@ -21,9 +21,9 @@ package org.everrest.core.servlet;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.ResourceBinder;
+import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.util.Logger;
@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -225,8 +224,8 @@ public class RestInitializedListener implements ServletContextListener
       }
 
       EverrestProcessor processor =
-         new EverrestProcessor(resources, ProviderBinder.getInstance(), dispatcher, dependencySupplier, config,
-            application != null ? Arrays.asList(application) : new ArrayList<Application>());
+         new EverrestProcessor(resources, new ApplicationProviderBinder(), dispatcher, dependencySupplier, config,
+            application);
       sctx.setAttribute(EverrestProcessor.class.getName(), processor);
    }
 }

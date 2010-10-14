@@ -87,7 +87,8 @@ public class ProviderContextParameterInjectionTest extends BaseTest
 
       public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
-         return uriInfo != null && request != null && httpHeaders != null && providers != null && httpRequest != null;
+         return type == MockEntity.class && uriInfo != null && request != null && httpHeaders != null
+            && providers != null && httpRequest != null;
       }
 
       public MockEntity readFrom(Class<MockEntity> type, Type genericType, Annotation[] annotations,
@@ -106,7 +107,8 @@ public class ProviderContextParameterInjectionTest extends BaseTest
 
       public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
-         return uriInfo != null && request != null && httpHeaders != null && providers != null && httpRequest != null;
+         return type == MockEntity.class && uriInfo != null && request != null && httpHeaders != null
+            && providers != null && httpRequest != null;
       }
 
       public void writeTo(MockEntity t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,

@@ -54,13 +54,10 @@ public class RequestDispatcherTest extends BaseTest
       SimpleDependencySupplier depInjector = new SimpleDependencySupplier();
       depInjector.put(InjectableComponent1.class, new InjectableComponent1());
       depInjector.put(InjectableComponent2.class, new InjectableComponent2());
-
-      requestHandler = new RequestHandlerImpl(resources, depInjector, new EverrestConfiguration());
-
       // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
-      providers = ProviderBinder.getInstance();
-
+      providers = new ApplicationProviderBinder();
+      requestHandler = new RequestHandlerImpl(resources, providers, depInjector, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
    }
 

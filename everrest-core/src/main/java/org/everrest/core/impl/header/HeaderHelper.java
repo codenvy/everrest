@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -55,42 +56,35 @@ public final class HeaderHelper
    {
    }
 
-   /**
-    * Pattern for search whitespace and quote in string.
-    */
+   /** Pattern for search whitespace and quote in string. */
    private static final Pattern WHITESPACE_QOUTE_PATTERN = Pattern.compile("[\\s\"]");
 
-   /**
-    * Pattern for whitespace in string.
-    */
+   /** Pattern for whitespace in string. */
    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
-   /**
-    * Header separators. Header token MUST NOT contains any of it.
-    */
-   private static final String SEPARTORS = "()<>@,;:\"\\/[]?={}";
+   /** Header separators. Header token MUST NOT contains any of it. */
+   private static final char[] SEPARATORS = new char[128];
+   static
+   {
+      for (char c : "()<>@,;:\"\\/[]?={}".toCharArray())
+         SEPARATORS[c] = c;
+   }
 
-   /**
-    * Accept all media type list.
-    */
+   /** Accept all media type list. */
    private static final List<AcceptMediaType> ACCEPT_ALL_MEDIA_TYPE =
       Collections.singletonList(AcceptMediaType.DEFAULT);
 
-   /**
-    * Accept all languages list.
-    */
+   /** Accept all languages list. */
    private static final List<AcceptLanguage> ACCEPT_ALL_LANGUAGE = Collections.singletonList(AcceptLanguage.DEFAULT);
 
-   /**
-    * Accept all tokens list.
-    */
+   /** Accept all tokens list. */
    private static final List<AcceptToken> ACCEPT_ALL_TOKENS = Collections.singletonList(new AcceptToken("*"));
 
    //
 
    /**
     * Comparator for tokens which have quality value.
-    * 
+    *
     * @see QualityValue
     */
    public static final Comparator<QualityValue> QUALITY_VALUE_COMPARATOR = new Comparator<QualityValue>()
@@ -98,7 +92,7 @@ public final class HeaderHelper
 
       /**
        * Compare two QualityValue for order.
-       * 
+       *
        * @param o1 first QualityValue to be compared
        * @param o2 second QualityValue to be compared
        * @return result of comparison
@@ -122,7 +116,7 @@ public final class HeaderHelper
 
    /**
     * Accept media type producer.
-    * 
+    *
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptMediaType> LIST_MEDIA_TYPE_PRODUCER =
@@ -142,21 +136,20 @@ public final class HeaderHelper
 
    /**
     * Create sorted by quality value accepted media type list.
-    * 
+    *
     * @param header source header string
     * @return List of AcceptMediaType
     */
    public static List<AcceptMediaType> createAcceptedMediaTypeList(String header)
    {
-      if (header == null || header.length() == 0)
+      if (header == null || header.length() == 0 || MediaType.WILDCARD.equals(header.trim()))
          return ACCEPT_ALL_MEDIA_TYPE;
-
       return LIST_MEDIA_TYPE_PRODUCER.createQualitySortedList(header);
    }
 
    /**
     * Accept language producer.
-    * 
+    *
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptLanguage> LIST_LANGUAGE_PRODUCER =
@@ -176,22 +169,21 @@ public final class HeaderHelper
 
    /**
     * Create sorted by quality value accepted language list.
-    * 
+    *
     * @param header source header string
     * @return List of AcceptLanguage
     */
    public static List<AcceptLanguage> createAcceptedLanguageList(String header)
    {
-      if (header == null || header.length() == 0)
+      if (header == null || header.length() == 0 || "*".equals(header))
          return ACCEPT_ALL_LANGUAGE;
-
       return LIST_LANGUAGE_PRODUCER.createQualitySortedList(header);
    }
 
    /**
     * Accept token producer. Useful for processing 'accept-charset' and
     * 'accept-encoding' request headers.
-    * 
+    *
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptToken> LIST_TOKEN_PRODUCER = new ListHeaderProducer<AcceptToken>()
@@ -230,29 +222,27 @@ public final class HeaderHelper
 
    /**
     * Create sorted by quality value 'accept-character' list.
-    * 
+    *
     * @param header source header string
     * @return List of accept charset tokens
     */
    public static List<AcceptToken> createAcceptedCharsetList(String header)
    {
-      if (header == null || header.length() == 0)
+      if (header == null || header.length() == 0 || "*".equals(header))
          return ACCEPT_ALL_TOKENS;
-
       return LIST_TOKEN_PRODUCER.createQualitySortedList(header);
    }
 
    /**
     * Create sorted by quality value 'accept-encoding' list.
-    * 
+    *
     * @param header source header string
     * @return List of accept encoding tokens
     */
    public static List<AcceptToken> createAcceptedEncodingList(String header)
    {
-      if (header == null || header.length() == 0)
+      if (header == null || header.length() == 0 || "*".equals(header))
          return ACCEPT_ALL_TOKENS;
-
       return LIST_TOKEN_PRODUCER.createQualitySortedList(header);
    }
 
@@ -264,46 +254,30 @@ public final class HeaderHelper
    private static class TempCookie
    {
 
-      /**
-       * Cookie name.
-       */
+      /** Cookie name. */
       String name;
 
-      /**
-       * Cookie value.
-       */
+      /** Cookie value. */
       String value;
 
-      /**
-       * Cookie version.
-       */
+      /** Cookie version. */
       int version;
 
-      /**
-       * Cookie path.
-       */
+      /** Cookie path. */
       String path;
 
-      /**
-       * Cookie domain.
-       */
+      /** Cookie domain. */
       String domain;
 
       // For NewCokie.
 
-      /**
-       * Comments about cookie.
-       */
+      /** Comments about cookie. */
       String comment;
 
-      /**
-       * Cookie max age.
-       */
+      /** Cookie max age. */
       int maxAge;
 
-      /**
-       * True if cookie secure false otherwise.
-       */
+      /** True if cookie secure false otherwise. */
       boolean security;
 
       /**
@@ -326,7 +300,7 @@ public final class HeaderHelper
 
    /**
     * Parse cookie header string and create collection of cookie from it.
-    * 
+    *
     * @param cookie the cookie string.
     * @return collection of Cookie.
     */
@@ -370,7 +344,7 @@ public final class HeaderHelper
          if (name.indexOf('$') == -1)
          {
 
-            // first save previous cookie 
+            // first save previous cookie
             if (temp != null)
                l.add(new Cookie(temp.name, temp.value, temp.path, temp.domain, temp.version));
 
@@ -469,7 +443,7 @@ public final class HeaderHelper
     * header. Format can be one of see
     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>}
     * .
-    * 
+    *
     * @param header source date header
     * @return parsed Date
     */
@@ -482,9 +456,9 @@ public final class HeaderHelper
       }
       catch (ParseException e)
       {
-         // ignore all ParseException now 
+         // ignore all ParseException now
       }
-      // no one format was found 
+      // no one format was found
       throw new IllegalArgumentException("Not found appropriated date format for " + header);
    }
 
@@ -505,7 +479,7 @@ public final class HeaderHelper
    /**
     * Create string representation of Java Object for adding to response. Method
     * use {@link HeaderDelegate#toString()}.
-    * 
+    *
     * @param o HTTP header as Java type.
     * @return string representation of supplied type
     */
@@ -520,7 +494,7 @@ public final class HeaderHelper
     * Convert Collection&lt;String&gt; to single String, where values separated
     * by ','. Useful for getting source string of HTTP header for next
     * processing quality value of header tokens.
-    * 
+    *
     * @param collection the source list
     * @return String result
     */
@@ -545,7 +519,7 @@ public final class HeaderHelper
    /**
     * Append string in given string buffer, if string contains quotes or
     * whitespace, then it be escaped.
-    * 
+    *
     * @param sb string buffer
     * @param s string
     */
@@ -569,7 +543,7 @@ public final class HeaderHelper
 
    /**
     * Append string in given string buffer, quotes will be escaped.
-    * 
+    *
     * @param sb string buffer
     * @param s string
     */
@@ -586,7 +560,7 @@ public final class HeaderHelper
 
    /**
     * Remove all whitespace from given string.
-    * 
+    *
     * @param s the source string
     * @return the result string
     */
@@ -602,7 +576,7 @@ public final class HeaderHelper
    /**
     * Add quotes to <code>String</code> if it consists whitespaces, otherwise
     * <code>String</code> will be returned without changes.
-    * 
+    *
     * @param s the source string.
     * @return new string.
     */
@@ -619,7 +593,7 @@ public final class HeaderHelper
    /**
     * Check syntax of quality value and parse it. Quality value must have not
     * more then 5 characters and be not more then 1 .
-    * 
+    *
     * @param qstring string representation of quality value
     * @return quality value
     */
@@ -638,7 +612,7 @@ public final class HeaderHelper
    /**
     * Check is given string token. Token may contains only US-ASCII characters
     * except separators, {@link #SEPARTORS} and controls.
-    * 
+    *
     * @param token the token
     * @return -1 if string has only valid character otherwise index of first
     *         wrong character
@@ -648,10 +622,9 @@ public final class HeaderHelper
       for (int i = 0; i < token.length(); i++)
       {
          char c = token.charAt(i);
-         if (c >= 127 || SEPARTORS.indexOf(c) != -1)
+         if (c > 127 || SEPARATORS[c] != 0)
             return i;
       }
-
       return -1;
    }
 
@@ -659,7 +632,7 @@ public final class HeaderHelper
     * The cookies parameters can be separated by ';' or ',', try to find first
     * available separator in cookie string. If both not found the string length
     * will be returned.
-    * 
+    *
     * @param cookie the cookie string.
     * @param start index for start searching.
     * @return the index of ',' or ';'.
@@ -688,7 +661,7 @@ public final class HeaderHelper
     * <p>
     * String \"hello \\\"someone\\\"\" will be changed to hello \"someone\"
     * </p>
-    * 
+    *
     * @param token token for processing
     * @return result
     */

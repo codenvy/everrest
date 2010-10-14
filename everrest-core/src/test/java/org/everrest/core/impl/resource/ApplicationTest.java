@@ -188,12 +188,16 @@ public class ApplicationTest extends BaseTest
 
    public void testRegistry()
    {
+      int resourcesSize = resources.getSize();
+      int requestFiltersSize = providers.getRequestFilters(null).size();
+      int responseFilterSize = providers.getResponseFilters(null).size();
+      int methodFilterSize = providers.getMethodInvokerFilters(null).size();
       ApplicationPublisher deployer = new ApplicationPublisher(resources, providers);
       deployer.publish(new Application1());
-      assertEquals(4, resources.getSize());
-      assertEquals(1, providers.getRequestFilters(null).size());
-      assertEquals(1, providers.getResponseFilters(null).size());
-      assertEquals(1, providers.getMethodInvokerFilters(null).size());
+      assertEquals(resourcesSize + 4, resources.getSize());
+      assertEquals(requestFiltersSize + 1, providers.getRequestFilters(null).size());
+      assertEquals(responseFilterSize + 1, providers.getResponseFilters(null).size());
+      assertEquals(methodFilterSize + 1, providers.getMethodInvokerFilters(null).size());
       assertNotNull(providers.getExceptionMapper(RuntimeException.class));
       assertNotNull(providers.getExceptionMapper(IllegalStateException.class));
    }

@@ -19,6 +19,7 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.impl.BaseTest;
+import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 
 import java.io.ByteArrayInputStream;
@@ -47,7 +48,9 @@ public class ByteEntityProviderTest extends BaseTest
       for (int i = 0; i < data.length; i++)
          data[i] = (byte)i;
       assertTrue(reader.isReadable(data.getClass(), null, null, null));
-      byte[] result = (byte[])reader.readFrom(byte[].class, null, null, null, null, new ByteArrayInputStream(data));
+      byte[] result =
+         (byte[])reader.readFrom(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(),
+            new ByteArrayInputStream(data));
       assertTrue(Arrays.equals(data, result));
    }
 
@@ -63,7 +66,7 @@ public class ByteEntityProviderTest extends BaseTest
       for (int i = data.length - 1; i >= 0; i--)
          data[i] = (byte)i;
       ByteArrayOutputStream out = new ByteArrayOutputStream();
-      writer.writeTo(data, byte[].class, null, null, null, null, out);
+      writer.writeTo(data, byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(), out);
       assertTrue(Arrays.equals(data, out.toByteArray()));
    }
 

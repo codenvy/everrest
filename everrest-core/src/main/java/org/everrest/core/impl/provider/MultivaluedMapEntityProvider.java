@@ -84,7 +84,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
       InputStream entityStream) throws IOException
    {
       ApplicationContext context = ApplicationContextImpl.getCurrent();
-      Object o = context.getAttributes().get("ws.rs.provider.entity.form");
+      Object o = context.getAttributes().get("org.everrest.provider.entity.form");
       if (o != null)
          return (MultivaluedMap<String, String>)o;
 
@@ -108,7 +108,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
          // keep the last part
          addPair(sb.toString(), form);
 
-         context.getAttributes().put("ws.rs.provider.entity.form", form);
+         context.getAttributes().put("org.everrest.provider.entity.form", form);
 
          return form;
       }

@@ -20,6 +20,7 @@ package org.everrest.core.impl.uri;
 
 import org.everrest.core.uri.UriPattern;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -164,8 +165,13 @@ public class UriBuilderImpl extends UriBuilder
     */
    private void encode()
    {
-      // Should do this even path segment already encoded.
-      // The reason is matrix parameters that is not encoded yet.
+       // Should do this even path all segments already encoded. The reason is
+       // matrix parameters that is not encoded yet. Not able encode it just
+       // after adding via particular method(s) since updating/removing of it may
+       // be requested later. If matrix parameters encoded just after adding then
+       // original name of parameters may be changed and need play with
+       // encoding/decoding again when updating/removing of matrix parameter
+       // performed.
       encodePath();
 
       encodeQuery();
@@ -178,6 +184,13 @@ public class UriBuilderImpl extends UriBuilder
    private void encodePath()
    {
       if (path.length() == 0)
+         return;
+      // We are assumes matrix parameters is parameters added to last segment
+      // of URI. Check  ';' after last '/'.
+      int p = path.lastIndexOf("/");
+      p = path.indexOf(";", p < 0 ? 0 : p);
+      // If ';' not found then not need encode since path segments itself already encoded.
+      if (p < 0)
          return;
       String t = path.toString();
       path.setLength(0);
@@ -207,7 +220,8 @@ public class UriBuilderImpl extends UriBuilder
             n = str.length();
 
          if (n > p)
-         { // skip empty pair, like a=x&&b=y
+         {
+            // skip empty pair, like a=x&&b=y
             String pair = str.substring(p, n);
             if (query.length() > 0)
                query.append('&');
@@ -242,7 +256,7 @@ public class UriBuilderImpl extends UriBuilder
 
    /**
     * For #clone() method.
-    * 
+    *
     * @param cloned current UriBuilder.
     */
    private UriBuilderImpl(UriBuilderImpl cloned)
@@ -369,12 +383,11 @@ public class UriBuilderImpl extends UriBuilder
       if (resource == null)
          throw new IllegalArgumentException("Resource is null");
 
-      if (resource.getAnnotation(Path.class) == null)
+      Annotation annotation = resource.getAnnotation(Path.class);
+      if (annotation == null)
          throw new IllegalArgumentException("Resource is not annotated with javax.ws.rs.Path");
 
-      Path p = (Path)resource.getAnnotation(Path.class);
-
-      return path(p.value());
+      return path(((Path)annotation).value());
    }
 
    /**
@@ -390,9 +403,7 @@ public class UriBuilderImpl extends UriBuilder
       if (p == null)
          throw new IllegalArgumentException("Method " + method.getName() + " is not annotated with javax.ws.rs.Path");
 
-      path(p.value());
-
-      return this;
+      return path(p.value());
    }
 
    /**

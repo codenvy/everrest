@@ -18,6 +18,8 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.core.util.CaselessStringWrapper;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;
@@ -43,24 +46,18 @@ import javax.ws.rs.core.Variant;
 public final class ResponseImpl extends Response
 {
 
-   /**
-    * HTTP status.
-    */
+   /** HTTP status. */
    private final int status;
 
-   /**
-    * Entity. Entity will be written as response message body.
-    */
+   /** Entity. Entity will be written as response message body. */
    private final Object entity;
 
-   /**
-    * HTTP headers.
-    */
+   /** HTTP headers. */
    private final MultivaluedMap<String, Object> headers;
 
    /**
     * Construct Response with supplied status, entity and headers.
-    * 
+    *
     * @param status HTTP status
     * @param entity an entity
     * @param headers HTTP headers
@@ -107,106 +104,74 @@ public final class ResponseImpl extends Response
    public static final class ResponseBuilderImpl extends ResponseBuilder
    {
 
-      /**
-       * HTTP headers which can't be multivalued.
-       */
+      /** HTTP headers which can't be multivalued. */
       private enum HEADERS {
-         /**
-          * Cache control.
-          */
+         /** Cache control. */
          CACHE_CONTROL,
-         /**
-          * Content-Language.
-          */
+         /** Content-Language. */
          CONTENT_LANGUAGE,
-         /**
-          * Content-Location.
-          */
+         /** Content-Location. */
          CONTENT_LOCATION,
-         /**
-          * Content-Type.
-          */
+         /** Content-Type. */
          CONTENT_TYPE,
-         /**
-          * Content-length.
-          */
+         /** Content-length. */
          CONTENT_LENGTH,
-         /**
-          * ETag.
-          */
+         /** ETag. */
          ETAG,
-         /**
-          * Expires.
-          */
+         /** Expires. */
          EXPIRES,
-         /**
-          * Last-Modified.
-          */
+         /** Last-Modified. */
          LAST_MODIFIED,
-         /**
-          * Location.
-          */
+         /** Location. */
          LOCATION
       }
 
-      /**
-       * HTTP headers which can't be multivalued.
-       */
-      private static final Map<HEADERS, String> HEADERS_MAP = new HashMap<HEADERS, String>();
+      private static final Map<HEADERS, CaselessStringWrapper> HEADER_TO_ENUM =
+         new HashMap<HEADERS, CaselessStringWrapper>();
+
+      private static final Map<CaselessStringWrapper, HEADERS> ENUM_TO_HEADER =
+         new HashMap<CaselessStringWrapper, HEADERS>();
 
       static
       {
-         HEADERS_MAP.put(HEADERS.CACHE_CONTROL, HttpHeaders.CACHE_CONTROL);
-         HEADERS_MAP.put(HEADERS.CONTENT_LANGUAGE, HttpHeaders.CONTENT_LANGUAGE);
-         HEADERS_MAP.put(HEADERS.CONTENT_LOCATION, HttpHeaders.CONTENT_LOCATION);
-         HEADERS_MAP.put(HEADERS.CONTENT_TYPE, HttpHeaders.CONTENT_TYPE);
-         HEADERS_MAP.put(HEADERS.CONTENT_LENGTH, HttpHeaders.CONTENT_LENGTH);
-         HEADERS_MAP.put(HEADERS.ETAG, HttpHeaders.ETAG);
-         HEADERS_MAP.put(HEADERS.LAST_MODIFIED, HttpHeaders.LAST_MODIFIED);
-         HEADERS_MAP.put(HEADERS.LOCATION, HttpHeaders.LOCATION);
-         HEADERS_MAP.put(HEADERS.EXPIRES, HttpHeaders.EXPIRES);
+         HEADER_TO_ENUM.put(HEADERS.CACHE_CONTROL, new CaselessStringWrapper(HttpHeaders.CACHE_CONTROL));
+         HEADER_TO_ENUM.put(HEADERS.CONTENT_LANGUAGE, new CaselessStringWrapper(HttpHeaders.CONTENT_LANGUAGE));
+         HEADER_TO_ENUM.put(HEADERS.CONTENT_LOCATION, new CaselessStringWrapper(HttpHeaders.CONTENT_LOCATION));
+         HEADER_TO_ENUM.put(HEADERS.CONTENT_TYPE, new CaselessStringWrapper(HttpHeaders.CONTENT_TYPE));
+         HEADER_TO_ENUM.put(HEADERS.CONTENT_LENGTH, new CaselessStringWrapper(HttpHeaders.CONTENT_LENGTH));
+         HEADER_TO_ENUM.put(HEADERS.ETAG, new CaselessStringWrapper(HttpHeaders.ETAG));
+         HEADER_TO_ENUM.put(HEADERS.LAST_MODIFIED, new CaselessStringWrapper(HttpHeaders.LAST_MODIFIED));
+         HEADER_TO_ENUM.put(HEADERS.LOCATION, new CaselessStringWrapper(HttpHeaders.LOCATION));
+         HEADER_TO_ENUM.put(HEADERS.EXPIRES, new CaselessStringWrapper(HttpHeaders.EXPIRES));
       }
 
-      /**
-       * Default HTTP status, No-content, 204.
-       */
+      /** Default HTTP status, No-content, 204. */
       private static final int DEFAULT_HTTP_STATUS = Response.Status.NO_CONTENT.getStatusCode();
 
-      /**
-       * Default HTTP status.
-       */
+      /** Default HTTP status. */
       private int status = DEFAULT_HTTP_STATUS;
 
-      /**
-       * Entity. Entity will be written as response message body.
-       */
+      /** Entity. Entity will be written as response message body. */
       private Object entity;
 
-      /**
-       * Not multivalued HTTP headers.
-       */
-      private Map<String, Object> headers = new HashMap<String, Object>();
+      /** Not multivalued HTTP headers. */
+      //private Map<String, Object> headers = new HashMap<String, Object>();
+      private Map<CaselessStringWrapper, Object> headers = new HashMap<CaselessStringWrapper, Object>();
 
-      /**
-       * Multivalued HTTP headers.
-       */
+      /** Multivalued HTTP headers. */
       private List<Object> headerValues;
 
-      /**
-       * HTTP cookies, Set-Cookie header.
-       */
+      /** HTTP cookies, Set-Cookie header. */
       private Map<String, NewCookie> cookies;
 
-      /**
-       * See {@link ResponseBuilder}.
-       */
+      /** See {@link ResponseBuilder}. */
       ResponseBuilderImpl()
       {
       }
 
       /**
        * Useful for clone method.
-       * 
+       *
        * @param other other ResponseBuilderImpl
        * @see #clone()
        */
@@ -227,10 +192,9 @@ public final class ResponseImpl extends Response
       {
          MultivaluedMap<String, Object> m = new OutputHeadersMap();
          // following headers can't be multivalued
-         for (Map.Entry<String, Object> e : headers.entrySet())
+         for (Entry<CaselessStringWrapper, Object> e : headers.entrySet())
          {
-            if (e.getValue() != null)
-               m.putSingle(e.getKey(), e.getValue());
+            m.putSingle(e.getKey().getString(), e.getValue());
          }
 
          // following headers can be multivalued
@@ -238,20 +202,24 @@ public final class ResponseImpl extends Response
          {
             Iterator<Object> i = headerValues.iterator();
             while (i.hasNext())
-               m.add((String)i.next(), i.next());
+            {
+               m.add(((CaselessStringWrapper)i.next()).getString(), i.next());
+            }
          }
 
          // add cookies
          if (cookies != null)
          {
             for (NewCookie c : cookies.values())
+            {
                m.add(HttpHeaders.SET_COOKIE, c);
+            }
          }
 
-         Response r = new ResponseImpl(status, entity, m);
+         Response response = new ResponseImpl(status, entity, m);
          reset();
 
-         return r;
+         return response;
       }
 
       /**
@@ -272,7 +240,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder cacheControl(CacheControl cacheControl)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.CACHE_CONTROL), cacheControl);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.CACHE_CONTROL), cacheControl);
          return this;
       }
 
@@ -291,7 +259,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder contentLocation(URI location)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.CONTENT_LOCATION), location);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.CONTENT_LOCATION), location);
          return this;
       }
 
@@ -308,12 +276,15 @@ public final class ResponseImpl extends Response
          else if (cookies != null)
          {
             if (this.cookies == null)
+            {
                this.cookies = new HashMap<String, NewCookie>();
+            }
             // new cookie overwrite old ones with the same name
             for (NewCookie c : cookies)
+            {
                this.cookies.put(c.getName(), c);
+            }
          }
-
          return this;
       }
 
@@ -333,7 +304,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder expires(Date expires)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.EXPIRES), expires);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.EXPIRES), expires);
          return this;
       }
 
@@ -343,62 +314,51 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder header(String name, Object value)
       {
-         for (Map.Entry<HEADERS, String> e : HEADERS_MAP.entrySet())
+         CaselessStringWrapper caselessname = new CaselessStringWrapper(name);
+         if (ENUM_TO_HEADER.get(caselessname) != null)
          {
-            if (e.getValue().equalsIgnoreCase(name))
+            if (value == null)
             {
-               headers.put(e.getValue(), value);
-               return this;
-            }
-         }
-         if (value != null)
-            add(name, value);
-         else
-            remove(name);
-
-         return this;
-      }
-
-      /**
-       * Add header with supplied name and Object as header value.
-       * 
-       * @param name a header name
-       * @param value a header value
-       */
-      private void add(String name, Object value)
-      {
-         if (headerValues == null)
-            headerValues = new ArrayList<Object>();
-
-         headerValues.add(name);
-         headerValues.add(value);
-      }
-
-      /**
-       * Remove header with supplied name.
-       * 
-       * @param name a header name
-       */
-      private void remove(String name)
-      {
-         if (headerValues == null || headerValues.isEmpty())
-            return;
-
-         Iterator<Object> i = headerValues.iterator();
-         while (i.hasNext())
-         {
-            String n = i.next().toString();
-            if (n.equalsIgnoreCase(name))
-            {
-               i.remove(); // remove name
-               i.next();
-               i.remove(); // remove value
+               headers.remove(caselessname);
             }
             else
             {
-               i.next(); // skip next Object in iterator
+               headers.put(caselessname, value);
+            }
+            return this;
+         }
+         if (value != null)
+         {
+            if (headerValues == null)
+            {
+               headerValues = new ArrayList<Object>();
+            }
+            headerValues.add(caselessname);
+            headerValues.add(value);
+         }
+         else
+         {
+            if (headerValues == null || headerValues.isEmpty())
+            {
+               return this;
+            }
+            Iterator<Object> i = headerValues.iterator();
+            while (i.hasNext())
+            {
+               CaselessStringWrapper next = (CaselessStringWrapper)i.next();
+               if (next.equals(caselessname))
+               {
+                  i.remove(); // remove name
+                  i.next();
+                  i.remove(); // remove value
+               }
+               else
+               {
+                  i.next(); // skip next Object in iterator
+               }
             }
          }
+         return this;
       }
 
       /**
@@ -407,7 +367,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder language(String language)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.CONTENT_LANGUAGE), language);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.CONTENT_LANGUAGE), language);
          return this;
       }
 
@@ -417,7 +377,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder language(Locale language)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.CONTENT_LANGUAGE), language);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.CONTENT_LANGUAGE), language);
          return this;
       }
 
@@ -427,7 +387,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder lastModified(Date lastModified)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.LAST_MODIFIED), lastModified);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.LAST_MODIFIED), lastModified);
          return this;
       }
 
@@ -437,7 +397,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder location(URI location)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.LOCATION), location);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.LOCATION), location);
          return this;
       }
 
@@ -457,7 +417,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder tag(EntityTag tag)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.ETAG), tag);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.ETAG), tag);
          return this;
       }
 
@@ -467,7 +427,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder tag(String tag)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.ETAG), tag);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.ETAG), tag);
          return this;
       }
 
@@ -477,7 +437,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder type(MediaType type)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.CONTENT_TYPE), type);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.CONTENT_TYPE), type);
          return this;
       }
 
@@ -487,7 +447,7 @@ public final class ResponseImpl extends Response
       @Override
       public ResponseBuilder type(String type)
       {
-         headers.put(HEADERS_MAP.get(HEADERS.CONTENT_TYPE), type);
+         headers.put(HEADER_TO_ENUM.get(HEADERS.CONTENT_TYPE), type);
          return this;
       }
 
@@ -500,7 +460,9 @@ public final class ResponseImpl extends Response
          type(variant.getMediaType());
          language(variant.getLanguage());
          if (variant.getEncoding() != null)
+         {
             header(HttpHeaders.CONTENT_ENCODING, variant.getEncoding());
+         }
          return this;
       }
 
@@ -511,7 +473,9 @@ public final class ResponseImpl extends Response
       public ResponseBuilder variants(List<Variant> variants)
       {
          if (variants.isEmpty())
+         {
             return this;
+         }
 
          boolean acceptMediaType = variants.get(0).getMediaType() != null;
          boolean acceptLanguage = variants.get(0).getLanguage() != null;
@@ -526,23 +490,29 @@ public final class ResponseImpl extends Response
 
          StringBuilder sb = new StringBuilder();
          if (acceptMediaType)
+         {
             sb.append(HttpHeaders.ACCEPT);
+         }
          if (acceptLanguage)
          {
             if (sb.length() > 0)
+            {
                sb.append(',');
+            }
             sb.append(HttpHeaders.ACCEPT_LANGUAGE);
          }
          if (acceptEncoding)
          {
             if (sb.length() > 0)
+            {
                sb.append(',');
+            }
             sb.append(HttpHeaders.ACCEPT_ENCODING);
          }
-
          if (sb.length() > 0)
+         {
             header(HttpHeaders.VARY, sb.toString());
-
+         }
          return this;
       }
 

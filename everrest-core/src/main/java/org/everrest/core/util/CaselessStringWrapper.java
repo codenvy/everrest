@@ -21,7 +21,7 @@ package org.everrest.core.util;
 /**
  * Caseless wrapper for strings.
  */
-public class CaselessStringWrapper
+public final class CaselessStringWrapper
 {
 
    private final String string;
@@ -31,21 +31,30 @@ public class CaselessStringWrapper
    public CaselessStringWrapper(String string)
    {
       this.string = string;
-      if (string != null)
-      {
-         this.caselessString = string.toLowerCase();
-      }
-      else
-      {
-         this.caselessString = null;
-      }
+      this.caselessString = string != null ? string.toLowerCase() : null;
    }
 
+   /**
+    * Get original string value.
+    *
+    * @return original string
+    */
+   public String getString()
+   {
+      return string;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
    public String toString()
    {
       return string == null ? "null" : string;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public boolean equals(Object obj)
    {
@@ -58,6 +67,9 @@ public class CaselessStringWrapper
          || (caselessString != null && caselessString.equals(other.caselessString));
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public int hashCode()
    {

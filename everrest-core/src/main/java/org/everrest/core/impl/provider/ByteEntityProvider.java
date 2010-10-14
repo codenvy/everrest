@@ -19,6 +19,7 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.provider.EntityProvider;
+import org.everrest.core.util.NoSyncByteArrayOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -53,8 +55,22 @@ public class ByteEntityProvider implements EntityProvider<byte[]>
    public byte[] readFrom(Class<byte[]> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
-
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      String contentLength = httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
+      int length = 0;
+      if (contentLength != null)
+      {
+         try
+         {
+            length = Integer.parseInt(contentLength);
+         }
+         catch (NumberFormatException e)
+         {
+         }
+      }
+      // Content length header may be not set. If it is set allocate more space
+      // from start to avoid expand of buffer in future.
+      ByteArrayOutputStream out =
+         length > 0 ? new NoSyncByteArrayOutputStream(length) : new NoSyncByteArrayOutputStream();
       IOHelper.write(entityStream, out);
       return out.toByteArray();
    }

@@ -80,31 +80,39 @@ public final class RequestHandlerImpl implements RequestHandler
    private final RequestDispatcher dispatcher;
 
    /** ResourceBinder. */
-   private final ResourceBinder binder;
+   private final ResourceBinder resources;
+
+   /** ProviderBinder. */
+   private final ProviderBinder applicationProviders;
 
    private final DependencySupplier depInjector;
 
    private final EverrestConfiguration config;
 
-   public RequestHandlerImpl(ResourceBinder binder, RequestDispatcher dispatcher, DependencySupplier depInjector,
-      EverrestConfiguration config)
+   public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
+      DependencySupplier depInjector, EverrestConfiguration config)
    {
-      this.binder = binder;
-      this.config = config;
+      this.resources = resources;
+      this.applicationProviders = providers;
+      this.config = config == null ? new EverrestConfiguration() : config;
       this.dispatcher = dispatcher;
       this.depInjector = depInjector;
-      if (config.isCheckSecurity())
-         ProviderBinder.getInstance().addMethodInvokerFilter(new SecurityConstraint());
+      // Add security check only in customized ProviderBinder.
+      if (this.applicationProviders != null && this.config.isCheckSecurity())
+      {
+         this.applicationProviders.addMethodInvokerFilter(new SecurityConstraint());
+      }
    }
 
-   public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector, EverrestConfiguration config)
+   public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, DependencySupplier depInjector,
+      EverrestConfiguration config)
    {
-      this(binder, new RequestDispatcher(binder), depInjector, config);
+      this(resources, providers, new RequestDispatcher(resources), depInjector, config);
    }
 
-   public RequestHandlerImpl(ResourceBinder binder, DependencySupplier depInjector)
+   public RequestHandlerImpl(ResourceBinder resources, DependencySupplier depInjector)
    {
-      this(binder, depInjector, new EverrestConfiguration());
+      this(resources, null, new RequestDispatcher(resources), depInjector, new EverrestConfiguration());
    }
 
    /**
@@ -112,7 +120,7 @@ public final class RequestHandlerImpl implements RequestHandler
     */
    public ResourceBinder getResourceBinder()
    {
-      return binder;
+      return resources;
    }
 
    /**
@@ -136,13 +144,18 @@ public final class RequestHandlerImpl implements RequestHandler
             }
          }
 
-         ApplicationContext context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
+         ProviderBinder providers = applicationProviders;
+         if (providers == null)
+         {
+            providers = ProviderBinder.getInstance();
+         }
+
+         ApplicationContext context = new ApplicationContextImpl(request, response, providers);
          context.getProperties().putAll(properties);
          context.setDependencySupplier(depInjector);
          ApplicationContextImpl.setCurrent(context);
 
-         for (ObjectFactory<FilterDescriptor> factory : ProviderBinder.getInstance().getRequestFilters(
-            context.getPath()))
+         for (ObjectFactory<FilterDescriptor> factory : providers.getRequestFilters(context.getPath()))
          {
             RequestFilter f = (RequestFilter)factory.getInstance(context);
             f.doFilter(request);
@@ -165,7 +178,7 @@ public final class RequestHandlerImpl implements RequestHandler
             if (e instanceof WebApplicationException)
             {
                Response errorResponse = ((WebApplicationException)e).getResponse();
-               ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(WebApplicationException.class);
+               ExceptionMapper excmap = providers.getExceptionMapper(WebApplicationException.class);
 
                int errorStatus = errorResponse.getStatus();
                // should be some of 4xx status
@@ -216,10 +229,10 @@ public final class RequestHandlerImpl implements RequestHandler
             {
                Throwable cause = e.getCause();
                Class causeClazz = cause.getClass();
-               ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(causeClazz);
+               ExceptionMapper excmap = providers.getExceptionMapper(causeClazz);
                while (causeClazz != null && excmap == null)
                {
-                  excmap = ProviderBinder.getInstance().getExceptionMapper(causeClazz);
+                  excmap = providers.getExceptionMapper(causeClazz);
                   if (excmap == null)
                   {
                      causeClazz = causeClazz.getSuperclass();
@@ -245,8 +258,7 @@ public final class RequestHandlerImpl implements RequestHandler
                throw new UnhandledException(e);
             }
          }
-         for (ObjectFactory<FilterDescriptor> factory : ProviderBinder.getInstance().getResponseFilters(
-            context.getPath()))
+         for (ObjectFactory<FilterDescriptor> factory : providers.getResponseFilters(context.getPath()))
          {
             ResponseFilter f = (ResponseFilter)factory.getInstance(context);
             f.doFilter(response);
