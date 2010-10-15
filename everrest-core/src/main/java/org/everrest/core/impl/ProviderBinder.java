@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -94,6 +95,12 @@ import javax.ws.rs.ext.Providers;
 public class ProviderBinder implements Providers
 {
 
+   /**
+    * Builder or range acceptable media types for look up appropriate
+    * {@link MessageBodyReader}, {@link MessageBodyWriter} or
+    * {@link ContextResolver}. It provider set of media types in descending
+    * ordering.
+    */
    protected final class MediaTypeRange implements java.util.Iterator<MediaType>
    {
       private MediaType next;
@@ -124,18 +131,55 @@ public class ProviderBinder implements Providers
 
       void fetchNext()
       {
-         MediaType type = next;
+         MediaType mediaType = next;
          next = null;
-         if (!type.isWildcardType() && !type.isWildcardSubtype())
-            next = new MediaType(type.getType(), MediaType.MEDIA_TYPE_WILDCARD);
-         else if (!type.isWildcardType() && type.isWildcardSubtype())
+         if (!mediaType.isWildcardType() && !mediaType.isWildcardSubtype())
+         {
+            // Media type such as application/xml, application/atom+xml, application/*+xml
+            // or application/xml+* .
+            String type = mediaType.getType();
+            String subType = mediaType.getSubtype();
+            Matcher extMatcher = MediaTypeHelper.EXT_SUBTYPE_PATTERN.matcher(subType);
+            if (extMatcher.matches())
+            {
+               // Media type such as application/atom+xml or application/*+xml (sub-type extended!!!)
+               String extSubtypePrefix = extMatcher.group(1);
+               String extSubtype = extMatcher.group(2);
+               if (MediaType.MEDIA_TYPE_WILDCARD.equals(extSubtypePrefix))
+               {
+                  // Media type such as 'application/*+xml' (first part is wildcard).
+                  // Next to be checked will be 'application/*'. NOTE do not use 'application/xml'
+                  // since there is no guaranty sure xml reader/writer/resolver supports xml extentions.
+                  next = new MediaType(type, MediaType.MEDIA_TYPE_WILDCARD);
+               }
+               else
+               {
+                  // Media type such as 'application/atom+xml' next to be checked will be 'application/*+xml'
+                  // Reader/writer/resolver which declared support of 'application/*+xml' should
+                  // supports 'application/atom+xml' also.
+                  next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + extSubtype);
+               }
+            }
+            else
+            {
+               // Media type without extension such as 'application/xml'.
+               // Next will be 'application/*+xml' since extensions should support pure xml as well.
+               next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + subType);
+            }
+         }
+         else if (!mediaType.isWildcardType() && mediaType.isWildcardSubtype())
+         {
+            // Type such as 'application/*' . Next one to be checked is '*/*'.
+            // This type is always last for checking in our range.
             next = MediaTypeHelper.DEFAULT_TYPE;
+         }
       }
    }
 
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(ProviderBinder.class);
 
+   /** Need have possibility to disable replacing default providers. */
    private static final RuntimePermission PROVIDERS_PERMISSIONS = new RuntimePermission("providersManagePermission");
 
    /** Providers binder instance. */
@@ -677,12 +721,19 @@ public class ProviderBinder implements Providers
    protected List<MediaType> doGetAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations)
    {
       List<MediaType> l = new ArrayList<MediaType>();
+      Map<Class, MessageBodyWriter> instanceCache = new HashMap<Class, MessageBodyWriter>();
       for (Map.Entry<MediaType, List<ObjectFactory<ProviderDescriptor>>> e : writeProviders.entrySet())
       {
          MediaType mime = e.getKey();
          for (ObjectFactory pf : e.getValue())
          {
-            MessageBodyWriter writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+            Class clazz = pf.getObjectModel().getObjectClass();
+            MessageBodyWriter writer = instanceCache.get(clazz);
+            if (writer == null)
+            {
+               writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+               instanceCache.put(clazz, writer);
+            }
             if (writer.isWriteable(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE))
             {
                l.add(mime);
@@ -759,12 +810,19 @@ public class ProviderBinder implements Providers
       MediaType mediaType)
    {
       MediaTypeRange mrange = new MediaTypeRange(mediaType);
+      Map<Class, MessageBodyReader> instanceCache = new HashMap<Class, MessageBodyReader>();
       while (mrange.hasNext())
       {
          MediaType actual = mrange.next();
          for (ObjectFactory pf : readProviders.getList(actual))
          {
-            MessageBodyReader reader = (MessageBodyReader)pf.getInstance(ApplicationContextImpl.getCurrent());
+            Class<?> clazz = pf.getObjectModel().getObjectClass();
+            MessageBodyReader reader = instanceCache.get(clazz);
+            if (reader == null)
+            {
+               reader = (MessageBodyReader)pf.getInstance(ApplicationContextImpl.getCurrent());
+               instanceCache.put(clazz, reader);
+            }
             if (reader.isReadable(type, genericType, annotations, actual))
             {
                return reader;
@@ -790,12 +848,19 @@ public class ProviderBinder implements Providers
       MediaType mediaType)
    {
       MediaTypeRange mrange = new MediaTypeRange(mediaType);
+      Map<Class, MessageBodyWriter> instanceCache = new HashMap<Class, MessageBodyWriter>();
       while (mrange.hasNext())
       {
          MediaType actual = mrange.next();
          for (ObjectFactory pf : writeProviders.getList(actual))
          {
-            MessageBodyWriter writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+            Class<?> clazz = pf.getObjectModel().getObjectClass();
+            MessageBodyWriter writer = instanceCache.get(clazz);
+            if (writer == null)
+            {
+               writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+               instanceCache.put(clazz, writer);
+            }
             if (writer.isWriteable(type, genericType, annotations, actual))
             {
                return writer;

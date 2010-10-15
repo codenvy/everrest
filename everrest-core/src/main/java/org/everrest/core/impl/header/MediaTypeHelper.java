@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -37,12 +39,40 @@ import javax.ws.rs.core.MediaType;
 public final class MediaTypeHelper
 {
 
-   /**
-    * Constructor.
-    */
+   /** Constructor. */
    private MediaTypeHelper()
    {
    }
+
+   /** Default media type. It minds any content type. */
+   public static final String DEFAULT = "*/*";
+
+   /** Default media type. It minds any content type. */
+   public static final MediaType DEFAULT_TYPE = new MediaType("*", "*");
+
+   /** List which contains default media type. */
+   public static final List<MediaType> DEFAULT_TYPE_LIST = Collections.singletonList(DEFAULT_TYPE);
+
+   /** WADL media type. */
+   public static final String WADL = "application/vnd.sun.wadl+xml";
+
+   /** WADL media type. */
+   public static final MediaType WADL_TYPE = new MediaType("application", "vnd.sun.wadl+xml");
+
+   /** Suffix of sub-type part of media types as application/atom+*. */
+   public static final String EXT_SUFFIX_SUBTYPE = "+*";
+
+   /** Prefix of sub-type part of media types as application/*+xml. */
+   public static final String EXT_PREFIX_SUBTYPE = "*+";
+
+   /** Media types as application/atom+* or application/*+xml pattern. */
+   public static final Pattern EXT_SUBTYPE_PATTERN = Pattern.compile("([^\\+]+)\\+(.+)");
+
+   /** Media types as application/atom+* pattern. */
+   public static final Pattern EXT_SUFFIX_SUBTYPE_PATTERN = Pattern.compile("([^\\+]+)\\+\\*");
+
+   /** Media types as application/*+xml pattern. */
+   public static final Pattern EXT_PREFIX_SUBTYPE_PATTERN = Pattern.compile("\\*\\+(.+)");
 
    /**
     * Compare two mimetypes. The main rule for sorting media types is :
@@ -56,33 +86,42 @@ public final class MediaTypeHelper
     */
    public static final Comparator<MediaType> MEDIA_TYPE_COMPARATOR = new Comparator<MediaType>()
    {
-
-      /**
-       * {@inheritDoc}
-       */
-      public int compare(MediaType o1, MediaType o2)
+      public int compare(MediaType mediaType1, MediaType mediaType2)
       {
-         if (o1.getType().equals(MediaType.MEDIA_TYPE_WILDCARD) && !o2.getType().equals(MediaType.MEDIA_TYPE_WILDCARD))
-         {
+         String type1 = mediaType1.getType();
+         String subType1 = mediaType1.getSubtype();
+         String type2 = mediaType2.getType();
+         String subType2 = mediaType2.getSubtype();
+
+         if (type1.equals(MediaType.MEDIA_TYPE_WILDCARD) && !type2.equals(MediaType.MEDIA_TYPE_WILDCARD))
             return 1;
-         }
-
-         if (!o1.getType().equals(MediaType.MEDIA_TYPE_WILDCARD) && o2.getType().equals(MediaType.MEDIA_TYPE_WILDCARD))
-         {
+         if (!type1.equals(MediaType.MEDIA_TYPE_WILDCARD) && type2.equals(MediaType.MEDIA_TYPE_WILDCARD))
             return -1;
-         }
-
-         if (o1.getSubtype().equals(MediaType.MEDIA_TYPE_WILDCARD)
-            && !o2.getSubtype().equals(MediaType.MEDIA_TYPE_WILDCARD))
-         {
+         if (subType1.equals(MediaType.MEDIA_TYPE_WILDCARD) && !subType2.equals(MediaType.MEDIA_TYPE_WILDCARD))
             return 1;
-         }
-
-         if (!o1.getSubtype().equals(MediaType.MEDIA_TYPE_WILDCARD)
-            && o2.getSubtype().equals(MediaType.MEDIA_TYPE_WILDCARD))
-         {
+         if (!subType1.equals(MediaType.MEDIA_TYPE_WILDCARD) && subType2.equals(MediaType.MEDIA_TYPE_WILDCARD))
             return -1;
-         }
+
+         Matcher extmatcher1 = EXT_SUBTYPE_PATTERN.matcher(subType1);
+         Matcher extmatcher2 = EXT_SUBTYPE_PATTERN.matcher(subType2);
+         if (extmatcher1.matches() && !extmatcher2.matches())
+            return 1;
+         if (!extmatcher1.matches() && extmatcher2.matches())
+            return -1;
+
+         extmatcher1 = EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType1);
+         extmatcher2 = EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType2);
+         if (extmatcher1.matches() && !extmatcher2.matches())
+            return 1;
+         if (!extmatcher1.matches() && extmatcher2.matches())
+            return -1;
+
+         extmatcher1 = EXT_SUFFIX_SUBTYPE_PATTERN.matcher(subType1);
+         extmatcher2 = EXT_SUFFIX_SUBTYPE_PATTERN.matcher(subType2);
+         if (extmatcher1.matches() && !extmatcher2.matches())
+            return 1;
+         if (!extmatcher1.matches() && extmatcher2.matches())
+            return -1;
 
          return 0;
       }
@@ -90,35 +129,10 @@ public final class MediaTypeHelper
    };
 
    /**
-    * Default media type. It minds any content type.
-    */
-   public static final String DEFAULT = "*/*";
-
-   /**
-    * Default media type. It minds any content type.
-    */
-   public static final MediaType DEFAULT_TYPE = new MediaType("*", "*");
-
-   /**
-    * List which contains default media type.
-    */
-   public static final List<MediaType> DEFAULT_TYPE_LIST = Collections.singletonList(DEFAULT_TYPE);
-
-   /**
-    * WADL media type.
-    */
-   public static final String WADL = "application/vnd.sun.wadl+xml";
-
-   /**
-    * WADL media type.
-    */
-   public static final MediaType WADL_TYPE = new MediaType("application", "vnd.sun.wadl+xml");
-
-   /**
     * Create a list of media type for given Consumes annotation. If parameter
     * mime is null then list with single element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
-    * 
+    *
     * @param mime the Consumes annotation.
     * @return ordered list of media types.
     */
@@ -136,7 +150,7 @@ public final class MediaTypeHelper
     * Create a list of media type for given Produces annotation. If parameter
     * mime is null then list with single element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
-    * 
+    *
     * @param mime the Produces annotation.
     * @return ordered list of media types.
     */
@@ -152,7 +166,7 @@ public final class MediaTypeHelper
 
    /**
     * Useful for checking does method able to consume certain media type.
-    * 
+    *
     * @param consumes list of consumed media types
     * @param contentType should be checked
     * @return true contentType is compatible to one of consumes, false otherwise
@@ -170,7 +184,7 @@ public final class MediaTypeHelper
 
    /**
     * Create a list of media type from string array.
-    * 
+    *
     * @param mimes source string array
     * @return ordered list of media types
     */
@@ -187,7 +201,7 @@ public final class MediaTypeHelper
    /**
     * Looking for accept media type with the best quality. Accept list of media
     * type must be sorted by quality value.
-    * 
+    *
     * @param accept See {@link AcceptMediaType}, {@link QualityValue}
     * @param produces list of produces media type, See {@link Produces}
     * @return quality value of best found compatible accept media type or 0.0 if

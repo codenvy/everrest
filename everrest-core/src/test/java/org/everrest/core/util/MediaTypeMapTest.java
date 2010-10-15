@@ -34,27 +34,22 @@ public class MediaTypeMapTest extends BaseTest
    public void testSort()
    {
       MediaTypeMap<Object> m = new MediaTypeMap<Object>();
-      Object o1 = new Object();
-      Object o2 = new Object();
-      Object o3 = new Object();
-      Object o4 = new Object();
-      Object o5 = new Object();
-      int h1 = o1.hashCode();
-      int h2 = o2.hashCode();
-      int h3 = o3.hashCode();
-      int h4 = o4.hashCode();
-      int h5 = o5.hashCode();
-      m.put(new MediaType(), o1);
-      m.put(new MediaType("text", "*"), o2);
-      m.put(new MediaType("text", "plain"), o3);
-      m.put(new MediaType("text", "xml"), o4);
-      m.put(new MediaType("application", "*"), o5);
+      m.put(new MediaType(), "*/*");
+      m.put(new MediaType("text", "*"), "text/*");
+      m.put(new MediaType("text", "plain"), "text/plain");
+      m.put(new MediaType("application", "*+xml"), "application/*+xml");
+      m.put(new MediaType("text", "xml"), "text/xml");
+      m.put(new MediaType("application", "*"), "application/*");
+      m.put(new MediaType("application", "atom+*"), "application/atom+*");
+      System.out.println(m.values());
       Iterator<Object> values = m.values().iterator();
-      assertEquals(h3, values.next().hashCode());
-      assertEquals(h4, values.next().hashCode());
-      assertEquals(h5, values.next().hashCode());
-      assertEquals(h2, values.next().hashCode());
-      assertEquals(h1, values.next().hashCode());
+      assertEquals("text/plain", values.next());
+      assertEquals("text/xml", values.next());
+      assertEquals("application/atom+*", values.next());
+      assertEquals("application/*+xml", values.next());
+      assertEquals("application/*", values.next());
+      assertEquals("text/*", values.next());
+      assertEquals("*/*", values.next());
    }
 
 }

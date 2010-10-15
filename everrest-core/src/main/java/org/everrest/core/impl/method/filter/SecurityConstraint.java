@@ -29,6 +29,7 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
@@ -85,7 +86,8 @@ public class SecurityConstraint implements MethodInvokerFilter
          }
          if (!allowed)
          {
-            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).build());
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(
+               "User not authorized to call this method.").type(MediaType.TEXT_PLAIN).build());
          }
       }
 

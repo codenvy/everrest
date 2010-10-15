@@ -34,19 +34,13 @@ import java.nio.charset.Charset;
 public final class IOHelper
 {
 
-   /**
-    * Default character set name.
-    */
+   /** Default character set name. */
    static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
-   /**
-    * If character set was not specified then this will be used.
-    */
+   /** If character set was not specified then this will be used. */
    static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
 
-   /**
-    * Constructor.
-    */
+   /** Constructor. */
    private IOHelper()
    {
    }

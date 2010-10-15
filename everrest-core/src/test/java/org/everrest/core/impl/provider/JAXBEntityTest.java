@@ -144,7 +144,7 @@ public class JAXBEntityTest extends BaseTest
       writer = new ByteArrayContainerResponseWriter();
       response = launcher.service("POST", "/", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
-      assertEquals("application/xml", response.getContentType().toString());
+      assertEquals("application/*+xml", response.getContentType().toString());
       book = (Book)response.getEntity();
       assertEquals("Hamlet\n", book.getTitle());
       assertEquals("William Shakespeare\n", book.getAuthor());

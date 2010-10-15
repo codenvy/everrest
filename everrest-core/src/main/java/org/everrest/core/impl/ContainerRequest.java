@@ -23,6 +23,7 @@ import org.everrest.core.impl.header.AcceptLanguage;
 import org.everrest.core.impl.header.AcceptMediaType;
 import org.everrest.core.impl.header.HeaderHelper;
 import org.everrest.core.impl.header.Language;
+import org.everrest.core.impl.header.MediaTypeHelper;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Cookie;
@@ -135,23 +137,48 @@ public class ContainerRequest implements GenericContainerRequest
    public MediaType getAcceptableMediaType(List<MediaType> mediaTypes)
    {
       if (mediaTypes.isEmpty())
+      {
          // getAcceptableMediaTypes() return list which contains at least one
          // element even HTTP header 'accept' is absent
          return getAcceptableMediaTypes().get(0);
+      }
 
       List<MediaType> l = getAcceptableMediaTypes();
 
       for (MediaType at : l)
       {
          if (at.isWildcardType())
+         {
             // any media type from given list is acceptable the take first
             return mediaTypes.get(0);
-
+         }
          for (MediaType rt : mediaTypes)
          {
-            // skip all media types if it has wildcard at type or sub-type
-            if (rt.isCompatible(at) && !rt.isWildcardType() && !rt.isWildcardSubtype())
-               return rt;
+            if (!rt.isWildcardType() && !rt.isWildcardSubtype())
+            {
+               // skip all media types if it has wildcard at type or sub-type
+               if (rt.isCompatible(at))
+               {
+                  return rt;
+               }
+
+               String type = rt.getType();
+               if (at.getType().equalsIgnoreCase(type))
+               {
+                  String subType = rt.getSubtype();
+                  Matcher extPrefixMatcher = MediaTypeHelper.EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType);
+                  if (extPrefixMatcher.matches())
+                  {
+                     subType = extPrefixMatcher.group(1);
+                     MediaType newType = new MediaType(type, subType);
+                     if (newType.isCompatible(at))
+                     {
+                        return rt;
+                     }
+                  }
+               }
+            }
+
          }
       }
 

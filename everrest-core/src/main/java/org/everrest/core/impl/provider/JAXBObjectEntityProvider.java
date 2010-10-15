@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.EntityProvider;
 import org.everrest.core.util.Logger;
 
@@ -48,8 +47,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  *          aparfonov $
  */
 @Provider
-@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
-@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML, MediaTypeHelper.WADL})
+//@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
+//@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML, MediaTypeHelper.WADL})
+@Consumes({"application/*+xml", "text/*+xml"})
+@Produces({"application/*+xml", "text/*+xml"})
 public class JAXBObjectEntityProvider implements EntityProvider<Object>
 {
 

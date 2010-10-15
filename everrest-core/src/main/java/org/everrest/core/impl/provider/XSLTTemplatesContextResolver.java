@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
@@ -47,7 +46,8 @@ import javax.xml.transform.sax.TemplatesHandler;
  * @version $Id$
  */
 @Provider
-@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
+//@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
+@Consumes({"application/*+xml", "text/*+xml"})
 public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplatesContextResolver>
 {
 

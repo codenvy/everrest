@@ -57,6 +57,7 @@ public class SourceEntityProviderTest extends BaseTest
       data =
          "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>to be or not to be</message></root>"
             .getBytes("UTF-8");
+      setContext();
    }
 
    @SuppressWarnings("unchecked")

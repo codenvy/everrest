@@ -45,8 +45,10 @@ import javax.xml.transform.stream.StreamResult;
  *          $
  */
 @Provider
-@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
-@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
+//@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
+//@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
+@Consumes({"application/*+xml", "text/*+xml"})
+@Produces({"application/*+xml", "text/*+xml"})
 public class SAXSourceEntityProvider implements EntityProvider<SAXSource>
 {
 

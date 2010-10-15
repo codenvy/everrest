@@ -86,7 +86,7 @@ public class OptionsMethodTest extends BaseTest
       registry(resource2);
       assertEquals(200, launcher.service("OPTIONS", "/b", "", null, null, null).getStatus());
       assertNotNull(launcher.service("OPTIONS", "/b", "", null, null, null).getResponse().getMetadata());
-
+      unregistry(resource2);
    }
 
 }
