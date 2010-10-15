@@ -17,11 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.everrest.ext;
+package org.everrest.proxy;
 
 import junit.framework.TestCase;
 
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
@@ -42,8 +41,7 @@ public abstract class BaseTest extends TestCase
    public void setUp() throws Exception
    {
       this.resources = new ResourceBinderImpl();
-      this.requestHandler =
-         new RequestHandlerImpl(resources, new SimpleDependencySupplier(), new EverrestConfiguration());
+      this.requestHandler = new RequestHandlerImpl(resources, new SimpleDependencySupplier());
       this.providers = ProviderBinder.getInstance();
       this.launcher = new ResourceLauncher(requestHandler);
    }
