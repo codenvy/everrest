@@ -132,7 +132,7 @@ public final class MediaTypeHelper
     * Create a list of media type for given Consumes annotation. If parameter
     * mime is null then list with single element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
-    *
+    * 
     * @param mime the Consumes annotation.
     * @return ordered list of media types.
     */
@@ -150,7 +150,7 @@ public final class MediaTypeHelper
     * Create a list of media type for given Produces annotation. If parameter
     * mime is null then list with single element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
-    *
+    * 
     * @param mime the Produces annotation.
     * @return ordered list of media types.
     */
@@ -166,7 +166,7 @@ public final class MediaTypeHelper
 
    /**
     * Useful for checking does method able to consume certain media type.
-    *
+    * 
     * @param consumes list of consumed media types
     * @param contentType should be checked
     * @return true contentType is compatible to one of consumes, false otherwise
@@ -175,16 +175,18 @@ public final class MediaTypeHelper
    {
       for (MediaType c : consumes)
       {
-         if (contentType.isCompatible(c))
+         //if (contentType.isCompatible(c))
+         if (isMatched(c, contentType))
+         {
             return true;
+         }
       }
-
       return false;
    }
 
    /**
     * Create a list of media type from string array.
-    *
+    * 
     * @param mimes source string array
     * @return ordered list of media types
     */
@@ -201,7 +203,7 @@ public final class MediaTypeHelper
    /**
     * Looking for accept media type with the best quality. Accept list of media
     * type must be sorted by quality value.
-    *
+    * 
     * @param accept See {@link AcceptMediaType}, {@link QualityValue}
     * @param produces list of produces media type, See {@link Produces}
     * @return quality value of best found compatible accept media type or 0.0 if
@@ -228,4 +230,161 @@ public final class MediaTypeHelper
       return 0.0F; // 0 quality not acceptable
    }
 
+   /**
+    * Check types <code>one</code> and type <code>two</code> are compatible. The
+    * operation is commutative.
+    * <p>
+    * Examples:
+    * <ul>
+    * <li><i>text/plain</i> and <i>text/*</i> are compatible</li>
+    * <li><i>application/atom+xml</i> and <i>application/atom+*</i> are
+    * compatible</li>
+    * </ul>
+    * </p>
+    * 
+    * @param one media type
+    * @param two media type
+    * @return <code>true</code> if types compatible and <code>false</code>
+    *         otherwise
+    */
+   public static boolean isCompatible(MediaType one, MediaType two)
+   {
+      if (one == null || two == null)
+      {
+         throw new IllegalArgumentException("null");
+      }
+
+      String oneType = one.getType();
+      String twoType = two.getType();
+      if (oneType.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoType.equals(MediaType.MEDIA_TYPE_WILDCARD))
+      {
+         return true;
+      }
+      
+      if (one.getType().equalsIgnoreCase(two.getType()))
+      {
+         String oneSubtype = one.getSubtype();
+         String twoSubtype = two.getSubtype();
+         if (oneSubtype.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoSubtype.equals(MediaType.MEDIA_TYPE_WILDCARD)
+            || oneSubtype.equalsIgnoreCase(twoSubtype))
+         {
+            return true;
+         }
+         Matcher oneMatcher = EXT_SUBTYPE_PATTERN.matcher(oneSubtype);
+         Matcher twoMatcher = EXT_SUBTYPE_PATTERN.matcher(twoSubtype);
+         if (!oneMatcher.matches() && twoMatcher.matches())
+         {
+            // one is type such as application/xml
+            // two is type such as application/atom+xml, application/*+xml, application/xml+*
+            return oneSubtype.equalsIgnoreCase(twoMatcher.group(1)) || oneSubtype.equalsIgnoreCase(twoMatcher.group(2));
+         }
+         else if (oneMatcher.matches() && !twoMatcher.matches())
+         {
+            // one is type such as application/atom+xml, application/*+xml, application/xml+*
+            // two is type such as application/xml
+            return twoSubtype.equalsIgnoreCase(oneMatcher.group(1)) || twoSubtype.equalsIgnoreCase(oneMatcher.group(2));
+         }
+         else if (oneMatcher.matches() && twoMatcher.matches())
+         {
+            // both types are extended types
+            String onePrefix = oneMatcher.group(1);
+            String oneSuffix = oneMatcher.group(2);
+            String twoPrefix = twoMatcher.group(1);
+            String twoSuffix = twoMatcher.group(2);
+
+            if (onePrefix.equalsIgnoreCase(twoPrefix)
+               && (oneSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD)))
+            {
+               // parts before '+' are the same and one of after '+' is wildcard '*'
+               // For example two sub-types: atom+* and atom+xml
+               return true;
+            }
+            if (oneSuffix.equalsIgnoreCase(twoSuffix)
+               && (onePrefix.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoPrefix.equals(MediaType.MEDIA_TYPE_WILDCARD)))
+            {
+               // parts after '+' are the same and one of before '+' is wildcard '*'
+               // For example two sub-types: *+xml and atom+xml
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
+   /**
+    * Check is type <code>checkMe</code> matched to type <code>pattern</code>.
+    * NOTE The operation is NOT commutative, e.g. matching of type
+    * <code>checkMe</code> matched to <code>pattern</code> does not guaranty
+    * that <code>pattern</code> matched to <code>checkMe</code>.
+    * <p>
+    * Examples:
+    * <ul>
+    * <li><i>text/plain</i> is matched to <i>text/*</i> but type <i>text/*</i>
+    * is not matched to <i>text/plain</i></li>
+    * <li><i>application/atom+xml</i> is matched to <i>application/atom+*</i>
+    * but type <i>application/atom+*</i> is not matched to
+    * <i>application/atom+xml</i></li>
+    * </ul>
+    * </p>
+    * 
+    * @param pattern pattern type
+    * @param checkMe type to be checked
+    * @return <code>true</code> if type <code>checkMe</code> is matched to
+    *         <code>pattern</code> and <code>false</code> otherwise
+    */
+   public static boolean isMatched(MediaType pattern, MediaType checkMe)
+   {
+      if (pattern == null || checkMe == null)
+      {
+         throw new IllegalArgumentException("null");
+      }
+
+      if (pattern.getType().equals(MediaType.MEDIA_TYPE_WILDCARD))
+      {
+         return true;
+      }
+      
+      if (pattern.getType().equalsIgnoreCase(checkMe.getType()))
+      {
+         String patternSubtype = pattern.getSubtype();
+         String checkMeSubtype = checkMe.getSubtype();
+         if (patternSubtype.equals(MediaType.MEDIA_TYPE_WILDCARD) || patternSubtype.equalsIgnoreCase(checkMeSubtype))
+         {
+            return true;
+         }
+         Matcher patternMatcher = EXT_SUBTYPE_PATTERN.matcher(patternSubtype);
+         Matcher checkMeMatcher = EXT_SUBTYPE_PATTERN.matcher(checkMeSubtype);
+         if (patternMatcher.matches())
+         {
+            String onePrefix = patternMatcher.group(1);
+            String oneSuffix = patternMatcher.group(2);
+
+            if (!checkMeMatcher.matches())
+            {
+               // pattern is type such as application/atom+xml, application/*+xml, application/xml+*
+               // checkMe is type such as application/xml
+               return checkMeSubtype.equalsIgnoreCase(onePrefix) || checkMeSubtype.equalsIgnoreCase(oneSuffix);
+            }
+
+            // both types are extended types
+            String twoPrefix = checkMeMatcher.group(1);
+            String twoSuffix = checkMeMatcher.group(2);
+
+            if (onePrefix.equalsIgnoreCase(twoPrefix) && oneSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD))
+            {
+               // parts before '+' are the same and one after '+' is wildcard '*'
+               // For example two sub-types: atom+* and atom+xml
+               return true;
+            }
+            if (oneSuffix.equalsIgnoreCase(twoSuffix) && onePrefix.equals(MediaType.MEDIA_TYPE_WILDCARD))
+            {
+               // parts after '+' are the same and one before '+' is wildcard '*'
+               // For example two sub-types: *+xml and atom+xml
+               return true;
+            }
+         }
+      }
+      
+      return false;
+   }
 }

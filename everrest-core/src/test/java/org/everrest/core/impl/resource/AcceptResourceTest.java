@@ -146,6 +146,27 @@ public class AcceptResourceTest extends BaseTest
 
    }
 
+   @Path("/a")
+   public static class Resource4
+   {
+      @POST
+      @Consumes({"text/*+xml"})
+      @Produces({"text/*+xml"})
+      public String m0()
+      {
+         return "m0";
+      }
+
+      @POST
+      @Consumes({"application/*+xml"})
+      @Produces({"application/xhtml+xml"})
+      public String m1()
+      {
+         return "m1";
+      }
+
+   }
+
    public void setUp() throws Exception
    {
       super.setUp();
@@ -225,5 +246,19 @@ public class AcceptResourceTest extends BaseTest
       h.putSingle("content-type", contentType);
       h.putSingle("accept", acceptMediaType);
       return (String)launcher.service("POST", "/a", "", h, null, null).getEntity();
+   }
+   
+   public void testExtSubtype() throws Exception
+   {
+      registry(Resource4.class);
+      assertEquals("m0", testComplex("text/xml", "text/xml,text/*+xml;q=.8"));
+      unregistry(Resource4.class);
+   }
+
+   public void testExtSubtype2() throws Exception
+   {
+      registry(Resource4.class);
+      assertEquals("m1", testComplex("application/atom+xml", "application/xhtml+xml"));
+      unregistry(Resource4.class);
    }
 }

@@ -49,10 +49,8 @@ import javax.xml.transform.stream.StreamSource;
  *          aparfonov $
  */
 @Provider
-//@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
-//@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
-@Consumes({"application/*+xml", "text/*+xml"})
-@Produces({"application/*+xml", "text/*+xml"})
+@Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
+@Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
 {
 

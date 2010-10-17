@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
@@ -34,10 +35,8 @@ import javax.xml.bind.JAXBException;
  * @version $Id: JAXBContextResolver.java 285 2009-10-15 16:21:30Z aparfonov $
  */
 @Provider
-//@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
-//@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML, MediaTypeHelper.WADL})
-@Consumes({"application/*+xml", "text/*+xml"})
-@Produces({"application/*+xml", "text/*+xml"})
+@Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
+@Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
 {
 

@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
@@ -41,13 +42,13 @@ import javax.xml.transform.sax.TemplatesHandler;
 
 /**
  * Provide cache for transformation templates.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: XSLTTemplatesContextResolver.java 63 2010-10-15 14:31:56Z
+ *          andrew00x $
  */
 @Provider
-//@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
-@Consumes({"application/*+xml", "text/*+xml"})
+@Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplatesContextResolver>
 {
 
@@ -67,7 +68,7 @@ public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplat
 
    /**
     * Add entity resolver.
-    *
+    * 
     * @param resolver entity resolver
     */
    public void setXmlResolver(EntityResolver resolver)
@@ -77,13 +78,13 @@ public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplat
 
    /**
     * Parse and add given source as templates.
-    *
+    * 
     * @param name name to which templates will be mapped
     * @param source templates' source
     * @throws IOException if any i/o errors occurs
     * @throws SAXException if given source can not be parsed
     * @throws TransformerConfigurationException if templates handler can't be
-    *         initialized
+    *            initialized
     * @see Templates
     * @see TransformerConfigurationException
     */
@@ -125,7 +126,7 @@ public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplat
 
    /**
     * Get templates with given name.
-    *
+    * 
     * @param name templates' name
     * @return templates or <code>null</code> if no templates mapped to given
     *         name

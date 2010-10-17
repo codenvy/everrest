@@ -47,10 +47,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  *          aparfonov $
  */
 @Provider
-//@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML})
-//@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_XHTML_XML, MediaTypeHelper.WADL})
-@Consumes({"application/*+xml", "text/*+xml"})
-@Produces({"application/*+xml", "text/*+xml"})
+@Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
+@Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBObjectEntityProvider implements EntityProvider<Object>
 {
 

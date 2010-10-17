@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Cookie;
@@ -43,8 +42,8 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Variant;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -112,7 +111,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Constructs new instance of ContainerRequest.
-    *
+    * 
     * @param method HTTP method
     * @param requestUri full request URI
     * @param baseUri base request URI
@@ -145,40 +144,33 @@ public class ContainerRequest implements GenericContainerRequest
 
       List<MediaType> l = getAcceptableMediaTypes();
 
+      //      for (MediaType at : l)
+      //      {
+      //         if (at.isWildcardType())
+      //         {
+      //            // any media type from given list is acceptable the take first
+      //            return mediaTypes.get(0);
+      //         }
+      //         for (MediaType rt : mediaTypes)
+      //         {
+      //            if (!rt.isWildcardType() && !rt.isWildcardSubtype())
+      //            {
+      //               // skip all media types if it has wildcard at type or sub-type
+      //               if (rt.isCompatible(at))
+      //               {
+      //                  return rt;
+      //               }
+      //            }
+      //         }
+      //      }
       for (MediaType at : l)
       {
-         if (at.isWildcardType())
-         {
-            // any media type from given list is acceptable the take first
-            return mediaTypes.get(0);
-         }
          for (MediaType rt : mediaTypes)
          {
-            if (!rt.isWildcardType() && !rt.isWildcardSubtype())
+            if (MediaTypeHelper.isMatched(at, rt))
             {
-               // skip all media types if it has wildcard at type or sub-type
-               if (rt.isCompatible(at))
-               {
-                  return rt;
-               }
-
-               String type = rt.getType();
-               if (at.getType().equalsIgnoreCase(type))
-               {
-                  String subType = rt.getSubtype();
-                  Matcher extPrefixMatcher = MediaTypeHelper.EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType);
-                  if (extPrefixMatcher.matches())
-                  {
-                     subType = extPrefixMatcher.group(1);
-                     MediaType newType = new MediaType(type, subType);
-                     if (newType.isCompatible(at))
-                     {
-                        return rt;
-                     }
-                  }
-               }
+               return rt;
             }
-
          }
       }
 
@@ -497,7 +489,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for If-Match header and ETag.
-    *
+    * 
     * @param etag the ETag
     * @return ResponseBuilder with status 412 (precondition failed) if If-Match
     *         header is NOT MATCH to ETag or null otherwise
@@ -528,7 +520,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for If-None-Match header and ETag.
-    *
+    * 
     * @param etag the ETag
     * @return ResponseBuilder with status 412 (precondition failed) if
     *         If-None-Match header is MATCH to ETag and HTTP method is not GET
@@ -570,7 +562,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for lastModified and unmodifiedSince times.
-    *
+    * 
     * @param lastModified the last modified time
     * @return ResponseBuilder with status 412 (precondition failed) if
     *         lastModified time is greater then unmodifiedSince otherwise return
@@ -600,7 +592,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for lastModified and modifiedSince times.
-    *
+    * 
     * @param lastModified the last modified time
     * @return ResponseBuilder with status 304 (not modified) if lastModified
     *         time is greater then modifiedSince otherwise return null. If date

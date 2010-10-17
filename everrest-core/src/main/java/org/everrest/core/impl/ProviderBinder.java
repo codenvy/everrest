@@ -77,7 +77,7 @@ import javax.ws.rs.ext.Providers;
 
 /**
  * Gives access to common predefined provider.
- *
+ * 
  * @see Providers
  * @see Provider
  * @see MessageBodyReader
@@ -88,7 +88,7 @@ import javax.ws.rs.ext.Providers;
  * @see RequestFilter
  * @see ResponseFilter
  * @see MethodInvokerFilter
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ProviderBinder.java -1 $
  */
@@ -258,7 +258,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ContextResolver.
-    *
+    * 
     * @param clazz class of implementation ContextResolver
     */
    @SuppressWarnings("unchecked")
@@ -278,7 +278,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ContextResolver.
-    *
+    * 
     * @param instance ContextResolver instance
     */
    @SuppressWarnings("unchecked")
@@ -299,7 +299,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ExceptionMapper.
-    *
+    * 
     * @param clazz class of implementation ExceptionMapper
     */
    @SuppressWarnings("unchecked")
@@ -318,7 +318,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ExceptionMapper.
-    *
+    * 
     * @param instance ExceptionMapper instance
     */
    @SuppressWarnings("unchecked")
@@ -338,7 +338,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyReader.
-    *
+    * 
     * @param clazz class of implementation MessageBodyReader
     */
    @SuppressWarnings("unchecked")
@@ -358,7 +358,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyReader.
-    *
+    * 
     * @param instance MessageBodyReader instance
     */
    @SuppressWarnings("unchecked")
@@ -379,7 +379,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyWriter.
-    *
+    * 
     * @param clazz class of implementation MessageBodyWriter
     */
    @SuppressWarnings("unchecked")
@@ -399,7 +399,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyWriter.
-    *
+    * 
     * @param instance MessageBodyWriter instance
     */
    @SuppressWarnings("unchecked")
@@ -420,7 +420,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MethodInvokerFilter.
-    *
+    * 
     * @param clazz class of implementation MethodInvokerFilter
     */
    public void addMethodInvokerFilter(Class<? extends MethodInvokerFilter> clazz)
@@ -439,7 +439,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MethodInvokerFilter.
-    *
+    * 
     * @param instance MethodInvokerFilter instance
     */
    public void addMethodInvokerFilter(MethodInvokerFilter instance)
@@ -459,7 +459,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request RequestFilter.
-    *
+    * 
     * @param clazz class of implementation RequestFilter
     */
    public void addRequestFilter(Class<? extends RequestFilter> clazz)
@@ -478,7 +478,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton RequestFilter.
-    *
+    * 
     * @param instance RequestFilter instance
     */
    public void addRequestFilter(RequestFilter instance)
@@ -498,7 +498,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ResponseFilter.
-    *
+    * 
     * @param clazz class of implementation ResponseFilter
     */
    public void addResponseFilter(Class<? extends ResponseFilter> clazz)
@@ -517,7 +517,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ResponseFilter.
-    *
+    * 
     * @param instance ResponseFilter instance
     */
    public void addResponseFilter(ResponseFilter instance)
@@ -537,7 +537,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Get list of most acceptable writer's media type for specified type.
-    *
+    * 
     * @param type type
     * @param genericType generic type
     * @param annotations annotations
@@ -763,10 +763,10 @@ public class ProviderBinder implements Providers
    /**
     * @param <T> context resolver actual type argument
     * @param pm MediaTypeMap that contains ProviderFactories that may produce
-    *        objects that are instance of T
+    *           objects that are instance of T
     * @param contextType context type
     * @param mediaType media type that can be used to restrict context resolver
-    *        choose
+    *           choose
     * @return ContextResolver or null if nothing was found
     */
    @SuppressWarnings("unchecked")
@@ -797,7 +797,7 @@ public class ProviderBinder implements Providers
    /**
     * Looking for message body reader according to supplied entity class, entity
     * generic type, annotations and content type.
-    *
+    * 
     * @param <T> message body reader actual type argument
     * @param type entity type
     * @param genericType entity generic type
@@ -835,7 +835,7 @@ public class ProviderBinder implements Providers
    /**
     * Looking for message body writer according to supplied entity class, entity
     * generic type, annotations and content type.
-    *
+    * 
     * @param <T> message body writer actual type argument
     * @param type entity type
     * @param genericType entity generic type
