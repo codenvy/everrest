@@ -356,29 +356,29 @@ public final class MediaTypeHelper
          Matcher checkMeMatcher = EXT_SUBTYPE_PATTERN.matcher(checkMeSubtype);
          if (patternMatcher.matches())
          {
-            String onePrefix = patternMatcher.group(1);
-            String oneSuffix = patternMatcher.group(2);
+            String patternPrefix = patternMatcher.group(1);
+            String patternSuffix = patternMatcher.group(2);
 
             if (!checkMeMatcher.matches())
             {
                // pattern is type such as application/atom+xml, application/*+xml, application/xml+*
                // checkMe is type such as application/xml
-               return checkMeSubtype.equalsIgnoreCase(onePrefix) || checkMeSubtype.equalsIgnoreCase(oneSuffix);
+               return checkMeSubtype.equalsIgnoreCase(patternPrefix) || checkMeSubtype.equalsIgnoreCase(patternSuffix);
             }
 
             // both types are extended types
-            String twoPrefix = checkMeMatcher.group(1);
-            String twoSuffix = checkMeMatcher.group(2);
+            String checkMePrefix = checkMeMatcher.group(1);
+            String checkMeSuffix = checkMeMatcher.group(2);
 
-            if (onePrefix.equalsIgnoreCase(twoPrefix) && oneSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD))
+            if (patternPrefix.equalsIgnoreCase(checkMePrefix) && patternSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD))
             {
-               // parts before '+' are the same and one after '+' is wildcard '*'
+               // parts before '+' are the same and pattern after '+' is wildcard '*'
                // For example two sub-types: atom+* and atom+xml
                return true;
             }
-            if (oneSuffix.equalsIgnoreCase(twoSuffix) && onePrefix.equals(MediaType.MEDIA_TYPE_WILDCARD))
+            if (patternSuffix.equalsIgnoreCase(checkMeSuffix) && patternPrefix.equals(MediaType.MEDIA_TYPE_WILDCARD))
             {
-               // parts after '+' are the same and one before '+' is wildcard '*'
+               // parts after '+' are the same and pattern before '+' is wildcard '*'
                // For example two sub-types: *+xml and atom+xml
                return true;
             }
