@@ -136,11 +136,9 @@ public class FieldInjectorImpl implements FieldInjector
                + a.toString() + ". It will be ignored.");
          }
       }
-
       this.defaultValue = defaultValue;
       this.annotation = annotation;
       this.encoded = encoded || resourceClass.getAnnotation(Encoded.class) != null;
-
    }
 
    /**
@@ -216,7 +214,6 @@ public class FieldInjectorImpl implements FieldInjector
          }
          catch (Throwable e)
          {
-
             Class<?> ac = annotation.annotationType();
             if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
                throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
@@ -243,9 +240,7 @@ public class FieldInjectorImpl implements FieldInjector
                }
             }
          }
-
       }
-
    }
 
    /**

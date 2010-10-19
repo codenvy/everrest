@@ -21,6 +21,7 @@ package org.everrest.core.impl;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.Inject;
 import org.everrest.core.Property;
+import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.test.mock.MockHttpServletRequest;
 
@@ -51,9 +52,9 @@ public class RequestDispatcherTest extends BaseTest
    public void setUp() throws Exception
    {
       resources = new ResourceBinderImpl();
-      SimpleDependencySupplier depInjector = new SimpleDependencySupplier();
-      depInjector.put(InjectableComponent1.class, new InjectableComponent1());
-      depInjector.put(InjectableComponent2.class, new InjectableComponent2());
+      DependencySupplierImpl depInjector = new DependencySupplierImpl();
+      depInjector.addComponent(InjectableComponent1.class, new InjectableComponent1());
+      depInjector.addComponent(InjectableComponent2.class, new InjectableComponent2());
       // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
       providers = new ApplicationProviderBinder();

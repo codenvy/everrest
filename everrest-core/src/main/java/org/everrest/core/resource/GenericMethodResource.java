@@ -18,7 +18,6 @@
  */
 package org.everrest.core.resource;
 
-import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodParameter;
 
 import java.lang.annotation.Annotation;
@@ -50,11 +49,6 @@ public interface GenericMethodResource
     * @return parent resource descriptor
     */
    AbstractResourceDescriptor getParentResource();
-
-   /**
-    * @return invoker that must be used for processing current method
-    */
-   MethodInvoker getMethodInvoker();
 
    /**
     * @return Java type returned by method, see {@link #getMethod()}

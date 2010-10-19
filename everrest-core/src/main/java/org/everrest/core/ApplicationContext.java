@@ -19,6 +19,8 @@
 package org.everrest.core;
 
 import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.method.MethodInvoker;
+import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.uri.UriPattern;
 
 import java.util.List;
@@ -33,7 +35,7 @@ import javax.ws.rs.ext.Providers;
 /**
  * Provides access to ContainerRequest, ContainerResponse and request URI
  * information.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ApplicationContext.java -1 $
  */
@@ -47,7 +49,7 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * the root resource last.
     * </p>
     * So add each new resource at the begin of list.
-    * 
+    *
     * @param resource the resource e. g. resource class, sub-resource method or
     *        sub-resource locator.
     */
@@ -60,7 +62,7 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * resource URI last.
     * </p>
     * So add each new URI at the begin of list.
-    * 
+    *
     * @param uri the partial part of that matched to resource class,
     *        sub-resource method or sub-resource locator.
     */
@@ -94,11 +96,17 @@ public interface ApplicationContext extends UriInfo, InitialProperties
    InitialProperties getInitialProperties();
 
    /**
+    * @param methodDescriptor method descriptor
+    * @return invoker that must be used for processing methods
+    */
+   MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor);
+
+   /**
     * Should be used to pass template values in context by using returned list
     * in matching to @see
     * {@link org.everrest.core.uri.UriPattern#match(String, List)} . List will
     * be cleared during matching.
-    * 
+    *
     * @return the list for template values
     */
    List<String> getParameterValues();
@@ -128,7 +136,7 @@ public interface ApplicationContext extends UriInfo, InitialProperties
 
    /**
     * Pass in context list of path template parameters @see {@link UriPattern}.
-    * 
+    *
     * @param parameterNames list of templates parameters
     */
    void setParameterNames(List<String> parameterNames);

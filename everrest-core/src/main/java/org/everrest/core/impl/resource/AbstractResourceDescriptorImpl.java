@@ -25,9 +25,7 @@ import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.ConstructorDescriptorImpl;
 import org.everrest.core.impl.FieldInjectorImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
-import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.impl.method.MethodParameterImpl;
-import org.everrest.core.impl.method.OptionsRequestMethodInvoker;
 import org.everrest.core.impl.method.ParameterHelper;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
@@ -78,47 +76,25 @@ import javax.ws.rs.core.MediaType;
 public class AbstractResourceDescriptorImpl extends BaseObjectModel implements AbstractResourceDescriptor
 {
 
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Logger LOG = Logger.getLogger(AbstractResourceDescriptorImpl.class);
 
-   /**
-    * @see PathValue
-    */
+   /** PathValue. */
    private final PathValue path;
 
-   /**
-    * @see UriPattern
-    */
+   /** UriPattern. */
    private final UriPattern uriPattern;
 
-   /**
-    * Sub-resource methods. Sub-resource method has path annotation.
-    *
-    * @see SubResourceMethodDescriptor
-    */
+   /** Sub-resource methods. Sub-resource method has path annotation. */
    private final SubResourceMethodMap subResourceMethods;
 
-   /**
-    * Sub-resource locators. Sub-resource locator has path annotation.
-    *
-    * @see SubResourceLocatorDescriptor
-    */
+   /** Sub-resource locators. Sub-resource locator has path annotation. */
    private final SubResourceLocatorMap subResourceLocators;
 
-   /**
-    * Resource methods. Resource method has not own path annotation.
-    *
-    * @see ResourceMethodDescriptor
-    */
+   /** Resource methods. Resource method has not own path annotation. */
    private final ResourceMethodMap<ResourceMethodDescriptor> resourceMethods;
 
-   /**
-    * Resource class constructors.
-    *
-    * @see ConstructorDescriptor
-    */
+   /** ConstructorDescriptor. */
    private final List<ConstructorDescriptor> constructors;
 
    /** Resource class fields. */
@@ -334,7 +310,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   // resource method
                   ResourceMethodDescriptor res =
                      new ResourceMethodDescriptorImpl(method, httpMethod.value(), params, this, consumes, produces,
-                        additional, new DefaultMethodInvoker());
+                        additional);
                   ResourceMethodDescriptor exist =
                      findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(), res
                         .produces());
@@ -355,11 +331,10 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   // sub-resource method
                   SubResourceMethodDescriptor subRes =
                      new SubResourceMethodDescriptorImpl(new PathValue(subPath.value()), method, httpMethod.value(),
-                        params, this, consumes, produces, additional, new DefaultMethodInvoker());
+                        params, this, consumes, produces, additional);
                   SubResourceMethodDescriptor exist = null;
                   ResourceMethodMap<SubResourceMethodDescriptor> rmm =
-                     subResourceMethods.getMethodMap(subRes
-                     .getUriPattern());
+                     subResourceMethods.getMethodMap(subRes.getUriPattern());
                   // rmm is never null, empty map instead
 
                   List<SubResourceMethodDescriptor> l = rmm.getList(httpMethod.value());
@@ -385,7 +360,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   // sub-resource locator
                   SubResourceLocatorDescriptor loc =
                      new SubResourceLocatorDescriptorImpl(new PathValue(subPath.value()), method, params, this,
-                        additional, new DefaultMethodInvoker());
+                        additional);
                   if (!subResourceLocators.containsKey(loc.getUriPattern()))
                   {
                      subResourceLocators.put(loc.getUriPattern(), loc);
@@ -516,7 +491,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       {
          if (findMethodResourceMediaType(headRes, rmd.consumes(), rmd.produces()) == null)
             headRes.add(new ResourceMethodDescriptorImpl(rmd.getMethod(), HttpMethod.HEAD, rmd.getMethodParameters(),
-               this, rmd.consumes(), rmd.produces(), rmd.getAnnotations(), rmd.getMethodInvoker()));
+               this, rmd.consumes(), rmd.produces(), rmd.getAnnotations()));
       }
       for (ResourceMethodMap<SubResourceMethodDescriptor> rmm : subResourceMethods.values())
       {
@@ -536,7 +511,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             {
                headSubres.add(new SubResourceMethodDescriptorImpl(srmd.getPathValue(), srmd.getMethod(),
                   HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(), srmd
-                     .getAnnotations(), new DefaultMethodInvoker()));
+                     .getAnnotations()));
             }
          }
       }
@@ -561,7 +536,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          List<MediaType> produces = new ArrayList<MediaType>(1);
          produces.add(MediaTypeHelper.WADL_TYPE);
          o.add(new OptionsRequestResourceMethodDescriptorImpl(null, "OPTIONS", mps, this, consumes, produces,
-            new Annotation[0], new OptionsRequestMethodInvoker()));
+            new Annotation[0]));
       }
       // TODO need process sub-resources ?
    }

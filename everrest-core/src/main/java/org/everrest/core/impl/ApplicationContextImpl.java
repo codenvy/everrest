@@ -23,7 +23,11 @@ import org.everrest.core.DependencySupplier;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.InitialProperties;
+import org.everrest.core.impl.method.DefaultMethodInvoker;
+import org.everrest.core.impl.method.OptionsRequestMethodInvoker;
 import org.everrest.core.impl.uri.UriComponent;
+import org.everrest.core.method.MethodInvoker;
+import org.everrest.core.resource.GenericMethodResource;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -304,6 +308,22 @@ public class ApplicationContextImpl implements ApplicationContext
             matchedURIs.add(0, UriComponent.decode(seg, UriComponent.PATH_SEGMENT));
       }
       return encodedMatchedURIs;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor)
+   {
+      String method = request.getMethod();
+      if ("OPTIONS".equals(method) && methodDescriptor.getMethod() == null)
+      {
+         // GenericMethodResource.getMethod() always return null if method for
+         // "OPTIONS" request was not described in source code of service. In
+         // this case we provide mechanism for "fake" method invoking.
+         return new OptionsRequestMethodInvoker();
+      }
+      return new DefaultMethodInvoker();
    }
 
    /**

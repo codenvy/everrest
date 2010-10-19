@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009 eXo Platform SAS.
+/**
+ * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,38 +16,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.core.servlet;
+
+package org.everrest.core.tools;
 
 import org.everrest.core.BaseDependencySupplier;
 
-import javax.servlet.ServletContext;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Resolve dependency by look up instance of object in {@link ServletContext}.
- * Instance of object must be present in servlet context as attribute with name
- * which is the same as class or interface name of requested parameter, e.g.
- * instance of org.foo.bar.MyClass must be bound to attribute name
- * org.foo.bar.MyClass
+ * Simple dependency resolver.
  *
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
+ * @version $Id$
  */
-public class ServletContextDependencySupplier extends BaseDependencySupplier
+public class DependencySupplierImpl extends BaseDependencySupplier
 {
 
-   private final ServletContext ctx;
+   private final Map<Class<?>, Object> dependencies = new HashMap<Class<?>, Object>();
 
-   public ServletContextDependencySupplier(ServletContext ctx)
-   {
-      this.ctx = ctx;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public Object getComponent(Class<?> type)
    {
-      return ctx.getAttribute(type.getName());
+      return dependencies.get(type);
+   }
+
+   public void addComponent(Class<?> key, Object instance)
+   {
+      dependencies.put(key, instance);
    }
 
 }

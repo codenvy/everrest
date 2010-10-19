@@ -21,7 +21,7 @@ package org.everrest.core;
 /**
  * Implementation of DependencySupplier should be able to provide objects that
  * required for constructors or fields of Resource or Provider.
- * 
+ *
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id: DependencySupplier.java -1 $
  */
@@ -30,7 +30,7 @@ public interface DependencySupplier
 
    /**
     * Get object that is approach do description <code>parameter</code>.
-    * 
+    *
     * @param parameter required parameter description
     * @return object of required type or null if instance described by
     *         <code>parameter</code> may not be produced
@@ -39,8 +39,8 @@ public interface DependencySupplier
 
    /**
     * Get instance of <code>type</code>.
-    * 
-    * @param parameter required parameter description
+    *
+    * @param parameter required parameter class
     * @return object of required type or null if instance described by
     *         <code>type</code> may not be produced
     */

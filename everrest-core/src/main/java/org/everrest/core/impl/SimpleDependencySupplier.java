@@ -22,6 +22,7 @@ import org.everrest.core.DependencySupplier;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.Inject;
 import org.everrest.core.Parameter;
+import org.everrest.core.tools.DependencySupplierImpl;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id: SimpleDependencySupplier.java -1 $
+ * @deprecated use {@link DependencySupplierImpl} instead
  */
 public class SimpleDependencySupplier extends HashMap<Class<?>, Object> implements DependencySupplier
 {
@@ -47,11 +49,11 @@ public class SimpleDependencySupplier extends HashMap<Class<?>, Object> implemen
             // Do not process fields without annotation Inject
             if (a.annotationType() == Inject.class)
             {
-               return get(parameter.getParameterClass());
+               return getComponent(parameter.getParameterClass());
             }
          }
       }
-      return get(parameter.getParameterClass());
+      return getComponent(parameter.getParameterClass());
    }
 
    /**

@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
@@ -63,11 +62,6 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
     */
    private final List<MethodParameter> parameters;
 
-   /**
-    * Method invoker.
-    */
-   private final MethodInvoker invoker;
-
    private final Annotation[] additional;
 
    /**
@@ -78,10 +72,9 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
     * @param parameters list of method parameters. See {@link MethodParameter}
     * @param parentResource parent resource for this method
     * @param additional set of additional (not JAX-RS annotations)
-    * @param invoker method invoker
     */
    SubResourceLocatorDescriptorImpl(PathValue path, Method method, List<MethodParameter> parameters,
-      AbstractResourceDescriptor parentResource, Annotation[] additional, MethodInvoker invoker)
+      AbstractResourceDescriptor parentResource, Annotation[] additional)
    {
       this.path = path;
       this.uriPattern = new UriPattern(path.getPath());
@@ -89,7 +82,6 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
       this.parameters = parameters;
       this.parentResource = parentResource;
       this.additional = additional;
-      this.invoker = invoker;
    }
 
    /**
@@ -143,14 +135,6 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
    /**
     * {@inheritDoc}
     */
-   public MethodInvoker getMethodInvoker()
-   {
-      return invoker;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
@@ -172,7 +156,7 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
    {
       StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");
       sb.append("resource: " + getParentResource() + "; ").append("path: " + getPathValue() + "; ").append(
-         "return type: " + getResponseType() + "; ").append("invoker: " + getMethodInvoker()).append(" ]");
+         "return type: " + getResponseType()).append(" ]");
       return sb.toString();
    }
 }

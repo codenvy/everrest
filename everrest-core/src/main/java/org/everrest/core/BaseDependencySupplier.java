@@ -17,20 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.everrest.core.impl.method;
+package org.everrest.core;
 
-import org.everrest.core.method.MethodInvoker;
+import java.lang.annotation.Annotation;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MethodInvokerFactory.java 2367 2010-05-12 09:51:45Z aparfonov $
+ * @version $Id$
  */
-public interface MethodInvokerFactory
+public abstract class BaseDependencySupplier implements DependencySupplier
 {
 
    /**
-    * @return {@link MethodInvoker}
+    * {@inheritDoc}
     */
-   MethodInvoker getMethodInvoker();
+   public final Object getComponent(Parameter parameter)
+   {
+      if (parameter instanceof FieldInjector)
+      {
+         for (Annotation a : parameter.getAnnotations())
+         {
+            // Do not process fields without annotation Inject
+            if (a.annotationType() == Inject.class)
+            {
+               return getComponent(parameter.getParameterClass());
+            }
+         }
+      }
+      return getComponent(parameter.getParameterClass());
+   }
 
 }

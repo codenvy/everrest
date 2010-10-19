@@ -25,8 +25,6 @@ import org.everrest.core.PerRequestObjectFactory;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResourcePublicationException;
 import org.everrest.core.SingletonObjectFactory;
-import org.everrest.core.impl.method.DefaultMethodInvoker;
-import org.everrest.core.impl.method.MethodInvokerFactory;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.resource.AbstractResourceDescriptor;
@@ -158,9 +156,7 @@ public class ResourceBinderImpl implements ResourceBinder
       }
    }
 
-   /**
-    * Root resource descriptors.
-    */
+   /** Root resource descriptors. */
    protected final List<ObjectFactory<AbstractResourceDescriptor>> rootResources =
       new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
 
@@ -170,21 +166,8 @@ public class ResourceBinderImpl implements ResourceBinder
    /** Resource listeners. */
    protected final List<ResourceListener> resourceListeners = new ArrayList<ResourceListener>();
 
-   /**
-    * Producer of methods invokers. If not specified then
-    * {@link DefaultMethodInvoker} will be in use.
-    */
-   protected final MethodInvokerFactory invokerFactory;
-
    public ResourceBinderImpl()
    {
-      // TODO
-      this(null);
-   }
-
-   public ResourceBinderImpl(MethodInvokerFactory invokerFactory)
-   {
-      this.invokerFactory = invokerFactory;
       // Initialize RuntimeDelegate instance
       // This is first component in life cycle what needs.
       // TODO better solution to initialize RuntimeDelegate
@@ -203,8 +186,7 @@ public class ResourceBinderImpl implements ResourceBinder
       try
       {
          AbstractResourceDescriptor descriptor =
-            new AbstractResourceDescriptorImpl(resourceClass, ComponentLifecycleScope.PER_REQUEST //
-            /*TODO, invokerFactory*/);
+            new AbstractResourceDescriptorImpl(resourceClass, ComponentLifecycleScope.PER_REQUEST);
          // validate AbstractResourceDescriptor
          descriptor.accept(rdv);
          if (properties != null)
@@ -228,8 +210,7 @@ public class ResourceBinderImpl implements ResourceBinder
       try
       {
          AbstractResourceDescriptor descriptor =
-            new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON //
-            /*TODO, invokerFactory*/);
+            new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON);
          // validate AbstractResourceDescriptor
          descriptor.accept(rdv);
          if (properties != null)

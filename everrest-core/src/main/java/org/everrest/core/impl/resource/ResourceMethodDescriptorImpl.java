@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
@@ -71,11 +70,6 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
     */
    private final List<MediaType> produces;
 
-   /**
-    * Method invoker.
-    */
-   private final MethodInvoker invoker;
-
    private final Annotation[] additional;
 
    /**
@@ -88,11 +82,10 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
     * @param consumes list of media types which this method can consume
     * @param produces list of media types which this method can produce
     * @param additional set of additional (not JAX-RS annotations)
-    * @param invoker method invoker
     */
    ResourceMethodDescriptorImpl(Method method, String httpMethod, List<MethodParameter> parameters,
       AbstractResourceDescriptor parentResource, List<MediaType> consumes, List<MediaType> produces,
-      Annotation[] additional, MethodInvoker invoker)
+      Annotation[] additional)
    {
       this.method = method;
       this.httpMethod = httpMethod;
@@ -101,7 +94,6 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
       this.consumes = consumes;
       this.produces = produces;
       this.additional = additional;
-      this.invoker = invoker;
    }
 
    /**
@@ -163,14 +155,6 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
    /**
     * {@inheritDoc}
     */
-   public MethodInvoker getMethodInvoker()
-   {
-      return invoker;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
@@ -193,7 +177,7 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
       StringBuilder sb = new StringBuilder("[ ResourceMethodDescriptorImpl: ");
       sb.append("resource: " + getParentResource() + "; ").append("HTTP method: " + getHttpMethod() + "; ").append(
          "produces media type: " + produces() + "; ").append("consumes media type: " + consumes() + "; ").append(
-         "return type: " + getResponseType() + "; ").append("invoker: " + getMethodInvoker()).append("] ]");
+         "return type: " + getResponseType()).append("] ]");
       return sb.toString();
    }
 

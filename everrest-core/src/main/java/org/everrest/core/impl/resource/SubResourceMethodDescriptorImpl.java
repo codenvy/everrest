@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
@@ -82,11 +81,6 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
     */
    private final List<MediaType> produces;
 
-   /**
-    * Method invoker.
-    */
-   private final MethodInvoker invoker;
-
    private final Annotation[] additional;
 
    /**
@@ -100,11 +94,10 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
     * @param consumes list of media types which this method can consume
     * @param produces list of media types which this method can produce
     * @param additional set of additional (not JAX-RS annotations)
-    * @param invoker method invoker
     */
    SubResourceMethodDescriptorImpl(PathValue path, Method method, String httpMethod, List<MethodParameter> parameters,
       AbstractResourceDescriptor parentResource, List<MediaType> consumes, List<MediaType> produces,
-      Annotation[] additional, MethodInvoker invoker)
+      Annotation[] additional)
    {
       this.path = path;
       this.uriPattern = new UriPattern(path.getPath());
@@ -115,7 +108,6 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
       this.consumes = consumes;
       this.produces = produces;
       this.additional = additional;
-      this.invoker = invoker;
    }
 
    /**
@@ -193,14 +185,6 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
    /**
     * {@inheritDoc}
     */
-   public MethodInvoker getMethodInvoker()
-   {
-      return invoker;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
@@ -223,8 +207,7 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
       StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");
       sb.append("resource: " + getParentResource() + "; ").append("path: " + getPathValue() + "; ").append(
          "HTTP method: " + getHttpMethod() + "; ").append("produces media type: " + produces() + "; ").append(
-         "consumes media type: " + consumes() + "; ").append("return type: " + getResponseType() + "; ").append(
-         "invoker: " + getMethodInvoker()).append(" ]");
+         "consumes media type: " + consumes() + "; ").append("return type: " + getResponseType()).append(" ]");
       return sb.toString();
    }
 

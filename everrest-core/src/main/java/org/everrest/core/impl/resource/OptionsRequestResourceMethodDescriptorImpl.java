@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 
@@ -44,13 +43,12 @@ public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMe
     * @param parentResource parent resource for this method
     * @param consumes list of media types which this method can consume
     * @param produces list of media types which this method can produce
-    * @param invoker method invoker
     */
    public OptionsRequestResourceMethodDescriptorImpl(Method method, String httpMethod,
       List<MethodParameter> parameters, AbstractResourceDescriptor parentResource, List<MediaType> consumes,
-      List<MediaType> produces, Annotation[] additional, MethodInvoker invoker)
+      List<MediaType> produces, Annotation[] additional)
    {
-      super(method, httpMethod, parameters, parentResource, consumes, produces, additional, invoker);
+      super(method, httpMethod, parameters, parentResource, consumes, produces, additional);
    }
 
    /**
