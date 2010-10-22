@@ -21,6 +21,7 @@ package org.everrest.core.impl.provider;
 import org.everrest.core.impl.provider.json.JsonException;
 import org.everrest.core.impl.provider.json.JsonGenerator;
 import org.everrest.core.impl.provider.json.JsonParser;
+import org.everrest.core.impl.provider.json.JsonTransient;
 import org.everrest.core.impl.provider.json.JsonUtils;
 import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
@@ -76,6 +77,10 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
 
    private static boolean isIgnored(Class<?> type)
    {
+      if (type.getAnnotation(JsonTransient.class) != null)
+      {
+         return true;
+      }
       for (Class<?> c : IGNORED)
       {
          if (c.isAssignableFrom(type))

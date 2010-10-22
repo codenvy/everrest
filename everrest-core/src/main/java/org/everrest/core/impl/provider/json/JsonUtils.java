@@ -18,10 +18,14 @@
  */
 package org.everrest.core.impl.provider.json;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -172,7 +176,7 @@ public final class JsonUtils
 
    /**
     * Transform Java String to JSON string.
-    * 
+    *
     * @param string source String.
     * @return result.
     */
@@ -228,7 +232,7 @@ public final class JsonUtils
 
    /**
     * Check is given Object is known.
-    * 
+    *
     * @param o Object.
     * @return true if Object is known, false otherwise.
     */
@@ -239,7 +243,7 @@ public final class JsonUtils
 
    /**
     * Check is given Class is known.
-    * 
+    *
     * @param clazz Class.
     * @return true if Class is known, false otherwise.
     */
@@ -250,7 +254,7 @@ public final class JsonUtils
 
    /**
     * Get 'type' of Object. @see {@link KNOWN_TYPES} .
-    * 
+    *
     * @param o Object.
     * @return 'type'.
     */
@@ -274,7 +278,7 @@ public final class JsonUtils
 
    /**
     * Get 'type' of Class. @see {@link KNOWN_TYPES} .
-    * 
+    *
     * @param clazz Class.
     * @return 'type'.
     */
@@ -291,6 +295,28 @@ public final class JsonUtils
       if (Map.class.isAssignableFrom(clazz))
          return Types.MAP;
       return null;
+   }
+
+   /**
+    * Check fields in class which marked as 'transient' or annotated with
+    * {@link JsonTransient} annotation . Transient fields will be not serialized
+    * in JSON representation.
+    *
+    * @param clazz the class.
+    * @return set of fields which must be skiped.
+    */
+   public static Set<String> getTransientFields(Class<?> clazz)
+   {
+      Set<String> set = new HashSet<String>();
+      Field[] fields = clazz.getDeclaredFields();
+      for (Field f : fields)
+      {
+         if (Modifier.isTransient(f.getModifiers()) || f.getAnnotation(JsonTransient.class) != null)
+         {
+            set.add(f.getName());
+         }
+      }
+      return set;
    }
 
    /** Must not be created. */

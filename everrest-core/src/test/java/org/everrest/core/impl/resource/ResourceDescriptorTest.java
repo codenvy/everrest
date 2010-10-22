@@ -781,7 +781,7 @@ public class ResourceDescriptorTest extends BaseTest
       public Request request;
 
       @Context
-      protected UriInfo something;
+      /*protected */UriInfo something;
    }
 
    public abstract static class ExtResource extends AbstractResource

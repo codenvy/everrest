@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -371,6 +372,7 @@ public class ObjectBuilder
       }
 
       Method[] methods = clazz.getMethods();
+      Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
 
       for (Method method : methods)
       {
@@ -386,64 +388,67 @@ public class ObjectBuilder
             // first letter to lower case
             key = (key.length() > 1) ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
 
-            JsonValue childJsonValue = jsonValue.getElement(key);
-            if (childJsonValue == null)
+            if (!transientFieldNames.contains(key))
             {
-               continue;
-            }
-            // if one of known primitive type or array of primitive type
-            try
-            {
-
-               if (JsonUtils.isKnownType(methodParameterClass))
+               JsonValue childJsonValue = jsonValue.getElement(key);
+               if (childJsonValue == null)
                {
-                  method.invoke(object, new Object[]{createObjectKnownTypes(methodParameterClass, childJsonValue)});
+                  continue;
                }
-               else
+               // if one of known primitive type or array of primitive type
+               try
                {
-                  Types parameterType = JsonUtils.getType(methodParameterClass);
-                  // other type Collection, Map or Object[].
-                  if (parameterType != null)
+
+                  if (JsonUtils.isKnownType(methodParameterClass))
                   {
-                     if (parameterType == Types.ENUM)
-                     {
-                        Class c = methodParameterClass;
-                        Enum<?> en = Enum.valueOf(c, childJsonValue.getStringValue());
-                        method.invoke(object, new Object[]{en});
-                     }
-                     else if (parameterType == Types.ARRAY_OBJECT)
-                     {
-                        Object array = createArray(methodParameterClass, childJsonValue);
-                        method.invoke(object, new Object[]{array});
-                     }
-                     else if (parameterType == Types.COLLECTION)
-                     {
-                        Class c = methodParameterClass;
-                        method
-                           .invoke(object, createCollection(c, method.getGenericParameterTypes()[0], childJsonValue));
-                     }
-                     else if (parameterType == Types.MAP)
-                     {
-                        Class c = methodParameterClass;
-                        method.invoke(object, createObject(c, method.getGenericParameterTypes()[0], childJsonValue));
-                     }
-                     else
-                     {
-                        // it must never happen!
-                        throw new JsonException("Can't restore parameter of method : " + clazz.getName() + "#"
-                           + method.getName() + " from JSON source.");
-                     }
+                     method.invoke(object, new Object[]{createObjectKnownTypes(methodParameterClass, childJsonValue)});
                   }
                   else
                   {
-                     method.invoke(object, createObject(methodParameterClass, childJsonValue));
+                     Types parameterType = JsonUtils.getType(methodParameterClass);
+                     // other type Collection, Map or Object[].
+                     if (parameterType != null)
+                     {
+                        if (parameterType == Types.ENUM)
+                        {
+                           Class c = methodParameterClass;
+                           Enum<?> en = Enum.valueOf(c, childJsonValue.getStringValue());
+                           method.invoke(object, new Object[]{en});
+                        }
+                        else if (parameterType == Types.ARRAY_OBJECT)
+                        {
+                           Object array = createArray(methodParameterClass, childJsonValue);
+                           method.invoke(object, new Object[]{array});
+                        }
+                        else if (parameterType == Types.COLLECTION)
+                        {
+                           Class c = methodParameterClass;
+                           method.invoke(object, createCollection(c, method.getGenericParameterTypes()[0],
+                              childJsonValue));
+                        }
+                        else if (parameterType == Types.MAP)
+                        {
+                           Class c = methodParameterClass;
+                           method.invoke(object, createObject(c, method.getGenericParameterTypes()[0], childJsonValue));
+                        }
+                        else
+                        {
+                           // it must never happen!
+                           throw new JsonException("Can't restore parameter of method : " + clazz.getName() + "#"
+                              + method.getName() + " from JSON source.");
+                        }
+                     }
+                     else
+                     {
+                        method.invoke(object, createObject(methodParameterClass, childJsonValue));
+                     }
                   }
                }
-            }
-            catch (Exception e)
-            {
-               throw new JsonException("Unable restore parameter via method " + clazz.getName() + "#"
-                  + method.getName() + ". " + e.getMessage(), e);
+               catch (Exception e)
+               {
+                  throw new JsonException("Unable restore parameter via method " + clazz.getName() + "#"
+                     + method.getName() + ". " + e.getMessage(), e);
+               }
             }
          }
       }

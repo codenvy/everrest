@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009 eXo Platform SAS.
+/**
+ * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,39 +16,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.everrest.core.impl.provider.json;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import org.everrest.core.impl.provider.JsonEntityProvider;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
+ * Prevent processing field/type via Json framework. When applied to class, it
+ * indicates that the class should not be processed by
+ * {@link JsonEntityProvider}.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BeanWithTransientField.java 34417 2009-07-23 14:42:56Z dkatayev
- *          $
+ * @version $Id$
  */
-public class BeanWithTransientField
-{
-
-   private String field = "visible";
-
-   //@JsonTransient
-   transient private String transientField = "invisible";
-
-   public String getField()
-   {
-      return field;
-   }
-
-   public void setField(String field)
-   {
-      this.field = field;
-   }
-
-   public String getTransientField()
-   {
-      return transientField;
-   }
-
-   public void setTransientField(String transientField)
-   {
-      this.transientField = transientField;
-   }
-
+@Retention(RUNTIME)
+@Target({FIELD, TYPE})
+public @interface JsonTransient {
 }

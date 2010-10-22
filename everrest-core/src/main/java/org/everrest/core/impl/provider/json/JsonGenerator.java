@@ -22,10 +22,8 @@ import org.everrest.core.impl.provider.json.JsonUtils.Types;
 
 import java.io.StringReader;
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -132,7 +130,7 @@ public class JsonGenerator
    {
       Class<?> clazz = object.getClass();
       Method[] methods = clazz.getMethods();
-      Set<String> transientFields = getTransientFields(clazz);
+      Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
       JsonValue jsonRootValue = new ObjectValue();
       for (Method method : methods)
       {
@@ -162,7 +160,7 @@ public class JsonGenerator
             // First letter of key to lower case.
             key = (key.length() > 1) ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
             // Check is this field in list of transient field.
-            if (!transientFields.contains(key))
+            if (!transientFieldNames.contains(key))
             {
                try
                {
@@ -361,27 +359,6 @@ public class JsonGenerator
             // Must not be here!
             return null;
       }
-   }
-
-   /**
-    * Check fields in class which marked as 'transient'. Transient fields will
-    * be not serialized in JSON representation.
-    *
-    * @param clazz the class.
-    * @return set of fields which must be skiped.
-    */
-   private static Set<String> getTransientFields(Class<?> clazz)
-   {
-      Set<String> set = new HashSet<String>();
-      Field[] fields = clazz.getDeclaredFields();
-      for (Field f : fields)
-      {
-         if (Modifier.isTransient(f.getModifiers()))
-         {
-            set.add(f.getName());
-         }
-      }
-      return set;
    }
 
 }

@@ -155,19 +155,28 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             fields.add(new FieldInjectorImpl(resourceClass, jfield));
          }
          Class<?> sc = resourceClass.getSuperclass();
+         Package package0 = resourceClass.getPackage();
+         String resourcePackageName = package0 != null ? package0.getName() : null;
          while (sc != Object.class)
          {
             for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
             {
                int modif = jfield.getModifiers();
-               // TODO process fields with package visibility.
-               if (Modifier.isPublic(modif) || Modifier.isProtected(modif))
+               Package package1 = resourceClass.getPackage();
+               String scPackageName = package1 != null ? package1.getName() : null;
+               if (!Modifier.isPrivate(modif))
                {
-                  FieldInjector inj = new FieldInjectorImpl(resourceClass, jfield);
-                  // Skip not annotated field. They will be not injected from container.
-                  if (inj.getAnnotation() != null)
+                  if (Modifier.isPublic(modif)
+                     || Modifier.isProtected(modif)
+                     || (!Modifier.isPrivate(modif) && ((resourcePackageName == null && scPackageName == null) || resourcePackageName
+                        .equals(scPackageName))))
                   {
-                     fields.add(new FieldInjectorImpl(resourceClass, jfield));
+                     FieldInjector inj = new FieldInjectorImpl(resourceClass, jfield);
+                     // Skip not annotated field. They will be not injected from container.
+                     if (inj.getAnnotation() != null)
+                     {
+                        fields.add(new FieldInjectorImpl(resourceClass, jfield));
+                     }
                   }
                }
             }
