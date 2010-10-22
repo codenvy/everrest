@@ -145,7 +145,7 @@ public class JsonHandler
 
    /**
     * Parse characters array dependent of context.
-    * 
+    *
     * @param characters the characters array.
     * @return JsonValue.
     */
@@ -156,11 +156,11 @@ public class JsonHandler
       {
          return new StringValue(s.substring(1, s.length() - 1));
       }
-      else if ("true".equalsIgnoreCase(new String(characters)) || "false".equalsIgnoreCase(s))
+      else if ("true".equalsIgnoreCase(s) || "false".equalsIgnoreCase(s))
       {
-         return new BooleanValue(Boolean.parseBoolean(new String(characters)));
+         return new BooleanValue(Boolean.parseBoolean(s));
       }
-      else if ("null".equalsIgnoreCase(new String(characters)))
+      else if ("null".equalsIgnoreCase(s))
       {
          return new NullValue();
       }

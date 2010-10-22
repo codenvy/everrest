@@ -143,6 +143,16 @@ public final class ResponseImpl extends Response
          HEADER_TO_ENUM.put(HEADERS.LAST_MODIFIED, new CaselessStringWrapper(HttpHeaders.LAST_MODIFIED));
          HEADER_TO_ENUM.put(HEADERS.LOCATION, new CaselessStringWrapper(HttpHeaders.LOCATION));
          HEADER_TO_ENUM.put(HEADERS.EXPIRES, new CaselessStringWrapper(HttpHeaders.EXPIRES));
+
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.CACHE_CONTROL), HEADERS.CACHE_CONTROL);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.CONTENT_LANGUAGE), HEADERS.CONTENT_LANGUAGE);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.CONTENT_LOCATION), HEADERS.CONTENT_LOCATION);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.CONTENT_TYPE), HEADERS.CONTENT_TYPE);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.CONTENT_LENGTH), HEADERS.CONTENT_LENGTH);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.ETAG), HEADERS.ETAG);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.LAST_MODIFIED), HEADERS.LAST_MODIFIED);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.LOCATION), HEADERS.LOCATION);
+         ENUM_TO_HEADER.put(new CaselessStringWrapper(HttpHeaders.EXPIRES), HEADERS.EXPIRES);
       }
 
       /** Default HTTP status, No-content, 204. */

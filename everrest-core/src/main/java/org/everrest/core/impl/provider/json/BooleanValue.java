@@ -30,7 +30,7 @@ public class BooleanValue extends JsonValue
 
    /**
     * Constructs new BooleanValue.
-    * 
+    *
     * @param value value.
     */
    public BooleanValue(boolean value)
@@ -53,7 +53,7 @@ public class BooleanValue extends JsonValue
    @Override
    public String toString()
    {
-      return value ? "true" : "false";
+      return getStringValue();
    }
 
    /**
@@ -63,6 +63,14 @@ public class BooleanValue extends JsonValue
    public boolean getBooleanValue()
    {
       return value;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String getStringValue()
+   {
+      return value ? "true" : "false";
    }
 
    /**

@@ -194,63 +194,6 @@ public class ParameterHelper
    }
 
    /**
-    * The type <code>T</code> of the annotated parameter, field or property must
-    * either:
-    * <ol>
-    * <li>Be a primitive type</li>
-    * <li>Have a constructor that accepts a single <code>String</code> argument</li>
-    * <li>Have a static method named <code>valueOf</code> that accepts a single
-    * <code>String</code> argument (see, for example,
-    * {@link Integer#valueOf(String)})</li>
-    * <li>Be <code>List&lt;T&gt;</code>, <code>Set&lt;T&gt;</code> or
-    * <code>SortedSet&lt;T&gt;</code>, where <code>T</code> satisfies 2 or 3
-    * above. The resulting collection is read-only.</li>
-    * </ol>
-    * 
-    * @param parameterClass the parameter class
-    * @param parameterType the parameter type
-    * @param annotation parameter annotation
-    * @return true it parameter is valid, false otherwise
-    */
-   // TODO remove this method
-   boolean isValidAnnotatedParameter(Class<?> parameterClass, Type parameterType, Annotation annotation)
-   {
-      if (parameterClass == List.class || parameterClass == Set.class || parameterClass == SortedSet.class)
-      {
-
-         // PathParam cann't be used on collection
-         // if (annotation.annotationType() == PathParam.class)
-         // return false;
-
-         Class<?> clazz = getGenericType(parameterType);
-
-         if (clazz == null || clazz == String.class || getStringValueOfMethod(clazz) != null
-            || getStringConstructor(clazz) != null)
-         {
-
-            // parameter is collection (List, Set or SortedSet)
-            return true;
-
-         }
-         else
-         {
-
-            // if primitive type
-            if (parameterClass.isPrimitive() && PrimitiveTypeProducer.PRIMITIVE_TYPES_MAP.get(parameterClass) != null)
-               return true;
-
-            if (parameterClass == String.class || getStringValueOfMethod(parameterClass) != null
-               || getStringConstructor(parameterClass) != null)
-               return true;
-
-         }
-      }
-
-      // not valid parameter.
-      return false;
-   }
-
-   /**
     * Get static {@link Method} with single string argument and name 'valueOf'
     * for supplied class.
     * 
