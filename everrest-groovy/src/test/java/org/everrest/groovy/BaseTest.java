@@ -29,7 +29,7 @@ import org.everrest.core.tools.ResourceLauncher;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BaseTest.java 2698 2010-06-24 15:06:31Z aparfonov $
+ * @version $Id$
  */
 public abstract class BaseTest extends TestCase
 {

@@ -23,7 +23,7 @@ package org.everrest.groovy;
  * Base implementation of ResourceId.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BaseResourceId.java 2663 2010-06-18 13:50:27Z aparfonov $
+ * @version $Id$
  */
 public class BaseResourceId implements ResourceId
 {

@@ -27,7 +27,7 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GroovyDependenciesTest.java 2762 2010-07-09 13:39:29Z aparfonov $
+ * @version $Id$
  */
 public class GroovyDependenciesTest extends BaseTest
 {

@@ -21,7 +21,7 @@ package org.everrest.groovy;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceId.java 2663 2010-06-18 13:50:27Z aparfonov $
+ * @version $Id$
  */
 public interface ResourceId
 {

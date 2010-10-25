@@ -24,7 +24,7 @@ import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GroovySimpleTest.java 2762 2010-07-09 13:39:29Z aparfonov $
+ * @version $Id$
  */
 public class GroovySimpleTest extends BaseTest
 {

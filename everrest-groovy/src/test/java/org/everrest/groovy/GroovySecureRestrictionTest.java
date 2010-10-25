@@ -26,7 +26,7 @@ import java.io.InputStream;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GroovySecureRestrictionTest.java 2762 2010-07-09 13:39:29Z aparfonov $
+ * @version $Id$
  */
 public class GroovySecureRestrictionTest extends BaseTest
 {

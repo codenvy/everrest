@@ -50,7 +50,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * Manage via {@link ResourceBinder} Groovy based RESTful services.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GroovyJaxrsPublisher.java 2762 2010-07-09 13:39:29Z aparfonov $
+ * @version $Id$
  */
 public class GroovyResourcePublisher
 {
@@ -81,8 +81,7 @@ public class GroovyResourcePublisher
    /**
     * Create GroovyJaxrsPublisher which is able publish per-request and
     * singleton resources. Any required dependencies for per-request resource
-    * injected by {@link PerRequestObjectFactory}, instance of singleton
-    * resources will be created by {@link GroovyScriptInstantiator}.
+    * injected by {@link PerRequestObjectFactory}.
     *
     * @param binder resource binder
     * @param dependencies dependencies resolver

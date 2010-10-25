@@ -2,10 +2,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 @Path("a")
-class CroovyResource3
+class GroovyResource3
 {
    
-   CroovyResource3()
+   GroovyResource3()
    {
    }
    
