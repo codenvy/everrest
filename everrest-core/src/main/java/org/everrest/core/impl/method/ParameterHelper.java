@@ -44,7 +44,7 @@ import javax.ws.rs.core.Context;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ParameterHelper.java 292 2009-10-19 07:03:07Z aparfonov $
+ * @version $Id$
  */
 public class ParameterHelper
 {

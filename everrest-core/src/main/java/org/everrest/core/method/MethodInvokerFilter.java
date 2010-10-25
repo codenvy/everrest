@@ -26,7 +26,7 @@ import org.everrest.core.resource.GenericMethodResource;
  * JSR-250.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MethodInvokerFilter.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public interface MethodInvokerFilter
 {

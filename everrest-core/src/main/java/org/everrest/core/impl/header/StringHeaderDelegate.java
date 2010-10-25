@@ -22,7 +22,7 @@ import org.everrest.core.header.AbstractHeaderDelegate;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: StringHeaderDelegate.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public class StringHeaderDelegate extends AbstractHeaderDelegate<String>
 {

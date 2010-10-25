@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class ObjectBuilderTest extends JsonTest
 {

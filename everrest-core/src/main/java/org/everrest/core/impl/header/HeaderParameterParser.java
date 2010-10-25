@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: HeaderParameterParser.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public class HeaderParameterParser
 {

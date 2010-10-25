@@ -30,7 +30,7 @@ package org.everrest.core;
  * defined or the type of software that is handling the request."
  * 
  * @author Gennady Azarenkov
- * @version $Id: Connector.java -1 $
+ * @version $Id$
  */
 public interface Connector
 {

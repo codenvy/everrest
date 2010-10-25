@@ -27,7 +27,7 @@ import org.everrest.core.Property;
  * in {@link Property#value()} .
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: PropertyResolver.java 279 2009-10-14 15:58:06Z aparfonov $
+ * @version $Id$
  */
 public class PropertyResolver extends ParameterResolver<Property>
 {

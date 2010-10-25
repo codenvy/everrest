@@ -22,7 +22,7 @@ package org.everrest.core.resource;
  * Common essence for all resource descriptors.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceDescriptor.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public interface ResourceDescriptor
 {

@@ -29,7 +29,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * Manages root resources.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceBinder.java -1 $
+ * @version $Id$
  */
 public interface ResourceBinder
 {

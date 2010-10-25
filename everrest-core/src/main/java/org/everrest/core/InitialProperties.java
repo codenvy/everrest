@@ -25,7 +25,7 @@ import java.util.Map;
  * annotation.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: InitialProperties.java -1 $
+ * @version $Id$
  * 
  */
 public interface InitialProperties

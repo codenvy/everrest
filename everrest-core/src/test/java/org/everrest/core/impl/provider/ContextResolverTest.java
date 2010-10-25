@@ -26,7 +26,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContextResolverTest.java 497 2009-11-08 13:19:25Z aparfonov $
+ * @version $Id$
  */
 public class ContextResolverTest extends BaseTest
 {

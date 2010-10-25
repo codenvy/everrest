@@ -44,7 +44,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestHandlerImpl.java -1 $
+ * @version $Id$
  */
 public final class RequestHandlerImpl implements RequestHandler
 {

@@ -32,7 +32,7 @@ import javax.ws.rs.core.UriBuilderException;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: UriBuilderImpl.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public class UriBuilderImpl extends UriBuilder
 {
@@ -165,13 +165,13 @@ public class UriBuilderImpl extends UriBuilder
     */
    private void encode()
    {
-       // Should do this even path all segments already encoded. The reason is
-       // matrix parameters that is not encoded yet. Not able encode it just
-       // after adding via particular method(s) since updating/removing of it may
-       // be requested later. If matrix parameters encoded just after adding then
-       // original name of parameters may be changed and need play with
-       // encoding/decoding again when updating/removing of matrix parameter
-       // performed.
+      // Should do this even path all segments already encoded. The reason is
+      // matrix parameters that is not encoded yet. Not able encode it just
+      // after adding via particular method(s) since updating/removing of it may
+      // be requested later. If matrix parameters encoded just after adding then
+      // original name of parameters may be changed and need play with
+      // encoding/decoding again when updating/removing of matrix parameter
+      // performed.
       encodePath();
 
       encodeQuery();
@@ -282,7 +282,8 @@ public class UriBuilderImpl extends UriBuilder
          return this;
       }
 
-      this.fragment = UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
+      //      this.fragment = UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
+      this.fragment = fragment;
 
       return this;
    }

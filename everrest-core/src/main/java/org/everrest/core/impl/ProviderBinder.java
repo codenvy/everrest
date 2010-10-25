@@ -90,7 +90,7 @@ import javax.ws.rs.ext.Providers;
  * @see MethodInvokerFilter
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ProviderBinder.java -1 $
+ * @version $Id$
  */
 public class ProviderBinder implements Providers
 {

@@ -28,7 +28,7 @@ import java.util.List;
  * type is used in per-request lifecycle.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ConstructorDescriptor.java -1 $
+ * @version $Id$
  */
 public interface ConstructorDescriptor extends ResourceDescriptor
 {

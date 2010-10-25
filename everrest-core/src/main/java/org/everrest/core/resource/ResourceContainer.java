@@ -22,7 +22,7 @@ package org.everrest.core.resource;
  * Abstraction of REST resource.
  * 
  * @author Gennady Azarenkov
- * @version $Id: ResourceContainer.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public interface ResourceContainer
 {

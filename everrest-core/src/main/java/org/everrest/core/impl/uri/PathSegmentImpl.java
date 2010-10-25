@@ -25,7 +25,7 @@ import javax.ws.rs.core.PathSegment;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: PathSegmentImpl.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public final class PathSegmentImpl implements PathSegment
 {

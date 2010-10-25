@@ -47,7 +47,7 @@ import javax.xml.namespace.QName;
  * {@link AbstractResourceDescriptor}.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: WadlProcessor.java 292 2009-10-19 07:03:07Z aparfonov $
+ * @version $Id$
  */
 public final class WadlProcessor
 {

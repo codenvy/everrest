@@ -24,7 +24,7 @@ package org.everrest.core;
  * not be used directly, it is part of REST framework.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResponseFilter.java -1 $
+ * @version $Id$
  */
 public interface ResponseFilter
 {

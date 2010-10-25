@@ -47,7 +47,7 @@ import javax.ws.rs.core.Variant;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContainerRequest.java -1 $
+ * @version $Id$
  */
 public class ContainerRequest implements GenericContainerRequest
 {

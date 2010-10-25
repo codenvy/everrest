@@ -25,7 +25,7 @@ package org.everrest.core;
  * @param <T> ObjectModel extensions
  * @see ObjectModel
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ObjectFactory.java -1 $
+ * @version $Id$
  */
 public interface ObjectFactory<T extends ObjectModel>
 {

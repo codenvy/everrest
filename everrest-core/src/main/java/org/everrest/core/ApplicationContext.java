@@ -37,7 +37,7 @@ import javax.ws.rs.ext.Providers;
  * information.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ApplicationContext.java -1 $
+ * @version $Id$
  */
 public interface ApplicationContext extends UriInfo, InitialProperties
 {

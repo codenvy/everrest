@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009 eXo Platform SAS.
+/**
+ * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,14 +16,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.core.impl.header;
 
-import junit.framework.TestCase;
+package org.everrest.core.util;
 
-import org.everrest.core.impl.InputHeadersMap;
+import org.everrest.core.ExtMultivaluedMap;
+import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,128 +33,169 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
-public class InputHeadersMapTest extends TestCase
+public class CaselessUnmodifiableMultivaluedMapTest extends BaseTest
 {
+   private ExtMultivaluedMap<String, String> map;
 
-   public void testCaseInsensitive()
+   public void setUp() throws Exception
    {
-      InputHeadersMap um;
-      try
-      {
-         um = new InputHeadersMap(null);
-         fail("NullPointerException should be here");
-      }
-      catch (NullPointerException e)
-      {
-      }
+      super.setUp();
       MultivaluedMap<String, String> m = new MultivaluedMapImpl();
-      m.add("hello", "world");
-      m.add("hello", "foo");
-      m.add("hello", "bar");
-      m.add("bar", "bar");
-      m.add("bar", "foo");
-      m.add("bar", "hello");
-
-      um = new InputHeadersMap(m);
-      assertEquals("world", um.getFirst("hello"));
-      assertEquals("foo", um.get("heLLo").get(1));
-      assertEquals("foo", um.get("bar").get(1));
-      assertEquals("hello", um.get("BAR").get(2));
-
+      m.add("K", "a");
+      m.add("K", "b");
+      m.add("e", "c");
+      m.add("y", "d");
+      m.add("y", "e");
+      map = new CaselessUnmodifiableMultivaluedMap<String>(m);
    }
 
-   public void testUnsupportedOperation()
+   public void testGet()
    {
-      MultivaluedMap<String, String> m = new MultivaluedMapImpl();
-      m.add("hello", "world");
-      InputHeadersMap um = new InputHeadersMap(m);
+      assertEquals("a", map.getFirst("k"));
+      assertEquals(Arrays.asList("a", "b"), map.get("k"));
+      assertEquals("c", map.getFirst("E"));
+      assertEquals(Arrays.asList("d", "e"), map.get("Y"));
+   }
 
+   public void testGetList()
+   {
+      assertEquals(Arrays.asList("a", "b"), map.getList("k"));
+      List<String> list = map.getList("x");
+      assertNotNull(list);
+      assertEquals(0, list.size());
+   }
+
+   public void tesClear()
+   {
       try
       {
-         um.clear();
+         map.clear();
          fail("UnsupportedOperationException should be thrown fro 'clear'");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testRemove()
+   {
       try
       {
-         um.remove("hello");
+         map.remove("k");
          fail("UnsupportedOperationException should be thrown for 'remove'");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testPut()
+   {
       try
       {
-         um.put("bar", new ArrayList<String>());
+         map.put("k", new ArrayList<String>());
          fail("UnsupportedOperationException should be thrown for 'put'");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testPutAll()
+   {
       try
       {
-         um.putAll(new MultivaluedMapImpl());
+         map.putAll(new MultivaluedMapImpl());
          fail("UnsupportedOperationException should be thrown for 'puAll'");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testPutSingle()
+   {
       try
       {
-         um.putSingle("foo", "bar");
+         map.putSingle("k", "value");
          fail("UnsupportedOperationException should be thrown for 'putSingle'");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testAdd()
+   {
       try
       {
-         um.add("foo", "bar");
+         map.add("k", "value");
          fail("UnsupportedOperationException should be thrown for 'add'");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testEntryRemove()
+   {
       try
       {
-         um.entrySet().remove(null);
+         map.entrySet().remove(new java.util.Map.Entry<String, List>()
+         {
+            public String getKey()
+            {
+               return "K";
+            }
+
+            public List getValue()
+            {
+               return Arrays.asList("a", "b");
+            }
+
+            public List setValue(List value)
+            {
+               return Arrays.asList("a", "b");
+            }
+         });
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testEntryRemoveAll()
+   {
       try
       {
-         um.entrySet().removeAll(null);
+         map.entrySet().removeAll(new ArrayList());
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testEntryRetainAll()
+   {
       try
       {
-         um.entrySet().retainAll(null);
+         map.entrySet().retainAll(new ArrayList());
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testEntryIteratorRemove()
+   {
       try
       {
-         Iterator<Map.Entry<String, List<String>>> i = um.entrySet().iterator();
+         Iterator<Map.Entry<String, List<String>>> i = map.entrySet().iterator();
          while (i.hasNext())
             i.remove();
          fail("UnsupportedOperationException should be thrown");
@@ -161,46 +203,61 @@ public class InputHeadersMapTest extends TestCase
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testEntryUpdateValue()
+   {
       try
       {
-         um.entrySet().iterator().next().setValue(null);
+         map.entrySet().iterator().next().setValue(new ArrayList<String>());
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testKeysRemove()
+   {
       try
       {
-         um.keySet().remove("hello");
+         map.keySet().remove("K");
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testKeysRemoveAll()
+   {
       try
       {
-         um.keySet().removeAll(null);
+         map.keySet().removeAll(Arrays.asList("k", "y", "e"));
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testKeysRetainAll()
+   {
       try
       {
-         um.keySet().retainAll(null);
+         map.keySet().retainAll(Arrays.asList("k", "y"));
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testKeysIteratorRemove()
+   {
       try
       {
-         Iterator<String> i = um.keySet().iterator();
+         Iterator<String> i = map.keySet().iterator();
          while (i.hasNext())
             i.remove();
          fail("UnsupportedOperationException should be thrown");
@@ -208,34 +265,30 @@ public class InputHeadersMapTest extends TestCase
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testClearList()
+   {
       try
       {
-         um.get("hello").clear();
+         map.get("k").clear();
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
+   }
 
+   public void testClearKeys()
+   {
       try
       {
-         um.values().clear();
+         map.keySet().clear();
          fail("UnsupportedOperationException should be thrown");
       }
       catch (UnsupportedOperationException e)
       {
       }
-
-      try
-      {
-         um.keySet().clear();
-         fail("UnsupportedOperationException should be thrown");
-      }
-      catch (UnsupportedOperationException e)
-      {
-      }
-
    }
 
 }

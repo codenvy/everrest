@@ -44,7 +44,7 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: HeaderHelper.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public final class HeaderHelper
 {
@@ -487,7 +487,9 @@ public final class HeaderHelper
    public static String getHeaderAsString(Object o)
    {
       HeaderDelegate hd = RuntimeDelegate.getInstance().createHeaderDelegate(o.getClass());
-      return hd.toString(o);
+      if (hd != null)
+         return hd.toString(o);
+      return o.toString();
    }
 
    /**

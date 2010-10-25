@@ -23,7 +23,7 @@ import java.io.IOException;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: FileCollector.java -1 $
+ * @version $Id$
  */
 public final class FileCollector
 {

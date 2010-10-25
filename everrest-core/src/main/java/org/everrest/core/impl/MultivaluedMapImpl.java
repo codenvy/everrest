@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @see javax.ws.rs.core.MultivaluedMap
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MultivaluedMapImpl.java -1 $
+ * @version $Id$
  */
 public class MultivaluedMapImpl extends HashMap<String, List<String>> implements ExtMultivaluedMap<String, String>
 {
@@ -41,8 +41,9 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
    public void add(String key, String value)
    {
       if (value == null)
+      {
          return;
-
+      }
       List<String> list = getList(key);
       list.add(value);
    }
@@ -62,8 +63,10 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
    public void putSingle(String key, String value)
    {
       if (value == null)
+      {
+         remove(key);
          return;
-
+      }
       List<String> list = getList(key);
       list.clear();
       list.add(value);

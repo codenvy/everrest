@@ -28,7 +28,7 @@ import javax.ws.rs.core.PathSegment;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class UriComponentTest extends BaseTest
 {

@@ -23,7 +23,7 @@ package org.everrest.core;
  * control main components of JAX-RS implementation.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestHandler.java -1 $
+ * @version $Id$
  */
 public interface RequestHandler
 {

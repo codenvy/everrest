@@ -57,7 +57,7 @@ import javax.ws.rs.core.Response.Status;
  * Lookup resource which can serve request.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestDispatcher.java -1 $
+ * @version $Id$
  */
 public class RequestDispatcher
 {

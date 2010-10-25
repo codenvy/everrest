@@ -33,7 +33,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public final class RestComponentResolver
 {

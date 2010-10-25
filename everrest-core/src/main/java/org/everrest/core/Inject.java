@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * will be not initialized
  * 
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: Inject.java -1 $
+ * @version $Id$
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

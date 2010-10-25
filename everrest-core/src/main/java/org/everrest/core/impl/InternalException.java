@@ -24,7 +24,7 @@ package org.everrest.core.impl;
  * as wrapper for exception that may occur during request processing.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: InternalException.java -1 $
+ * @version $Id$
  */
 public class InternalException extends RuntimeException
 {

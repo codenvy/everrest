@@ -35,7 +35,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class FileEntityProviderTest extends BaseTest
 {

@@ -25,17 +25,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class ResponseImplTest extends BaseTest
 {
@@ -45,26 +45,15 @@ public class ResponseImplTest extends BaseTest
       Response response =
          Response.ok().language(new Locale("en", "GB")).language(new Locale("en", "US")).type(
             new MediaType("text", "plain")).location(new URI("http://exoplatform.org/ws/rs/test")).cookie(
-            new NewCookie("name1", "value1")).cookie(new NewCookie("name2", "value2")).tag(
-            new EntityTag("123456789", true)).lastModified(new Date(1000)).build();
-      List<String> l = new ArrayList<String>();
-      l.add("location:http://exoplatform.org/ws/rs/test");
-      l.add("set-cookie:name1=value1;Version=1");
-      l.add("set-cookie:name2=value2;Version=1");
-      l.add("content-language:en-us");
-      l.add("content-type:text/plain");
-      l.add("etag:W/\"123456789\"");
-      l.add("last-modified:Thu, 01 Jan 1970 00:00:01 GMT");
-
-      for (Map.Entry<String, List<Object>> e : response.getMetadata().entrySet())
-      {
-         String name = e.getKey();
-         for (Object o : e.getValue())
-         {
-            String h = name + ":" + HeaderHelper.getHeaderAsString(o);
-            assertTrue(l.contains(h));
-         }
-      }
+            new NewCookie("name1", "value1")).tag(new EntityTag("123456789", true)).lastModified(new Date(1000))
+            .build();
+      MultivaluedMap<String, Object> headers = response.getMetadata();
+      assertEquals("http://exoplatform.org/ws/rs/test", HeaderHelper.getHeaderAsString(headers.getFirst("location")));
+      assertEquals("name1=value1;Version=1", HeaderHelper.getHeaderAsString(headers.getFirst("set-cookie")));
+      assertEquals("en-us", HeaderHelper.getHeaderAsString(headers.getFirst("content-language")));
+      assertEquals("text/plain", HeaderHelper.getHeaderAsString(headers.getFirst("content-type")));
+      assertEquals("W/\"123456789\"", HeaderHelper.getHeaderAsString(headers.getFirst("etag")));
+      assertEquals("Thu, 01 Jan 1970 00:00:01 GMT", HeaderHelper.getHeaderAsString(headers.getFirst("last-modified")));
    }
 
    public void testVariant()
@@ -119,4 +108,13 @@ public class ResponseImplTest extends BaseTest
       assertEquals(1, response.getMetadata().get("content-length").size());
       assertEquals("10", response.getMetadata().getFirst("content-length"));
    }
+
+   public void testRemoveHeadersCookie()
+   {
+      Response response =
+         Response.ok().header("content-type", "text/plain").entity("entity").header("set-cookie",
+            new NewCookie("name1", "value1")).cookie((NewCookie[])null).build();
+      assertNull(response.getMetadata().get("Set-Cookie"));
+   }
+
 }

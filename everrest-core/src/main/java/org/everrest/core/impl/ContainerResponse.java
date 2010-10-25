@@ -39,7 +39,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContainerResponse.java -1 $
+ * @version $Id$
  */
 public class ContainerResponse implements GenericContainerResponse
 {
@@ -191,7 +191,8 @@ public class ContainerResponse implements GenericContainerResponse
          else
          {
             LOG.error(message);
-            throw new WebApplicationException(Response.status(Response.Status.NOT_ACCEPTABLE).build());
+            throw new WebApplicationException(Response.status(Response.Status.NOT_ACCEPTABLE).entity(message).type(
+               MediaType.TEXT_PLAIN).build());
          }
       }
       else

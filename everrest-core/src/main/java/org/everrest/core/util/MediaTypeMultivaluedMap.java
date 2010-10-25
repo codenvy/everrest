@@ -36,7 +36,7 @@ public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements
    /**
     * Get {@link List} with specified key. If it does not exist new one be
     * created.
-    * 
+    *
     * @param mediaType MediaType
     * @return List of ProviderFactory if no value mapped to the specified key
     *         then empty list will be returned instead null
@@ -78,7 +78,10 @@ public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements
    public void putSingle(MediaType mediaType, V value)
    {
       if (value == null)
+      {
+         remove(mediaType);
          return;
+      }
       List<V> list = getList(mediaType);
       list.clear();
       list.add(value);

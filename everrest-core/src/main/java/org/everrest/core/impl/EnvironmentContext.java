@@ -25,7 +25,7 @@ import java.util.HashMap;
  * in resource. Parameter must be annotated by {@link javax.ws.rs.core.Context}.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: EnvironmentContext.java -1 $
+ * @version $Id$
  */
 public class EnvironmentContext extends HashMap<Class<?>, Object>
 {

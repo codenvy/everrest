@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 /**
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public abstract class JsonTest extends TestCase
 {

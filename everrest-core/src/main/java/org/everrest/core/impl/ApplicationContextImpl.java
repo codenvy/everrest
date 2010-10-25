@@ -45,7 +45,7 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ApplicationContextImpl.java -1 $
+ * @version $Id$
  */
 public class ApplicationContextImpl implements ApplicationContext
 {

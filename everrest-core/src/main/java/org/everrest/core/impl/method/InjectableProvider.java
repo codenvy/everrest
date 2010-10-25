@@ -24,7 +24,7 @@ import org.everrest.core.Parameter;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: InjectableProvider.java 436 2009-10-28 06:47:29Z aparfonov $
+ * @version $Id$
  * @deprecated
  */
 public class InjectableProvider extends ParameterResolver<Inject>

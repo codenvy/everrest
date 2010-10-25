@@ -24,7 +24,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 /**
  * @param <T> entity type
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: EntityProvider.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public interface EntityProvider<T> extends MessageBodyReader<T>, MessageBodyWriter<T>
 {

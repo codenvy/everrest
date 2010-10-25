@@ -26,7 +26,7 @@ import org.everrest.core.resource.AbstractResourceDescriptor;
  * Listener for adding/removing JAX-RS resources.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceListener.java 2763 2010-07-09 14:46:40Z aparfonov $
+ * @version $Id$
  */
 public interface ResourceListener
 {

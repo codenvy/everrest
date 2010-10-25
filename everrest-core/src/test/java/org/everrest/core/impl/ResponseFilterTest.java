@@ -39,7 +39,7 @@ import javax.ws.rs.ext.Providers;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResponseFilterTest.java -1 $
+ * @version $Id$
  */
 public class ResponseFilterTest extends BaseTest
 {

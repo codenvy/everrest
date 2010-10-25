@@ -44,7 +44,7 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RequestDispatcherTest.java -1 $
+ * @version $Id$
  */
 public class RequestDispatcherTest extends BaseTest
 {

@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
  * Abstraction of method's, constructor's parameter or object field.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: Parameter.java -1 $
+ * @version $Id$
  */
 public interface Parameter
 {

@@ -23,7 +23,7 @@ package org.everrest.core;
  * required for constructors or fields of Resource or Provider.
  *
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: DependencySupplier.java -1 $
+ * @version $Id$
  */
 public interface DependencySupplier
 {

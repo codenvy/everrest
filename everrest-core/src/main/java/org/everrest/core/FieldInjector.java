@@ -25,7 +25,7 @@ import org.everrest.core.resource.ResourceDescriptor;
  * per-request mode.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: FieldInjector.java -1 $
+ * @version $Id$
  */
 public interface FieldInjector extends Parameter, ResourceDescriptor
 {

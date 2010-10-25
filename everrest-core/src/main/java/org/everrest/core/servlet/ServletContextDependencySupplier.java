@@ -30,7 +30,7 @@ import javax.servlet.ServletContext;
  * org.foo.bar.MyClass
  *
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class ServletContextDependencySupplier extends BaseDependencySupplier
 {

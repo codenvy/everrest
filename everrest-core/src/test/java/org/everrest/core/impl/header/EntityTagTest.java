@@ -24,7 +24,7 @@ import javax.ws.rs.core.EntityTag;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class EntityTagTest extends BaseTest
 {

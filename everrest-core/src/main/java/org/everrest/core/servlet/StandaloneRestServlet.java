@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: StandaloneRestServlet.java 436 2009-10-28 06:47:29Z aparfonov $
+ * @version $Id$
  */
 public class StandaloneRestServlet extends HttpServlet
 {

@@ -44,7 +44,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourceBinderImpl.java -1 $
+ * @version $Id$
  */
 public class ResourceBinderImpl implements ResourceBinder
 {

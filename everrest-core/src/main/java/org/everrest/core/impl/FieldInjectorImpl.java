@@ -42,7 +42,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: FieldInjectorImpl.java -1 $
+ * @version $Id$
  */
 public class FieldInjectorImpl implements FieldInjector
 {

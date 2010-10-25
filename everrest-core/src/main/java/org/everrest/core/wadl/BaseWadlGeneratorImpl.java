@@ -44,7 +44,7 @@ import javax.xml.namespace.QName;
  * provide doc and grammar extension of WADL.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BaseWadlGeneratorImpl.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public class BaseWadlGeneratorImpl implements WadlGenerator
 {

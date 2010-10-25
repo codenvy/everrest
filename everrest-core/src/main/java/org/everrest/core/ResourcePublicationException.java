@@ -24,7 +24,7 @@ package org.everrest.core;
  * because to conflict of root path
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ResourcePublicationException.java 2761 2010-07-09 13:37:30Z aparfonov $
+ * @version $Id$
  */
 public class ResourcePublicationException extends RuntimeException
 {

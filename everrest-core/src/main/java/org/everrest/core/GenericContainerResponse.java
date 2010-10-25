@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GenericContainerResponse.java -1 $
+ * @version $Id$
  */
 public interface GenericContainerResponse
 {

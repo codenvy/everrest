@@ -22,7 +22,7 @@ package org.everrest.core.impl.resource;
  * Describe the Path annotation, see {@link javax.ws.rs.Path}.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: PathValue.java 285 2009-10-15 16:21:30Z aparfonov $
+ * @version $Id$
  */
 public class PathValue
 {

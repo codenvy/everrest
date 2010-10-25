@@ -36,7 +36,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: FileEntityProvider.java 448 2009-10-30 10:54:42Z aparfonov $
+ * @version $Id$
  */
 @Provider
 public class FileEntityProvider implements EntityProvider<File>

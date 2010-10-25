@@ -26,7 +26,7 @@ import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: ApplicationPublisher.java -1 $
+ * @version $Id$
  */
 public class ApplicationPublisher
 {

@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
  * Describes constructor's parameter.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ConstructorParameterImpl.java -1 $
+ * @version $Id$
  */
 public class ConstructorParameterImpl implements ConstructorParameter
 {

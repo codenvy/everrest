@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * preset in {@link InitialProperties}.
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: Property.java -1 $
+ * @version $Id$
  * 
  */
 @Target({ElementType.PARAMETER, ElementType.FIELD})

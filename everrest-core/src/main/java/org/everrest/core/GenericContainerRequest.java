@@ -29,7 +29,7 @@ import javax.ws.rs.core.SecurityContext;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GenericContainerRequest.java -1 $
+ * @version $Id$
  */
 public interface GenericContainerRequest extends Request, SecurityContext, ExtHttpHeaders
 {
