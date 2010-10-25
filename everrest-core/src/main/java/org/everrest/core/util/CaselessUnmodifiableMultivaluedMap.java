@@ -216,7 +216,12 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
 
    public CaselessUnmodifiableMultivaluedMap(Map<String, List<T>> m)
    {
-      super(m);
+      this(m.size());
+      for (Iterator<Entry<String, List<T>>> iterator = m.entrySet().iterator(); iterator.hasNext();)
+      {
+         Entry<String, List<T>> e = iterator.next();
+         this.m.put(new CaselessStringWrapper(e.getKey()), Collections.unmodifiableList(e.getValue()));
+      }
    }
 
    /**
