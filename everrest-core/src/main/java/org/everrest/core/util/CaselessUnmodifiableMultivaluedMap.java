@@ -328,12 +328,7 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
    @Override
    public Collection<List<T>> values()
    {
-      Collection<List<T>> values = super.values();
-      if (values == null)
-      {
-         return Collections.emptyList();
-      }
-      return Collections.unmodifiableCollection(values);
+      return Collections.unmodifiableCollection(super.values());
    }
 
 }
