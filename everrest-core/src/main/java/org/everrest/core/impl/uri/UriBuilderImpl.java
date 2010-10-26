@@ -281,9 +281,8 @@ public class UriBuilderImpl extends UriBuilder
          this.fragment = null;
          return this;
       }
-
-      //      this.fragment = UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
-      this.fragment = fragment;
+      //this.fragment = fragment;
+      this.fragment = UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
 
       return this;
    }
