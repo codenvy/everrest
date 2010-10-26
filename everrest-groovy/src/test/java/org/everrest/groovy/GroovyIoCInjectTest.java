@@ -37,7 +37,7 @@ public class GroovyIoCInjectTest extends BaseTest
    public void setUp() throws Exception
    {
       super.setUp();
-      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("GroovyResource2.groovy");
+      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GroovyResource2.groovy");
       assertNotNull(script);
    }
 

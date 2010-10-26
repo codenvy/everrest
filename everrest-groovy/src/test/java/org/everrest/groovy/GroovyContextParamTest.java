@@ -41,7 +41,7 @@ public class GroovyContextParamTest extends BaseTest
    public void setUp() throws Exception
    {
       super.setUp();
-      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("GroovyResource1.groovy");
+      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GroovyResource1.groovy");
       assertNotNull(script);
    }
 

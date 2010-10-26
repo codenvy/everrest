@@ -19,36 +19,32 @@
 
 package org.everrest.groovy;
 
-import org.everrest.core.impl.ContainerResponse;
-import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import java.util.Collections;
+import java.util.Set;
 
-import java.io.InputStream;
+import javax.ws.rs.core.Application;
 
 /**
+ * Define names of Groovy scripts which should be components of a JAX-RS
+ * application.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class GroovySecureRestrictionTest extends BaseTest
+public abstract class GroovyApplication extends Application
 {
-
-   private InputStream script;
+   private static final Set<Class<?>> classes = Collections.emptySet();
 
    @Override
-   public void setUp() throws Exception
+   public Set<Class<?>> getClasses()
    {
-      super.setUp();
-      assertNotNull("SecurityManager not installed", System.getSecurityManager());
-      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GroovyResource3.groovy");
-      assertNotNull(script);
+      return classes;
    }
 
-   public void testReadSystemPropertyFail() throws Exception
-   {
-      groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null);
-      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
-      assertEquals(500, resp.getStatus());
-      assertTrue(new String(writer.getBody()).startsWith("access denied"));
-   }
+   /**
+    * @return set of names of Groovy scripts. Returning null is equivalent to
+    *         returning an empty set.
+    */
+   public abstract Set<String> getScripts();
 
 }

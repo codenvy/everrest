@@ -41,7 +41,7 @@ public class GroovyDependenciesTest extends BaseTest
       DefaultGroovyResourceLoader groovyResourceLoader = new DefaultGroovyResourceLoader(root);
       groovyPublisher.getGroovyClassLoader().setResourceLoader(groovyResourceLoader);
 
-      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("GMain1.groovy");
+      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GMain1.groovy");
       assertNotNull(script);
    }
 

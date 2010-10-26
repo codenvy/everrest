@@ -1,3 +1,4 @@
+package a.b
 import javax.ws.rs.Path
 import javax.ws.rs.GET
 import dependencies.Dep1
@@ -6,9 +7,5 @@ import dependencies.Dep1
 class GMain1
 {
    @GET
-   def m0()
-   {
-      return new Dep1().getName()
-   }
-   
+   def m0(){new Dep1().getName()}
 }
