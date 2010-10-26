@@ -31,9 +31,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
+import javax.ws.rs.core.Application;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: GroovyApplicationPublisher.java 76 2010-10-26 10:43:52Z
+ *          andrew00x $
  */
 public class GroovyApplicationPublisher extends ApplicationPublisher
 {
@@ -47,12 +50,12 @@ public class GroovyApplicationPublisher extends ApplicationPublisher
       this.groovyClassLoader = groovyClassLoader;
    }
 
-   public void publish(GroovyApplication application)
+   public <T extends Application> void publish(T application)
    {
       // Process Java resources.
       super.publish(application);
       // Process Groovy resources.
-      Set<String> scripts = application.getScripts();
+      Set<String> scripts = ((GroovyApplication)application).getScripts();
       if (scripts != null)
       {
          GroovyResourceLoader resourceLoader = groovyClassLoader.getResourceLoader();

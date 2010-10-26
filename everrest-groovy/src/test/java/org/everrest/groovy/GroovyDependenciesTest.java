@@ -51,7 +51,7 @@ public class GroovyDependenciesTest extends BaseTest
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse resp = launcher.service("GET", "/a", "", null, null, writer, null);
       assertEquals(200, resp.getStatus());
-      assertEquals("dependencies.Dep1", new String(writer.getBody()));
+      assertEquals("dependencies.GDependency1", new String(writer.getBody()));
    }
 
 }

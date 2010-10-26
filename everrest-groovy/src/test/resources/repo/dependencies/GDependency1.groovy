@@ -1,6 +1,6 @@
 package dependencies
 
-class Dep1
+class GDependency1
 {
    String name = getClass().getName()
 }

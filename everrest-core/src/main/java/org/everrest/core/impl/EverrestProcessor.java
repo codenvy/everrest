@@ -38,7 +38,18 @@ public class EverrestProcessor
    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
       DependencySupplier dependencies, EverrestConfiguration config, Application application)
    {
-      ApplicationPublisher appInitializer = new ApplicationPublisher(resources, providers);
+      this(resources, providers, dispatcher, dependencies, null, config, application);
+
+   }
+
+   public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
+      DependencySupplier dependencies, ApplicationPublisher appInitializer, EverrestConfiguration config,
+      Application application)
+   {
+      if (appInitializer == null)
+      {
+         appInitializer = new ApplicationPublisher(resources, providers);
+      }
       if (application != null)
       {
          appInitializer.publish(application);

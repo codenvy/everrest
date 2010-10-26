@@ -25,7 +25,6 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.util.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -42,8 +41,6 @@ import javax.ws.rs.core.Application;
  */
 public class RestInitializedListener implements ServletContextListener
 {
-
-   private static final Logger LOG = Logger.getLogger(RestInitializedListener.class);
 
    public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
 

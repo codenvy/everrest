@@ -38,7 +38,7 @@ public class ApplicationPublisher
       resolver = new RestComponentResolver(resources, providers);
    }
 
-   public void publish(Application application)
+   public <T extends Application> void publish(T application)
    {
       Set<Object> singletons = application.getSingletons();
       if (singletons != null)
