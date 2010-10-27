@@ -31,7 +31,13 @@ import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.core.servlet.ServletContextDependencySupplier;
+import org.everrest.groovy.DefaultGroovyResourceLoader;
 import org.everrest.groovy.GroovyApplicationPublisher;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -40,7 +46,8 @@ import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: GroovyEverrestInitializedListener.java 77 2010-10-26 15:20:15Z
+ *          andrew00x $
  */
 public class GroovyEverrestInitializedListener implements ServletContextListener
 {
@@ -53,17 +60,27 @@ public class GroovyEverrestInitializedListener implements ServletContextListener
    {
       ServletContext sctx = event.getServletContext();
       GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
-      //      try
-      //      {
-      //         groovyClassLoader.setResourceLoader(new DefaultGroovyResourceLoader(new java.net.URL(
-      //            "file:///home/Andrey/temp/groovy")));
-      //      }
-      //      catch (IOException e)
-      //      {
-      //         e.printStackTrace();
-      //      }
       EverrestServletContextInitializer initializer =
          new GroovyEverrestServletContextInitializer(sctx, groovyClassLoader);
+      String srootResources =
+         initializer.getParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES);
+      List<URL> rootResources = new ArrayList<URL>();
+      if (srootResources != null)
+      {
+         try
+         {
+            for (String s : srootResources.split(","))
+            {
+               rootResources.add(new URL(s.trim()));
+            }
+            groovyClassLoader.setResourceLoader(new DefaultGroovyResourceLoader(rootResources
+               .toArray(new URL[rootResources.size()])));
+         }
+         catch (MalformedURLException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
       Application application = initializer.getApplication();
       DependencySupplier dependencySupplier = null;
       String dependencyInjectorFQN = initializer.getParameter(DependencySupplier.class.getName());

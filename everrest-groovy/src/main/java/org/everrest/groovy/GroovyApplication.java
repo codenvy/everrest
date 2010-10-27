@@ -27,7 +27,7 @@ import javax.ws.rs.core.Application;
 /**
  * Define names of Groovy scripts which should be components of a JAX-RS
  * application.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -42,6 +42,10 @@ public abstract class GroovyApplication extends Application
    }
 
    /**
+    * Get names (FQN) of scripts which should be components of a JAX-RS
+    * application. All components (resources and providers) got per-request
+    * lifecycle.
+    * 
     * @return set of names of Groovy scripts. Returning null is equivalent to
     *         returning an empty set.
     */

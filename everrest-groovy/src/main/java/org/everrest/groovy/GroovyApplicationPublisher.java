@@ -50,6 +50,7 @@ public class GroovyApplicationPublisher extends ApplicationPublisher
       this.groovyClassLoader = groovyClassLoader;
    }
 
+   @Override
    public <T extends Application> void publish(T application)
    {
       // Process Java resources.

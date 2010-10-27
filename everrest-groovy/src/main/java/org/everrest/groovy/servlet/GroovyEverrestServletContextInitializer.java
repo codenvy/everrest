@@ -24,17 +24,18 @@ import groovy.lang.GroovyClassLoader;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.groovy.GroovyApplication;
 
-import java.io.InputStream;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: GroovyEverrestServletContextInitializer.java 77 2010-10-26
+ *          15:20:15Z andrew00x $
  */
 public class GroovyEverrestServletContextInitializer extends EverrestServletContextInitializer
 {
+
+   public static final String EVERREST_GROOVY_ROOT_RESOURCES = "org.everrest.groovy.root.resources";
 
    private final GroovyClassLoader groovyClassLoader;
 
@@ -47,12 +48,11 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
    @Override
    public Application getApplication()
    {
-      String applicationLocation = getParameter(JAXRS_APPLICATION);
-      InputStream applicationStream = sctx.getResourceAsStream(applicationLocation);
-      Class<?> applicationClass = groovyClassLoader.parseClass(applicationStream);
+      String applicationFQN = getParameter(JAXRS_APPLICATION);
       GroovyApplication application = null;
       try
       {
+         Class<?> applicationClass = groovyClassLoader.loadClass(applicationFQN, true, false);
          application = (GroovyApplication)applicationClass.newInstance();
       }
       catch (Exception e)
