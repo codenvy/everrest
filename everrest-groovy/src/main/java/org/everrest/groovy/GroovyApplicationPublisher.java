@@ -51,27 +51,30 @@ public class GroovyApplicationPublisher extends ApplicationPublisher
    }
 
    @Override
-   public <T extends Application> void publish(T application)
+   public void publish(Application application)
    {
       // Process Java resources.
       super.publish(application);
       // Process Groovy resources.
-      Set<String> scripts = ((GroovyApplication)application).getScripts();
-      if (scripts != null)
+      if (application instanceof GroovyApplication)
       {
-         GroovyResourceLoader resourceLoader = groovyClassLoader.getResourceLoader();
-         for (String name : scripts)
+         Set<String> scripts = ((GroovyApplication)application).getScripts();
+         if (scripts != null)
          {
-            try
+            GroovyResourceLoader resourceLoader = groovyClassLoader.getResourceLoader();
+            for (String name : scripts)
             {
-               URL url = resourceLoader.loadGroovySource(name);
-               Class<?> clazz = groovyClassLoader.parseClass(createCodeSource(url, name));
-               resolver.addPerRequest(clazz);
-            }
-            catch (IOException e)
-            {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
+               try
+               {
+                  URL url = resourceLoader.loadGroovySource(name);
+                  Class<?> clazz = groovyClassLoader.parseClass(createCodeSource(url, name));
+                  //System.out.println("\t\t"+clazz.getName());
+                  resolver.addPerRequest(clazz);
+               }
+               catch (IOException e)
+               {
+                  throw new RuntimeException(e.getMessage(), e);
+               }
             }
          }
       }

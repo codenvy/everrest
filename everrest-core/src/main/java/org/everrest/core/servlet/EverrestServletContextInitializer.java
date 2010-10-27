@@ -41,7 +41,8 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: EverrestServletContextInitializer.java 76 2010-10-26 10:43:52Z
+ *          andrew00x $
  */
 public class EverrestServletContextInitializer
 {
@@ -64,12 +65,17 @@ public class EverrestServletContextInitializer
    {
       Application application = null;
       String applicationFQN = getParameter(JAXRS_APPLICATION);
-      boolean scan = Boolean.parseBoolean(getParameter(EVERREST_SCAN_COMPONENTS));
+      boolean scan = true;
+      String scanParameter = getParameter(EVERREST_SCAN_COMPONENTS);
+      if (scanParameter != null)
+      {
+         scan = Boolean.parseBoolean(getParameter(EVERREST_SCAN_COMPONENTS));
+      }
       if (applicationFQN != null)
       {
          if (scan)
          {
-            String msg = "Scan of rest components is disabled cause to specified 'javax.ws.rs.Application'.";
+            String msg = "Scan of JAX-RS components is disabled cause to specified 'javax.ws.rs.Application'.";
             LOG.warn(msg);
          }
          try
@@ -84,55 +90,9 @@ public class EverrestServletContextInitializer
       }
       else if (scan)
       {
-         URL classes = WarUrlFinder.findWebInfClassesPath(sctx);
-         URL[] libs = WarUrlFinder.findWebInfLibClasspaths(sctx);
-         AnnotationDB annotationDB = new AnnotationDB();
-         List<String> skip = new ArrayList<String>();
-         String sskip = sctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
-         if (sskip != null)
-         {
-            for (String s : sskip.split(","))
-            {
-               skip.add(s.trim());
-            }
-         }
-         // Disable processing of API, implementation and JAX-RS packages
-         skip.add("org.everrest.core");
-         skip.add("javax.ws.rs");
-         annotationDB.setIgnoredPackages(skip.toArray(new String[skip.size()]));
          try
          {
-            if (classes != null)
-            {
-               annotationDB.scanArchives(classes);
-            }
-            annotationDB.scanArchives(libs);
-            final Set<Class<?>> scanned = new HashSet<Class<?>>();
-            Map<String, Set<String>> results = annotationDB.getAnnotationIndex();
-            for (String annotation : new String[]{Path.class.getName(), Provider.class.getName(),
-               Filter.class.getName()})
-            {
-               if (results.get(annotation) != null)
-               {
-                  for (String fqn : results.get(annotation))
-                  {
-                     try
-                     {
-                        Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(fqn);
-                        if (cl.isInterface() || Modifier.isAbstract(cl.getModifiers()))
-                        {
-                           LOG.info("Skip abstract class or interface " + fqn);
-                           continue;
-                        }
-                        scanned.add(cl);
-                     }
-                     catch (ClassNotFoundException e)
-                     {
-                        throw new RuntimeException(e);
-                     }
-                  }
-               }
-            }
+            final Set<Class<?>> scanned = scanWebApplication();
             application = new Application()
             {
                public Set<Class<?>> getClasses()
@@ -147,6 +107,70 @@ public class EverrestServletContextInitializer
          }
       }
       return application;
+   }
+
+   /**
+    * Scan web application's folders WEB-INF/classes and WEB-INF/lib for classes
+    * which contains JAX-RS annotations. Interesting for three annotations
+    * {@link Path}, {@link Provider} and {@link Filter} .
+    *
+    * @return set of not classes which contains JAX-RS annotations. Abstract
+    *         classes and interfaces which such annotation will be not added in
+    *         result.
+    * @throws IOException if any i/o errors occur
+    */
+   protected Set<Class<?>> scanWebApplication() throws IOException
+   {
+      URL classes = WarUrlFinder.findWebInfClassesPath(sctx);
+      URL[] libs = WarUrlFinder.findWebInfLibClasspaths(sctx);
+      AnnotationDB annotationDB = new AnnotationDB();
+      List<String> skip = new ArrayList<String>();
+      String sskip = sctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
+      if (sskip != null)
+      {
+         for (String s : sskip.split(","))
+         {
+            skip.add(s.trim());
+         }
+      }
+      // Disable processing of API, implementation and JAX-RS packages
+      skip.add("org.everrest.core");
+      skip.add("javax.ws.rs");
+      annotationDB.setIgnoredPackages(skip.toArray(new String[skip.size()]));
+      annotationDB.setScanFieldAnnotations(false);
+      annotationDB.setScanMethodAnnotations(false);
+      annotationDB.setScanParameterAnnotations(false);
+      if (classes != null)
+      {
+         annotationDB.scanArchives(classes);
+      }
+      annotationDB.scanArchives(libs);
+      final Set<Class<?>> scanned = new HashSet<Class<?>>();
+      Map<String, Set<String>> results = annotationDB.getAnnotationIndex();
+      for (String annotation : new String[]{Path.class.getName(), Provider.class.getName(), Filter.class.getName()})
+      {
+         if (results.get(annotation) != null)
+         {
+            for (String fqn : results.get(annotation))
+            {
+               try
+               {
+                  Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(fqn);
+                  if (cl.isInterface() || Modifier.isAbstract(cl.getModifiers()))
+                  {
+                     LOG.info("Skip abstract class or interface " + fqn);
+                     continue;
+                  }
+                  scanned.add(cl);
+               }
+               catch (ClassNotFoundException e)
+               {
+                  throw new RuntimeException(e);
+               }
+            }
+         }
+      }
+      return scanned;
    }
 
    public EverrestConfiguration getConfiguration()

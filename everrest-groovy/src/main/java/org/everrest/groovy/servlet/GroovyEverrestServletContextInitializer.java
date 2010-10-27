@@ -22,7 +22,12 @@ package org.everrest.groovy.servlet;
 import groovy.lang.GroovyClassLoader;
 
 import org.everrest.core.servlet.EverrestServletContextInitializer;
+import org.everrest.core.util.Logger;
 import org.everrest.groovy.GroovyApplication;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Application;
@@ -37,6 +42,8 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
 
    public static final String EVERREST_GROOVY_ROOT_RESOURCES = "org.everrest.groovy.root.resources";
 
+   private static final Logger LOG = Logger.getLogger(GroovyEverrestServletContextInitializer.class);
+
    private final GroovyClassLoader groovyClassLoader;
 
    public GroovyEverrestServletContextInitializer(ServletContext sctx, GroovyClassLoader groovyClassLoader)
@@ -49,15 +56,56 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
    public Application getApplication()
    {
       String applicationFQN = getParameter(JAXRS_APPLICATION);
-      GroovyApplication application = null;
-      try
+      Application application = null;
+      boolean scan = true;
+      String scanParameter = getParameter(EVERREST_SCAN_COMPONENTS);
+      if (scanParameter != null)
       {
-         Class<?> applicationClass = groovyClassLoader.loadClass(applicationFQN, true, false);
-         application = (GroovyApplication)applicationClass.newInstance();
+         scan = Boolean.parseBoolean(getParameter(EVERREST_SCAN_COMPONENTS));
       }
-      catch (Exception e)
+      if (applicationFQN != null)
       {
-         throw new RuntimeException(e);
+         if (scan)
+         {
+            String msg = "Scan of JAX-RS components is disabled cause to specified 'javax.ws.rs.Application'.";
+            LOG.warn(msg);
+         }
+         try
+         {
+            Class<?> applicationClass = groovyClassLoader.loadClass(applicationFQN, true, false);
+            application = (Application)applicationClass.newInstance();
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e.getMessage(), e);
+         }
+      }
+      else if (scan)
+      {
+         try
+         {
+            final Set<Class<?>> scanned = scanWebApplication();
+            application = new GroovyApplication()
+            {
+               @Override
+               public Set<Class<?>> getClasses()
+               {
+                  return scanned;
+               }
+
+               @Override
+               public Set<String> getScripts()
+               {
+                  // TODO scan for Groovy components on local file system.
+                  return Collections.emptySet();
+               }
+            };
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+
       }
       return application;
    }
