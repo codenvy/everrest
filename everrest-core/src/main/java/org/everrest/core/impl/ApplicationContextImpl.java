@@ -91,7 +91,7 @@ public class ApplicationContextImpl implements ApplicationContext
    /**
     * List of decoded matched URIs.
     */
-   private List<String> matchedURIs;
+   private List<String> matchedURIs = new ArrayList<String>();
 
    /**
     * Mutable runtime attributes.
@@ -194,6 +194,7 @@ public class ApplicationContextImpl implements ApplicationContext
    public void addMatchedURI(String uri)
    {
       encodedMatchedURIs.add(0, uri);
+      matchedURIs.add(0, UriComponent.decode(uri, UriComponent.PATH_SEGMENT));
    }
 
    /**
@@ -300,14 +301,7 @@ public class ApplicationContextImpl implements ApplicationContext
     */
    public List<String> getMatchedURIs(boolean decode)
    {
-      if (decode)
-      {
-         if (matchedURIs == null)
-            matchedURIs = new ArrayList<String>();
-         for (String seg : encodedMatchedURIs)
-            matchedURIs.add(0, UriComponent.decode(seg, UriComponent.PATH_SEGMENT));
-      }
-      return encodedMatchedURIs;
+      return decode ? matchedURIs : encodedMatchedURIs;
    }
 
    /**
