@@ -59,7 +59,7 @@ public class ApplicationProviderBinder extends ProviderBinder
    public List<MediaType> getAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations)
    {
       List<MediaType> l = doGetAcceptableWriterMediaTypes(type, genericType, annotations);
-      l.addAll(getParent().getAcceptableWriterMediaTypes(type, genericType, annotations));
+      l.addAll(getDefaults().getAcceptableWriterMediaTypes(type, genericType, annotations));
       return l;
    }
 
@@ -72,7 +72,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       ContextResolver<T> resolver = doGetContextResolver(contextType, mediaType);
       if (resolver == null)
       {
-         resolver = getParent().getContextResolver(contextType, mediaType);
+         resolver = getDefaults().getContextResolver(contextType, mediaType);
       }
       return resolver;
    }
@@ -86,7 +86,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       ExceptionMapper<T> excMapper = doGetExceptionMapper(type);
       if (excMapper == null)
       {
-         excMapper = getParent().getExceptionMapper(type);
+         excMapper = getDefaults().getExceptionMapper(type);
       }
       return excMapper;
    }
@@ -101,7 +101,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       MessageBodyReader<T> reader = doGetMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader == null)
       {
-         reader = getParent().getMessageBodyReader(type, genericType, annotations, mediaType);
+         reader = getDefaults().getMessageBodyReader(type, genericType, annotations, mediaType);
       }
       return reader;
    }
@@ -116,7 +116,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       MessageBodyWriter<T> writer = doGetMessageBodyWriter(type, genericType, annotations, mediaType);
       if (writer == null)
       {
-         writer = getParent().getMessageBodyWriter(type, genericType, annotations, mediaType);
+         writer = getDefaults().getMessageBodyWriter(type, genericType, annotations, mediaType);
       }
       return writer;
    }
@@ -128,7 +128,7 @@ public class ApplicationProviderBinder extends ProviderBinder
    public List<ObjectFactory<FilterDescriptor>> getMethodInvokerFilters(String path)
    {
       List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, invokerFilters);
-      l.addAll(getParent().getMethodInvokerFilters(path));
+      l.addAll(getDefaults().getMethodInvokerFilters(path));
       return l;
    }
 
@@ -139,7 +139,7 @@ public class ApplicationProviderBinder extends ProviderBinder
    public List<ObjectFactory<FilterDescriptor>> getRequestFilters(String path)
    {
       List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, requestFilters);
-      l.addAll(getParent().getRequestFilters(path));
+      l.addAll(getDefaults().getRequestFilters(path));
       return l;
    }
 
@@ -150,11 +150,11 @@ public class ApplicationProviderBinder extends ProviderBinder
    public List<ObjectFactory<FilterDescriptor>> getResponseFilters(String path)
    {
       List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, responseFilters);
-      l.addAll(getParent().getResponseFilters(path));
+      l.addAll(getDefaults().getResponseFilters(path));
       return l;
    }
 
-   private ProviderBinder getParent()
+   private ProviderBinder getDefaults()
    {
       return ProviderBinder.getInstance();
    }
