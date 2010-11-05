@@ -135,7 +135,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
             {
                public boolean accept(URL url)
                {
-                  return url.getFile().endsWith(".groovy");
+                  return url.getPath().endsWith(".groovy");
                }
             };
 
