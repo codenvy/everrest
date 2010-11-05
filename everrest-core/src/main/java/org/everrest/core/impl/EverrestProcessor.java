@@ -31,30 +31,22 @@ import javax.ws.rs.core.Application;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class EverrestProcessor
+public final class EverrestProcessor
 {
+
    private final RequestHandler requestHandler;
+
+   private final ResourceBinder resources;
+
+   private final ProviderBinder providers;
 
    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
       DependencySupplier dependencies, EverrestConfiguration config, Application application)
    {
-      this(resources, providers, dispatcher, dependencies, null, config, application);
-
-   }
-
-   public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
-      DependencySupplier dependencies, ApplicationPublisher appInitializer, EverrestConfiguration config,
-      Application application)
-   {
-      if (appInitializer == null)
-      {
-         appInitializer = new ApplicationPublisher(resources, providers);
-      }
-      if (application != null)
-      {
-         appInitializer.publish(application);
-      }
-      requestHandler = new RequestHandlerImpl(resources, providers, dispatcher, dependencies, config);
+      this.resources = resources;
+      this.providers = providers;
+      this.requestHandler = new RequestHandlerImpl(resources, providers, dispatcher, dependencies, config);
+      addApplication(application);
    }
 
    public void process(GenericContainerRequest request, GenericContainerResponse response, EnvironmentContext envCtx)
@@ -68,6 +60,15 @@ public class EverrestProcessor
       finally
       {
          EnvironmentContext.setCurrent(null);
+      }
+   }
+
+   public void addApplication(Application application)
+   {
+      if (application != null)
+      {
+         ApplicationPublisher appPublisher = new ApplicationPublisher(resources, providers);
+         appPublisher.publish(application);
       }
    }
 

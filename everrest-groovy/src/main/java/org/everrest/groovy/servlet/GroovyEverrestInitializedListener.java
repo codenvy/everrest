@@ -19,16 +19,8 @@
 
 package org.everrest.groovy.servlet;
 
-import org.everrest.core.DependencySupplier;
-import org.everrest.core.ResourceBinder;
-import org.everrest.core.impl.ApplicationProviderBinder;
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RequestDispatcher;
-import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
-import org.everrest.core.servlet.ServletContextDependencySupplier;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -43,43 +35,25 @@ import javax.ws.rs.core.Application;
 public class GroovyEverrestInitializedListener implements ServletContextListener
 {
 
+   /**
+    * {@inheritDoc}
+    */
    public void contextDestroyed(ServletContextEvent event)
    {
    }
 
+   /**
+    * {@inheritDoc}
+    */
    public void contextInitialized(ServletContextEvent event)
    {
       ServletContext sctx = event.getServletContext();
+      EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());
+      if (processor == null)
+         throw new RuntimeException("EverrestProcessor not found. ");
       EverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(sctx);
       Application application = initializer.getApplication();
-      DependencySupplier dependencySupplier = null;
-      String dependencyInjectorFQN = initializer.getParameter(DependencySupplier.class.getName());
-      if (dependencyInjectorFQN != null)
-      {
-         try
-         {
-            Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(dependencyInjectorFQN.trim());
-            dependencySupplier = (DependencySupplier)cl.newInstance();
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      if (dependencySupplier == null)
-      {
-         dependencySupplier = new ServletContextDependencySupplier(sctx);
-      }
-      EverrestConfiguration config = initializer.getConfiguration();
-      ResourceBinder resources = new ResourceBinderImpl();
-      RequestDispatcher dispatcher = (RequestDispatcher)sctx.getAttribute(RequestDispatcher.class.getName());
-      if (dispatcher == null)
-      {
-         dispatcher = new RequestDispatcher(resources);
-      }
-      ProviderBinder providers = new ApplicationProviderBinder();
-      EverrestProcessor processor =
-         new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, config, application);
+      processor.addApplication(application);
       sctx.setAttribute(EverrestProcessor.class.getName(), processor);
    }
 }

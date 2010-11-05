@@ -39,14 +39,8 @@ import javax.ws.rs.core.Application;
  * @version $Id: RestInitializedListener.java 436 2009-10-28 06:47:29Z aparfonov
  *          $
  */
-public class RestInitializedListener implements ServletContextListener
+public class EverrestInitializedListener implements ServletContextListener
 {
-
-   public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
-
-   public static final String EVERREST_SCAN_SKIP_PACKAGES = "org.everrest.scan.skip.packages";
-
-   public static final String JAXRS_APPLICATION = "javax.ws.rs.Application";
 
    /**
     * {@inheritDoc}

@@ -5,19 +5,15 @@
       <param-name>javax.ws.rs.Application</param-name>
       <param-value>APPLICATION FQN</param-value>	
 	</context-param -->
-	<context-param>
-		<param-name>org.everrest.scan.components</param-name>
-		<param-value>true</param-value>
-	</context-param>
 	<listener>
-		<listener-class>org.everrest.core.servlet.RestInitializedListener</listener-class>
+		<listener-class>org.everrest.core.servlet.EverrestInitializedListener</listener-class>
 	</listener>
 	<servlet>
-		<servlet-name>StandaloneRestServlet</servlet-name>
-		<servlet-class>org.everrest.core.servlet.StandaloneRestServlet</servlet-class>
+		<servlet-name>EverrestServlet</servlet-name>
+		<servlet-class>org.everrest.core.servlet.EverrestServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>StandaloneRestServlet</servlet-name>
+		<servlet-name>EverrestServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 </web-app>

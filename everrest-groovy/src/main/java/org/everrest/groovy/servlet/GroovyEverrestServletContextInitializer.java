@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -51,6 +52,10 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
 {
 
    public static final String EVERREST_GROOVY_ROOT_RESOURCES = "org.everrest.groovy.root.resources";
+
+   public static final String EVERREST_GROOVY_APPLICATION = "org.everrest.groovy.Application";
+
+   public static final String EVERREST_GROOVY_SCAN_COMPONENTS = "org.everrest.groovy.scan.components";
 
    private static final Logger LOG = Logger.getLogger(GroovyEverrestServletContextInitializer.class);
 
@@ -95,25 +100,26 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
    @Override
    public Application getApplication()
    {
-      String applicationFQN = getParameter(JAXRS_APPLICATION);
-      Application application = null;
+      String groovyApplicationFQN = getParameter(EVERREST_GROOVY_APPLICATION);
+      Application groovyApplication = null;
       boolean scan = true;
-      String scanParameter = getParameter(EVERREST_SCAN_COMPONENTS);
+      String scanParameter = getParameter(EVERREST_GROOVY_SCAN_COMPONENTS);
       if (scanParameter != null)
       {
-         scan = Boolean.parseBoolean(getParameter(EVERREST_SCAN_COMPONENTS));
+         scan = Boolean.parseBoolean(scanParameter);
       }
-      if (applicationFQN != null)
+      if (groovyApplicationFQN != null)
       {
          if (scan)
          {
-            String msg = "Scan of JAX-RS components is disabled cause to specified 'javax.ws.rs.Application'.";
+            String msg =
+               "Scan of Groovy JAX-RS components is disabled cause to specified 'org.everrest.groovy.Application'.";
             LOG.warn(msg);
          }
          try
          {
-            Class<?> applicationClass = groovyClassLoader.loadClass(applicationFQN, true, false);
-            application = (Application)applicationClass.newInstance();
+            Class<?> applicationClass = groovyClassLoader.loadClass(groovyApplicationFQN, true, false);
+            groovyApplication = (Application)applicationClass.newInstance();
          }
          catch (Exception e)
          {
@@ -124,8 +130,46 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
       {
          try
          {
-            final Set<Class<?>> scanned = scanWebApplication();
-            application = new Application()
+            URLFilter filter = new URLFilter()
+            {
+               public boolean accept(URL url)
+               {
+                  return url.getFile().endsWith(".groovy");
+               }
+            };
+
+            final Set<Class<?>> scanned = new HashSet<Class<?>>();
+            Class[] jaxrsAnnotations = new Class[]{Path.class, Provider.class, Filter.class};
+            for (URL url : groovyClassPath)
+            {
+               String protocol = url.getProtocol();
+               ScriptFinder finder = ScriptFinderFactory.getScriptFinder(protocol);
+               if (finder != null)
+               {
+                  Set<URL> scripts = finder.find(filter, url);
+                  if (scripts != null && scripts.size() > 0)
+                  {
+                     for (URL script : scripts)
+                     {
+                        Class<?> clazz = groovyClassLoader.parseClass(createCodeSource(script, script.toString()));
+                        if (findAnnotation(clazz, jaxrsAnnotations))
+                        {
+                           if (LOG.isDebugEnabled())
+                              LOG.debug("Add script from URL: " + script);
+                           scanned.add(clazz);
+                        }
+                     }
+                  }
+               }
+               else
+               {
+                  String msg =
+                     "Skip URL : " + url + ". Protocol '" + protocol
+                        + "' is not supported for scan JAX-RS components. ";
+                  LOG.warn(msg);
+               }
+            }
+            groovyApplication = new Application()
             {
                public Set<Class<?>> getClasses()
                {
@@ -138,7 +182,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
             throw new RuntimeException(e);
          }
       }
-      return application;
+      return groovyApplication;
    }
 
    private boolean findAnnotation(Class<?> clazz, Class<? extends Annotation>... annClasses)
@@ -161,52 +205,4 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
       return gcs;
    }
 
-   /**
-    * Scan Groovy components as additional. {@inheritDoc}
-    */
-   @SuppressWarnings("unchecked")
-   @Override
-   protected Set<Class<?>> scanWebApplication() throws IOException
-   {
-      Set<Class<?>> scanned = super.scanWebApplication();
-
-      URLFilter filter = new URLFilter()
-      {
-         public boolean accept(URL url)
-         {
-            return url.getFile().endsWith(".groovy");
-         }
-      };
-
-      Class[] jaxrs = new Class[]{Path.class, Provider.class, Filter.class};
-      for (URL url : groovyClassPath)
-      {
-         String protocol = url.getProtocol();
-         ScriptFinder finder = ScriptFinderFactory.getScriptFinder(protocol);
-         if (finder != null)
-         {
-            Set<URL> scripts = finder.find(filter, url);
-            if (scripts != null && scripts.size() > 0)
-            {
-               for (URL script : scripts)
-               {
-                  Class<?> clazz = groovyClassLoader.parseClass(createCodeSource(script, script.toString()));
-                  if (findAnnotation(clazz, jaxrs))
-                  {
-                     if (LOG.isDebugEnabled())
-                        LOG.debug("Add script from URL: " + script);
-                     scanned.add(clazz);
-                  }
-               }
-            }
-         }
-         else
-         {
-            String msg =
-               "Skip URL : " + url + ". Protocol '" + protocol + "' is not supported for scan JAX-RS components. ";
-            LOG.warn(msg);
-         }
-      }
-      return scanned;
-   }
 }
