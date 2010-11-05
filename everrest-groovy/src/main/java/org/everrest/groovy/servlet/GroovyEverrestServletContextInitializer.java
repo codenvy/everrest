@@ -31,6 +31,7 @@ import org.everrest.groovy.ScriptFinderFactory;
 import org.everrest.groovy.URLFilter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -140,23 +141,51 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
 
             final Set<Class<?>> scanned = new HashSet<Class<?>>();
             Class[] jaxrsAnnotations = new Class[]{Path.class, Provider.class, Filter.class};
-            for (URL url : groovyClassPath)
+            for (URL path : groovyClassPath)
             {
-               String protocol = url.getProtocol();
+               String protocol = path.getProtocol();
                ScriptFinder finder = ScriptFinderFactory.getScriptFinder(protocol);
                if (finder != null)
                {
-                  Set<URL> scripts = finder.find(filter, url);
+                  Set<URL> scripts = finder.find(filter, path);
                   if (scripts != null && scripts.size() > 0)
                   {
                      for (URL script : scripts)
                      {
-                        Class<?> clazz = groovyClassLoader.parseClass(createCodeSource(script, script.toString()));
-                        if (findAnnotation(clazz, jaxrsAnnotations))
+                        InputStream in = null;
+                        try
                         {
-                           if (LOG.isDebugEnabled())
-                              LOG.debug("Add script from URL: " + script);
-                           scanned.add(clazz);
+                           in = script.openStream();
+                           GroovyCodeSource gcs = new GroovyCodeSource(in, script.toString(), "/groovy/script/jaxrs");
+                           gcs.setCachable(false);
+                           Class<?> clazz = groovyClassLoader.parseClass(gcs);
+                           if (findAnnotation(clazz, jaxrsAnnotations))
+                           {
+                              boolean added = scanned.add(clazz);
+                              if (added)
+                              {
+                                 if (LOG.isDebugEnabled())
+                                    LOG.debug("Add script from URL: " + script);
+                              }
+                              else
+                              {
+                                 LOG.warn("Skip duplicated class: " + clazz);
+                              }
+                           }
+                        }
+                        finally
+                        {
+                           if (in != null)
+                           {
+                              try
+                              {
+                                 in.close();
+                              }
+                              catch (IOException e)
+                              {
+                                 LOG.error("Error occurs when tried to close stream, " + e.getMessage());
+                              }
+                           }
                         }
                      }
                   }
@@ -164,7 +193,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                else
                {
                   String msg =
-                     "Skip URL : " + url + ". Protocol '" + protocol
+                     "Skip URL : " + path + ". Protocol '" + protocol
                         + "' is not supported for scan JAX-RS components. ";
                   LOG.warn(msg);
                }
@@ -195,14 +224,6 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
          }
       }
       return false;
-   }
-
-   protected GroovyCodeSource createCodeSource(URL url, String name) throws IOException
-   {
-      GroovyCodeSource gcs =
-         new GroovyCodeSource(url.openStream(), name == null ? url.toString() : name, "/groovy/script/jaxrs");
-      gcs.setCachable(false);
-      return gcs;
    }
 
 }
