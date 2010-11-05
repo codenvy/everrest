@@ -20,17 +20,27 @@
 package org.everrest.groovy.servlet;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
 
+import org.everrest.core.Filter;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.core.util.Logger;
-import org.everrest.groovy.GroovyApplication;
+import org.everrest.groovy.DefaultGroovyResourceLoader;
+import org.everrest.groovy.ScriptFinder;
+import org.everrest.groovy.ScriptFinderFactory;
+import org.everrest.groovy.URLFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.lang.annotation.Annotation;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -44,14 +54,44 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
 
    private static final Logger LOG = Logger.getLogger(GroovyEverrestServletContextInitializer.class);
 
-   private final GroovyClassLoader groovyClassLoader;
+   protected final GroovyClassLoader groovyClassLoader;
 
-   public GroovyEverrestServletContextInitializer(ServletContext sctx, GroovyClassLoader groovyClassLoader)
+   protected final URL[] groovyClassPath;
+
+   public GroovyEverrestServletContextInitializer(ServletContext sctx)
    {
       super(sctx);
-      this.groovyClassLoader = groovyClassLoader;
+      this.groovyClassLoader = new GroovyClassLoader();
+      String _rootResources = getParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES);
+      Set<URL> rootResources = new LinkedHashSet<URL>();
+      if (_rootResources != null)
+      {
+         try
+         {
+            for (String s : _rootResources.split(","))
+            {
+               rootResources.add(new URL(s.trim()));
+            }
+         }
+         catch (MalformedURLException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      this.groovyClassPath = rootResources.toArray(new URL[rootResources.size()]);
+      try
+      {
+         this.groovyClassLoader.setResourceLoader(new DefaultGroovyResourceLoader(groovyClassPath));
+      }
+      catch (MalformedURLException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public Application getApplication()
    {
@@ -85,19 +125,11 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
          try
          {
             final Set<Class<?>> scanned = scanWebApplication();
-            application = new GroovyApplication()
+            application = new Application()
             {
-               @Override
                public Set<Class<?>> getClasses()
                {
                   return scanned;
-               }
-
-               @Override
-               public Set<String> getScripts()
-               {
-                  // TODO scan for Groovy components on local file system.
-                  return Collections.emptySet();
                }
             };
          }
@@ -105,9 +137,76 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
          {
             throw new RuntimeException(e);
          }
-
       }
       return application;
    }
 
+   private boolean findAnnotation(Class<?> clazz, Class<? extends Annotation>... annClasses)
+   {
+      for (Class<? extends Annotation> ac : annClasses)
+      {
+         if (clazz.getAnnotation(ac) != null)
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   protected GroovyCodeSource createCodeSource(URL url, String name) throws IOException
+   {
+      GroovyCodeSource gcs =
+         new GroovyCodeSource(url.openStream(), name == null ? url.toString() : name, "/groovy/script/jaxrs");
+      gcs.setCachable(false);
+      return gcs;
+   }
+
+   /**
+    * Scan Groovy components as additional. {@inheritDoc}
+    */
+   @SuppressWarnings("unchecked")
+   @Override
+   protected Set<Class<?>> scanWebApplication() throws IOException
+   {
+      Set<Class<?>> scanned = super.scanWebApplication();
+
+      URLFilter filter = new URLFilter()
+      {
+         public boolean accept(URL url)
+         {
+            return url.getFile().endsWith(".groovy");
+         }
+      };
+
+      Class[] jaxrs = new Class[]{Path.class, Provider.class, Filter.class};
+      for (URL url : groovyClassPath)
+      {
+         String protocol = url.getProtocol();
+         ScriptFinder finder = ScriptFinderFactory.getScriptFinder(protocol);
+         if (finder != null)
+         {
+            Set<URL> scripts = finder.find(filter, url);
+            if (scripts != null && scripts.size() > 0)
+            {
+               for (URL script : scripts)
+               {
+                  Class<?> clazz = groovyClassLoader.parseClass(createCodeSource(script, script.toString()));
+                  if (findAnnotation(clazz, jaxrs))
+                  {
+                     if (LOG.isDebugEnabled())
+                        LOG.debug("Add script from URL: " + script);
+                     scanned.add(clazz);
+                  }
+               }
+            }
+         }
+         else
+         {
+            String msg =
+               "Skip URL : " + url + ". Protocol '" + protocol + "' is not supported for scan JAX-RS components. ";
+            LOG.warn(msg);
+         }
+      }
+      return scanned;
+   }
 }

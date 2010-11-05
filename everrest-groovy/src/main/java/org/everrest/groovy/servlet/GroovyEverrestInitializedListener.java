@@ -19,8 +19,6 @@
 
 package org.everrest.groovy.servlet;
 
-import groovy.lang.GroovyClassLoader;
-
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
@@ -31,13 +29,6 @@ import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.core.servlet.ServletContextDependencySupplier;
-import org.everrest.groovy.DefaultGroovyResourceLoader;
-import org.everrest.groovy.GroovyApplicationPublisher;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -59,28 +50,7 @@ public class GroovyEverrestInitializedListener implements ServletContextListener
    public void contextInitialized(ServletContextEvent event)
    {
       ServletContext sctx = event.getServletContext();
-      GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
-      EverrestServletContextInitializer initializer =
-         new GroovyEverrestServletContextInitializer(sctx, groovyClassLoader);
-      String srootResources =
-         initializer.getParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES);
-      List<URL> rootResources = new ArrayList<URL>();
-      if (srootResources != null)
-      {
-         try
-         {
-            for (String s : srootResources.split(","))
-            {
-               rootResources.add(new URL(s.trim()));
-            }
-            groovyClassLoader.setResourceLoader(new DefaultGroovyResourceLoader(rootResources
-               .toArray(new URL[rootResources.size()])));
-         }
-         catch (MalformedURLException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
+      EverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(sctx);
       Application application = initializer.getApplication();
       DependencySupplier dependencySupplier = null;
       String dependencyInjectorFQN = initializer.getParameter(DependencySupplier.class.getName());
@@ -109,8 +79,7 @@ public class GroovyEverrestInitializedListener implements ServletContextListener
       }
       ProviderBinder providers = new ApplicationProviderBinder();
       EverrestProcessor processor =
-         new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, new GroovyApplicationPublisher(
-            resources, providers, groovyClassLoader), config, application);
+         new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, config, application);
       sctx.setAttribute(EverrestProcessor.class.getName(), processor);
    }
 }

@@ -21,7 +21,15 @@ package org.everrest.groovy;
 
 import groovy.lang.GroovyClassLoader;
 
+import org.everrest.core.impl.ApplicationPublisher;
+import org.everrest.groovy.servlet.GroovyEverrestServletContextInitializer;
+import org.everrest.test.mock.MockServletContext;
+
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -30,7 +38,7 @@ import java.net.URL;
 public class GroovyApplicationTest extends BaseTest
 {
 
-   protected GroovyApplicationPublisher groovyApplicationPublisher;
+   protected ApplicationPublisher applicationPublisher;
 
    protected GroovyClassLoader groovyClassLoader;
 
@@ -41,20 +49,41 @@ public class GroovyApplicationTest extends BaseTest
       URL root = Thread.currentThread().getContextClassLoader().getResource("repo");
       DefaultGroovyResourceLoader groovyResourceLoader = new DefaultGroovyResourceLoader(root);
       groovyClassLoader.setResourceLoader(groovyResourceLoader);
-      groovyApplicationPublisher = new GroovyApplicationPublisher(resources, providers, groovyClassLoader);
+      applicationPublisher = new ApplicationPublisher(resources, providers);
    }
 
    public void testApplication() throws Exception
    {
-      String application = "class Application0 extends org.everrest.groovy.GroovyApplication {\n" //
-         + "Set<String> getScripts(){new HashSet<String>(['a.b.GResource1','a.b.GExceptionMapper'])}" //
-         + "}";
+      String application =
+         "class Application0 extends javax.ws.rs.core.Application\n"
+            + "{\n" //
+            + "Set<Class<?>> getClasses(){new HashSet<Class<?>>([a.b.GResource1.class, a.b.GExceptionMapper.class])}\n"
+            + "}\n";
       Class<?> class1 = groovyClassLoader.parseClass(application);
-      GroovyApplication groovyApplication = (GroovyApplication)class1.newInstance();
-      groovyApplicationPublisher.publish(groovyApplication);
+      javax.ws.rs.core.Application groovyApplication = (javax.ws.rs.core.Application)class1.newInstance();
+      applicationPublisher.publish(groovyApplication);
       assertEquals("GResource1", launcher.service("GET", "/a/1", "", null, null, null).getEntity());
       // ExceptionMapper written in Groovy should process a.b.GRuntimeException.
       assertEquals("GExceptionMapper", launcher.service("GET", "/a/2", "", null, null, null).getEntity());
+   }
+
+   public void testScanComponents()
+   {
+      MockServletContext mockContext = new MockServletContext("test");
+      StringBuilder classPath = new StringBuilder();
+      classPath.append(Thread.currentThread().getContextClassLoader().getResource("scan/").toString());
+      mockContext.setInitParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES, classPath
+         .toString());
+      GroovyEverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(mockContext);
+      Application application = initializer.getApplication();
+      Set<Class<?>> classes = application.getClasses();
+      assertNotNull(classes);
+      assertEquals(2, classes.size());
+      java.util.List<String> l = new ArrayList<String>(2);
+      for (Class c : classes)
+         l.add(c.getName());
+      assertTrue(l.contains("org.everrest.A"));
+      assertTrue(l.contains("org.everrest.B"));
    }
 
 }

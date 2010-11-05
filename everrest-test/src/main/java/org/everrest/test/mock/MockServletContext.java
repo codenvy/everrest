@@ -36,7 +36,7 @@ import javax.servlet.ServletException;
 
 /**
  * The Class MockServletContext.
- * 
+ *
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
  * @version $Id: $
  */
@@ -68,7 +68,7 @@ public class MockServletContext implements ServletContext
 
    /**
     * Instantiates a new mock servlet context.
-    * 
+    *
     * @param name the name
     */
    public MockServletContext(String name)
@@ -80,7 +80,7 @@ public class MockServletContext implements ServletContext
 
    /**
     * Instantiates a new mock servlet context.
-    * 
+    *
     * @param name the name
     * @param path the path
     */
@@ -93,7 +93,7 @@ public class MockServletContext implements ServletContext
 
    /**
     * Sets the name.
-    * 
+    *
     * @param name the new name
     */
    public void setName(String name)
@@ -103,7 +103,7 @@ public class MockServletContext implements ServletContext
 
    /**
     * Gets the log buffer.
-    * 
+    *
     * @return the log buffer
     */
    public String getLogBuffer()
@@ -160,22 +160,24 @@ public class MockServletContext implements ServletContext
          s = s + "/";
 
       Set<String> set = new HashSet<String>();
-      set.add("/WEB-INF/");
 
       try
       {
          URL url = getResource(s);
-         File dir = new File(url.getPath());
-         if (dir.isDirectory())
+         if (url != null)
          {
-            File[] arr = dir.listFiles();
-            for (int i = 0; i < arr.length; i++)
+            File dir = new File(url.getPath());
+            if (dir.isDirectory())
             {
-               File tmp = arr[i];
-               if (tmp.isDirectory())
-                  set.add(s + "/" + tmp.getName() + "/");
-               else
-                  set.add(s + "/" + tmp.getName());
+               File[] arr = dir.listFiles();
+               for (int i = 0; i < arr.length; i++)
+               {
+                  File tmp = arr[i];
+                  if (tmp.isDirectory())
+                     set.add(s + "/" + tmp.getName() + "/");
+                  else
+                     set.add(s + "/" + tmp.getName());
+               }
             }
          }
       }
@@ -281,7 +283,7 @@ public class MockServletContext implements ServletContext
 
    /**
     * Sets the context path.
-    * 
+    *
     * @param s the new context path
     */
    public void setContextPath(String s)
@@ -307,7 +309,7 @@ public class MockServletContext implements ServletContext
 
    /**
     * Sets the init parameter.
-    * 
+    *
     * @param name the name
     * @param value the value
     */
@@ -321,7 +323,7 @@ public class MockServletContext implements ServletContext
     */
    public String getInitParameter(String name)
    {
-      return (String)initParams.get(name);
+      return initParams.get(name);
    }
 
    /**

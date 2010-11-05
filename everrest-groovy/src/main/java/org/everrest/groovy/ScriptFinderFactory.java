@@ -19,36 +19,35 @@
 
 package org.everrest.groovy;
 
-import java.util.Collections;
-import java.util.Set;
-
-import javax.ws.rs.core.Application;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Define names of Groovy scripts which should be components of a JAX-RS
- * application.
- * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class GroovyApplication extends Application
+public class ScriptFinderFactory
 {
-   private static final Set<Class<?>> classes = Collections.emptySet();
 
-   @Override
-   public Set<Class<?>> getClasses()
+   private static final Map<String, ScriptFinder> all = new ConcurrentHashMap<String, ScriptFinder>();
+
+   static
    {
-      return classes;
+      all.put("file", new FileSystemScriptFinder());
    }
 
-   /**
-    * Get names (FQN) of scripts which should be components of a JAX-RS
-    * application. All components (resources and providers) got per-request
-    * lifecycle.
-    * 
-    * @return set of names of Groovy scripts. Returning null is equivalent to
-    *         returning an empty set.
-    */
-   public abstract Set<String> getScripts();
+   public static ScriptFinder getScriptFinder(String protocol)
+   {
+      return all.get(protocol);
+   }
+
+   public static void addScriptFilder(String protocol, ScriptFinder finder)
+   {
+      all.put(protocol, finder);
+   }
+
+   private ScriptFinderFactory()
+   {
+   }
 
 }
