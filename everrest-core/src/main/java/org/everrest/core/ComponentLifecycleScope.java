@@ -22,12 +22,10 @@ package org.everrest.core;
  * Object scope identifier.
  */
 public enum ComponentLifecycleScope {
-   /**
-    * New instance of object created foe each request.
-    */
+   /** New instance of object created for each request. */
    PER_REQUEST,
-   /**
-    * Singleton lifecycle.
-    */
+   /** Singleton lifecycle. */
    SINGLETON,
+   /** Inversion-of-control framework controls component's lifecycle. */
+   IoC_CONTAINER
 }

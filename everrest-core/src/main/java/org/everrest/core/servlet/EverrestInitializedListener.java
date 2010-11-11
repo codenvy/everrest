@@ -83,9 +83,13 @@ public class EverrestInitializedListener implements ServletContextListener
       {
          dispatcher = new RequestDispatcher(resources);
       }
+      ApplicationProviderBinder providers = new ApplicationProviderBinder();
       EverrestProcessor processor =
-         new EverrestProcessor(resources, new ApplicationProviderBinder(), dispatcher, dependencySupplier, config,
-            application);
+         new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, config, application);
+      sctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
+      sctx.setAttribute(ResourceBinder.class.getName(), resources);
+      sctx.setAttribute(ApplicationProviderBinder.class.getName(), providers);
+      sctx.setAttribute(RequestDispatcher.class.getName(), dispatcher);
       sctx.setAttribute(EverrestProcessor.class.getName(), processor);
    }
 }

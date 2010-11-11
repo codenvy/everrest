@@ -232,10 +232,18 @@ public class ResourceBinderImpl implements ResourceBinder
          {
             if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern()))
             {
-               throw new ResourcePublicationException("Resource class "
-                  + resourceFactory.getObjectModel().getObjectClass().getName()
-                  + " can't be registered. Resource class " + resource.getObjectModel().getObjectClass().getName()
-                  + " with the same pattern " + pattern + " already registered.");
+               if (resource.getObjectModel().getObjectClass() == resourceFactory.getObjectModel().getObjectClass())
+               {
+                  LOG.warn("Resource " + resourceFactory.getObjectModel().getObjectClass().getName()
+                     + " already registered.");
+               }
+               else
+               {
+                  throw new ResourcePublicationException("Resource class "
+                     + resourceFactory.getObjectModel().getObjectClass().getName()
+                     + " can't be registered. Resource class " + resource.getObjectModel().getObjectClass().getName()
+                     + " with the same pattern " + pattern + " already registered.");
+               }
             }
          }
          rootResources.add(resourceFactory);

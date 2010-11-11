@@ -28,9 +28,11 @@ import org.everrest.core.impl.MultivaluedMapImpl;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 
 /**
@@ -71,7 +73,10 @@ public class ResourceLauncher
 
       ByteArrayInputStream in = null;
       if (data != null)
+      {
          in = new ByteArrayInputStream(data);
+         headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList(Integer.toString(data.length)));
+      }
 
       if (env == null)
          env = new EnvironmentContext();

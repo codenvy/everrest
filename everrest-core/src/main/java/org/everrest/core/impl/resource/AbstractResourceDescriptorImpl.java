@@ -133,30 +133,34 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
       this.constructors = new ArrayList<ConstructorDescriptor>();
       this.fields = new ArrayList<FieldInjector>();
-      if (scope == ComponentLifecycleScope.PER_REQUEST)
+      if (scope == ComponentLifecycleScope.PER_REQUEST || scope == ComponentLifecycleScope.IoC_CONTAINER)
       {
-         for (Constructor<?> constructor : resourceClass.getConstructors())
+         if (scope == ComponentLifecycleScope.PER_REQUEST)
          {
-            constructors.add(new ConstructorDescriptorImpl(resourceClass, constructor));
+            for (Constructor<?> constructor : resourceClass.getConstructors())
+            {
+               constructors.add(new ConstructorDescriptorImpl(resourceClass, constructor));
+            }
+            if (constructors.size() == 0)
+            {
+               String msg = "Not found accepted constructors for resource class " + resourceClass.getName();
+               throw new RuntimeException(msg);
+            }
+            // Sort constructors in number parameters order
+            if (constructors.size() > 1)
+            {
+               Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
+            }
          }
-         if (constructors.size() == 0)
-         {
-            String msg = "Not found accepted constructors for resource class " + resourceClass.getName();
-            throw new RuntimeException(msg);
-         }
-         // Sort constructors in number parameters order
-         if (constructors.size() > 1)
-         {
-            Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
-         }
+
          // process field
          for (java.lang.reflect.Field jfield : resourceClass.getDeclaredFields())
          {
             fields.add(new FieldInjectorImpl(resourceClass, jfield));
          }
          Class<?> sc = resourceClass.getSuperclass();
-         Package package0 = resourceClass.getPackage();
-         String resourcePackageName = package0 != null ? package0.getName() : null;
+         Package _package = resourceClass.getPackage();
+         String resourcePackageName = _package != null ? _package.getName() : null;
          while (sc != Object.class)
          {
             for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
