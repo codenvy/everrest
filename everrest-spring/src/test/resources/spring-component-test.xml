@@ -17,6 +17,6 @@
    </bean>
 
    <bean class="org.everrest.spring.SpringResourceTest$Resource" />
-   <bean class="org.everrest.spring.SpringResourceTest.MessageProvider" />
+   <bean class="org.everrest.spring.SpringResourceTest$MessageProvider" />
 
 </beans>
