@@ -103,6 +103,7 @@
          <plugin>
             <artifactId>maven-war-plugin</artifactId>
             <configuration>
+               <archiveClasses>true</archiveClasses>
                <archive>
                   <manifest>
                      <addClasspath>false</addClasspath>
