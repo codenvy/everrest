@@ -58,31 +58,14 @@ public class EverrestInitializedListener implements ServletContextListener
       EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(sctx);
 
       Application application = initializer.getApplication();
-      DependencySupplier dependencySupplier = null;
-      String dependencyInjectorFQN = initializer.getParameter(DependencySupplier.class.getName());
-      if (dependencyInjectorFQN != null)
-      {
-         try
-         {
-            Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(dependencyInjectorFQN.trim());
-            dependencySupplier = (DependencySupplier)cl.newInstance();
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
+      DependencySupplier dependencySupplier = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
       if (dependencySupplier == null)
-      {
          dependencySupplier = new ServletContextDependencySupplier(sctx);
-      }
       EverrestConfiguration config = initializer.getConfiguration();
       ResourceBinder resources = new ResourceBinderImpl();
       RequestDispatcher dispatcher = (RequestDispatcher)sctx.getAttribute(RequestDispatcher.class.getName());
       if (dispatcher == null)
-      {
          dispatcher = new RequestDispatcher(resources);
-      }
       ApplicationProviderBinder providers = new ApplicationProviderBinder();
       EverrestProcessor processor =
          new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, config, application);

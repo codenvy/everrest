@@ -21,23 +21,34 @@ package org.everrest.spring.servlet;
 
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.ApplicationPublisher;
+import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.spring.SpringComponentsLoader;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.Application;
 
 /**
- * SpringComponentsLoader which obtains ResourceBinder and
- * ApplicationProviderBinder from ServletContext. This implementation is useful
- * together with EverrestHandlerServletContextMapping.
+ * SpringComponentsLoader which obtains resources and providers delivered via
+ * {@link Application} or obtained after scanning JAX-RS components if
+ * Application is not configured as JAX-RS specification says.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: SpringComponentsServletContextLoader.java 88 2010-11-11
+ *          11:22:12Z andrew00x $
  */
 public class SpringComponentsServletContextLoader extends SpringComponentsLoader implements ServletContextAware
 {
 
    private ServletContext servletContext;
+
+   public SpringComponentsServletContextLoader(ResourceBinder resources, ApplicationProviderBinder providers)
+   {
+      super(resources, providers);
+   }
 
    /**
     * {@inheritDoc}
@@ -48,23 +59,13 @@ public class SpringComponentsServletContextLoader extends SpringComponentsLoader
    }
 
    @Override
-   protected ApplicationProviderBinder getProviders()
+   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException
    {
-      if (providers == null)
-      {
-         providers = (ApplicationProviderBinder)servletContext.getAttribute(ApplicationProviderBinder.class.getName());
-      }
-      return providers;
-   }
-
-   @Override
-   protected ResourceBinder getResources()
-   {
-      if (resources == null)
-      {
-         resources = (ResourceBinder)servletContext.getAttribute(ResourceBinder.class.getName());
-      }
-      return resources;
+      super.postProcessBeanFactory(beanFactory);
+      EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
+      Application application = everrestInitializer.getApplication();
+      if (application != null)
+         new ApplicationPublisher(getResources(), getProviders()).publish(application);
    }
 
 }
