@@ -20,10 +20,6 @@ package org.everrest.core.impl.resource;
 
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.ComponentLifecycleScope;
-import org.everrest.core.ConstructorDescriptor;
-import org.everrest.core.FieldInjector;
-import org.everrest.core.impl.ConstructorDescriptorImpl;
-import org.everrest.core.impl.FieldInjectorImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.impl.method.MethodParameterImpl;
 import org.everrest.core.impl.method.ParameterHelper;
@@ -40,7 +36,6 @@ import org.everrest.core.uri.UriPattern;
 import org.everrest.core.util.Logger;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -94,12 +89,6 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /** Resource methods. Resource method has not own path annotation. */
    private final ResourceMethodMap<ResourceMethodDescriptor> resourceMethods;
 
-   /** ConstructorDescriptor. */
-   private final List<ConstructorDescriptor> constructors;
-
-   /** Resource class fields. */
-   private final List<FieldInjector> fields;
-
    /**
     * Constructs new instance of AbstractResourceDescriptor without path
     * (sub-resource).
@@ -119,7 +108,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     */
    private AbstractResourceDescriptorImpl(Path path, Class<?> resourceClass, ComponentLifecycleScope scope)
    {
-      super(resourceClass);
+      super(resourceClass, scope);
       if (path != null)
       {
          this.path = new PathValue(path.value());
@@ -130,64 +119,6 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          this.path = null;
          uriPattern = null;
       }
-
-      this.constructors = new ArrayList<ConstructorDescriptor>();
-      this.fields = new ArrayList<FieldInjector>();
-      if (scope == ComponentLifecycleScope.PER_REQUEST || scope == ComponentLifecycleScope.IoC_CONTAINER)
-      {
-         if (scope == ComponentLifecycleScope.PER_REQUEST)
-         {
-            for (Constructor<?> constructor : resourceClass.getConstructors())
-            {
-               constructors.add(new ConstructorDescriptorImpl(resourceClass, constructor));
-            }
-            if (constructors.size() == 0)
-            {
-               String msg = "Not found accepted constructors for resource class " + resourceClass.getName();
-               throw new RuntimeException(msg);
-            }
-            // Sort constructors in number parameters order
-            if (constructors.size() > 1)
-            {
-               Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
-            }
-         }
-
-         // process field
-         for (java.lang.reflect.Field jfield : resourceClass.getDeclaredFields())
-         {
-            fields.add(new FieldInjectorImpl(resourceClass, jfield));
-         }
-         Class<?> sc = resourceClass.getSuperclass();
-         Package _package = resourceClass.getPackage();
-         String resourcePackageName = _package != null ? _package.getName() : null;
-         while (sc != Object.class)
-         {
-            for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
-            {
-               int modif = jfield.getModifiers();
-               Package package1 = resourceClass.getPackage();
-               String scPackageName = package1 != null ? package1.getName() : null;
-               if (!Modifier.isPrivate(modif))
-               {
-                  if (Modifier.isPublic(modif)
-                     || Modifier.isProtected(modif)
-                     || (!Modifier.isPrivate(modif) && ((resourcePackageName == null && scPackageName == null) || resourcePackageName
-                        .equals(scPackageName))))
-                  {
-                     FieldInjector inj = new FieldInjectorImpl(resourceClass, jfield);
-                     // Skip not annotated field. They will be not injected from container.
-                     if (inj.getAnnotation() != null)
-                     {
-                        fields.add(new FieldInjectorImpl(resourceClass, jfield));
-                     }
-                  }
-               }
-            }
-            sc = sc.getSuperclass();
-         }
-      }
-
       this.resourceMethods = new ResourceMethodMap<ResourceMethodDescriptor>();
       this.subResourceMethods = new SubResourceMethodMap();
       this.subResourceLocators = new SubResourceLocatorMap();
@@ -200,22 +131,6 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitAbstractResourceDescriptor(this);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<ConstructorDescriptor> getConstructorDescriptors()
-   {
-      return constructors;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<FieldInjector> getFieldInjectors()
-   {
-      return fields;
    }
 
    /**

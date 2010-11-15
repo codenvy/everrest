@@ -20,17 +20,10 @@ package org.everrest.core.impl.provider;
 
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.ComponentLifecycleScope;
-import org.everrest.core.ConstructorDescriptor;
-import org.everrest.core.FieldInjector;
-import org.everrest.core.impl.ConstructorDescriptorImpl;
-import org.everrest.core.impl.FieldInjectorImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -44,18 +37,6 @@ import javax.ws.rs.core.MediaType;
  */
 public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderDescriptor
 {
-
-   /**
-    * Resource class constructors.
-    * 
-    * @see {@link ConstructorDescriptor}
-    */
-   private final List<ConstructorDescriptor> constructors;
-
-   /**
-    * Resource class fields.
-    */
-   private final List<FieldInjector> fields;
 
    /**
     * List of media types which this method can consume. See
@@ -75,32 +56,7 @@ public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderD
     */
    public ProviderDescriptorImpl(Class<?> providerClass, ComponentLifecycleScope scope)
    {
-      super(providerClass);
-      this.constructors = new ArrayList<ConstructorDescriptor>();
-      this.fields = new ArrayList<FieldInjector>();
-      if (scope == ComponentLifecycleScope.PER_REQUEST)
-      {
-         for (Constructor<?> constructor : providerClass.getConstructors())
-         {
-            constructors.add(new ConstructorDescriptorImpl(providerClass, constructor));
-         }
-         if (constructors.size() == 0)
-         {
-            String msg = "Not found accepted constructors for provider class " + providerClass.getName();
-            throw new RuntimeException(msg);
-         }
-         // Sort constructors in number parameters order
-         if (constructors.size() > 1)
-         {
-            Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
-         }
-         // process field
-         for (java.lang.reflect.Field jfield : providerClass.getDeclaredFields())
-         {
-            fields.add(new FieldInjectorImpl(providerClass, jfield));
-         }
-      }
-
+      super(providerClass, scope);
       this.consumes = MediaTypeHelper.createConsumesList(providerClass.getAnnotation(Consumes.class));
       this.produces = MediaTypeHelper.createProducesList(providerClass.getAnnotation(Produces.class));
    }
@@ -119,22 +75,6 @@ public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderD
    public List<MediaType> consumes()
    {
       return consumes;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<ConstructorDescriptor> getConstructorDescriptors()
-   {
-      return constructors;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<FieldInjector> getFieldInjectors()
-   {
-      return fields;
    }
 
    /**

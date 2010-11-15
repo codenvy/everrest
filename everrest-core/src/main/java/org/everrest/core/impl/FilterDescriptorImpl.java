@@ -27,9 +27,6 @@ import org.everrest.core.impl.resource.PathValue;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.uri.UriPattern;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Path;
@@ -41,27 +38,11 @@ import javax.ws.rs.Path;
 public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescriptor
 {
 
-   /**
-    * @see PathValue
-    */
+   /** @see PathValue */
    private final PathValue path;
 
-   /**
-    * @see UriPattern
-    */
+   /** @see UriPattern */
    private final UriPattern uriPattern;
-
-   /**
-    * Filter class constructors.
-    *
-    * @see ConstructorDescriptor
-    */
-   private final List<ConstructorDescriptor> constructors;
-
-   /**
-    * Filter class fields.
-    */
-   private final List<FieldInjector> fields;
 
    /**
     * @param filterClass filter class
@@ -70,7 +51,7 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
     */
    public FilterDescriptorImpl(Class<?> filterClass, ComponentLifecycleScope scope)
    {
-      super(filterClass);
+      super(filterClass, scope);
       final Path p = filterClass.getAnnotation(Path.class);
       if (p != null)
       {
@@ -82,31 +63,6 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
          this.path = null;
          this.uriPattern = null;
       }
-
-      this.constructors = new ArrayList<ConstructorDescriptor>();
-      this.fields = new ArrayList<FieldInjector>();
-      if (scope == ComponentLifecycleScope.PER_REQUEST)
-      {
-         for (Constructor<?> constructor : filterClass.getConstructors())
-         {
-            constructors.add(new ConstructorDescriptorImpl(filterClass, constructor));
-         }
-         if (constructors.size() == 0)
-         {
-            String msg = "Not found accepted constructors for filter class " + filterClass.getName();
-            throw new RuntimeException(msg);
-         }
-         // Sort constructors in number parameters order
-         if (constructors.size() > 1)
-         {
-            Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
-         }
-         // process field
-         for (java.lang.reflect.Field jfield : filterClass.getDeclaredFields())
-         {
-            fields.add(new FieldInjectorImpl(filterClass, jfield));
-         }
-      }
    }
 
    /**
@@ -115,22 +71,6 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitFilterDescriptor(this);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<ConstructorDescriptor> getConstructorDescriptors()
-   {
-      return constructors;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public List<FieldInjector> getFieldInjectors()
-   {
-      return fields;
    }
 
    /**
