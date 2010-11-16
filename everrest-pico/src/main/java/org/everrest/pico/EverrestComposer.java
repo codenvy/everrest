@@ -40,6 +40,7 @@ import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.web.PicoServletContainerListener;
 import org.picocontainer.web.WebappComposer;
 
 import java.util.Collection;
@@ -64,27 +65,52 @@ import javax.ws.rs.ext.Provider;
 public abstract class EverrestComposer implements WebappComposer
 {
 
+   /**
+    * Default EverrestComposer implementation. It gets application's FQN from
+    * context-param javax.ws.rs.Application and instantiate it. If such
+    * parameter is not specified then scan web application's folders
+    * WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS
+    * annotations. Interesting for three annotations {@link Path},
+    * {@link Provider} and {@link Filter} .
+    */
    public static class DefaultComposser extends EverrestComposer
    {
 
+      /**
+       * Deploy JAX-RS application in default manner.
+       *
+       * @see EverrestServletContextInitializer#getApplication()
+       * @see PicoServletContainerListener
+       */
       @Override
       protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext)
       {
          processor.addApplication(everrestInitializer.getApplication());
       }
 
+      /**
+       * Do nothing in default implementation but can be overridden in
+       * subclasses to add component with request scope.
+       *
+       * @see PicoServletContainerListener
+       */
       @Override
       protected void doComposeRequest(MutablePicoContainer container)
       {
       }
 
+      /**
+       * Do nothing in default implementation but can be overridden in
+       * subclasses to add component with session scope.
+       *
+       * @see PicoServletContainerListener
+       */
       @Override
       protected void doComposeSession(MutablePicoContainer container)
       {
       }
 
    }
-
 
    protected ApplicationProviderBinder providers;
 
@@ -127,10 +153,45 @@ public abstract class EverrestComposer implements WebappComposer
       processComponents(container);
    }
 
+   /**
+    * Compose components with application scope.
+    *
+    * <pre>
+    * // Do this if need to keep default everrest framework behaviour.
+    * processor.addApplication(everrestInitializer.getApplication());
+    *
+    * // Register components in picocontainer.
+    * container.addComponent(MyApplicationScopeResource.class);
+    * container.addComponent(MyApplicationScopeProvider.class);
+    * </pre>
+    *
+    * @param container picocontainer
+    * @param servletContext servlet context
+    */
    protected abstract void doComposeApplication(MutablePicoContainer container, ServletContext servletContext);
 
+   /**
+    * Compose components with request scope.
+    *
+    * <pre>
+    * container.addComponent(MyRequestScopeResource.class);
+    * container.addComponent(MyRequestScopeProvider.class);
+    * </pre>
+    *
+    * @param container picocontainer
+    */
    protected abstract void doComposeRequest(MutablePicoContainer container);
 
+   /**
+    * Compose components with session scope.
+    *
+    * <pre>
+    * container.addComponent(MySessionScopeResource.class);
+    * container.addComponent(MySessionScopeProvider.class);
+    * </pre>
+    *
+    * @param container picocontainer
+    */
    protected abstract void doComposeSession(MutablePicoContainer container);
 
    protected ApplicationProviderBinder getProviders()
@@ -168,7 +229,7 @@ public abstract class EverrestComposer implements WebappComposer
          }
          else if (clazz.getAnnotation(Filter.class) != null)
          {
-            FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz,  ComponentLifecycleScope.IoC_CONTAINER);
+            FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.IoC_CONTAINER);
             fDescriptor.accept(rdv);
 
             if (MethodInvokerFilter.class.isAssignableFrom(clazz))
