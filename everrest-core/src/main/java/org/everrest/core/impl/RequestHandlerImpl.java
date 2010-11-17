@@ -29,10 +29,12 @@ import org.everrest.core.RequestFilter;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
+import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.util.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,7 +129,8 @@ public final class RequestHandlerImpl implements RequestHandler
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public void handleRequest(GenericContainerRequest request, GenericContainerResponse response) throws Exception
+   public void handleRequest(GenericContainerRequest request, GenericContainerResponse response)
+      throws UnhandledException, IOException
    {
       try
       {

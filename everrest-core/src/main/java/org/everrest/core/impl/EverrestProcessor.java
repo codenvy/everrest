@@ -24,6 +24,9 @@ import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
+import org.everrest.core.UnhandledException;
+
+import java.io.IOException;
 
 import javax.ws.rs.core.Application;
 
@@ -50,7 +53,7 @@ public final class EverrestProcessor
    }
 
    public void process(GenericContainerRequest request, GenericContainerResponse response, EnvironmentContext envCtx)
-      throws Exception
+      throws UnhandledException, IOException
    {
       try
       {
