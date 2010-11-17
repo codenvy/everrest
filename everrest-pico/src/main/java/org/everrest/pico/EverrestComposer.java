@@ -77,7 +77,8 @@ public abstract class EverrestComposer implements WebappComposer
    {
 
       /**
-       * Deploy JAX-RS application in default manner.
+       * Do nothing in default implementation but can be overridden in
+       * subclasses to add component with application scope.
        *
        * @see EverrestServletContextInitializer#getApplication()
        * @see PicoServletContainerListener
@@ -85,7 +86,6 @@ public abstract class EverrestComposer implements WebappComposer
       @Override
       protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext)
       {
-         processor.addApplication(everrestInitializer.getApplication());
       }
 
       /**
@@ -129,7 +129,7 @@ public abstract class EverrestComposer implements WebappComposer
       RequestDispatcher dispatcher = new RequestDispatcher(resources);
       processor =
          new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, everrestInitializer
-            .getConfiguration(), null);
+            .getConfiguration(), everrestInitializer.getApplication());
 
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       servletContext.setAttribute(ResourceBinder.class.getName(), resources);
@@ -159,7 +159,6 @@ public abstract class EverrestComposer implements WebappComposer
     * <pre>
     * // Do this if need to keep default everrest framework behaviour.
     * processor.addApplication(everrestInitializer.getApplication());
-    *
     * // Register components in picocontainer.
     * container.addComponent(MyApplicationScopeResource.class);
     * container.addComponent(MyApplicationScopeProvider.class);
