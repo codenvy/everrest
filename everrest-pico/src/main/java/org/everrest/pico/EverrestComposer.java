@@ -193,16 +193,6 @@ public abstract class EverrestComposer implements WebappComposer
     */
    protected abstract void doComposeSession(MutablePicoContainer container);
 
-   protected ApplicationProviderBinder getProviders()
-   {
-      return providers;
-   }
-
-   protected ResourceBinder getResources()
-   {
-      return resources;
-   }
-
    protected void processComponents(MutablePicoContainer container)
    {
       Collection<ComponentAdapter<?>> adapters = container.getComponentAdapters();
@@ -215,16 +205,16 @@ public abstract class EverrestComposer implements WebappComposer
             ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.IoC_CONTAINER);
             pDescriptor.accept(rdv);
             if (ContextResolver.class.isAssignableFrom(clazz))
-               getProviders().addContextResolver(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+               providers.addContextResolver(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
 
             if (ExceptionMapper.class.isAssignableFrom(clazz))
-               getProviders().addExceptionMapper(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+               providers.addExceptionMapper(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
 
             if (MessageBodyReader.class.isAssignableFrom(clazz))
-               getProviders().addMessageBodyReader(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+               providers.addMessageBodyReader(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
 
             if (MessageBodyWriter.class.isAssignableFrom(clazz))
-               getProviders().addMessageBodyWriter(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+               providers.addMessageBodyWriter(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
          }
          else if (clazz.getAnnotation(Filter.class) != null)
          {
@@ -232,13 +222,13 @@ public abstract class EverrestComposer implements WebappComposer
             fDescriptor.accept(rdv);
 
             if (MethodInvokerFilter.class.isAssignableFrom(clazz))
-               getProviders().addMethodInvokerFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
+               providers.addMethodInvokerFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
 
             if (RequestFilter.class.isAssignableFrom(clazz))
-               getProviders().addRequestFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
+               providers.addRequestFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
 
             if (ResponseFilter.class.isAssignableFrom(clazz))
-               getProviders().addResponseFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
+               providers.addResponseFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
          }
          else if (clazz.getAnnotation(Path.class) != null)
          {
@@ -246,7 +236,7 @@ public abstract class EverrestComposer implements WebappComposer
                new AbstractResourceDescriptorImpl(clazz, ComponentLifecycleScope.IoC_CONTAINER);
             descriptor.accept(rdv);
 
-            getResources().addResource(new PicoObjectFactory<AbstractResourceDescriptor>(descriptor));
+            resources.addResource(new PicoObjectFactory<AbstractResourceDescriptor>(descriptor));
          }
       }
    }
