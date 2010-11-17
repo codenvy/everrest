@@ -5,6 +5,10 @@
       <param-name>javax.ws.rs.Application</param-name>
       <param-value>APPLICATION FQN</param-value>	
 	</context-param -->
+   <context-param>
+      <param-name>org.everrest.scan.components</param-name>
+      <param-value>true</param-value>
+   </context-param>
 	<listener>
 		<listener-class>org.everrest.core.servlet.EverrestInitializedListener</listener-class>
 	</listener>
