@@ -103,7 +103,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
    {
       String groovyApplicationFQN = getParameter(EVERREST_GROOVY_APPLICATION);
       Application groovyApplication = null;
-      boolean scan = true;
+      boolean scan = false;
       String scanParameter = getParameter(EVERREST_GROOVY_SCAN_COMPONENTS);
       if (scanParameter != null)
       {
