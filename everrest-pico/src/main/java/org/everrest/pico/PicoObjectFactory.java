@@ -20,9 +20,10 @@
 package org.everrest.pico;
 
 import org.everrest.core.ApplicationContext;
+import org.everrest.core.FieldInjector;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ObjectModel;
-import org.picocontainer.web.PicoServletContainerFilter.ServletFilter;
+import org.everrest.pico.ComponentScopedWrapper.Scope;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -44,12 +45,20 @@ public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T
    public Object getInstance(ApplicationContext context)
    {
       Class<?> clazz = model.getObjectClass();
-      Object object = ServletFilter.getRequestComponentForThread(clazz);
-      /*for (FieldInjector field : model.getFieldInjectors())
+      ComponentScopedWrapper<?> wrapper = EverrestPicoFilter.getComponent(clazz);
+      if (wrapper != null)
       {
-         field.inject(object, context);
-      }*/
-      return object;
+         Object component = wrapper.getComponent();
+         if (Scope.REQUEST == wrapper.getScope())
+         {
+            // Inject fields for components with request scope only. The fields
+            // of components with session and application scope keep untouched.
+            for (FieldInjector field : model.getFieldInjectors())
+               field.inject(component, context);
+         }
+         return wrapper.getComponent();
+      }
+      return null;
    }
 
    /**

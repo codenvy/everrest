@@ -19,24 +19,44 @@
 
 package org.everrest.pico;
 
-import org.everrest.core.BaseDependencySupplier;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class PicoDependencySupplier extends BaseDependencySupplier
+public class ComponentScopedWrapper<T>
 {
 
-   /**
-    * {@inheritDoc}
-    */
-   public Object getComponent(Class<?> type)
+   public enum Scope {
+      APPLICATION, SESSION, REQUEST
+   }
+
+   private final T component;
+
+   private final Scope scope;
+
+   public ComponentScopedWrapper(T component, Scope scope)
    {
-      ComponentScopedWrapper<?> wrapper = EverrestPicoFilter.getComponent(type);
-      if (wrapper != null)
-         return wrapper.getComponent();
-      return null;
+      if (component == null)
+         throw new IllegalArgumentException("Component may not be null. ");
+      this.component = component;
+      this.scope = scope;
+   }
+
+   public T getComponent()
+   {
+      return component;
+   }
+
+   public Scope getScope()
+   {
+      return scope;
+   }
+
+   public String toString()
+   {
+      StringBuilder builder = new StringBuilder();
+      builder.append("[component: ").append(component.getClass().getName()).append("; scope: ").append(scope).append("]");
+      return builder.toString();
    }
 
 }
