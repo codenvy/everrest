@@ -74,6 +74,7 @@ public class GroovyApplicationTest extends BaseTest
       classPath.append(Thread.currentThread().getContextClassLoader().getResource("scan/").toString());
       mockContext.setInitParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES, classPath
          .toString());
+      mockContext.setInitParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_SCAN_COMPONENTS, "true");
       GroovyEverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(mockContext);
       Application application = initializer.getApplication();
       Set<Class<?>> classes = application.getClasses();
