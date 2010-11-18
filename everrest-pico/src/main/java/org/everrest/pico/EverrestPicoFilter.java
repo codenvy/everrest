@@ -76,9 +76,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       }
    }
 
-   public static class InitialProperiesInjector extends AbstractAdapter<InitialProperties>
+   public static class InitialPropertiesInjector extends AbstractAdapter<InitialProperties>
    {
-      public InitialProperiesInjector()
+      public InitialPropertiesInjector()
       {
          super(InitialProperties.class, InitialProperties.class);
       }
@@ -328,7 +328,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       // This issue ONLY for constructor parameters, all fields for components
       // of 'request container' will be initialized in
       // PicoObjectFactory.getInstance(ApplicationContext).
-      reqContainer.as(Characteristics.NO_CACHE).addAdapter(new InitialProperiesInjector());
+      reqContainer.as(Characteristics.NO_CACHE).addAdapter(new InitialPropertiesInjector());
       reqContainer.as(Characteristics.NO_CACHE).addAdapter(new HttpHeadersInjector());
       reqContainer.as(Characteristics.NO_CACHE).addAdapter(new ProvidersInjector());
       reqContainer.as(Characteristics.NO_CACHE).addAdapter(new RequestInjector());
