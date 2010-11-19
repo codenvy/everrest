@@ -64,6 +64,9 @@ import javax.ws.rs.ext.Provider;
  */
 public abstract class EverrestComposer implements WebappComposer
 {
+   public enum Scope {
+      APPLICATION, SESSION, REQUEST
+   }
 
    /**
     * Default EverrestComposer implementation. It gets application's FQN from
@@ -75,7 +78,6 @@ public abstract class EverrestComposer implements WebappComposer
     */
    public static class DefaultComposser extends EverrestComposer
    {
-
       /**
        * Do nothing in default implementation but can be overridden in
        * subclasses to add component with application scope.
@@ -109,7 +111,6 @@ public abstract class EverrestComposer implements WebappComposer
       protected void doComposeSession(MutablePicoContainer container)
       {
       }
-
    }
 
    protected ApplicationProviderBinder providers;
@@ -138,19 +139,19 @@ public abstract class EverrestComposer implements WebappComposer
       servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
 
       doComposeApplication(container, servletContext);
-      processComponents(container);
+      processComponents(container, Scope.APPLICATION);
    }
 
    public final void composeRequest(MutablePicoContainer container)
    {
       doComposeRequest(container);
-      processComponents(container);
+      processComponents(container, Scope.REQUEST);
    }
 
    public final void composeSession(MutablePicoContainer container)
    {
       doComposeSession(container);
-      processComponents(container);
+      processComponents(container, Scope.SESSION);
    }
 
    /**
@@ -193,8 +194,12 @@ public abstract class EverrestComposer implements WebappComposer
     */
    protected abstract void doComposeSession(MutablePicoContainer container);
 
-   protected void processComponents(MutablePicoContainer container)
+   protected void processComponents(MutablePicoContainer container, Scope scope)
    {
+      // Avoid unnecessary of fields and constructors for components with scope other then request.
+      ComponentLifecycleScope lifeCycle =
+         scope == Scope.REQUEST ? ComponentLifecycleScope.PER_REQUEST : ComponentLifecycleScope.SINGLETON;
+
       Collection<ComponentAdapter<?>> adapters = container.getComponentAdapters();
       ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
       for (ComponentAdapter<?> adapter : adapters)
@@ -202,7 +207,7 @@ public abstract class EverrestComposer implements WebappComposer
          Class<?> clazz = adapter.getComponentImplementation();
          if (clazz.getAnnotation(Provider.class) != null)
          {
-            ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.IoC_CONTAINER);
+            ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, lifeCycle);
             pDescriptor.accept(rdv);
             if (ContextResolver.class.isAssignableFrom(clazz))
                providers.addContextResolver(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
@@ -218,7 +223,7 @@ public abstract class EverrestComposer implements WebappComposer
          }
          else if (clazz.getAnnotation(Filter.class) != null)
          {
-            FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.IoC_CONTAINER);
+            FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz, lifeCycle);
             fDescriptor.accept(rdv);
 
             if (MethodInvokerFilter.class.isAssignableFrom(clazz))
@@ -232,10 +237,8 @@ public abstract class EverrestComposer implements WebappComposer
          }
          else if (clazz.getAnnotation(Path.class) != null)
          {
-            AbstractResourceDescriptor descriptor =
-               new AbstractResourceDescriptorImpl(clazz, ComponentLifecycleScope.IoC_CONTAINER);
+            AbstractResourceDescriptor descriptor = new AbstractResourceDescriptorImpl(clazz, lifeCycle);
             descriptor.accept(rdv);
-
             resources.addResource(new PicoObjectFactory<AbstractResourceDescriptor>(descriptor));
          }
       }

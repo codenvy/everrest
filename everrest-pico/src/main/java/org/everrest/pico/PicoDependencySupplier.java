@@ -20,6 +20,7 @@
 package org.everrest.pico;
 
 import org.everrest.core.BaseDependencySupplier;
+import org.everrest.pico.servlet.EverrestPicoFilter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -27,16 +28,11 @@ import org.everrest.core.BaseDependencySupplier;
  */
 public class PicoDependencySupplier extends BaseDependencySupplier
 {
-
    /**
     * {@inheritDoc}
     */
    public Object getComponent(Class<?> type)
    {
-      ComponentScopedWrapper<?> wrapper = EverrestPicoFilter.getComponent(type);
-      if (wrapper != null)
-         return wrapper.getComponent();
-      return null;
+      return EverrestPicoFilter.getComponent(type);
    }
-
 }

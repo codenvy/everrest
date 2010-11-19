@@ -17,14 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.everrest.pico;
+package org.everrest.pico.servlet;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.util.Logger;
-import org.everrest.pico.ComponentScopedWrapper.Scope;
 import org.picocontainer.Characteristics;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.PicoCompositionException;
@@ -257,22 +256,19 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
    private static final ThreadLocal<MutablePicoContainer> currentSessionContainer = new ThreadLocal<MutablePicoContainer>();
    private static final ThreadLocal<MutablePicoContainer> currentRequestContainer = new ThreadLocal<MutablePicoContainer>();
 
-   public static <T> ComponentScopedWrapper<T> getComponent(Class<T> type)
+   public static <T> T getComponent(Class<T> type)
    {
-      // Since containers are inherited start lookup components from top container.
-      // It is application scope container in our case.
-      T object = getAppContainer().getComponent(type);
-      if (object != null)
-         return new ComponentScopedWrapper<T>(object, Scope.APPLICATION);
-      object = getSessionContainer().getComponent(type);
-      if (object != null)
-         return new ComponentScopedWrapper<T>(object, Scope.SESSION);
-      object = getRequestContainer().getComponent(type);
-      if (object != null)
-         return new ComponentScopedWrapper<T>(object, Scope.REQUEST);
-      if (log.isDebugEnabled())
+      // Since containers are inherited start lookup components from top
+      // container. It is application scope container in our case.
+      T object = null;
+      object = getAppContainer().getComponent(type);
+      if (object == null)
+         object = getSessionContainer().getComponent(type);
+      if (object == null)
+         object = getRequestContainer().getComponent(type);
+      if (object == null && log.isDebugEnabled())
          log.debug("Component with type " + type.getName() + " not found in any containers.");
-      return null;
+      return object;
    }
 
    static MutablePicoContainer getAppContainer()
@@ -338,17 +334,17 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       reqContainer.as(Characteristics.NO_CACHE).addAdapter(new ServletContextInjector());
    }
 
-   protected void setAppContainer(MutablePicoContainer container)
+   public void setAppContainer(MutablePicoContainer container)
    {
       currentAppContainer.set(container);
    }
 
-   protected void setRequestContainer(MutablePicoContainer container)
+   public void setRequestContainer(MutablePicoContainer container)
    {
       currentRequestContainer.set(container);
    }
 
-   protected void setSessionContainer(MutablePicoContainer container)
+   public void setSessionContainer(MutablePicoContainer container)
    {
       currentSessionContainer.set(container);
    }
