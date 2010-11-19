@@ -243,6 +243,50 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.8</version>
          </dependency>
+         <!-- ====== Integrations ====== -->
+         <!-- SPRING -->
+         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>3.0.3.RELEASE</version>
+         </dependency>
+         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>3.0.3.RELEASE</version>
+         </dependency>
+         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>3.0.3.RELEASE</version>
+         </dependency>
+         <!-- PICOCONTAINER -->
+         <dependency>
+            <groupId>org.picocontainer</groupId>
+            <artifactId>picocontainer</artifactId>
+            <version>2.10</version>
+         </dependency>
+         <dependency>
+            <groupId>org.picocontainer.web</groupId>
+            <artifactId>picocontainer-web-core</artifactId>
+            <version>2.5</version>
+         </dependency>
+         <!-- GUICE -->
+         <dependency>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
+            <version>2.0</version>
+         </dependency>
+         <dependency>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <version>2.0</version>
+         </dependency>
+         <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+         </dependency>
       </dependencies>
    </dependencyManagement>
 
