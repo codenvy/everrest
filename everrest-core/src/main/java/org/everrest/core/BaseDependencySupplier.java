@@ -43,6 +43,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier
                return getComponent(parameter.getParameterClass());
             }
          }
+         return null;
       }
       return getComponent(parameter.getParameterClass());
    }

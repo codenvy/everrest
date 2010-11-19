@@ -109,7 +109,7 @@ public class JsonWriter
          JsonToken token = stack.pop();
          if (token != JsonToken.object)
          {
-            System.out.println(token);
+            //System.out.println(token);
             // wrong JSON structure.
             throw new JsonException("Sysntax error. Unexpected element '}'.");
          }

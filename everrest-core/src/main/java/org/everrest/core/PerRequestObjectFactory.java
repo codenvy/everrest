@@ -18,9 +18,11 @@
  */
 package org.everrest.core;
 
+import java.util.List;
+
 /**
  * Provide object's instance of component that support per-request lifecycle.
- * 
+ *
  * @param <T> ObjectModel extensions
  * @see ObjectModel
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -32,7 +34,7 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
    /**
     * Object model that at least gives possibility to create object instance.
     * Should provide full set of available constructors and object fields.
-    * 
+    *
     * @see ObjectModel
     */
    protected final T model;
@@ -53,9 +55,11 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
       ConstructorDescriptor inj = model.getConstructorDescriptors().get(0);
       Object object = inj.createInstance(context);
 
-      for (FieldInjector field : model.getFieldInjectors())
+      List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+      if (fieldInjectors != null && fieldInjectors.size() > 0)
       {
-         field.inject(object, context);
+         for (FieldInjector injector : fieldInjectors)
+            injector.inject(object, context);
       }
 
       return object;

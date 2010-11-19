@@ -49,24 +49,21 @@ public abstract class BaseObjectModel implements ObjectModel
       this.clazz = clazz;
       this.constructors = new ArrayList<ConstructorDescriptor>();
       this.fields = new ArrayList<FieldInjector>();
-      if (scope == ComponentLifecycleScope.PER_REQUEST || scope == ComponentLifecycleScope.IoC_CONTAINER)
+      if (scope == ComponentLifecycleScope.PER_REQUEST)
       {
-         if (scope == ComponentLifecycleScope.PER_REQUEST)
+         for (Constructor<?> constructor : clazz.getConstructors())
          {
-            for (Constructor<?> constructor : clazz.getConstructors())
-            {
-               constructors.add(new ConstructorDescriptorImpl(clazz, constructor));
-            }
-            if (constructors.size() == 0)
-            {
-               String msg = "Not found accepted constructors for provider class " + clazz.getName();
-               throw new RuntimeException(msg);
-            }
-            // Sort constructors in number parameters order
-            if (constructors.size() > 1)
-            {
-               Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
-            }
+            constructors.add(new ConstructorDescriptorImpl(clazz, constructor));
+         }
+         if (constructors.size() == 0)
+         {
+            String msg = "Not found accepted constructors for provider class " + clazz.getName();
+            throw new RuntimeException(msg);
+         }
+         // Sort constructors in number parameters order
+         if (constructors.size() > 1)
+         {
+            Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
          }
          // process field
          for (java.lang.reflect.Field jfield : clazz.getDeclaredFields())

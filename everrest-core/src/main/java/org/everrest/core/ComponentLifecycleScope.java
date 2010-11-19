@@ -25,7 +25,5 @@ public enum ComponentLifecycleScope {
    /** New instance of object created for each request. */
    PER_REQUEST,
    /** Singleton lifecycle. */
-   SINGLETON,
-   /** Inversion-of-control framework controls component's lifecycle. */
-   IoC_CONTAINER
+   SINGLETON
 }
