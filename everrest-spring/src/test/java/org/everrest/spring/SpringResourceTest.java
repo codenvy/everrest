@@ -73,7 +73,6 @@ public class SpringResourceTest extends BaseTest
    @Provider
    public static class MessageProvider implements MessageBodyReader<Message>, MessageBodyWriter<Message>
    {
-
       public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          return Message.class == type;
@@ -103,7 +102,6 @@ public class SpringResourceTest extends BaseTest
       {
          IOHelper.writeString(t.getMessage(), entityStream, mediaType.getParameters().get("charset"));
       }
-
    }
 
    private static final String mesageBody = "TEST SPRING BEAN";

@@ -39,18 +39,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:/spring-component-test.xml"})
 public abstract class BaseTest
 {
-
    @Autowired
    protected ProviderBinder providers;
-
    @Autowired
    protected ResourceBinder resources;
-
    @Autowired
    protected DependencySupplier dependencies;
-
    protected RequestHandlerImpl requestHandler;
-
    protected ResourceLauncher launcher;
 
    @Before
@@ -59,5 +54,4 @@ public abstract class BaseTest
       requestHandler = new RequestHandlerImpl(resources, providers, dependencies, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
    }
-
 }

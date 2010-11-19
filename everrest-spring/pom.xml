@@ -54,23 +54,19 @@
          <version>4.8.1</version>
          <scope>test</scope>
       </dependency>
-      <!-- spring -->
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-core</artifactId>
-         <version>3.0.3.RELEASE</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-test</artifactId>
-         <version>3.0.3.RELEASE</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-webmvc</artifactId>
-         <version>3.0.3.RELEASE</version>
          <scope>provided</scope>
       </dependency>
    </dependencies>

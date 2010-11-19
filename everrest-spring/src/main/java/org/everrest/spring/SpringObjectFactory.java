@@ -20,9 +20,12 @@
 package org.everrest.spring;
 
 import org.everrest.core.ApplicationContext;
+import org.everrest.core.FieldInjector;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ObjectModel;
 import org.springframework.beans.factory.BeanFactory;
+
+import java.util.List;
 
 /**
  * Spring container object factory obtains instance of bean form Spring
@@ -52,10 +55,12 @@ public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory
    public Object getInstance(ApplicationContext context)
    {
       Object bean = beanFactory.getBean(name);
-      /*for (FieldInjector field : model.getFieldInjectors())
+      List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+      if (fieldInjectors != null && fieldInjectors.size() > 0)
       {
-         field.inject(bean, context);
-      }*/
+         for (FieldInjector injector : fieldInjectors)
+            injector.inject(bean, context);
+      }
       return bean;
    }
 

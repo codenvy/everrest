@@ -5,6 +5,8 @@
       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
       ">
 
+   <context:annotation-config/>
+
    <bean id="everrest.dependencies" class="org.everrest.spring.SpringDependencySupplier" />
 
    <bean id="everrest.resources" class="org.everrest.core.impl.ResourceBinderImpl" />
@@ -16,7 +18,7 @@
       <constructor-arg ref="everrest.providers"></constructor-arg>
    </bean>
 
-   <bean class="org.everrest.spring.SpringResourceTest$Resource" />
+   <bean scope="prototype" class="org.everrest.spring.SpringResourceTest$Resource" />
    <bean class="org.everrest.spring.SpringResourceTest$MessageProvider" />
 
 </beans>
