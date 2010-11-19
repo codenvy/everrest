@@ -119,8 +119,16 @@ public class EverrestModule implements Module
       }
    }
 
+   /**
+    * Add binding for HttpHeaders, InitialProperties, Providers, Request,
+    * SecurityContext, ServletConfig, UriInfo. All this types will be supported
+    * for injection in constructor or fields of component of Guice container.
+    *
+    * @see com.google.inject.Inject
+    */
    public void configure(Binder binder)
    {
+      // Override if need other binding.
       binder.bind(HttpHeaders.class).toProvider(new HttpHeadersProvider());
       binder.bind(InitialProperties.class).toProvider(new InitialPropertiesProvider());
       binder.bind(Providers.class).toProvider(new ProvidersProvider());

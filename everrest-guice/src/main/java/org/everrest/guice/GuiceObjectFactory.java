@@ -26,24 +26,22 @@ import org.everrest.core.FieldInjector;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ObjectModel;
 
+import java.util.List;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<T>
 {
-
    protected final T model;
 
    protected final Provider<?> provider;
 
-   protected final boolean noScope;
-
-   public GuiceObjectFactory(T model, Provider<?> provider, boolean noScope)
+   public GuiceObjectFactory(T model, Provider<?> provider)
    {
       this.model = model;
       this.provider = provider;
-      this.noScope = noScope;
    }
 
    /**
@@ -52,10 +50,11 @@ public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<
    public Object getInstance(ApplicationContext context)
    {
       Object object = provider.get();
-      if (noScope)
+      List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+      if (fieldInjectors != null && fieldInjectors.size() > 0)
       {
-         for (FieldInjector field : model.getFieldInjectors())
-            field.inject(object, context);
+         for (FieldInjector injector : fieldInjectors)
+            injector.inject(object, context);
       }
       return object;
    }
@@ -67,5 +66,4 @@ public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<
    {
       return model;
    }
-
 }

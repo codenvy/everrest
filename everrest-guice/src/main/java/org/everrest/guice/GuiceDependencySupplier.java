@@ -29,7 +29,6 @@ import org.everrest.core.BaseDependencySupplier;
  */
 public class GuiceDependencySupplier extends BaseDependencySupplier
 {
-
    private final Injector injector;
 
    public GuiceDependencySupplier(Injector injector)
@@ -44,5 +43,4 @@ public class GuiceDependencySupplier extends BaseDependencySupplier
    {
       return injector.getInstance(type);
    }
-
 }
