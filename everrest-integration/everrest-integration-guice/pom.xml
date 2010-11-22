@@ -28,7 +28,7 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>everrest-guice</artifactId>
+   <artifactId>everrest-integration-guice</artifactId>
 
    <name>eXo EverRest :: Guice</name>
 

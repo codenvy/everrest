@@ -28,7 +28,7 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>everrest-pico</artifactId>
+   <artifactId>everrest-integration-pico</artifactId>
 
    <name>eXo EverRest :: Pico</name>
 

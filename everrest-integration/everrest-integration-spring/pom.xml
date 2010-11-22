@@ -29,7 +29,7 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>everrest-spring</artifactId>
+   <artifactId>everrest-integration-spring</artifactId>
 
    <name>eXo EverRest :: Spring</name>
 
