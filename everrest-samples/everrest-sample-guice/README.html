@@ -53,7 +53,7 @@
 	      <p><i>org.everrest.sample.guice.BookNotFoundException</i> - exception that will be thrown by
 	      <i>org.everrest.sample.guice.BookService</i> if client requested book that does not exist in storage.</p>
 	      <p><i>org.everrest.sample.guice.BookNotFoundExceptionMapper</i> - JAX-RS component that intercepts
-	      <i>org.everrest.sample.guice.BookService</i> and send correct response to client.</p>
+	      <i>org.everrest.sample.guice.BookNotFoundException</i> and send correct response to client.</p>
 	      <pre>
          @Provider
          @Singleton
@@ -66,7 +66,7 @@
          }
 	      </pre>
 	      <p>Annotation <i>@Singleton</i> say to Guice container we want to have the same instance of
-	      <i>org.everrest.sample.guice.BookNotFoundException</i> for all requests.</p>
+	      <i>org.everrest.sample.guice.BookNotFoundExceptionMapper</i> for all requests.</p>
 	      <p><i>org.everrest.sample.guice.BookService</i> - JAX-RS service that process client's requests.
 	      This is per-request resource and it inject BookStorage instance via <i>com.google.inject.Inject</i> annotation.
 	      </p>
