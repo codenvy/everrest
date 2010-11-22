@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+   xsi:schemaLocation="
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      ">
+<context:annotation-config/>
+
+<bean id="everrest.resources" class="org.everrest.core.impl.ResourceBinderImpl" />
+   <bean id="everrest.providers" class="org.everrest.core.impl.ApplicationProviderBinder" />
+   <bean class="org.everrest.spring.SpringComponentsLoader">
+      <constructor-arg ref="everrest.resources" />
+      <constructor-arg ref="everrest.providers" />
+   </bean>
+   <bean id="everrest.dispatcher" class="org.everrest.core.impl.RequestDispatcher">
+      <constructor-arg ref="everrest.resources" />
+   </bean>
+   <bean id="everrest.dependencies" class="org.everrest.spring.SpringDependencySupplier" />
+   <bean id="everrest.handler.mapping" class="org.everrest.spring.EverrestHandlerMapping">
+      <constructor-arg ref="everrest.dispatcher" />
+      <constructor-arg ref="everrest.resources" />
+      <constructor-arg ref="everrest.providers" />
+      <constructor-arg ref="everrest.dependencies" />
+   </bean>
+   <bean id="everrest.handler" class="org.everrest.spring.EverrestHandlerAdapter" />
+   <bean scope="prototype" class="org.everrest.sample.spring.BookService" />
+   <bean class="org.everrest.sample.spring.BookNotFoundExceptionMapper" />
+   <bean class="org.everrest.sample.spring.BookStorage" />
+</beans>

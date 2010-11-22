@@ -6,6 +6,8 @@
    <body>
       <h1>EverRest-Guice Integration Example</h1>
       <p>This is sample of integration EverRest framework with Guice container.</p>
+      <p>We will create simple books service. It should be able give access to books by id, get list all available books 
+      and add new book in storage. Service supports JSON format for transfer data to/from client.</p>
       <ul>
 	      <li>You need add bootstrap of Book application.
 	      <pre>
@@ -116,7 +118,7 @@
 	      <pre>mvn clean install</pre>
 	      <p>Run it with Jetty server.</p>
          <pre>mvn jetty:run</pre>
-         <p>Point you web browser to <a href="http://localhost:8080/books/books/101">http://localhost:8080/books/books/101</a></p>
+         <p>Point you web browser to <a href="http://localhost:8080/books-sample/books/101">http://localhost:8080/books-sample/books/101</a></p>
          <p>If you are under linux or other unix like OS the you can use <i>curl</i> utility (often it is already installed).
          Binary build of this utility available for windows also at <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>.
          With <i>curl</i> you able to add new book in storage via command</p>
@@ -124,7 +126,7 @@
          curl -X PUT \
          -H "Content-type:application/json" \
          -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
-         http://localhost:8080/books/books/ 
+         http://localhost:8080/books-sample/books/ 
          </pre>
 	      </li>
       </ul>

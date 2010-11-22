@@ -27,10 +27,10 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>everrest-sample-pico</artifactId>
+   <artifactId>everrest-sample-spring</artifactId>
    <packaging>war</packaging>
 
-   <name>eXo EverRest :: Sample ::Pico</name>
+   <name>eXo EverRest :: Sample :: Spring</name>
 
    <dependencies>
       <dependency>
@@ -92,20 +92,24 @@
       </dependency>
       <dependency>
          <groupId>org.everrest</groupId>
-         <artifactId>everrest-pico</artifactId>
+         <artifactId>everrest-spring</artifactId>
          <version>1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
-         <groupId>org.picocontainer</groupId>
-         <artifactId>picocontainer</artifactId>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-core</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.picocontainer.web</groupId>
-         <artifactId>picocontainer-web-core</artifactId>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-webmvc</artifactId>
       </dependency>
    </dependencies>
    <build>
-      <finalName>everrest-sample-pico</finalName>
+      <finalName>everrest-sample-spring</finalName>
       <plugins>
          <plugin>
             <artifactId>maven-war-plugin</artifactId>

@@ -6,6 +6,8 @@
    <body>
       <h1>EverRest-Picocontainer Integration Example</h1>
       <p>This is sample of integration EverRest framework with Picocontainer.</p>
+      <p>We will create simple books service. It should be able give access to books by id, get list all available books 
+      and add new book in storage. Service supports JSON format for transfer data to/from client.</p>
       <ul>
 	      <li>You need add composer of Book application.
 	      <pre>
@@ -67,7 +69,7 @@
 	      <p><i>org.everrest.sample.pico.BookNotFoundException</i> - exception that will be thrown by
 	      <i>org.everrest.sample.pico.BookService</i> if client requested book that does not exist in storage.</p>
 	      <p><i>org.everrest.sample.pico.BookNotFoundExceptionMapper</i> - JAX-RS component that intercepts
-	      <i>org.everrest.sample.pico.BookService</i> and send correct response to client.</p>
+	      <i>org.everrest.sample.pico.BookNotFoundException</i> and send correct response to client.</p>
 	      <pre>
          @Provider
          public class BookNotFoundExceptionMapper implements ExceptionMapper&lt;BookNotFoundException&gt;
@@ -129,7 +131,7 @@
 	      <pre>mvn clean install</pre>
 	      <p>Run it with Jetty server.</p>
          <pre>mvn jetty:run</pre>
-         <p>Point you web browser to <a href="http://localhost:8080/books/books/101">http://localhost:8080/books/books/101</a></p>
+         <p>Point you web browser to <a href="http://localhost:8080/books-sample/books/101">http://localhost:8080/books-sample/books/101</a></p>
          <p>If you are under linux or other unix like OS the you can use <i>curl</i> utility (often it is already installed).
          Binary build of this utility available for windows also at <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>.
          With <i>curl</i> you able to add new book in storage via command</p>
@@ -137,7 +139,7 @@
          curl -X PUT \
          -H "Content-type:application/json" \
          -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
-         http://localhost:8080/books/books/ 
+         http://localhost:8080/books-sample/books/ 
          </pre>
 	      </li>
       </ul>
