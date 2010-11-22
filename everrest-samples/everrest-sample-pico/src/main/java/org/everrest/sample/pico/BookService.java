@@ -58,7 +58,7 @@ public class BookService
 
    @GET
    @Produces("application/json")
-   public Collection<Book> getAll() throws BookNotFoundException
+   public Collection<Book> getAll()
    {
       return bookStorage.getAll();
    }

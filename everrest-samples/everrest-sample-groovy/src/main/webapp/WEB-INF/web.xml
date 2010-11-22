@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>simple.rest.war</display-name>
+	<context-param>
+      <param-name>org.everrest.groovy.Application</param-name>
+      <param-value>org.everrest.sample.groovy.BookApplication</param-value>	
+	</context-param>
+   <context-param>
+      <param-name>org.everrest.groovy.root.resources</param-name>
+      <param-value>file:./src/main/resources/</param-value>
+   </context-param>
+   <context-param>
+      <param-name>org.everrest.scan.components</param-name>
+      <param-value>true</param-value>
+   </context-param>
+	<listener>
+		<listener-class>org.everrest.core.servlet.EverrestInitializedListener</listener-class>
+	</listener>
+   <listener>
+      <listener-class>org.everrest.groovy.servlet.GroovyEverrestInitializedListener</listener-class>
+   </listener>
+	<servlet>
+		<servlet-name>EverrestServlet</servlet-name>
+		<servlet-class>org.everrest.core.servlet.EverrestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EverrestServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+</web-app>
