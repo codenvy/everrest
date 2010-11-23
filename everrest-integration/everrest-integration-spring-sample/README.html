@@ -103,18 +103,18 @@
          <th>Description</th>
 	      </tr>
 	      <tr>
-	      <td>books-sample/books/{id}</td>
+	      <td>spring-book-service/books/{id}</td>
 	      <td>GET</td>
 	      <td>Get books with specified id. Just after server start only one book in storage and it can be accessed via
 	      id <i>101</i></td>
 	      </tr>
 	      <tr>
-	      <td>books-sample/books/</td>
+	      <td>spring-book-service/books/</td>
 	      <td>GET</td>
 	      <td>Get all books from storage.</td>
 	      </tr>
 	      <tr>
-	      <td>books-sample/books/</td>
+	      <td>spring-book-service/books/</td>
 	      <td>PUT</td>
 	      <td>Add new book in storage. The body of request must contains book's description in JSON format. The
 	      <i>Content-type</i> header must be set to <i>application/json</i></td>
@@ -126,7 +126,7 @@
 	      <pre>mvn clean install</pre>
 	      <p>Run it with Jetty server.</p>
          <pre>mvn jetty:run</pre>
-         <p>Point you web browser to <a href="http://localhost:8080/books-sample/books/101">http://localhost:8080/books-sample/books/101</a></p>
+         <p>Point you web browser to <a href="http://localhost:8080/spring-book-service/books/101">http://localhost:8080/spring-book-service/books/101</a></p>
          <p>If you are under linux or other unix like OS the you can use <i>curl</i> utility (often it is already installed).
          Binary build of this utility available for windows also at <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>.
          With <i>curl</i> you able to add new book in storage via command</p>
@@ -134,7 +134,7 @@
          curl -X PUT \
          -H "Content-type:application/json" \
          -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
-         http://localhost:8080/books-sample/books/ 
+         http://localhost:8080/spring-book-service/books/ 
          </pre>
 	      </li>
       </ul>

@@ -27,10 +27,10 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>everrest-sample-guice</artifactId>
+   <artifactId>everrest-integration-picocontainer-sample</artifactId>
    <packaging>war</packaging>
 
-   <name>eXo EverRest :: Sample :: Guice</name>
+   <name>eXo EverRest :: Picocontainer Integration Sample</name>
 
    <dependencies>
       <dependency>
@@ -92,30 +92,25 @@
       </dependency>
       <dependency>
          <groupId>org.everrest</groupId>
-         <artifactId>everrest-guice</artifactId>
+         <artifactId>everrest-integration-picocontainer</artifactId>
          <version>1.0-SNAPSHOT</version>
       </dependency>
-       <dependency>
-         <groupId>com.google.code.guice</groupId>
-         <artifactId>guice</artifactId>
+      <dependency>
+         <groupId>org.picocontainer</groupId>
+         <artifactId>picocontainer</artifactId>
       </dependency>
       <dependency>
-         <groupId>com.google.code.guice</groupId>
-         <artifactId>guice-servlet</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>aopalliance</groupId>
-         <artifactId>aopalliance</artifactId>
+         <groupId>org.picocontainer.web</groupId>
+         <artifactId>picocontainer-web-core</artifactId>
       </dependency>
    </dependencies>
-
    <build>
-      <finalName>everrest-sample-guice</finalName>
+      <finalName>pico-book-service</finalName>
       <plugins>
          <plugin>
             <artifactId>maven-war-plugin</artifactId>
             <configuration>
-                     <archiveClasses>true</archiveClasses>
+               <archiveClasses>true</archiveClasses>
                <archive>
                   <manifest>
                      <addClasspath>false</addClasspath>
@@ -128,11 +123,10 @@
             <artifactId>maven-jetty-plugin</artifactId>
             <version>6.1.10</version>
             <configuration>
-               <contextPath>/books-sample</contextPath>
-               <tmpDir>target/books-sample-work</tmpDir>
+               <contextPath>/pico-book-service</contextPath>
+               <tmpDir>target/pico-book-service-work</tmpDir>
             </configuration>
          </plugin>
       </plugins>
    </build>
-
 </project>
