@@ -35,7 +35,7 @@
       <tr>
       <td>org.everrest.groovy.Application</td>
       <td>This attribute has the same purpose as <i>javax.ws.rs.Application</i>. This is FQN of Groovy or Java class that
-      extends <i>javax.ws.rs.core.Application</i> and provides set of classes and(or) instances JAX-RS components.</td>
+      extends <i>javax.ws.rs.core.Application</i> and provides set of classes and(or) instances of JAX-RS components.</td>
       </tr>
       <tr>
       <td>org.everrest.groovy.root.resources</td>
@@ -99,7 +99,7 @@
          }
       }
       </pre>
-      <p><i>org.everrest.sample.guice.BookService</i> - JAX-RS service that process client's requests.</p>
+      <p><i>org.everrest.sample.groovy.BookService.groovy</i> - JAX-RS service that process client's requests.</p>
       <pre>
       @Path('books')
       class BookService
@@ -194,18 +194,18 @@
          <th>Description</th>
          </tr>
          <tr>
-         <td>groovy-books-sample/books/{id}</td>
+         <td>groovy-book-service/books/{id}</td>
          <td>GET</td>
          <td>Get books with specified id. Just after server start only one book in storage and it can be accessed via
          id <i>101</i></td>
          </tr>
          <tr>
-         <td>groovy-books-sample/books/</td>
+         <td>groovy-book-service/books/</td>
          <td>GET</td>
          <td>Get all books from storage.</td>
          </tr>
          <tr>
-         <td>groovy-books-sample/books/</td>
+         <td>groovy-book-service/books/</td>
          <td>PUT</td>
          <td>Add new book in storage. The body of request must contains book's description in JSON format. The
          <i>Content-type</i> header must be set to <i>application/json</i></td>
@@ -217,7 +217,7 @@
          <pre>mvn clean install</pre>
          <p>Run it with Jetty server.</p>
          <pre>mvn jetty:run</pre>
-         <p>Point you web browser to <a href="http://localhost:8080/groovy-books-sample/books/101">http://localhost:8080/groovy-books-sample/books/101</a></p>
+         <p>Point you web browser to <a href="http://localhost:8080/groovy-book-service/books/101">http://localhost:8080/groovy-book-service/books/101</a></p>
          <p>If you are under linux or other unix like OS the you can use <i>curl</i> utility (often it is already installed).
          Binary build of this utility available for windows also at <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>.
          With <i>curl</i> you able to add new book in storage via command</p>
@@ -225,7 +225,7 @@
          curl -X PUT \
          -H "Content-type:application/json" \
          -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
-         http://localhost:8080/groovy-books-sample/books/ 
+         http://localhost:8080/groovy-book-service/books/ 
          </pre>
          </li>
       

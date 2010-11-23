@@ -17,17 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.everrest.sample.spring;
+package org.everrest.sample.book;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-@SuppressWarnings("serial")
-public class BookNotFoundException extends Exception
+@Provider
+public class BookNotFoundExceptionMapper implements ExceptionMapper<BookNotFoundException>
 {
-   public BookNotFoundException(String id)
+   public Response toResponse(BookNotFoundException exception)
    {
-      super("Book with id " + id + " not found.");
+      return Response.status(404).entity(exception.getMessage()).type("text/plain").build();
    }
 }

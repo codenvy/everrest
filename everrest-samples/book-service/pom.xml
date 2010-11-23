@@ -27,10 +27,10 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>groovy-book-service</artifactId>
+   <artifactId>book-service</artifactId>
    <packaging>war</packaging>
 
-   <name>eXo EverRest :: Groovy Book Service</name>
+   <name>eXo EverRest :: WAR</name>
 
    <dependencies>
       <dependency>
@@ -43,10 +43,7 @@
             </exclusion>
          </exclusions>
       </dependency>
-      <dependency>
-         <groupId>org.everrest</groupId>
-         <artifactId>everrest-groovy</artifactId>
-      </dependency>
+      <!-- ***** -->
       <dependency>
          <groupId>javax.ws.rs</groupId>
          <artifactId>jsr311-api</artifactId>
@@ -95,8 +92,9 @@
          <scope>runtime</scope>
       </dependency>
    </dependencies>
+
    <build>
-      <finalName>groovy-book-service</finalName>
+      <finalName>book-service</finalName>
       <plugins>
          <plugin>
             <artifactId>maven-war-plugin</artifactId>
@@ -114,8 +112,8 @@
             <artifactId>maven-jetty-plugin</artifactId>
             <version>6.1.10</version>
             <configuration>
-               <contextPath>/groovy-book-service</contextPath>
-               <tmpDir>target/groovy-book-service-work</tmpDir>
+               <contextPath>/book-service</contextPath>
+               <tmpDir>target/book-service-work</tmpDir>
             </configuration>
          </plugin>
       </plugins>

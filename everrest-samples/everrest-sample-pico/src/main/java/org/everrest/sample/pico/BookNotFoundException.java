@@ -23,10 +23,9 @@ package org.everrest.sample.pico;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class BookNotFoundException extends Exception
 {
-   private static final long serialVersionUID = -2294889201634946933L;
-
    public BookNotFoundException(String id)
    {
       super("Book with id " + id + " not found.");

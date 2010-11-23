@@ -17,17 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.everrest.sample.spring;
+package org.everrest.sample.book;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-@SuppressWarnings("serial")
-public class BookNotFoundException extends Exception
+public class BookServiceBootstrap implements ServletContextListener
 {
-   public BookNotFoundException(String id)
+   static final String BOOK_STORAGE_NAME = BookStorage.class.getName();
+
+   public void contextDestroyed(ServletContextEvent sce)
    {
-      super("Book with id " + id + " not found.");
+      ServletContext sctx = sce.getServletContext();
+      sctx.removeAttribute(BOOK_STORAGE_NAME);
+   }
+
+   public void contextInitialized(ServletContextEvent sce)
+   {
+      ServletContext sctx = sce.getServletContext();
+      sctx.setAttribute(BOOK_STORAGE_NAME, new BookStorage());
    }
 }
