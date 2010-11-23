@@ -132,8 +132,11 @@ public class FieldInjectorImpl implements FieldInjector
          }
          else
          {
-            LOG.warn("Field " + jfield.toString() + " contains unknown or not allowed JAX-RS annotation "
-               + a.toString() + ". It will be ignored.");
+            if (LOG.isDebugEnabled())
+            {
+               LOG.warn("Field " + jfield.toString() + " contains unknown or not allowed JAX-RS annotation "
+                  + a.toString() + ". It will be ignored.");
+            }
          }
       }
       this.defaultValue = defaultValue;
@@ -209,7 +212,6 @@ public class FieldInjectorImpl implements FieldInjector
          {
             if (!Modifier.isPublic(jfield.getModifiers()))
                jfield.setAccessible(true);
-
             jfield.set(resource, pr.resolve(this, context));
          }
          catch (Throwable e)
@@ -217,7 +219,6 @@ public class FieldInjectorImpl implements FieldInjector
             Class<?> ac = annotation.annotationType();
             if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
                throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
-
             throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
          }
       }
