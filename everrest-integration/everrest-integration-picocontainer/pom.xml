@@ -28,9 +28,9 @@
       <version>1.0-SNAPSHOT</version>
    </parent>
 
-   <artifactId>everrest-integration-pico</artifactId>
+   <artifactId>everrest-integration-picocontainer</artifactId>
 
-   <name>eXo EverRest :: Pico</name>
+   <name>eXo EverRest :: Picocontainer</name>
 
    <dependencies>
       <dependency>
