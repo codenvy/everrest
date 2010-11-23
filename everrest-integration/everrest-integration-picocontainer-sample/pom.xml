@@ -98,10 +98,12 @@
       <dependency>
          <groupId>org.picocontainer</groupId>
          <artifactId>picocontainer</artifactId>
+         <version>2.10</version>
       </dependency>
       <dependency>
          <groupId>org.picocontainer.web</groupId>
          <artifactId>picocontainer-web-core</artifactId>
+         <version>2.5</version>
       </dependency>
    </dependencies>
    <build>
