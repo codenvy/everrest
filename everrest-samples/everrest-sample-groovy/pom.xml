@@ -114,8 +114,8 @@
             <artifactId>maven-jetty-plugin</artifactId>
             <version>6.1.10</version>
             <configuration>
-               <contextPath>/groovy-sample-books</contextPath>
-               <tmpDir>target/groovy-sample-books-work</tmpDir>
+               <contextPath>/groovy-books-sample</contextPath>
+               <tmpDir>target/groovy-books-sample-work</tmpDir>
             </configuration>
          </plugin>
       </plugins>

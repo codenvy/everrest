@@ -26,7 +26,6 @@ class BookService
       book
    }
    
-   
    @GET
    @Produces('application/json')
    public Collection<Book> getAll()
