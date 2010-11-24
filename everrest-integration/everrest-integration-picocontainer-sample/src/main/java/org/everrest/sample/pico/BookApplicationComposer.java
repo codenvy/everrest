@@ -1,10 +1,3 @@
-package org.everrest.sample.pico;
-
-import org.everrest.pico.EverrestComposer;
-import org.picocontainer.MutablePicoContainer;
-
-import javax.servlet.ServletContext;
-
 /**
  * Copyright (C) 2010 eXo Platform SAS.
  *
@@ -23,6 +16,12 @@ import javax.servlet.ServletContext;
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.everrest.sample.pico;
+
+import org.everrest.pico.EverrestComposer;
+import org.picocontainer.MutablePicoContainer;
+
+import javax.servlet.ServletContext;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
