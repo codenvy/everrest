@@ -32,10 +32,8 @@ import org.everrest.core.servlet.EverrestServlet;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
+@SuppressWarnings("serial")
 @Singleton
-public class GuiceEverrestServlet extends EverrestServlet
+public final class GuiceEverrestServlet extends EverrestServlet
 {
-
-   private static final long serialVersionUID = -4030746749943368535L;
-
 }
