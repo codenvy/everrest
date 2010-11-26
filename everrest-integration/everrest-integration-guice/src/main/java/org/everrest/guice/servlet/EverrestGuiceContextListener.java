@@ -112,14 +112,12 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
       DependencySupplier dependencySupplier = new GuiceDependencySupplier(injector);
-      RequestDispatcher dispatcher = new RequestDispatcher(resources);
       processor =
-         new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, everrestInitializer
+         new EverrestProcessor(resources, providers, dependencySupplier, everrestInitializer
             .getConfiguration(), everrestInitializer.getApplication());
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       servletContext.setAttribute(ResourceBinder.class.getName(), resources);
       servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
-      servletContext.setAttribute(RequestDispatcher.class.getName(), dispatcher);
       servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
 
       processBindings(injector);

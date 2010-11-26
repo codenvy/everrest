@@ -27,6 +27,19 @@ import java.lang.annotation.Annotation;
  */
 public abstract class BaseDependencySupplier implements DependencySupplier
 {
+   protected final Class<? extends Annotation> injectAnnotation;
+
+   public BaseDependencySupplier(Class<? extends Annotation> injectAnnotation)
+   {
+      if (injectAnnotation==null)
+         throw new IllegalArgumentException("Inject annotation class may not be null. ");
+      this.injectAnnotation = injectAnnotation;
+   }
+
+   public BaseDependencySupplier()
+   {
+      this(Inject.class);
+   }
 
    /**
     * {@inheritDoc}
@@ -37,8 +50,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier
       {
          for (Annotation a : parameter.getAnnotations())
          {
-            // Do not process fields without annotation Inject
-            if (a.annotationType() == Inject.class)
+            if (a.annotationType() == injectAnnotation)
             {
                return getComponent(parameter.getParameterClass());
             }
@@ -47,5 +59,4 @@ public abstract class BaseDependencySupplier implements DependencySupplier
       }
       return getComponent(parameter.getParameterClass());
    }
-
 }

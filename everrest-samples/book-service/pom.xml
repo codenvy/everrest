@@ -30,7 +30,7 @@
    <artifactId>book-service</artifactId>
    <packaging>war</packaging>
 
-   <name>eXo EverRest :: WAR</name>
+   <name>eXo EverRest :: Book Service</name>
 
    <dependencies>
       <dependency>

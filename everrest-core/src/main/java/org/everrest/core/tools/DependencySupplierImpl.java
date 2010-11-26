@@ -21,6 +21,7 @@ package org.everrest.core.tools;
 
 import org.everrest.core.BaseDependencySupplier;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +33,17 @@ import java.util.Map;
  */
 public class DependencySupplierImpl extends BaseDependencySupplier
 {
-
    private final Map<Class<?>, Object> dependencies = new HashMap<Class<?>, Object>();
+
+   public DependencySupplierImpl()
+   {
+      super();
+   }
+
+   public DependencySupplierImpl(Class<? extends Annotation> injectAnnotation)
+   {
+      super(injectAnnotation);
+   }
 
    public Object getComponent(Class<?> type)
    {
@@ -44,5 +54,4 @@ public class DependencySupplierImpl extends BaseDependencySupplier
    {
       dependencies.put(key, instance);
    }
-
 }

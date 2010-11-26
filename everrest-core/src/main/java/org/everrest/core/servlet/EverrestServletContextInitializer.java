@@ -88,24 +88,22 @@ public class EverrestServletContextInitializer
             String msg = "Scan of JAX-RS components is disabled cause to specified 'javax.ws.rs.Application'.";
             LOG.warn(msg);
          }
+         try
          {
-            try
-            {
-               Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN.trim());
-               application = (Application)cl.newInstance();
-            }
-            catch (ClassNotFoundException e)
-            {
-               throw new RuntimeException(e);
-            }
-            catch (InstantiationException e)
-            {
-               throw new RuntimeException(e);
-            }
-            catch (IllegalAccessException e)
-            {
-               throw new RuntimeException(e);
-            }
+            Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN.trim());
+            application = (Application)cl.newInstance();
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (InstantiationException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (IllegalAccessException e)
+         {
+            throw new RuntimeException(e);
          }
       }
       else if (scan)
@@ -162,8 +160,7 @@ public class EverrestServletContextInitializer
                   }
                }
             }
-            application = new Application()
-            {
+            application = new Application() {
                public Set<Class<?>> getClasses()
                {
                   return scanned;

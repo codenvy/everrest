@@ -24,7 +24,6 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.impl.RequestDispatcher;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -34,7 +33,8 @@ import javax.servlet.http.HttpServletRequest;
  * HandlerMapping for EverrestProcessor.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: EverrestHandlerMapping.java 116 2010-11-22 10:39:10Z andrew00x
+ *          $
  */
 public class EverrestHandlerMapping implements HandlerMapping
 {
@@ -46,28 +46,26 @@ public class EverrestHandlerMapping implements HandlerMapping
    }
 
    /**
-    * @param dispatcher request dispatcher
     * @param resources resources
     * @param providers providers
     * @param dependencies dependency resolver
     */
-   public EverrestHandlerMapping(RequestDispatcher dispatcher, ResourceBinder resources,
-      ApplicationProviderBinder providers, DependencySupplier dependencies)
+   public EverrestHandlerMapping(ResourceBinder resources, ApplicationProviderBinder providers,
+      DependencySupplier dependencies)
    {
-      this(dispatcher, resources, providers, new EverrestConfiguration(), dependencies);
+      this(resources, providers, new EverrestConfiguration(), dependencies);
    }
 
    /**
-    * @param dispatcher request dispatcher
     * @param resources resources
     * @param providers providers
     * @param configuration EverRest framework configuration
     * @param dependencies dependency resolver
     */
-   public EverrestHandlerMapping(RequestDispatcher dispatcher, ResourceBinder resources,
-      ApplicationProviderBinder providers, EverrestConfiguration configuration, DependencySupplier dependencies)
+   public EverrestHandlerMapping(ResourceBinder resources, ApplicationProviderBinder providers,
+      EverrestConfiguration configuration, DependencySupplier dependencies)
    {
-      processor = new EverrestProcessor(resources, providers, dispatcher, dependencies, configuration, null);
+      processor = new EverrestProcessor(resources, providers, dependencies, configuration, null);
    }
 
    /**

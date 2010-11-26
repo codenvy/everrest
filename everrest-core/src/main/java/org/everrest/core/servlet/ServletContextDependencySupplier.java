@@ -20,6 +20,8 @@ package org.everrest.core.servlet;
 
 import org.everrest.core.BaseDependencySupplier;
 
+import java.lang.annotation.Annotation;
+
 import javax.servlet.ServletContext;
 
 /**
@@ -30,15 +32,22 @@ import javax.servlet.ServletContext;
  * org.foo.bar.MyClass
  *
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: ServletContextDependencySupplier.java 71 2010-10-25 15:19:37Z
+ *          andrew00x $
  */
 public class ServletContextDependencySupplier extends BaseDependencySupplier
 {
-
    private final ServletContext ctx;
+
+   public ServletContextDependencySupplier(ServletContext ctx, Class<? extends Annotation> injectAnnotation)
+   {
+      super(injectAnnotation);
+      this.ctx = ctx;
+   }
 
    public ServletContextDependencySupplier(ServletContext ctx)
    {
+      super();
       this.ctx = ctx;
    }
 
@@ -49,5 +58,4 @@ public class ServletContextDependencySupplier extends BaseDependencySupplier
    {
       return ctx.getAttribute(type.getName());
    }
-
 }

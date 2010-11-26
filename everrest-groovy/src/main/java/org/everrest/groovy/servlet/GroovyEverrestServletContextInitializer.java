@@ -22,6 +22,7 @@ package org.everrest.groovy.servlet;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.everrest.core.Filter;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.core.util.Logger;
@@ -117,24 +118,36 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                "Scan of Groovy JAX-RS components is disabled cause to specified 'org.everrest.groovy.Application'.";
             LOG.warn(msg);
          }
+
+         Class<?> applicationClass;
          try
          {
-            Class<?> applicationClass = groovyClassLoader.loadClass(groovyApplicationFQN, true, false);
+            applicationClass = groovyClassLoader.loadClass(groovyApplicationFQN, true, false);
             groovyApplication = (Application)applicationClass.newInstance();
          }
-         catch (Exception e)
+         catch (CompilationFailedException e)
          {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException(e);
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (InstantiationException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (IllegalAccessException e)
+         {
+            throw new RuntimeException(e);
          }
       }
       else if (scan)
       {
          try
          {
-            URLFilter filter = new URLFilter()
-            {
-               public boolean accept(URL url)
-               {
+            URLFilter filter = new URLFilter() {
+               public boolean accept(URL url) {
                   return url.getPath().endsWith(".groovy");
                }
             };
@@ -198,10 +211,8 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                   LOG.warn(msg);
                }
             }
-            groovyApplication = new Application()
-            {
-               public Set<Class<?>> getClasses()
-               {
+            groovyApplication = new Application() {
+               public Set<Class<?>> getClasses() {
                   return scanned;
                }
             };

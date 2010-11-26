@@ -23,7 +23,6 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
 
 import javax.servlet.ServletContext;
@@ -56,23 +55,17 @@ public class EverrestInitializedListener implements ServletContextListener
    {
       ServletContext sctx = event.getServletContext();
       EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(sctx);
-
       Application application = initializer.getApplication();
       DependencySupplier dependencySupplier = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
       if (dependencySupplier == null)
          dependencySupplier = new ServletContextDependencySupplier(sctx);
       EverrestConfiguration config = initializer.getConfiguration();
       ResourceBinder resources = new ResourceBinderImpl();
-      RequestDispatcher dispatcher = (RequestDispatcher)sctx.getAttribute(RequestDispatcher.class.getName());
-      if (dispatcher == null)
-         dispatcher = new RequestDispatcher(resources);
       ApplicationProviderBinder providers = new ApplicationProviderBinder();
-      EverrestProcessor processor =
-         new EverrestProcessor(resources, providers, dispatcher, dependencySupplier, config, application);
+      EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, application);
       sctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       sctx.setAttribute(ResourceBinder.class.getName(), resources);
       sctx.setAttribute(ApplicationProviderBinder.class.getName(), providers);
-      sctx.setAttribute(RequestDispatcher.class.getName(), dispatcher);
       sctx.setAttribute(EverrestProcessor.class.getName(), processor);
    }
 }

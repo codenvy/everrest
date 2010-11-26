@@ -44,13 +44,6 @@ public interface RequestHandler
    public static final int WS_RS_BUFFER_SIZE_VALUE = 204800;
 
    /**
-    * Get {@link ResourceBinder}.
-    *
-    * @return ResourceBinder
-    */
-   ResourceBinder getResourceBinder();
-
-   /**
     * Handle the HTTP request by dispatching request to appropriate resource. If
     * no one appropriate resource found then error response will be produced.
     *

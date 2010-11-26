@@ -43,12 +43,12 @@ public final class EverrestProcessor
 
    private final ProviderBinder providers;
 
-   public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
+   public EverrestProcessor(ResourceBinder resources, ProviderBinder providers,
       DependencySupplier dependencies, EverrestConfiguration config, Application application)
    {
       this.resources = resources;
       this.providers = providers;
-      this.requestHandler = new RequestHandlerImpl(resources, providers, dispatcher, dependencies, config);
+      this.requestHandler = new RequestHandlerImpl(providers, new RequestDispatcher(resources), dependencies, config);
       addApplication(application);
    }
 

@@ -12,12 +12,8 @@
       <constructor-arg ref="everrest.resources" />
       <constructor-arg ref="everrest.providers" />
    </bean>
-   <bean id="everrest.dispatcher" class="org.everrest.core.impl.RequestDispatcher">
-      <constructor-arg ref="everrest.resources" />
-   </bean>
    <bean id="everrest.dependencies" class="org.everrest.spring.SpringDependencySupplier" />
    <bean id="everrest.handler.mapping" class="org.everrest.spring.EverrestHandlerMapping">
-      <constructor-arg ref="everrest.dispatcher" />
       <constructor-arg ref="everrest.resources" />
       <constructor-arg ref="everrest.providers" />
       <constructor-arg ref="everrest.dependencies" />

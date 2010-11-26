@@ -81,48 +81,34 @@ public final class RequestHandlerImpl implements RequestHandler
    /** See {@link RequestDispatcher}. */
    private final RequestDispatcher dispatcher;
 
-   /** ResourceBinder. */
-   private final ResourceBinder resources;
-
    /** ProviderBinder. */
    private final ProviderBinder applicationProviders;
 
-   private final DependencySupplier depInjector;
+   private final DependencySupplier dependencySupplier;
 
    private final EverrestConfiguration config;
 
-   public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, RequestDispatcher dispatcher,
-      DependencySupplier depInjector, EverrestConfiguration config)
+   public RequestHandlerImpl(ProviderBinder providers, RequestDispatcher dispatcher, DependencySupplier dependencySupplier,
+      EverrestConfiguration config)
    {
-      this.resources = resources;
       this.applicationProviders = providers;
       this.config = config == null ? new EverrestConfiguration() : config;
       this.dispatcher = dispatcher;
-      this.depInjector = depInjector;
+      this.dependencySupplier = dependencySupplier;
       // Add security check only in customized ProviderBinder.
       if (this.applicationProviders != null && this.config.isCheckSecurity())
-      {
          this.applicationProviders.addMethodInvokerFilter(new SecurityConstraint());
-      }
    }
 
-   public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, DependencySupplier depInjector,
+   public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier,
       EverrestConfiguration config)
    {
-      this(resources, providers, new RequestDispatcher(resources), depInjector, config);
+      this(providers, new RequestDispatcher(resources), dependencySupplier, config);
    }
 
-   public RequestHandlerImpl(ResourceBinder resources, DependencySupplier depInjector)
+   public RequestHandlerImpl(ResourceBinder resources, DependencySupplier dependencySupplier)
    {
-      this(resources, null, new RequestDispatcher(resources), depInjector, new EverrestConfiguration());
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public ResourceBinder getResourceBinder()
-   {
-      return resources;
+      this(null, new RequestDispatcher(resources), dependencySupplier, new EverrestConfiguration());
    }
 
    /**
@@ -155,7 +141,7 @@ public final class RequestHandlerImpl implements RequestHandler
 
          ApplicationContext context = new ApplicationContextImpl(request, response, providers);
          context.getProperties().putAll(properties);
-         context.setDependencySupplier(depInjector);
+         context.setDependencySupplier(dependencySupplier);
          ApplicationContextImpl.setCurrent(context);
 
          for (ObjectFactory<FilterDescriptor> factory : providers.getRequestFilters(context.getPath()))
