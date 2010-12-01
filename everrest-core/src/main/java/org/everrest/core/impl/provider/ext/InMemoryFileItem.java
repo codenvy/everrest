@@ -43,34 +43,25 @@ import javax.ws.rs.core.Response;
  */
 class InMemoryFileItem implements FileItem
 {
+   private static final long serialVersionUID = 5078209175022020528L;
 
-   private static final long serialVersionUID = 1086306476767362259L;
-
-   class ByteArrayOutputStream0 extends ByteArrayOutputStream
+   class _ByteArrayOutputStream extends ByteArrayOutputStream
    {
-
-      public ByteArrayOutputStream0(int size)
+      public _ByteArrayOutputStream(int size)
       {
          super(size);
       }
 
       public void write(byte b[], int off, int len)
       {
-         if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length))
-         {
-            throw new IndexOutOfBoundsException();
-         }
-         else if (len == 0)
-         {
+         if (len == 0)
             return;
-         }
+         if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length))
+            throw new IndexOutOfBoundsException();
          int newcount = count + len;
          if (newcount > buf.length)
-         {
-            // TODO : proper response status
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
+            throw new WebApplicationException(Response.status(413).entity(
                "Item size is to large. Must not be over " + buf.length).type(MediaType.TEXT_PLAIN).build());
-         }
          System.arraycopy(b, off, buf, count, len);
          count = newcount;
       }
@@ -79,10 +70,8 @@ class InMemoryFileItem implements FileItem
       {
          int newcount = count + 1;
          if (newcount > buf.length)
-         {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
+            throw new WebApplicationException(Response.status(413).entity(
                "Item size is to large. Must not be over " + buf.length).type(MediaType.TEXT_PLAIN).build());
-         }
          buf[count] = (byte)b;
          count = newcount;
       }
@@ -105,7 +94,7 @@ class InMemoryFileItem implements FileItem
       }
    }
 
-   private ByteArrayOutputStream0 bout;
+   private _ByteArrayOutputStream bout;
 
    private String contentType;
 
@@ -190,7 +179,7 @@ class InMemoryFileItem implements FileItem
    {
       if (bout == null)
       {
-         bout = new ByteArrayOutputStream0(maxSize);
+         bout = new _ByteArrayOutputStream(maxSize);
       }
       return bout;
    }
