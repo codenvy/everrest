@@ -59,9 +59,9 @@ public class GroovySimpleTest extends BaseTest
       assertEquals(0, groovyPublisher.resources.size());
 
       if (singleton)
-         groovyPublisher.publishSingleton(script, resourceId, null);
+         groovyPublisher.publishSingleton(script, resourceId, null, null, null);
       else
-         groovyPublisher.publishPerRequest(script, resourceId, null);
+         groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
 
       assertEquals(1, resources.getSize());
       assertEquals(1, groovyPublisher.resources.size());

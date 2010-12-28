@@ -19,20 +19,18 @@
 
 package org.everrest.groovy.servlet;
 
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyCodeSource;
-
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.everrest.core.Filter;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.core.util.Logger;
 import org.everrest.groovy.DefaultGroovyResourceLoader;
+import org.everrest.groovy.GroovyClassLoaderProvider;
 import org.everrest.groovy.ScriptFinder;
 import org.everrest.groovy.ScriptFinderFactory;
+import org.everrest.groovy.SourceFile;
 import org.everrest.groovy.URLFilter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -61,24 +59,21 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
 
    private static final Logger LOG = Logger.getLogger(GroovyEverrestServletContextInitializer.class);
 
-   protected final GroovyClassLoader groovyClassLoader;
+   protected GroovyClassLoaderProvider classLoaderProvider;
 
    protected final URL[] groovyClassPath;
 
    public GroovyEverrestServletContextInitializer(ServletContext sctx)
    {
       super(sctx);
-      this.groovyClassLoader = new GroovyClassLoader();
-      String _rootResources = getParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES);
+      String inputRootResources = getParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES);
       Set<URL> rootResources = new LinkedHashSet<URL>();
-      if (_rootResources != null)
+      if (inputRootResources != null)
       {
          try
          {
-            for (String s : _rootResources.split(","))
-            {
+            for (String s : inputRootResources.split(","))
                rootResources.add(new URL(s.trim()));
-            }
          }
          catch (MalformedURLException e)
          {
@@ -86,9 +81,10 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
          }
       }
       this.groovyClassPath = rootResources.toArray(new URL[rootResources.size()]);
+      this.classLoaderProvider = new GroovyClassLoaderProvider();
       try
       {
-         this.groovyClassLoader.setResourceLoader(new DefaultGroovyResourceLoader(groovyClassPath));
+         classLoaderProvider.getGroovyClassLoader().setResourceLoader(new DefaultGroovyResourceLoader(groovyClassPath));
       }
       catch (MalformedURLException e)
       {
@@ -99,6 +95,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings({"rawtypes", "unchecked"})
    @Override
    public Application getApplication()
    {
@@ -122,7 +119,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
          Class<?> applicationClass;
          try
          {
-            applicationClass = groovyClassLoader.loadClass(groovyApplicationFQN, true, false);
+            applicationClass = classLoaderProvider.getGroovyClassLoader().loadClass(groovyApplicationFQN, true, false);
             groovyApplication = (Application)applicationClass.newInstance();
          }
          catch (CompilationFailedException e)
@@ -146,8 +143,10 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
       {
          try
          {
-            URLFilter filter = new URLFilter() {
-               public boolean accept(URL url) {
+            URLFilter filter = new URLFilter()
+            {
+               public boolean accept(URL url)
+               {
                   return url.getPath().endsWith(".groovy");
                }
             };
@@ -163,7 +162,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                   Set<URL> scripts = finder.find(filter, path);
                   if (scripts != null && scripts.size() > 0)
                   {
-                     for (URL script : scripts)
+                     /*for (URL script : scripts)
                      {
                         InputStream in = null;
                         try
@@ -171,7 +170,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                            in = script.openStream();
                            GroovyCodeSource gcs = new GroovyCodeSource(in, script.toString(), "/groovy/script/jaxrs");
                            gcs.setCachable(false);
-                           Class<?> clazz = groovyClassLoader.parseClass(gcs);
+                           Class<?> clazz = classLoaderProvider.getGroovyClassLoader().parseClass(gcs);
                            if (findAnnotation(clazz, jaxrsAnnotations))
                            {
                               boolean added = scanned.add(clazz);
@@ -200,6 +199,29 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                               }
                            }
                         }
+                     }*/
+
+                     SourceFile[] files = new SourceFile[scripts.size()];
+                     int i = 0;
+                     for (URL script : scripts)
+                        files[i++] = new SourceFile(script);
+                     Class[] classes = classLoaderProvider.getGroovyClassLoader().parseClasses(files);
+                     for (int j = 0; j < classes.length; j++)
+                     {
+                        Class clazz = classes[j];
+                        if (findAnnotation(clazz, jaxrsAnnotations))
+                        {
+                           boolean added = scanned.add(clazz);
+                           if (added)
+                           {
+                              if (LOG.isDebugEnabled())
+                                 LOG.debug("Add class : " + clazz);
+                           }
+                           else
+                           {
+                              LOG.warn("Skip duplicated class: " + clazz);
+                           }
+                        }
                      }
                   }
                }
@@ -211,8 +233,10 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                   LOG.warn(msg);
                }
             }
-            groovyApplication = new Application() {
-               public Set<Class<?>> getClasses() {
+            groovyApplication = new Application()
+            {
+               public Set<Class<?>> getClasses()
+               {
                   return scanned;
                }
             };

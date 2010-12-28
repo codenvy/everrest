@@ -19,9 +19,9 @@
 
 package org.everrest.groovy;
 
-import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.PerRequestObjectFactory;
@@ -33,9 +33,10 @@ import org.everrest.core.uri.UriPattern;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,7 +55,6 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public class GroovyResourcePublisher
 {
-
    /** Default character set name. */
    protected static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
@@ -63,9 +63,9 @@ public class GroovyResourcePublisher
 
    protected final ResourceBinder binder;
 
-   protected GroovyClassLoader gcl;
-
    protected final Map<ResourceId, String> resources = Collections.synchronizedMap(new HashMap<ResourceId, String>());
+
+   protected final GroovyClassLoaderProvider classLoaderProvider;
 
    protected final DependencySupplier dependencies;
 
@@ -84,24 +84,30 @@ public class GroovyResourcePublisher
     * injected by {@link PerRequestObjectFactory}.
     *
     * @param binder resource binder
+    * @param classLoaderProvider GroovyClassLoaderProvider
+    * @param dependencies dependencies resolver
+    * @see DependencySupplier
+    */
+   protected GroovyResourcePublisher(ResourceBinder binder, GroovyClassLoaderProvider classLoaderProvider,
+      DependencySupplier dependencies)
+   {
+      this.binder = binder;
+      this.classLoaderProvider = classLoaderProvider;
+      this.dependencies = dependencies;
+   }
+
+   /**
+    * Create GroovyJaxrsPublisher which is able publish per-request and
+    * singleton resources. Any required dependencies for per-request resource
+    * injected by {@link PerRequestObjectFactory}.
+    *
+    * @param binder resource binder
     * @param dependencies dependencies resolver
     * @see DependencySupplier
     */
    public GroovyResourcePublisher(ResourceBinder binder, DependencySupplier dependencies)
    {
-      this.binder = binder;
-      this.dependencies = dependencies;
-      ClassLoader cl = getClass().getClassLoader();
-      this.gcl = new GroovyClassLoader(cl);
-
-   }
-
-   /**
-    * @return get underling groovy class loader
-    */
-   public GroovyClassLoader getGroovyClassLoader()
-   {
-      return gcl;
+      this(binder, new GroovyClassLoaderProvider(), dependencies);
    }
 
    /**
@@ -150,37 +156,28 @@ public class GroovyResourcePublisher
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *        <code>null</code>
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    * @throws CompilationFailedException if compilation fails from source errors
     */
-   public void publishPerRequest(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
+   public void publishPerRequest(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties,
+      SourceFolder[] src, SourceFile[] files)
    {
-      // XXX fall back to groovy-1.6.5
-      //publishPerRequest(new BufferedReader(new InputStreamReader(in)), resourceId, properties);
-      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
+      Class<?> rc;
+      try
+      {
+         rc = classLoaderProvider.getGroovyClassLoader(src).parseClass(in, resourceId.getId(), files);
+      }
+      catch (MalformedURLException e)
+      {
+         throw new IllegalArgumentException(e.getMessage());
+      }
       binder.addResource(rc, properties);
       resources.put(resourceId, rc.getAnnotation(Path.class).value());
    }
-
-   // XXX fall back to groovy-1.6.5
-   //   /**
-   //    * Parse given source and publish result as per-request RESTful service.
-   //    *
-   //    * @param in stream which contains groovy source code of RESTful service
-   //    * @param resourceId id to be assigned to resource
-   //    * @param properties optional resource properties. This parameter may be
-   //    *           <code>null</code>
-   //    * @throws NullPointerException if <code>resourceId == null</code>
-   //    * @throws ResourcePublicationException see
-   //    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
-   //    */
-   //   public void publishPerRequest(Reader in, ResourceId resourceId, MultivaluedMap<String, String> properties)
-   //   {
-   //      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
-   //      binder.addResource(rc, properties);
-   //      resources.put(resourceId, rc.getAnnotation(Path.class).value());
-   //   }
 
    /**
     * Parse given <code>source</code> and publish result as per-request RESTful
@@ -190,13 +187,16 @@ public class GroovyResourcePublisher
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *        <code>null</code>
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
-   public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
+   public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties,
+      SourceFolder[] src, SourceFile[] files)
    {
-      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties);
+      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, src, files);
    }
 
    /**
@@ -209,15 +209,18 @@ public class GroovyResourcePublisher
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *        <code>null</code>.
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
    public final void publishPerRequest(String source, String charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
-      publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties);
+      publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
+         src, files);
    }
 
    /**
@@ -227,127 +230,50 @@ public class GroovyResourcePublisher
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *        <code>null</code>
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
-   public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
+   public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties,
+      SourceFolder[] src, SourceFile[] files)
    {
-      // XXX fall back to groovy-1.6.5
-      //publishSingleton(new BufferedReader(new InputStreamReader(in)), resourceId, properties);
-      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
-      Object r = null;
-
-      Constructor<?>[] constructors = rc.getConstructors();
-      /* Sort constructors by number of parameters. With more parameters must be first. */
-      Arrays.sort(constructors, CONSTRUCTOR_COMPARATOR);
-
-      l : for (Constructor<?> c : constructors)
+      Class<?> rc;
+      try
       {
-         Class<?>[] parameterTypes = c.getParameterTypes();
-         if (parameterTypes.length == 0)
-         {
-            try
-            {
-               r = c.newInstance();
-               break;
-            }
-            catch (Exception e)
-            {
-               throw new RuntimeException("Unable instantiate object. " + e.getMessage(), e);
-            }
-         }
-
-         List<Object> parameters = new ArrayList<Object>(parameterTypes.length);
-
-         for (Class<?> parameterType : parameterTypes)
-         {
-            Object param = dependencies.getComponent(parameterType);
-            if (param == null)
-            {
-               continue l;
-            }
-            parameters.add(param);
-         }
-         try
-         {
-            r = c.newInstance(parameters.toArray(new Object[parameters.size()]));
-            break;
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException("Unable instantiate object." + e.getMessage(), e);
-         }
+         rc = classLoaderProvider.getGroovyClassLoader(src).parseClass(in, resourceId.getId(), files);
+      }
+      catch (MalformedURLException e)
+      {
+         throw new IllegalArgumentException(e.getMessage());
       }
 
-      //binder.bind(r);
+      Object r;
+      try
+      {
+         r = createInstance(rc);
+      }
+      catch (IllegalArgumentException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      catch (InstantiationException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      catch (InvocationTargetException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      
       binder.addResource(r, properties);
       resources.put(resourceId, r.getClass().getAnnotation(Path.class).value());
    }
-
-   // XXX fall back to groovy-1.6.5
-   //   /**
-   //    * Parse given source and publish result as singleton RESTful service.
-   //    *
-   //    * @param in reader which contains groovy source code of RESTful service
-   //    * @param resourceId id to be assigned to resource
-   //    * @param properties optional resource properties. This parameter may be
-   //    *        <code>null</code>
-   //    * @throws NullPointerException if <code>resourceId == null</code>
-   //    * @throws ResourcePublicationException see
-   //    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
-   //    */
-   //   public void publishSingleton(Reader in, ResourceId resourceId, MultivaluedMap<String, String> properties)
-   //   {
-   //      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
-   //      Object r = null;
-   //
-   //      Constructor<?>[] constructors = rc.getConstructors();
-   //      /* Sort constructors by number of parameters. With more parameters must be first. */
-   //      Arrays.sort(constructors, CONSTRUCTOR_COMPARATOR);
-   //
-   //      l : for (Constructor<?> c : constructors)
-   //      {
-   //         Class<?>[] parameterTypes = c.getParameterTypes();
-   //         if (parameterTypes.length == 0)
-   //         {
-   //            try
-   //            {
-   //               r = c.newInstance();
-   //               break;
-   //            }
-   //            catch (Exception e)
-   //            {
-   //               throw new RuntimeException("Unable instantiate object. " + e.getMessage(), e);
-   //            }
-   //         }
-   //
-   //         List<Object> parameters = new ArrayList<Object>(parameterTypes.length);
-   //
-   //         for (Class<?> parameterType : parameterTypes)
-   //         {
-   //            Object param = dependencies.getComponent(parameterType);
-   //            if (param == null)
-   //            {
-   //               continue l;
-   //            }
-   //            parameters.add(param);
-   //         }
-   //         try
-   //         {
-   //            r = c.newInstance(parameters.toArray(new Object[parameters.size()]));
-   //            break;
-   //         }
-   //         catch (Exception e)
-   //         {
-   //            throw new RuntimeException("Unable instantiate object." + e.getMessage(), e);
-   //         }
-   //      }
-   //
-   //      //binder.bind(r);
-   //      binder.addResource(r, properties);
-   //      resources.put(resourceId, r.getClass().getAnnotation(Path.class).value());
-   //   }
 
    /**
     * Parse given <code>source</code> and publish result as singleton RESTful
@@ -357,13 +283,16 @@ public class GroovyResourcePublisher
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
     *        <code>null</code>.
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
-   public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
+   public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties,
+      SourceFolder[] src, SourceFile[] files)
    {
-      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties);
+      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties, src, files);
    }
 
    /**
@@ -376,28 +305,18 @@ public class GroovyResourcePublisher
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
     *        <code>null</code>.
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
    public final void publishSingleton(String source, String charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
-      publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties);
-   }
-
-   /**
-    * Set groovy class loader.
-    *
-    * @param gcl groovy class loader
-    * @throws NullPointerException if <code>gcl == null</code>
-    */
-   public void setGroovyClassLoader(GroovyClassLoader gcl)
-   {
-      if (gcl == null)
-         throw new NullPointerException("GroovyClassLoader may not be null.");
-      this.gcl = gcl;
+      publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
+         src, files);
    }
 
    /**
@@ -424,17 +343,42 @@ public class GroovyResourcePublisher
    }
 
    private void publishPerRequest(String source, Charset charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
       byte[] bytes = source.getBytes(charset);
-      publishPerRequest(new ByteArrayInputStream(bytes), resourceId, properties);
+      publishPerRequest(new ByteArrayInputStream(bytes), resourceId, properties, src, files);
    }
 
    private void publishSingleton(String source, Charset charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
       byte[] bytes = source.getBytes(charset);
-      publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties);
+      publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties, src, files);
+   }
+
+   protected Object createInstance(Class<?> clazz) throws IllegalArgumentException, InstantiationException,
+      IllegalAccessException, InvocationTargetException
+   {
+      Constructor<?>[] constructors = clazz.getConstructors();
+      //Sort constructors by number of parameters. With more parameters must be first.
+      Arrays.sort(constructors, CONSTRUCTOR_COMPARATOR);
+      l : for (Constructor<?> c : constructors)
+      {
+         Class<?>[] parameterTypes = c.getParameterTypes();
+         if (parameterTypes.length == 0)
+            return c.newInstance();
+         Object[] parameters = new Object[parameterTypes.length];
+         for (int i = 0; i < parameterTypes.length; i++)
+         {
+            Object param = dependencies.getComponent(parameterTypes[i]);
+            if (param == null)
+               continue l;
+            parameters[i] = param;
+         }
+         return c.newInstance(parameters);
+      }
+      throw new ResourcePublicationException("Unbale create instance of class " + clazz.getName()
+         + ". Required constructor's dependencies can't be resolved. ");
    }
 
    /**
@@ -445,8 +389,6 @@ public class GroovyResourcePublisher
     * @param name code source name
     * @return GroovyCodeSource
     */
-   // XXX fall back to groovy-1.6.5
-   // protected GroovyCodeSource createCodeSource(Reader in, String name)
    protected GroovyCodeSource createCodeSource(InputStream in, String name)
    {
       GroovyCodeSource gcs = new GroovyCodeSource(in, name, "/groovy/script/jaxrs");

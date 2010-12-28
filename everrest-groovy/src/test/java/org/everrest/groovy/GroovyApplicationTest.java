@@ -81,7 +81,7 @@ public class GroovyApplicationTest extends BaseTest
       assertNotNull(classes);
       assertEquals(2, classes.size());
       java.util.List<String> l = new ArrayList<String>(2);
-      for (Class c : classes)
+      for (Class<?> c : classes)
          l.add(c.getName());
       assertTrue(l.contains("org.everrest.A"));
       assertTrue(l.contains("org.everrest.B"));

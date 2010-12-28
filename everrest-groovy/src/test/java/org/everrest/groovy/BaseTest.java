@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.SimpleDependencySupplier;
+import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
 
 /**
@@ -33,7 +33,6 @@ import org.everrest.core.tools.ResourceLauncher;
  */
 public abstract class BaseTest extends TestCase
 {
-
    protected ProviderBinder providers;
 
    protected ResourceBinderImpl resources;
@@ -44,12 +43,12 @@ public abstract class BaseTest extends TestCase
 
    protected GroovyResourcePublisher groovyPublisher;
 
-   protected SimpleDependencySupplier dependencies;
+   protected DependencySupplierImpl dependencies;
 
    protected void setUp() throws Exception
    {
       this.resources = new ResourceBinderImpl();
-      this.dependencies = new SimpleDependencySupplier();
+      this.dependencies = new DependencySupplierImpl();
       this.requestHandler = new RequestHandlerImpl(resources, dependencies);
       this.providers = ProviderBinder.getInstance();
       this.launcher = new ResourceLauncher(requestHandler);
@@ -61,5 +60,4 @@ public abstract class BaseTest extends TestCase
    {
       super.tearDown();
    }
-
 }

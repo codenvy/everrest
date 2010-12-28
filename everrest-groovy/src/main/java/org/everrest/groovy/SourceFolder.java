@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -16,61 +16,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.everrest.groovy;
 
+import java.net.URL;
+
 /**
- * Base implementation of ResourceId.
- *
+ * Folder with Groovy sources.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BaseResourceId implements ResourceId
+public class SourceFolder extends ClassPathEntry
 {
-   private final String id;
-
-   public BaseResourceId(String id)
+   public SourceFolder(URL path)
    {
-      if (id == null)
-         throw new IllegalArgumentException("Id may not be null. ");
-      this.id = id;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public String getId()
-   {
-      return id;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == null)
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      return id.equals(((BaseResourceId)obj).id);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode()
-   {
-      return id.hashCode();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public String toString()
-   {
-      return getClass().getSimpleName() + '(' + id + ')';
+      super(path);
    }
 }

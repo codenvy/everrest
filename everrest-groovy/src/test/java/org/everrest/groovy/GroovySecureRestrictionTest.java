@@ -44,7 +44,7 @@ public class GroovySecureRestrictionTest extends BaseTest
 
    public void testReadSystemPropertyFail() throws Exception
    {
-      groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null);
+      groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null, null, null);
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
       assertEquals(500, resp.getStatus());

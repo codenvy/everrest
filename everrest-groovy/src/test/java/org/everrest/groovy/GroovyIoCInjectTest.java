@@ -50,13 +50,13 @@ public class GroovyIoCInjectTest extends BaseTest
 
    public void testComponentPerRequest() throws Exception
    {
-      dependencies.put(Component1.class, new Component1());
+      dependencies.addComponent(Component1.class, new Component1());
       iocComponentTest(false, new BaseResourceId("g1"));
    }
 
    public void testComponentSingleton() throws Exception
    {
-      dependencies.put(Component1.class, new Component1());
+      dependencies.addComponent(Component1.class, new Component1());
       iocComponentTest(true, new BaseResourceId("g2"));
    }
 
@@ -66,9 +66,9 @@ public class GroovyIoCInjectTest extends BaseTest
       assertEquals(0, groovyPublisher.resources.size());
 
       if (singleton)
-         groovyPublisher.publishSingleton(script, resourceId, null);
+         groovyPublisher.publishSingleton(script, resourceId, null, null, null);
       else
-         groovyPublisher.publishPerRequest(script, resourceId, null);
+         groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
 
       assertEquals(1, resources.getSize());
       assertEquals(1, groovyPublisher.resources.size());

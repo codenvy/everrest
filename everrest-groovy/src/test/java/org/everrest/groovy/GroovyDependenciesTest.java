@@ -32,26 +32,34 @@ import java.net.URL;
 public class GroovyDependenciesTest extends BaseTest
 {
    private InputStream script;
+   private URL root;
+   private URL file;
 
    @Override
    public void setUp() throws Exception
    {
       super.setUp();
-      URL root = Thread.currentThread().getContextClassLoader().getResource("repo");
-      DefaultGroovyResourceLoader groovyResourceLoader = new DefaultGroovyResourceLoader(root);
-      groovyPublisher.getGroovyClassLoader().setResourceLoader(groovyResourceLoader);
-
+      root = Thread.currentThread().getContextClassLoader().getResource("repo");
+      file = Thread.currentThread().getContextClassLoader().getResource("repo/dependencies/GDependency1.groovy");
       script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GMain1.groovy");
       assertNotNull(script);
    }
 
-   public void testDependency() throws Exception
+   public void testDependencyFolder() throws Exception
    {
-      groovyPublisher.publishPerRequest(script, new BaseResourceId("GMain1"), null);
+      groovyPublisher.publishPerRequest(script, new BaseResourceId("GMain1"), null, new SourceFolder[]{new SourceFolder(root)}, null);
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse resp = launcher.service("GET", "/a", "", null, null, writer, null);
       assertEquals(200, resp.getStatus());
       assertEquals("dependencies.GDependency1", new String(writer.getBody()));
    }
 
+   public void testDependencyFile() throws Exception
+   {
+      groovyPublisher.publishPerRequest(script, new BaseResourceId("GMain1"), null, null, new SourceFile[]{new SourceFile(file)});
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+      ContainerResponse resp = launcher.service("GET", "/a", "", null, null, writer, null);
+      assertEquals(200, resp.getStatus());
+      assertEquals("dependencies.GDependency1", new String(writer.getBody()));
+   }
 }
