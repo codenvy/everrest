@@ -70,10 +70,9 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
    // and if this content type set trust it and try parse/write
 
    /** Do not process via JSON "known" JAX-RS types and some other. */
-   private static final Class<?>[] IGNORED =
-      new Class<?>[]{byte[].class, char[].class, DataSource.class, DOMSource.class, File.class, InputStream.class,
-         OutputStream.class, JAXBElement.class, MultivaluedMap.class, Reader.class, Writer.class, SAXSource.class,
-         StreamingOutput.class, StreamSource.class, String.class};
+   private static final Class<?>[] IGNORED = new Class<?>[]{byte[].class, char[].class, DataSource.class,
+      DOMSource.class, File.class, InputStream.class, OutputStream.class, JAXBElement.class, MultivaluedMap.class,
+      Reader.class, Writer.class, SAXSource.class, StreamingOutput.class, StreamSource.class, String.class};
 
    private static boolean isIgnored(Class<?> type)
    {
@@ -113,6 +112,11 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
          JsonParser jsonParser = new JsonParser();
          jsonParser.parse(entityStream);
          JsonValue jsonValue = jsonParser.getJsonObject();
+
+         // If requested object is JsonValue then stop processing here.
+         if (JsonValue.class.isAssignableFrom(type))
+            return (T)jsonValue;
+
          Types jtype = JsonUtils.getType(type);
          if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
             || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
@@ -168,27 +172,34 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       try
       {
          JsonValue jsonValue = null;
-         Types jtype = JsonUtils.getType(type);
-         if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
-            || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
-            || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
-            || jtype == Types.ARRAY_OBJECT)
+         if (t instanceof JsonValue)
          {
-            jsonValue = JsonGenerator.createJsonArray(t);
-         }
-         else if (jtype == Types.COLLECTION)
-         {
-            jsonValue = JsonGenerator.createJsonArray((Collection<?>)t);
-         }
-         else if (jtype == Types.MAP)
-         {
-            jsonValue = JsonGenerator.createJsonObjectFromMap((Map<String, ?>)t);
+            // Don't do any transformation if object is prepared JsonValue.
+            jsonValue = (JsonValue)t;
          }
          else
          {
-            jsonValue = JsonGenerator.createJsonObject(t);
+            Types jtype = JsonUtils.getType(type);
+            if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
+               || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
+               || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
+               || jtype == Types.ARRAY_OBJECT)
+            {
+               jsonValue = JsonGenerator.createJsonArray(t);
+            }
+            else if (jtype == Types.COLLECTION)
+            {
+               jsonValue = JsonGenerator.createJsonArray((Collection<?>)t);
+            }
+            else if (jtype == Types.MAP)
+            {
+               jsonValue = JsonGenerator.createJsonObjectFromMap((Map<String, ?>)t);
+            }
+            else
+            {
+               jsonValue = JsonGenerator.createJsonObject(t);
+            }
          }
-
          JsonWriter jsonWriter = new JsonWriter(entityStream);
          jsonValue.writeTo(jsonWriter);
          jsonWriter.flush();

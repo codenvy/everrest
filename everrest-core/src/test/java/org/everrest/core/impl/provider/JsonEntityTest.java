@@ -22,8 +22,12 @@ import org.everrest.core.generated.Book;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.impl.provider.json.BooleanValue;
 import org.everrest.core.impl.provider.json.JsonParser;
+import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
+import org.everrest.core.impl.provider.json.ObjectValue;
+import org.everrest.core.impl.provider.json.StringValue;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 
 import java.io.ByteArrayInputStream;
@@ -60,6 +64,19 @@ public class JsonEntityTest extends BaseTest
          assertEquals("Hamlet", book.getTitle());
          assertEquals("William Shakespeare", book.getAuthor());
          assertTrue(book.isSendByPost());
+      }
+   }
+
+   @Path("/")
+   public static class ResourceBookRaw
+   {
+      @POST
+      @Consumes("application/json")
+      public void m1(JsonValue book)
+      {
+         assertEquals("Hamlet", book.getElement("title").getStringValue());
+         assertEquals("William Shakespeare", book.getElement("author").getStringValue());
+         assertTrue(book.getElement("sendByPost").getBooleanValue());
       }
    }
 
@@ -139,6 +156,28 @@ public class JsonEntityTest extends BaseTest
       // Without @Produces annotation also should work.
       @POST
       public Book m2()
+      {
+         return m1();
+      }
+   }
+
+   @Path("/")
+   public static class ResourceBookRaw2
+   {
+      @GET
+      @Produces("application/json")
+      public JsonValue m1()
+      {
+         ObjectValue book = new ObjectValue();
+         book.addElement("title", new StringValue("Hamlet"));
+         book.addElement("author", new StringValue("William Shakespeare"));
+         book.addElement("sendByPost", new BooleanValue(true));
+         return book;
+      }
+
+      // Without @Produces annotation also should work.
+      @POST
+      public JsonValue m2()
       {
          return m1();
       }
@@ -295,6 +334,20 @@ public class JsonEntityTest extends BaseTest
       unregistry(r1);
    }
 
+   public void testJsonRawEntity() throws Exception
+   {
+      ResourceBookRaw r1 = new ResourceBookRaw();
+      registry(r1);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      // Object is transfered via JSON
+      h.putSingle("content-type", "application/json");
+      // with JSON transformation for Book have restriction can't pass BigDecimal
+      // (has not simple constructor and it is not in JSON known types)
+      h.putSingle("content-length", "" + jsonBookData.length);
+      assertEquals(204, launcher.service("POST", "/", "", h, jsonBookData, null).getStatus());
+      unregistry(r1);
+   }
+
    public void testJsonEntityArray() throws Exception
    {
       ResourceBookArray r1 = new ResourceBookArray();
@@ -371,6 +424,34 @@ public class JsonEntityTest extends BaseTest
       assertEquals("Hamlet", book.getTitle());
       assertEquals("William Shakespeare", book.getAuthor());
       assertTrue(book.isSendByPost());
+
+      unregistry(r2);
+   }
+
+   public void testJsonReturnRaw() throws Exception
+   {
+      ResourceBookRaw2 r2 = new ResourceBookRaw2();
+      registry(r2);
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("accept", "application/json");
+
+      // ResourceBook2#m1()
+      ContainerResponse response = launcher.service("GET", "/", "", h, null, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      JsonValue book = (JsonValue)response.getEntity();
+      assertEquals("Hamlet", book.getElement("title").getStringValue());
+      assertEquals("William Shakespeare", book.getElement("author").getStringValue());
+      assertTrue(book.getElement("sendByPost").getBooleanValue());
+
+      // ResourceBook2#m2()
+      response = launcher.service("POST", "/", "", h, null, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      book = (JsonValue)response.getEntity();
+      assertEquals("Hamlet", book.getElement("title").getStringValue());
+      assertEquals("William Shakespeare", book.getElement("author").getStringValue());
+      assertTrue(book.getElement("sendByPost").getBooleanValue());
 
       unregistry(r2);
    }
