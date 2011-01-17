@@ -81,12 +81,7 @@ public class ProxyService implements ResourceContainer
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
             Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
-         NVPair credentials = getCredentials(url);
-         if (credentials != null)
-         {
-            conn.addBasicAuthorization(null, credentials.getName(), credentials.getValue());
-         }
-         HTTPResponse resp = conn.Delete(url.getFile(), headerPairs);
+         HTTPResponse resp = addAuthorizationInfo(url, conn).Delete(url.getFile(), headerPairs);
          if (resp.getStatusCode() >= 300)
          {
             if (LOG.isDebugEnabled())
@@ -137,12 +132,7 @@ public class ProxyService implements ResourceContainer
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
             Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
-         NVPair credentials = getCredentials(url);
-         if (credentials != null)
-         {
-            conn.addBasicAuthorization(null, credentials.getName(), credentials.getValue());
-         }
-         HTTPResponse resp = conn.Get(url.getFile(), (NVPair[])null, headerPairs);
+         HTTPResponse resp = addAuthorizationInfo(url, conn).Get(url.getFile(), (NVPair[])null, headerPairs);
          if (resp.getStatusCode() >= 300)
          {
             if (LOG.isDebugEnabled())
@@ -195,16 +185,11 @@ public class ProxyService implements ResourceContainer
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
             Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
-         NVPair credentials = getCredentials(url);
-         if (credentials != null)
-         {
-            conn.addBasicAuthorization(null, credentials.getName(), credentials.getValue());
-         }
          HTTPResponse resp = null;
          if (entity != null)
          {
             HttpOutputStream stream = new HttpOutputStream();
-            resp = conn.Post(url.getFile(), stream, headerPairs);
+            resp = addAuthorizationInfo(url, conn).Post(url.getFile(), stream, headerPairs);
             byte[] buf = new byte[1024];
             int r = -1;
             while ((r = entity.read(buf)) != -1)
@@ -215,7 +200,7 @@ public class ProxyService implements ResourceContainer
          }
          else
          {
-            resp = conn.Post(url.getFile(), (NVPair[])null, headerPairs);
+            resp = addAuthorizationInfo(url, conn).Post(url.getFile(), (NVPair[])null, headerPairs);
          }
 
          if (resp.getStatusCode() >= 300)
@@ -270,16 +255,11 @@ public class ProxyService implements ResourceContainer
          NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
             Collections.singleton(new CaselessStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
-         NVPair credentials = getCredentials(url);
-         if (credentials != null)
-         {
-            conn.addBasicAuthorization(null, credentials.getName(), credentials.getValue());
-         }
          HTTPResponse resp = null;
          if (entity != null)
          {
             HttpOutputStream stream = new HttpOutputStream();
-            resp = conn.Put(url.getFile(), stream, headerPairs);
+            resp = addAuthorizationInfo(url, conn).Put(url.getFile(), stream, headerPairs);
             byte[] buf = new byte[1024];
             int r = -1;
             while ((r = entity.read(buf)) != -1)
@@ -290,7 +270,7 @@ public class ProxyService implements ResourceContainer
          }
          else
          {
-            resp = conn.Put(url.getFile(), new byte[0], headerPairs);
+            resp = addAuthorizationInfo(url, conn).Put(url.getFile(), new byte[0], headerPairs);
          }
 
          if (resp.getStatusCode() >= 300)
@@ -345,6 +325,7 @@ public class ProxyService implements ResourceContainer
     * @param httpResponse the http response
     * @return response Response
     */
+   @SuppressWarnings("unchecked")
    private Response createResponse(HTTPResponse httpResponse)
    {
       ResponseBuilder responseBuilder;
@@ -368,6 +349,32 @@ public class ProxyService implements ResourceContainer
       }
    }
 
+   private NVPair[] toNVPair(MultivaluedMap<String, String> map, Set<CaselessStringWrapper> skip)
+   {
+      List<NVPair> hds = new ArrayList<NVPair>();
+      for (Entry<String, List<String>> e : map.entrySet())
+      {
+         if (!skip.contains(new CaselessStringWrapper(e.getKey())))
+         {
+            for (String v : e.getValue())
+            {
+               hds.add(new NVPair(e.getKey(), v));
+            }
+         }
+      }
+      return hds.toArray(new NVPair[hds.size()]);
+   }
+
+   protected HTTPConnection addAuthorizationInfo(URL url, HTTPConnection conn)
+   {
+      NVPair credentials = getCredentials(url);
+      if (credentials != null)
+      {
+         conn.addBasicAuthorization(null, credentials.getName(), credentials.getValue());
+      }
+      return conn;
+   }
+
    private NVPair getCredentials(URL url)
    {
       String userInfo = url.getUserInfo();
@@ -389,22 +396,6 @@ public class ProxyService implements ResourceContainer
          }
       }
       return credentials;
-   }
-
-   private NVPair[] toNVPair(MultivaluedMap<String, String> map, Set<CaselessStringWrapper> skip)
-   {
-      List<NVPair> hds = new ArrayList<NVPair>();
-      for (Entry<String, List<String>> e : map.entrySet())
-      {
-         if (!skip.contains(new CaselessStringWrapper(e.getKey())))
-         {
-            for (String v : e.getValue())
-            {
-               hds.add(new NVPair(e.getKey(), v));
-            }
-         }
-      }
-      return hds.toArray(new NVPair[hds.size()]);
    }
 
 }

@@ -1,0 +1,34 @@
+You need Maven 2.2.0 or later to build project.
+You can download it from http://maven.apache.org/download.html
+
+1. Build war.
+   
+   Build and install it in local maven repository:
+   mvn clean install.
+   
+   Create war but do not install it in maven repository:
+   mvn package
+   
+   As result you will get ${PROJECT_HOME}/target/book-service.war.
+   You can deploy it at apache-tomcat or other servlet container and try
+   it (see section 3). jar file that can be add in already existed web
+   application available at ${PROJECT_HOME}/target/book-service/WEB-INF/lib/books-service.jar
+
+2. Run project with maven-jetty plugin.
+   Run command: mvn jetty:run.
+
+3. How to try.
+   Point you web browser to http://localhost:8080/book-service/books/101.
+   You will see JSON representation of book:
+   {"id":"101","author":"Vincent Massol","title":"JUnit in Action","price":19.37,"pages":386}
+    
+   If you are under linux or other unix like OS the you can use curl utility
+   (often it is already installed). Binary build of this utility available for
+   windows also at http://curl.haxx.se/download.html. With curl you able to add
+   new book in storage via command:
+
+   curl -X PUT \
+   -H "Content-type:application/json" \
+   -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
+   http://localhost:8080/book-service/books/ 
+         

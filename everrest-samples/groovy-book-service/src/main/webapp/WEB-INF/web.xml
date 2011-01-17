@@ -8,6 +8,8 @@
    <context-param>
       <param-name>org.everrest.groovy.root.resources</param-name>
       <param-value>file:./src/main/resources/</param-value>
+      <!-- FOR STANDALONE WAR UNDER TOMCAT -->
+      <!-- <param-value>jar:file:../webapps/groovy-book-service/WEB-INF/lib/groovy-book-service.jar!/</param-value>-->
    </context-param>
 	<listener>
 		<listener-class>org.everrest.core.servlet.EverrestInitializedListener</listener-class>

@@ -48,7 +48,7 @@ public class BookStorage
    {
       Book book = new Book();
       book.setTitle("JUnit in Action");
-      book.setAuthor("Vincent Masson");
+      book.setAuthor("Vincent Massol");
       book.setPages(386);
       book.setPrice(19.37);
       putBook(book);

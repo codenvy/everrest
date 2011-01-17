@@ -21,7 +21,7 @@ class BookStorage
    
    private void init()
    {
-      putBook(new Book(title:'JUnit in Action', author:'Vincent Masson', pages:386, price:19.37))
+      putBook(new Book(title:'JUnit in Action', author:'Vincent Massol', pages:386, price:19.37))
    }
    
    Book getBook(String id)
