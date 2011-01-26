@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="title" type="xsd:string"/>
+	<xsd:element name="author" type="xsd:string"/>
+	<xsd:simpleType name="_price_">
+		<xsd:restriction base="xsd:decimal">
+			<xsd:pattern value="[0-9]{3}[.][0-9]{2}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="price">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="_price_">
+					<xsd:attribute name="currency" type="xsd:string" default="US"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="member-price">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="_price_">
+					<xsd:attribute name="currency" type="xsd:string" default="US"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="book">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="title"/>
+				<xsd:element ref="author"/>
+				<xsd:element ref="price"/>
+				<xsd:element ref="member-price"/>
+			</xsd:sequence>
+			<xsd:attribute name="send-by-post" type="xsd:boolean" default="true"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
