@@ -26,7 +26,7 @@
    <groupId>org.everrest</groupId>
    <artifactId>everrest-parent</artifactId>
    <name>EverRest :: Parent</name>
-   <version>1.0</version>
+   <version>1.0-beta1</version>
    <packaging>pom</packaging>
 
    <organization>
@@ -44,7 +44,7 @@
       <exo.product.name>everrest</exo.product.name>
       <exo.product.specification>1.0</exo.product.specification>
 
-      <org.everrest.version>1.0</org.everrest.version>
+      <org.everrest.version>1.0-beta1</org.everrest.version>
 
       <javax.ws.rs.version>1.0</javax.ws.rs.version>
       <javax.servlet.version>2.4</javax.servlet.version>
