@@ -384,11 +384,13 @@ public class RequestDispatcher
    private static <T extends ResourceMethodDescriptor> boolean processResourceMethod(ResourceMethodMap<T> rmm,
       GenericContainerRequest request, GenericContainerResponse response, List<T> methods)
    {
-      List<T> rmds = rmm.getList(request.getMethod());
+      String method = request.getMethod();
+      List<T> rmds = rmm.getList(method);
       if (rmds == null || rmds.size() == 0)
       {
          response.setResponse(Response.status(405).header("Allow", HeaderHelper.convertToString(rmm.getAllow()))
-            .entity("Method not allowed.").type(MediaType.TEXT_PLAIN).build());
+            .entity(method + " method is not allowed for resource " + ApplicationContextImpl.getCurrent().getPath())
+            .type(MediaType.TEXT_PLAIN).build());
          return false;
       }
       MediaType contentType = request.getMediaType();
@@ -407,8 +409,8 @@ public class RequestDispatcher
 
       if (methods.isEmpty())
       {
-         response.setResponse(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(
-            "Media type " + contentType + " is not supported.").type(MediaType.TEXT_PLAIN).build());
+         response.setResponse(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
+            .entity("Media type " + contentType + " is not supported.").type(MediaType.TEXT_PLAIN).build());
          return false;
       }
 
@@ -448,8 +450,8 @@ public class RequestDispatcher
          return true;
       }
 
-      response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).entity("Not Acceptable").type(
-         MediaType.TEXT_PLAIN).build());
+      response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).entity("Not Acceptable")
+         .type(MediaType.TEXT_PLAIN).build());
       return false;
    }
 
@@ -486,8 +488,9 @@ public class RequestDispatcher
 
       if (rmm == null)
       {
-         response.setResponse(Response.status(Status.NOT_FOUND).entity(
-            "There is no any resources matched to request path " + requestedPath).type(MediaType.TEXT_PLAIN).build());
+         response.setResponse(Response.status(Status.NOT_FOUND)
+            .entity("There is no any resources matched to request path " + requestedPath).type(MediaType.TEXT_PLAIN)
+            .build());
          return false;
       }
 
@@ -547,8 +550,9 @@ public class RequestDispatcher
             LOG.debug("Root resource not found for " + requestPath);
          }
          // Stop here, there is no matched root resource
-         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(
-            "There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN).build());
+         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+            .entity("There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN)
+            .build());
       }
       return resourceFactory;
    }
