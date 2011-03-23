@@ -425,14 +425,14 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       // "HTTPClient.ContentMD5Module|" +
       // "HTTPClient.ContentEncodingModule";
 
-      String modules = "org.everrest.common.http.client.RetryModule|" //
-         + "org.everrest.common.http.client.CookieModule|" //
-         + "org.everrest.common.http.client.RedirectionModule|" //
-         + "org.everrest.common.http.client.AuthorizationModule|" //
-         + "org.everrest.common.http.client.DefaultModule|" //
-         + "org.everrest.common.http.client.TransferEncodingModule|" //
-         + "org.everrest.common.http.client.ContentMD5Module|" //
-         + "org.everrest.common.http.client.ContentEncodingModule";
+      String modules = "org.everrest.http.client.RetryModule|" //
+         + "org.everrest.http.client.CookieModule|" //
+         + "org.everrest.http.client.RedirectionModule|" //
+         + "org.everrest.http.client.AuthorizationModule|" //
+         + "org.everrest.http.client.DefaultModule|" //
+         + "org.everrest.http.client.TransferEncodingModule|" //
+         + "org.everrest.http.client.ContentMD5Module|" //
+         + "org.everrest.http.client.ContentEncodingModule";
 
       boolean in_applet = false;
       try
