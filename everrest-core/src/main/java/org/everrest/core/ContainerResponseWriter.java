@@ -47,7 +47,7 @@ public interface ContainerResponseWriter
     * @param entityWriter See {@link MessageBodyWriter}
     * @throws IOException if any i/o error occurs
     */
-   @SuppressWarnings("unchecked")
-   void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException;
+   void writeBody(GenericContainerResponse response, @SuppressWarnings("rawtypes") MessageBodyWriter entityWriter)
+      throws IOException;
 
 }

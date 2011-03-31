@@ -196,7 +196,7 @@ public class JsonGenerator
     * @return JsonValue.
     * @throws JsonException if any errors occurs.
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    private static JsonValue createJsonValue(Object object) throws JsonException
    {
       Types type = JsonUtils.getType(object);

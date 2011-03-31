@@ -38,9 +38,7 @@ import javax.ws.rs.core.Context;
 public final class ParameterResolverFactory
 {
 
-   /**
-    * Constructor.
-    */
+   /** Constructor. */
    private ParameterResolverFactory()
    {
    }
@@ -51,7 +49,7 @@ public final class ParameterResolverFactory
     * @param annotation JAX-RS annotation
     * @return ParameterResolver
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public static ParameterResolver createParameterResolver(Annotation annotation)
    {
       Class clazz = annotation.annotationType();

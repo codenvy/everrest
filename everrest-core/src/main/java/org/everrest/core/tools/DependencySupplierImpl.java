@@ -45,13 +45,17 @@ public class DependencySupplierImpl extends BaseDependencySupplier
       super(injectAnnotation);
    }
 
-   public Object getComponent(Class<?> type)
-   {
-      return dependencies.get(type);
-   }
-
    public void addComponent(Class<?> key, Object instance)
    {
       dependencies.put(key, instance);
+   }
+
+   /**
+    * @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class)
+    */
+   @Override
+   public Object getComponent(Class<?> type)
+   {
+      return dependencies.get(type);
    }
 }

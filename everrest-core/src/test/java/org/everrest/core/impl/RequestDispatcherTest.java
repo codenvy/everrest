@@ -19,7 +19,6 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.GenericContainerResponse;
-import org.everrest.core.Inject;
 import org.everrest.core.Property;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
@@ -184,12 +183,9 @@ public class RequestDispatcherTest extends BaseTest
    @Path("/a/b/{c}/{d}")
    public static class Resource3
    {
-
       @Context
       private UriInfo uriInfo;
-
       private String c;
-
       private String d;
 
       public Resource3(@PathParam("c") String c)
@@ -246,22 +242,17 @@ public class RequestDispatcherTest extends BaseTest
    @Path("{a}")
    public static class Resource4
    {
-
       @Context
       private UriInfo uriInfo;
-
       @Context
       private HttpServletRequest request;
-
       private InjectableComponent1 ic1;
-
-      @Inject
+      @javax.inject.Inject
       private InjectableComponent2 ic2;
 
       public Resource4(@PathParam("a") String test)
       {
-         // this constructor must not be used. There is constructors with more
-         // parameter
+         // this constructor must not be used. There is constructors with more parameter
          fail("Must not be used.");
       }
 
@@ -279,7 +270,6 @@ public class RequestDispatcherTest extends BaseTest
          assertNotNull(uriInfo);
          assertNotNull(request);
       }
-
    }
 
    public void testResourceConstructorsDependencyInjection() throws Exception
@@ -329,12 +319,9 @@ public class RequestDispatcherTest extends BaseTest
    @Path("a/{b}/{c}")
    public static class Resource5
    {
-
       @PathParam("b")
       private String b;
-
       private String c;
-
       @QueryParam("q1")
       private String q1;
 
@@ -353,7 +340,6 @@ public class RequestDispatcherTest extends BaseTest
          assertEquals("q1", q1);
          assertEquals("q2", q2);
       }
-
    }
 
    public void testQuery() throws Exception
@@ -376,10 +362,8 @@ public class RequestDispatcherTest extends BaseTest
    {
       @Context
       protected UriInfo uriInfo;
-
       @Context
       public Request request;
-
       @Context
       protected UriInfo something;
    }
@@ -388,7 +372,6 @@ public class RequestDispatcherTest extends BaseTest
    {
       @Context
       protected SecurityContext sc;
-
    }
 
    @Path("a")
@@ -396,7 +379,6 @@ public class RequestDispatcherTest extends BaseTest
    {
       @Context
       private HttpHeaders header;
-
       @Context
       private SecurityContext something;
 
@@ -423,16 +405,13 @@ public class RequestDispatcherTest extends BaseTest
       RequestHandlerImpl.setProperty("prop2", "test");
       launcher.service("GET", "/a", "", null, null, null);
       unregistry(Resource6.class);
-
    }
 
    @Path("a")
    public static class Resource6
    {
-
       @Property("prop1")
       private String prop1;
-
       private final String prop2;
 
       public Resource6(@Property("prop2") String cProp)
@@ -446,7 +425,6 @@ public class RequestDispatcherTest extends BaseTest
          assertEquals("hello", prop1);
          assertEquals("test", prop2);
       }
-
    }
 
 }

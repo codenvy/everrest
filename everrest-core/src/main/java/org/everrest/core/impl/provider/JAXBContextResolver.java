@@ -41,7 +41,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
 {
 
    /** JAXBContext cache. */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    private final ConcurrentHashMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<Class, JAXBContext>();
 
    /**

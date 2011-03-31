@@ -376,7 +376,7 @@ public class UriBuilderImpl extends UriBuilder
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    @Override
    public UriBuilder path(Class resource)
    {
@@ -409,7 +409,7 @@ public class UriBuilderImpl extends UriBuilder
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    @Override
    public UriBuilder path(Class resource, String method)
    {

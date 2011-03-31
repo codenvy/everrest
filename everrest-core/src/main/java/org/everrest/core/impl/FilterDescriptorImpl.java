@@ -20,14 +20,10 @@ package org.everrest.core.impl;
 
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.ComponentLifecycleScope;
-import org.everrest.core.ConstructorDescriptor;
-import org.everrest.core.FieldInjector;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.impl.resource.PathValue;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.uri.UriPattern;
-
-import java.util.List;
 
 import javax.ws.rs.Path;
 

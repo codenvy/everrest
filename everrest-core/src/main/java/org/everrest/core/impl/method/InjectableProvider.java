@@ -19,7 +19,6 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.Inject;
 import org.everrest.core.Parameter;
 
 /**
@@ -27,10 +26,10 @@ import org.everrest.core.Parameter;
  * @version $Id$
  * @deprecated
  */
-public class InjectableProvider extends ParameterResolver<Inject>
+public class InjectableProvider extends ParameterResolver<javax.inject.Inject>
 {
 
-   InjectableProvider(Inject inject)
+   InjectableProvider(javax.inject.Inject inject)
    {
    }
 

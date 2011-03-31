@@ -152,7 +152,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       /**
        * {@inheritDoc}
        */
-      @SuppressWarnings("unchecked")
+      @SuppressWarnings({"unchecked", "rawtypes"})
       @Override
       public boolean contains(Object o)
       {
@@ -196,7 +196,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       /**
        * {@inheritDoc}
        */
-      @SuppressWarnings("unchecked")
+      @SuppressWarnings({"unchecked", "rawtypes"})
       @Override
       public boolean remove(Object o)
       {

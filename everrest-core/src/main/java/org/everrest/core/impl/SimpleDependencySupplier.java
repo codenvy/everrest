@@ -20,7 +20,6 @@ package org.everrest.core.impl;
 
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.FieldInjector;
-import org.everrest.core.Inject;
 import org.everrest.core.Parameter;
 import org.everrest.core.tools.DependencySupplierImpl;
 
@@ -46,8 +45,8 @@ public class SimpleDependencySupplier extends HashMap<Class<?>, Object> implemen
       {
          for (Annotation a : parameter.getAnnotations())
          {
-            // Do not process fields without annotation Inject
-            if (a.annotationType() == Inject.class)
+            // Do not process fields without annotation org.everrest.core.Inject .
+            if (a.annotationType() == org.everrest.core.Inject.class)
             {
                return getComponent(parameter.getParameterClass());
             }
@@ -56,9 +55,6 @@ public class SimpleDependencySupplier extends HashMap<Class<?>, Object> implemen
       return getComponent(parameter.getParameterClass());
    }
 
-   /**
-    * {@inheritDoc}
-    */
    public Object getComponent(Class<?> type)
    {
       return get(type);

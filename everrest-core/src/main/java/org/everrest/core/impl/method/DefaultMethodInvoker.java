@@ -58,7 +58,7 @@ public class DefaultMethodInvoker implements MethodInvoker
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public final Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
    {
       beforeInvokeMethod(methodResource, methodResource, context);

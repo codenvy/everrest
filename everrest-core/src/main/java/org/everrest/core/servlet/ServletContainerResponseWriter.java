@@ -56,7 +56,7 @@ public class ServletContainerResponseWriter implements ContainerResponseWriter
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
    {
       Object entity = response.getEntity();

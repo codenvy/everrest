@@ -209,11 +209,11 @@ public final class MediaTypeHelper
     * @return quality value of best found compatible accept media type or 0.0 if
     *         media types are not compatible
     */
-   @SuppressWarnings("unchecked")
    public static float processQuality(List<MediaType> accept, List<MediaType> produces)
    {
       // NOTE accept contains list of AcceptMediaType instead
       // MediaType, see ContainerRequest#getAcceptableMediaTypes
+      @SuppressWarnings("rawtypes")
       Iterator i = accept.iterator();
       while (i.hasNext())
       {

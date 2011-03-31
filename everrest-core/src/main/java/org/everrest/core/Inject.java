@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
  * 
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id$
+ * @deprecated Use {@link javax.inject.Inject} instead
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

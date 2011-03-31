@@ -48,10 +48,7 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
  */
 public final class HeaderHelper
 {
-
-   /**
-    * Constructor.
-    */
+   /** Constructor.*/
    private HeaderHelper()
    {
    }
@@ -483,7 +480,7 @@ public final class HeaderHelper
     * @param o HTTP header as Java type.
     * @return string representation of supplied type
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public static String getHeaderAsString(Object o)
    {
       HeaderDelegate hd = RuntimeDelegate.getInstance().createHeaderDelegate(o.getClass());

@@ -47,13 +47,13 @@ public class ServletContextDependencySupplier extends BaseDependencySupplier
 
    public ServletContextDependencySupplier(ServletContext ctx)
    {
-      super();
       this.ctx = ctx;
    }
 
    /**
-    * {@inheritDoc}
+    * @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class)
     */
+   @Override
    public Object getComponent(Class<?> type)
    {
       return ctx.getAttribute(type.getName());

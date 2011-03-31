@@ -21,12 +21,12 @@ package org.everrest.core.impl;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.method.ParameterHelper;
-import org.everrest.core.impl.method.ParameterResolver;
 import org.everrest.core.impl.method.ParameterResolverFactory;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.util.Logger;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -46,20 +46,13 @@ import javax.ws.rs.ext.Provider;
  */
 public class FieldInjectorImpl implements FieldInjector
 {
-
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Logger LOG = Logger.getLogger(FieldInjectorImpl.class);
 
-   /**
-    * All annotations including JAX-RS annotation.
-    */
+   /** All annotations including JAX-RS annotation. */
    private final Annotation[] annotations;
 
-   /**
-    * JAX-RS annotation.
-    */
+   /** JAX-RS annotation. */
    private final Annotation annotation;
 
    /**
@@ -69,13 +62,13 @@ public class FieldInjectorImpl implements FieldInjector
     */
    private final String defaultValue;
 
-   /**
-    * See {@link javax.ws.rs.Encoded}.
-    */
+   /** See {@link javax.ws.rs.Encoded}. */
    private final boolean encoded;
 
    /** See {@link java.lang.reflect.Field} . */
    private final java.lang.reflect.Field jfield;
+
+   private final Method setter;
 
    /**
     * @param resourceClass class that contains field <tt>jfield</tt>
@@ -83,9 +76,9 @@ public class FieldInjectorImpl implements FieldInjector
     */
    public FieldInjectorImpl(Class<?> resourceClass, java.lang.reflect.Field jfield)
    {
-
       this.jfield = jfield;
       this.annotations = jfield.getDeclaredAnnotations();
+      this.setter = getSetter(resourceClass, jfield);
 
       Annotation annotation = null;
       String defaultValue = null;
@@ -117,14 +110,12 @@ public class FieldInjectorImpl implements FieldInjector
                throw new RuntimeException(msg);
             }
 
-            // @Encoded has not sense for Provider. Provider may use only @Context
-            // annotation for fields
+            // @Encoded has not sense for Provider. Provider may use only @Context annotation for fields
          }
          else if (ac == Encoded.class && !provider)
          {
             encoded = true;
-            // @Default has not sense for Provider. Provider may use only @Context
-            // annotation for fields
+            // @Default has not sense for Provider. Provider may use only @Context annotation for fields
          }
          else if (ac == DefaultValue.class && !provider)
          {
@@ -144,9 +135,25 @@ public class FieldInjectorImpl implements FieldInjector
       this.encoded = encoded || resourceClass.getAnnotation(Encoded.class) != null;
    }
 
+   private static Method getSetter(Class<?> clazz, java.lang.reflect.Field jfield)
+   {
+      Method setter = null;
+      try
+      {
+         String name = jfield.getName();
+         String setterName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+         setter = clazz.getMethod(setterName, jfield.getType());
+      }
+      catch (NoSuchMethodException ignored)
+      {
+         // Ignore NoSuchMethodException.
+      }
+      return setter;
+   }
+
    /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
    public Annotation getAnnotation()
    {
       return annotation;
@@ -205,43 +212,39 @@ public class FieldInjectorImpl implements FieldInjector
     */
    public void inject(Object resource, ApplicationContext context)
    {
-      if (annotation != null)
+      try
       {
-         ParameterResolver<?> pr = ParameterResolverFactory.createParameterResolver(annotation);
-         try
+         Object value = null;
+         if (annotation != null)
+            value = ParameterResolverFactory.createParameterResolver(annotation).resolve(this, context);
+         else if (context.getDependencySupplier() != null)
+            value = context.getDependencySupplier().getComponent(this);
+
+         if (value != null)
          {
-            if (!Modifier.isPublic(jfield.getModifiers()))
-               jfield.setAccessible(true);
-            jfield.set(resource, pr.resolve(this, context));
+            if (setter != null)
+            {
+               setter.invoke(resource, value);
+            }
+            else
+            {
+               if (!Modifier.isPublic(jfield.getModifiers()))
+                  jfield.setAccessible(true);
+               jfield.set(resource, value);
+            }
          }
-         catch (Throwable e)
+         // TODO Need to throw exception if value == null ?????
+      }
+      catch (Throwable e)
+      {
+         if (annotation != null)
          {
             Class<?> ac = annotation.annotationType();
-            if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
+            if (ac == PathParam.class || ac == QueryParam.class || ac == MatrixParam.class)
                throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
             throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
          }
-      }
-      else
-      {
-         if (context.getDependencySupplier() != null)
-         {
-            Object tmp = context.getDependencySupplier().getComponent(this);
-            if (tmp != null)
-            {
-               try
-               {
-                  if (!Modifier.isPublic(jfield.getModifiers()))
-                     jfield.setAccessible(true);
-                  jfield.set(resource, tmp);
-               }
-               catch (Throwable e)
-               {
-                  throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
-               }
-            }
-            // TODO Need to throw exception ?????
-         }
+         throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
       }
    }
 
@@ -260,9 +263,9 @@ public class FieldInjectorImpl implements FieldInjector
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ FieldInjectorImpl: ");
-      sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass()).append(
-         "; generic-type : " + getGenericType()).append("; default-value: " + getDefaultValue()).append(
-         "; encoded: " + isEncoded()).append(" ]");
+      sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass())
+         .append("; generic-type : " + getGenericType()).append("; default-value: " + getDefaultValue())
+         .append("; encoded: " + isEncoded()).append(" ]");
       return sb.toString();
    }
 

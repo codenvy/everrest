@@ -261,8 +261,7 @@ public class ProviderBinder implements Providers
     *
     * @param clazz class of implementation ContextResolver
     */
-   @SuppressWarnings("unchecked")
-   public void addContextResolver(Class<? extends ContextResolver> clazz)
+   public void addContextResolver(@SuppressWarnings("rawtypes") Class<? extends ContextResolver> clazz)
    {
       try
       {
@@ -281,7 +280,7 @@ public class ProviderBinder implements Providers
     *
     * @param instance ContextResolver instance
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public void addContextResolver(ContextResolver instance)
    {
       Class<? extends ContextResolver> clazz = instance.getClass();
@@ -302,7 +301,7 @@ public class ProviderBinder implements Providers
     *
     * @param clazz class of implementation ExceptionMapper
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void addExceptionMapper(Class<? extends ExceptionMapper> clazz)
    {
       try
@@ -321,7 +320,7 @@ public class ProviderBinder implements Providers
     *
     * @param instance ExceptionMapper instance
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void addExceptionMapper(ExceptionMapper instance)
    {
       Class<? extends ExceptionMapper> clazz = instance.getClass();
@@ -341,8 +340,7 @@ public class ProviderBinder implements Providers
     *
     * @param clazz class of implementation MessageBodyReader
     */
-   @SuppressWarnings("unchecked")
-   public void addMessageBodyReader(Class<? extends MessageBodyReader> clazz)
+   public void addMessageBodyReader(@SuppressWarnings("rawtypes") Class<? extends MessageBodyReader> clazz)
    {
       try
       {
@@ -361,7 +359,7 @@ public class ProviderBinder implements Providers
     *
     * @param instance MessageBodyReader instance
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void addMessageBodyReader(MessageBodyReader instance)
    {
       Class<? extends MessageBodyReader> clazz = instance.getClass();
@@ -382,8 +380,7 @@ public class ProviderBinder implements Providers
     *
     * @param clazz class of implementation MessageBodyWriter
     */
-   @SuppressWarnings("unchecked")
-   public void addMessageBodyWriter(Class<? extends MessageBodyWriter> clazz)
+   public void addMessageBodyWriter(@SuppressWarnings("rawtypes") Class<? extends MessageBodyWriter> clazz)
    {
       try
       {
@@ -402,7 +399,7 @@ public class ProviderBinder implements Providers
     *
     * @param instance MessageBodyWriter instance
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public void addMessageBodyWriter(MessageBodyWriter instance)
    {
       Class<? extends MessageBodyWriter> clazz = instance.getClass();
@@ -717,7 +714,7 @@ public class ProviderBinder implements Providers
       responseFilters.getList(filterFactory.getObjectModel().getUriPattern()).add(filterFactory);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    protected List<MediaType> doGetAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations)
    {
       List<MediaType> l = new ArrayList<MediaType>();
@@ -786,6 +783,7 @@ public class ProviderBinder implements Providers
    @SuppressWarnings("unchecked")
    protected <T extends Throwable> ExceptionMapper<T> doGetExceptionMapper(Class<T> type)
    {
+      @SuppressWarnings("rawtypes")
       ObjectFactory pf = exceptionMappers.get(type);
       if (pf != null)
       {
@@ -805,7 +803,7 @@ public class ProviderBinder implements Providers
     * @param mediaType entity content type
     * @return message body reader or null if no one was found.
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    protected <T> MessageBodyReader<T> doGetMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
       MediaType mediaType)
    {
@@ -843,7 +841,7 @@ public class ProviderBinder implements Providers
     * @param mediaType content type in which entity should be represented
     * @return message body writer or null if no one was found.
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    protected <T> MessageBodyWriter<T> doGetMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
       MediaType mediaType)
    {

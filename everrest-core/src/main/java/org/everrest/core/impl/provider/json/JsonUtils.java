@@ -258,7 +258,6 @@ public final class JsonUtils
     * @param o Object.
     * @return 'type'.
     */
-   @SuppressWarnings("unchecked")
    public static Types getType(Object o)
    {
       if (o == null)

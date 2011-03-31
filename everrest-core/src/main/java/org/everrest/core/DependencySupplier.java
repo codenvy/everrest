@@ -27,7 +27,6 @@ package org.everrest.core;
  */
 public interface DependencySupplier
 {
-
    /**
     * Get object that is approach do description <code>parameter</code>.
     *

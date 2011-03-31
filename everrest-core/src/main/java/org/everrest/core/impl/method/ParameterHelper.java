@@ -21,7 +21,6 @@ package org.everrest.core.impl.method;
 import org.everrest.core.Property;
 import org.everrest.core.method.TypeProducer;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

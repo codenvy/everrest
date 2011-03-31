@@ -48,7 +48,7 @@ public final class RestComponentResolver
       this.providers = providers;
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void addSingleton(Object instance)
    {
       Class clazz = instance.getClass();
@@ -96,7 +96,7 @@ public final class RestComponentResolver
 
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void addPerRequest(Class clazz)
    {
       if (clazz.getAnnotation(Provider.class) != null)

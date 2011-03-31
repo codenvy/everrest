@@ -39,7 +39,7 @@ public class DummyContainerResponseWriter implements ContainerResponseWriter
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"rawtypes"})
    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
    {
    }

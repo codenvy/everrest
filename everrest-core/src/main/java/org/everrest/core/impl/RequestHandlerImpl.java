@@ -114,7 +114,7 @@ public final class RequestHandlerImpl implements RequestHandler
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void handleRequest(GenericContainerRequest request, GenericContainerResponse response)
       throws UnhandledException, IOException
    {

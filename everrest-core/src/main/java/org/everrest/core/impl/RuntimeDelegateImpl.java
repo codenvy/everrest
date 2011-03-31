@@ -58,11 +58,8 @@ import javax.ws.rs.ext.RuntimeDelegate;
  */
 public class RuntimeDelegateImpl extends RuntimeDelegate
 {
-
-   /**
-    * HeaderDelegate cache.
-    */
-   @SuppressWarnings("unchecked")
+   /** HeaderDelegate cache. */
+   @SuppressWarnings("rawtypes")
    private final Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
 
    /**
@@ -135,5 +132,4 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
    {
       return new VariantListBuilderImpl();
    }
-
 }

@@ -97,7 +97,6 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
    public void setResponse(Response response)
    {
       this.response = response;
@@ -112,6 +111,7 @@ public class ContainerResponse implements GenericContainerResponse
       entity = response.getEntity();
       if (entity instanceof GenericEntity)
       {
+         @SuppressWarnings("rawtypes")
          GenericEntity ge = (GenericEntity)entity;
          entity = ge.getEntity();
          entityType = ge.getType();
@@ -177,6 +177,7 @@ public class ContainerResponse implements GenericContainerResponse
          this.contentType = contentType;
          getHttpHeaders().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
       }
+      @SuppressWarnings("rawtypes")
       MessageBodyWriter entityWriter =
          context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
       if (entityWriter == null)

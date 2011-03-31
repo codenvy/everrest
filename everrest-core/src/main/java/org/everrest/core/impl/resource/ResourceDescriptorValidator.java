@@ -262,7 +262,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
     * @param type generic type
     * @see #checkGenericType(Type)
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    private static void checkFormParam(Class clazz, Type type)
    {
       if (MultivaluedMap.class != clazz || !checkGenericType(type))

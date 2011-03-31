@@ -51,7 +51,7 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
    {
       ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -37,7 +37,6 @@ import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FilterDescriptorImpl;
-import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
@@ -191,7 +190,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       return (Injector)servletContext.getAttribute(Injector.class.getName());
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    protected void processBindings(Injector injector)
    {
       ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();

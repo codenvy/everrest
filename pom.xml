@@ -212,6 +212,11 @@
             <version>1.0</version>
          </dependency>
          <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+         </dependency>
+         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>1.6.5</version>

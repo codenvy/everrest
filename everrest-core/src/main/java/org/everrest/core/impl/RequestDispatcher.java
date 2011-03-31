@@ -467,7 +467,6 @@ public class RequestDispatcher
     * @param methods list for method resources
     * @return true if at least one sub-resource method found false otherwise
     */
-   @SuppressWarnings("unchecked")
    private static boolean processSubResourceMethod(SubResourceMethodMap srmm, String requestedPath,
       GenericContainerRequest request, GenericContainerResponse response, List<String> capturingValues,
       List<SubResourceMethodDescriptor> methods)
@@ -500,6 +499,7 @@ public class RequestDispatcher
       if (match)
       {
          // for cast, Iterator contains SubResourceMethodDescriptor
+         @SuppressWarnings("rawtypes")
          Iterator i = l.iterator();
          while (i.hasNext())
             methods.add((SubResourceMethodDescriptor)i.next());
