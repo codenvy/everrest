@@ -1,0 +1,11 @@
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd" xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+   <component>
+      <type>org.everrest.sample.exoplatform.BookStorage</type>
+   </component>
+   <component>
+      <type>org.everrest.sample.exoplatform.BookService</type>
+   </component>
+   <component>
+      <type>org.everrest.sample.exoplatform.BookNotFoundExceptionMapper</type>
+   </component>
+</configuration>
