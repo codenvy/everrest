@@ -32,10 +32,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -107,11 +109,35 @@ public class GuiceResourceTest extends BaseTest
       }
    }
 
+   @Path("b")
+   public static class ApplicationResource
+   {
+      @GET
+      public void m(Message m)
+      {
+         assertEquals(mesageBody, m.getMessage());
+      }
+   }
+   
+   public static class Application0 extends Application
+   {
+      @Override
+      public Set<Class<?>> getClasses()
+      {
+         return Collections.<Class<?>>singleton(ApplicationResource.class);
+      }
+   }
+   
    private static final String mesageBody = "GUICE RESOURCE TEST";
 
-   public void test() throws Exception
+   public void testResource() throws Exception
    {
       assertEquals(204, launcher.service("GET", "/a", "", null, mesageBody.getBytes(), null).getStatus());
+   }
+
+   public void testApplicationResource() throws Exception
+   {
+      assertEquals(204, launcher.service("GET", "/b", "", null, mesageBody.getBytes(), null).getStatus());
    }
 
    @Override
@@ -123,6 +149,7 @@ public class GuiceResourceTest extends BaseTest
          {
             binder.bind(Resource.class);
             binder.bind(MessageProvider.class).in(Singleton.class);
+            binder.bind(Application0.class).in(Singleton.class);
          }
       };
       return Collections.singletonList(module);

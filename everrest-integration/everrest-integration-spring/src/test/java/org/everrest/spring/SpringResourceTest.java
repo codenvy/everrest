@@ -29,10 +29,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -104,12 +107,36 @@ public class SpringResourceTest extends BaseTest
       }
    }
 
+   @Path("b")
+   public static class ApplicationResource
+   {
+      @GET
+      public void m(Message m)
+      {
+         assertEquals(mesageBody, m.getMessage());
+      }
+   }
+   
+   public static class Application0 extends Application
+   {
+      @Override
+      public Set<Class<?>> getClasses()
+      {
+         return Collections.<Class<?>>singleton(ApplicationResource.class);
+      }
+   }
+   
    private static final String mesageBody = "TEST SPRING BEAN";
 
    @Test
-   public void test() throws Exception
+   public void testResource() throws Exception
    {
       assertEquals(204, launcher.service("GET", "/a", "", null, mesageBody.getBytes(), null).getStatus());
    }
 
+   @Test
+   public void testApplicationResource() throws Exception
+   {
+      assertEquals(204, launcher.service("GET", "/b", "", null, mesageBody.getBytes(), null).getStatus());
+   }
 }

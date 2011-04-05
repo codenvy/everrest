@@ -29,6 +29,7 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
@@ -43,6 +44,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
@@ -89,22 +91,31 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor
          ComponentLifecycleScope lifeCycle =
             beanDefinition.isPrototype() ? ComponentLifecycleScope.PER_REQUEST : ComponentLifecycleScope.SINGLETON;
 
+         if (javax.ws.rs.core.Application.class.isAssignableFrom(beanClass))
+         {
+            new ApplicationPublisher(getResources(), getProviders()).publish((Application)beanFactory
+               .getBean(beanClass));
+         }
          if (beanClass.getAnnotation(Provider.class) != null)
          {
             ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(beanClass, lifeCycle);
             pDescriptor.accept(rdv);
 
             if (ContextResolver.class.isAssignableFrom(beanClass))
-               getProviders().addContextResolver(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               getProviders().addContextResolver(
+                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
 
             if (ExceptionMapper.class.isAssignableFrom(beanClass))
-               getProviders().addExceptionMapper(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               getProviders().addExceptionMapper(
+                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
 
             if (MessageBodyReader.class.isAssignableFrom(beanClass))
-               getProviders().addMessageBodyReader(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               getProviders().addMessageBodyReader(
+                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
 
             if (MessageBodyWriter.class.isAssignableFrom(beanClass))
-               getProviders().addMessageBodyWriter(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               getProviders().addMessageBodyWriter(
+                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
          }
          else if (beanClass.getAnnotation(Filter.class) != null)
          {
@@ -112,19 +123,23 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor
             fDescriptor.accept(rdv);
 
             if (MethodInvokerFilter.class.isAssignableFrom(beanClass))
-               getProviders().addMethodInvokerFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+               getProviders().addMethodInvokerFilter(
+                  new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
 
             if (RequestFilter.class.isAssignableFrom(beanClass))
-               getProviders().addRequestFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+               getProviders().addRequestFilter(
+                  new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
 
             if (ResponseFilter.class.isAssignableFrom(beanClass))
-               getProviders().addResponseFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+               getProviders().addResponseFilter(
+                  new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
          }
          else if (beanClass.getAnnotation(Path.class) != null)
          {
             AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(beanClass, lifeCycle);
             rDescriptor.accept(rdv);
-            getResources().addResource(new SpringObjectFactory<AbstractResourceDescriptor>(rDescriptor, beanName, beanFactory));
+            getResources().addResource(
+               new SpringObjectFactory<AbstractResourceDescriptor>(rDescriptor, beanName, beanFactory));
          }
       }
    }
@@ -139,40 +154,50 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor
     */
    protected void addAutowiredDependencies(ConfigurableListableBeanFactory beanFactory)
    {
-      beanFactory.registerResolvableDependency(HttpHeaders.class, new ObjectFactory<HttpHeaders>() {
-         public HttpHeaders getObject() {
+      beanFactory.registerResolvableDependency(HttpHeaders.class, new ObjectFactory<HttpHeaders>()
+      {
+         public HttpHeaders getObject()
+         {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             return context.getHttpHeaders();
          }
       });
-      beanFactory.registerResolvableDependency(InitialProperties.class, new ObjectFactory<InitialProperties>() {
-         public InitialProperties getObject() {
+      beanFactory.registerResolvableDependency(InitialProperties.class, new ObjectFactory<InitialProperties>()
+      {
+         public InitialProperties getObject()
+         {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             return context.getInitialProperties();
          }
       });
-      beanFactory.registerResolvableDependency(Request.class, new ObjectFactory<Request>() {
-         public Request getObject() {
+      beanFactory.registerResolvableDependency(Request.class, new ObjectFactory<Request>()
+      {
+         public Request getObject()
+         {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             return context.getRequest();
          }
       });
-      beanFactory.registerResolvableDependency(SecurityContext.class, new ObjectFactory<SecurityContext>() {
-         public SecurityContext getObject() {
+      beanFactory.registerResolvableDependency(SecurityContext.class, new ObjectFactory<SecurityContext>()
+      {
+         public SecurityContext getObject()
+         {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             return context.getSecurityContext();
          }
       });
-      beanFactory.registerResolvableDependency(UriInfo.class, new ObjectFactory<UriInfo>() {
-         public UriInfo getObject() {
+      beanFactory.registerResolvableDependency(UriInfo.class, new ObjectFactory<UriInfo>()
+      {
+         public UriInfo getObject()
+         {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
