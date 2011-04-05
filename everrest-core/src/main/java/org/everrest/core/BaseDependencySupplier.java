@@ -69,76 +69,53 @@ public abstract class BaseDependencySupplier implements DependencySupplier
       {
          Class<?> parameterClass = parameter.getParameterClass();
          if (isProvider(parameterClass))
-            return getProvider(parameterClass, parameter.getGenericType());
-         return getComponent(parameterClass/*, parameter.getGenericType()*/);
+            return getProvider(parameter.getGenericType());
+         return getComponent(parameterClass);
       }
       return null;
    }
 
    /**
-    * Check is <code>clazz</code> is Provider (not subclass of it),
-    * e.g. javax.inject.Provider. Override it if other type of Provider is in use.
+    * Check is <code>clazz</code> is javax.inject.Provider (not subclass of it).
     * 
     * @param clazz class to be checked
-    * @return <code>true</code> if <code>clazz</code> is Provider and
+    * @return <code>true</code> if <code>clazz</code> is javax.inject.Provider and
     *         <code>false</code> otherwise
     */
-   protected boolean isProvider(Class<?> clazz)
+   protected final boolean isProvider(Class<?> clazz)
    {
       return javax.inject.Provider.class == clazz;
    }
 
    /**
-    * Provider for type <code>parameterClass</code>.
+    * Get Provider of type <code>providerType</code>.
     * 
     * @param <T> type of Provider
-    * @param parameterClass 
-    * @param genericType
+    * @param providerType
     * @return Provider
     */
-   protected <T> javax.inject.Provider<T> getProvider(Class<T> parameterClass, Type genericType)
+   public javax.inject.Provider<?> getProvider(Type providerType)
    {
-      if (genericType == null || !(genericType instanceof ParameterizedType))
+      if (!(providerType instanceof ParameterizedType))
          throw new RuntimeException("Cannot inject provider without type parameter. ");
-
-      final Type actualType = ((ParameterizedType)genericType).getActualTypeArguments()[0];
-      Class<?> rawType;
+      final Type actualType = ((ParameterizedType)providerType).getActualTypeArguments()[0];
+      Class<?> componentType;
       if (actualType instanceof Class)
-         rawType = (Class<?>)actualType;
+         componentType = (Class<?>)actualType;
       else if (actualType instanceof ParameterizedType)
-         rawType = (Class<?>)((ParameterizedType)actualType).getRawType();
+         componentType = (Class<?>)((ParameterizedType)actualType).getRawType();
       else
-         // TODO improve
          throw new RuntimeException("Unsupported type " + actualType + ". ");
-      final Class<?> frawType = rawType;
-
-      return new javax.inject.Provider<T>()
-      {
-         @SuppressWarnings("unchecked")
+      final Class<?> fcomponentType = componentType;
+      
+      // javax.inject.Provider#get() may return null. Such behavior may be unexpected by caller.
+      // May be overridden if back-end (e.g. IoC container) provides better solution. 
+      return new javax.inject.Provider<Object>() {
          @Override
-         public T get()
+         public Object get()
          {
-            return (T)getComponent(frawType/*, actualType*/);
+            return getComponent(fcomponentType);
          }
       };
    }
-
-   //   /**
-   //    * Get instance of type <code>parameterClass</code>, e.g. obtain instance
-   //    * from IoC container. NOTE : In this implementation only <code>parameterClass</code>
-   //    * used to find appropriate instance, see {@link #getComponent(Class)}.
-   //    * 
-   //    * @param <T> type of component
-   //    * @param parameterClass
-   //    * @param genericType
-   //    * @return instance of type <code>parameterClass</code> or <code>null</code>
-   //    *         if there is no instances for such type
-   //    * @throws RuntimeException if instance cannot be produced cause to error
-   //    *         while providing an instance
-   //    */
-   //   @SuppressWarnings("unchecked")
-   //   protected <T> T getComponent(Class<T> parameterClass, Type genericType)
-   //   {
-   //      return (T)getComponent(parameterClass);
-   //   }
 }

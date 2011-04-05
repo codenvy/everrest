@@ -134,12 +134,12 @@ public abstract class EverrestExoContextListener implements ServletContextListen
             
             for (Iterator iter = adapters.iterator(); iter.hasNext();)
             {
-               ComponentAdapter cadpt = (ComponentAdapter)iter.next();
+               ComponentAdapter cadapter = (ComponentAdapter)iter.next();
 
-               Class clazz = cadpt.getComponentImplementation();
+               Class clazz = cadapter.getComponentImplementation();
                if (Application.class.isAssignableFrom(clazz))
                {
-                  processor.addApplication((Application)cadpt.getComponentInstance(container));
+                  processor.addApplication((Application)cadapter.getComponentInstance(container));
                }
                else
                {
@@ -150,19 +150,19 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                      
                      if (ContextResolver.class.isAssignableFrom(clazz))
                         providers.addContextResolver(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
-                           cadpt.getComponentInstance(container)));
+                           cadapter.getComponentInstance(container)));
 
                      if (ExceptionMapper.class.isAssignableFrom(clazz))
                         providers.addExceptionMapper(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
-                                 cadpt.getComponentInstance(container)));
+                                 cadapter.getComponentInstance(container)));
 
                      if (MessageBodyReader.class.isAssignableFrom(clazz))
                         providers.addMessageBodyReader(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
-                                 cadpt.getComponentInstance(container)));
+                                 cadapter.getComponentInstance(container)));
 
                      if (MessageBodyWriter.class.isAssignableFrom(clazz))
                         providers.addMessageBodyWriter(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
-                                 cadpt.getComponentInstance(container)));
+                                 cadapter.getComponentInstance(container)));
                   }
                   else if (clazz.getAnnotation(Filter.class) != null)
                   {
@@ -171,15 +171,15 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                      
                      if (MethodInvokerFilter.class.isAssignableFrom(clazz))
                         providers.addMethodInvokerFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor,
-                                 cadpt.getComponentInstance(container)));
+                                 cadapter.getComponentInstance(container)));
 
                      if (RequestFilter.class.isAssignableFrom(clazz))
                         providers
-                           .addRequestFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, cadpt.getComponentInstance(container)));
+                           .addRequestFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, cadapter.getComponentInstance(container)));
 
                      if (ResponseFilter.class.isAssignableFrom(clazz))
                         providers
-                           .addResponseFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, cadpt.getComponentInstance(container)));
+                           .addResponseFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, cadapter.getComponentInstance(container)));
                   }
                   else if (clazz.getAnnotation(Path.class) != null)
                   {
@@ -187,7 +187,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                      rDescriptor.accept(rdv);
                      
                      resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(rDescriptor,
-                              cadpt.getComponentInstance(container)));
+                              cadapter.getComponentInstance(container)));
                   }
                }
             }

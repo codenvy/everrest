@@ -33,6 +33,10 @@ public interface DependencySupplier
     * @param parameter required parameter description
     * @return object of required type or null if instance described by
     *         <code>parameter</code> may not be produced
+    * @throws RuntimeException if any error occurs while creating instance
+    *         described by <code>parameter</code>
+    * @see Parameter#getParameterClass()
+    * @see Parameter#getGenericType()
     */
    Object getComponent(Parameter parameter);
 
@@ -42,6 +46,8 @@ public interface DependencySupplier
     * @param parameter required parameter class
     * @return object of required type or null if instance described by
     *         <code>type</code> may not be produced
+    * @throws RuntimeException if any error occurs while creating instance
+    *         of <code>type</code>
     */
    Object getComponent(Class<?> type);
 }

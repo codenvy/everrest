@@ -43,6 +43,9 @@ public abstract class BaseTest extends TestCase
 {
    protected ResourceLauncher launcher;
    protected StandaloneContainer container;
+   protected ResourceBinder resources;
+   protected DependencySupplier dependencies;
+   protected ApplicationProviderBinder providers;
 
    @Override
    protected void setUp() throws Exception
@@ -64,10 +67,9 @@ public abstract class BaseTest extends TestCase
 
       listener.contextInitialized(new ServletContextEvent(sctx));
       
-      DependencySupplier dependencies = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
-      ResourceBinder resources = (ResourceBinder)sctx.getAttribute(ResourceBinder.class.getName());
-      ApplicationProviderBinder providers =
-         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
+      dependencies = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
+      resources = (ResourceBinder)sctx.getAttribute(ResourceBinder.class.getName());
+      providers = (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
 
       RequestHandler requestHandler =
          new RequestHandlerImpl(resources, providers, dependencies, new EverrestConfiguration());
