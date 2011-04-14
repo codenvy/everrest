@@ -284,7 +284,7 @@ public class WadlProcessorTest extends BaseTest
       assertEquals("text/plain", str);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    private static class DummyNamespaceContext implements NamespaceContext
    {
 

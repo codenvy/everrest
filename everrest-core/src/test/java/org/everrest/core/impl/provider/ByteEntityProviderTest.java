@@ -36,7 +36,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 public class ByteEntityProviderTest extends BaseTest
 {
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRead() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE);
@@ -54,7 +54,7 @@ public class ByteEntityProviderTest extends BaseTest
       assertTrue(Arrays.equals(data, result));
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWrite() throws Exception
    {
       MessageBodyWriter writer = providers.getMessageBodyWriter(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE);

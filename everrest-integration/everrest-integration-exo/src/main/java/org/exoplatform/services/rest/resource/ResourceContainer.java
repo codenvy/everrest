@@ -16,27 +16,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.exoplatform;
-
-import junit.framework.TestCase;
-
-import org.exoplatform.container.StandaloneContainer;
+package org.exoplatform.services.rest.resource;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
+ * @deprecated Do not use it any more. It copies from exo.ws.project for back compatibility.
  */
-public abstract class BaseTest extends TestCase
+public interface ResourceContainer extends org.everrest.core.resource.ResourceContainer
 {
-   protected StandaloneContainer container;
-
-   @Override
-   protected void setUp() throws Exception
-   {
-      super.setUp();
-
-      String conf = getClass().getResource("/conf/test-configuration.xml").toString();
-      StandaloneContainer.setConfigurationURL(conf);
-      container = StandaloneContainer.getInstance();
-   }
 }

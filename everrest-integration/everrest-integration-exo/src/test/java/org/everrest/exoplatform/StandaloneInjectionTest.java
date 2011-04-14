@@ -25,7 +25,7 @@ import javax.ws.rs.Path;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class InjectTest extends BaseTest
+public class StandaloneInjectionTest extends StandaloneBaseTest
 {
    public static interface Injectable
    {
@@ -41,7 +41,7 @@ public class InjectTest extends BaseTest
       }
    }
 
-   @Path("InjectTest.Resource1")
+   @Path("StandaloneInjectionTest.Resource1")
    public static class Resource1
    {
       @javax.inject.Inject
@@ -55,7 +55,7 @@ public class InjectTest extends BaseTest
       }
    }
 
-   @Path("InjectTest.Resource2")
+   @Path("StandaloneInjectionTest.Resource2")
    public static class Resource2
    {
       @javax.inject.Inject
@@ -88,7 +88,7 @@ public class InjectTest extends BaseTest
       }
    }
 
-   @Path("InjectTest.Resource3")
+   @Path("StandaloneInjectionTest.Resource3")
    public static class Resource3
    {
       @javax.inject.Inject
@@ -102,7 +102,7 @@ public class InjectTest extends BaseTest
       }
    }
 
-   @Path("InjectTest.Resource4")
+   @Path("StandaloneInjectionTest.Resource4")
    public static class Resource4
    {
       @javax.inject.Inject
@@ -120,10 +120,10 @@ public class InjectTest extends BaseTest
 
    /* ================================================================ */
 
-   private final String injectableProviderKey = "InjectTest.Provider.Injectable";
+   private final String injectableProviderKey = "StandaloneInjectionTest.Provider.Injectable";
 
    /**
-    * @see org.everrest.exoplatform.BaseTest#setUp()
+    * @see org.everrest.exoplatform.WebAppBaseTest#setUp()
     */
    @Override
    protected void setUp() throws Exception
@@ -155,14 +155,16 @@ public class InjectTest extends BaseTest
    public void testInjectInstance() throws Exception
    {
       resources.addResource(Resource1.class, null);
-      assertEquals(204, launcher.service("GET", "/InjectTest.Resource1", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource1", "", null, null, null)
+         .getStatus());
       resources.removeResource(Resource1.class);
    }
 
    public void testInjectProvider() throws Exception
    {
       resources.addResource(Resource2.class, null);
-      assertEquals(204, launcher.service("GET", "/InjectTest.Resource2", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource2", "", null, null, null)
+         .getStatus());
       resources.removeResource(Resource2.class);
    }
 
@@ -172,7 +174,8 @@ public class InjectTest extends BaseTest
    public void testInjectInstance2() throws Exception
    {
       resources.addResource(Resource3.class, null);
-      assertEquals(204, launcher.service("GET", "/InjectTest.Resource3", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource3", "", null, null, null)
+         .getStatus());
       resources.removeResource(Resource3.class);
    }
 
@@ -185,7 +188,8 @@ public class InjectTest extends BaseTest
    public void testInjectProvider2() throws Exception
    {
       resources.addResource(Resource4.class, null);
-      assertEquals(204, launcher.service("GET", "/InjectTest.Resource4", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource4", "", null, null, null).getStatus());
       resources.removeResource(Resource4.class);
    }
+
 }

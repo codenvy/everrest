@@ -70,7 +70,7 @@ public class JAXBEntityProviderTest extends BaseTest
       return je;
    };
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testReadJAXBElement() throws Exception
    {
       Method m = getClass().getMethod("m", new Class[]{JAXBElement.class});
@@ -87,7 +87,7 @@ public class JAXBEntityProviderTest extends BaseTest
       assertTrue("Java and XML Data Binding".equals(je.getValue().getTitle()));
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWriteJAXBElement() throws Exception
    {
       Method m = getClass().getMethod("m", new Class[]{JAXBElement.class});
@@ -104,7 +104,7 @@ public class JAXBEntityProviderTest extends BaseTest
       writer.writeTo(je, returnType, genericReturnType, null, mediaType, null, new ByteArrayOutputStream());
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testReadJAXBObject() throws Exception
    {
       MessageBodyReader prov = providers.getMessageBodyReader(Book.class, null, null, mediaType);
@@ -116,7 +116,7 @@ public class JAXBEntityProviderTest extends BaseTest
       assertEquals("Brett McLaughlin", book.getAuthor());
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWriteJAXBObject() throws Exception
    {
       MessageBodyWriter writer = providers.getMessageBodyWriter(Book.class, null, null, mediaType);

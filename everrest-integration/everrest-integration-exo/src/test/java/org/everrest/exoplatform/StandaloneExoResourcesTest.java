@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2010 eXo Platform SAS.
+/*
+ * Copyright (C) 2011 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,12 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
-package org.everrest.guice;
-
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Singleton;
+package org.everrest.exoplatform;
 
 import org.everrest.core.impl.provider.IOHelper;
 
@@ -31,11 +26,12 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -46,7 +42,7 @@ import javax.ws.rs.ext.Provider;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class GuiceResourceTest extends BaseTest
+public class StandaloneExoResourcesTest extends StandaloneBaseTest
 {
    public static class Message
    {
@@ -85,8 +81,8 @@ public class GuiceResourceTest extends BaseTest
          MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
          WebApplicationException
       {
-         return new Message(IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get(
-            "charset") : null));
+         return new Message(IOHelper.readString(entityStream,
+            mediaType != null ? mediaType.getParameters().get("charset") : null));
       }
 
       public void writeTo(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
@@ -97,8 +93,8 @@ public class GuiceResourceTest extends BaseTest
       }
    }
 
-   @Path("a")
-   public static class Resource
+   @Path("StandaloneExoResourcesTest.Resource1")
+   public static class Resource1
    {
       @GET
       public void m(Message m)
@@ -107,25 +103,44 @@ public class GuiceResourceTest extends BaseTest
       }
    }
 
-   private static final String mesageBody = "GUICE RESOURCE TEST";
+   private static final String mesageBody = "EXO RESOURCE TEST";
+
+   @Path("StandaloneExoResourcesTest.Resource2")
+   public static class Resource2
+   {
+      @GET
+      public void m(Message m)
+      {
+         assertEquals(mesageBody, m.getMessage());
+      }
+   }
+
+   public static class Application0 extends Application
+   {
+      @Override
+      public Set<Class<?>> getClasses()
+      {
+         return Collections.<Class<?>> singleton(Resource2.class);
+      }
+
+      @Override
+      public Set<Object> getSingletons()
+      {
+         return Collections.<Object> singleton(new MessageProvider());
+      }
+   }
 
    public void testResource() throws Exception
    {
-      assertEquals(204, launcher.service("GET", "/a", "", null, mesageBody.getBytes(), null).getStatus());
+      assertEquals(204,
+         launcher.service("GET", "/StandaloneExoResourcesTest.Resource1", "", null, mesageBody.getBytes(), null)
+            .getStatus());
    }
 
-   @Override
-   protected List<Module> getModules()
+   public void testApplicationResource() throws Exception
    {
-      Module module = new Module()
-      {
-         public void configure(Binder binder)
-         {
-            binder.bind(Resource.class);
-            binder.bind(MessageProvider.class).in(Singleton.class);
-         }
-      };
-      return Collections.singletonList(module);
+      assertEquals(204,
+         launcher.service("GET", "/StandaloneExoResourcesTest.Resource2", "", null, mesageBody.getBytes(), null)
+            .getStatus());
    }
-
 }

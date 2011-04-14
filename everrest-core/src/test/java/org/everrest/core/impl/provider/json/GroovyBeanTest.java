@@ -53,7 +53,7 @@ public class GroovyBeanTest extends JsonTest
          .toString());
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public void testSerializeGroovyBean1() throws Exception
    {
       GroovyClassLoader cl = new GroovyClassLoader();
@@ -72,7 +72,7 @@ public class GroovyBeanTest extends JsonTest
       assertFalse(iterator.hasNext());
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRestoreGroovyBean1() throws Exception
    {
       GroovyClassLoader cl = new GroovyClassLoader();

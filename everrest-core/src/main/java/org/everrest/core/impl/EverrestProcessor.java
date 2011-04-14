@@ -36,20 +36,18 @@ import javax.ws.rs.core.Application;
  */
 public final class EverrestProcessor
 {
+   private RequestHandler requestHandler;
+   private ResourceBinder resources;
+   private ProviderBinder providers;
 
-   private final RequestHandler requestHandler;
-
-   private final ResourceBinder resources;
-
-   private final ProviderBinder providers;
-
-   public EverrestProcessor(ResourceBinder resources, ProviderBinder providers,
-      DependencySupplier dependencies, EverrestConfiguration config, Application application)
+   public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencies,
+      EverrestConfiguration config, Application application)
    {
       this.resources = resources;
       this.providers = providers;
-      this.requestHandler = new RequestHandlerImpl(providers, new RequestDispatcher(resources), dependencies, config);
-      addApplication(application);
+      requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, config);
+      if (application != null)
+         addApplication(application);
    }
 
    public void process(GenericContainerRequest request, GenericContainerResponse response, EnvironmentContext envCtx)
@@ -68,11 +66,8 @@ public final class EverrestProcessor
 
    public void addApplication(Application application)
    {
-      if (application != null)
-      {
-         ApplicationPublisher appPublisher = new ApplicationPublisher(resources, providers);
-         appPublisher.publish(application);
-      }
+      if (application == null)
+         throw new NullPointerException("application");
+      new ApplicationPublisher(resources, providers).publish(application);
    }
-
 }

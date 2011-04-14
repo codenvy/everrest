@@ -96,6 +96,7 @@ public class CaselessMultivaluedMapTest extends BaseTest
       assertEquals(1, map.size());
    }
 
+   @SuppressWarnings("rawtypes")
    public void testEntrySet()
    {
       Set<Entry<String, List<String>>> entries = map.entrySet();
@@ -104,8 +105,8 @@ public class CaselessMultivaluedMapTest extends BaseTest
       map.put("Y", new ArrayList<String>(Arrays.asList("e", "f")));
       assertEquals(3, map.size());
       assertEquals(3, entries.size());
-      assertTrue(entries.remove(new java.util.Map.Entry<String, List>()
-      {
+
+      assertTrue(entries.remove(new java.util.Map.Entry<String, List>() {
          public String getKey()
          {
             return "E";

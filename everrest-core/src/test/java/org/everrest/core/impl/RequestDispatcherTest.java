@@ -56,8 +56,9 @@ public class RequestDispatcherTest extends BaseTest
       depInjector.addComponent(InjectableComponent2.class, new InjectableComponent2());
       // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
-      providers = new ApplicationProviderBinder();
-      requestHandler = new RequestHandlerImpl(resources, providers, depInjector, new EverrestConfiguration());
+      providers = ProviderBinder.getInstance();
+      requestHandler =
+         new RequestHandlerImpl(new RequestDispatcher(resources), depInjector, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
    }
 

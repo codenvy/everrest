@@ -29,7 +29,6 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.ApplicationProviderBinder;
-import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
@@ -44,7 +43,6 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
@@ -91,11 +89,6 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor
          ComponentLifecycleScope lifeCycle =
             beanDefinition.isPrototype() ? ComponentLifecycleScope.PER_REQUEST : ComponentLifecycleScope.SINGLETON;
 
-         if (javax.ws.rs.core.Application.class.isAssignableFrom(beanClass))
-         {
-            new ApplicationPublisher(getResources(), getProviders()).publish((Application)beanFactory
-               .getBean(beanClass));
-         }
          if (beanClass.getAnnotation(Provider.class) != null)
          {
             ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(beanClass, lifeCycle);

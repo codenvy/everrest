@@ -39,7 +39,7 @@ public class ReaderEntityProviderTest extends BaseTest
 
    private static final String TEST_CYR = "\u041f\u0440\u0438\u0432\u0456\u0442";
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRead() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(Reader.class, null, null, MediaTypeHelper.DEFAULT_TYPE);
@@ -68,7 +68,7 @@ public class ReaderEntityProviderTest extends BaseTest
       assertFalse(TEST_CYR.equals(resstr));
    }
 
-   //   [WS-201] Test fails on systems which use not UTF-8 encoding.
+   //   TODO Check! Test fails on systems which use not UTF-8 encoding.
    //   
    //   @SuppressWarnings("unchecked")
    //   public void testWrite() throws Exception

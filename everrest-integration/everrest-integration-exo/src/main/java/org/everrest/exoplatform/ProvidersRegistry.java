@@ -18,25 +18,28 @@
  */
 package org.everrest.exoplatform;
 
-import junit.framework.TestCase;
+import org.everrest.core.impl.ProviderBinder;
 
-import org.exoplatform.container.StandaloneContainer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * Keeps mapping set of Providers to Application name.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class BaseTest extends TestCase
+public class ProvidersRegistry
 {
-   protected StandaloneContainer container;
+   protected Map<String, ProviderBinder> all = new HashMap<String, ProviderBinder>();
 
-   @Override
-   protected void setUp() throws Exception
+   public void addProviders(String applicationName, ProviderBinder apb)
    {
-      super.setUp();
+      all.put(applicationName, apb);
+   }
 
-      String conf = getClass().getResource("/conf/test-configuration.xml").toString();
-      StandaloneContainer.setConfigurationURL(conf);
-      container = StandaloneContainer.getInstance();
+   public ProviderBinder getProviders(String applicationName)
+   {
+      return all.get(applicationName);
    }
 }

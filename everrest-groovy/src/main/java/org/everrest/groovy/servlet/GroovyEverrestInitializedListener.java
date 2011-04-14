@@ -29,8 +29,7 @@ import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GroovyEverrestInitializedListener.java 77 2010-10-26 15:20:15Z
- *          andrew00x $
+ * @version $Id$
  */
 public class GroovyEverrestInitializedListener implements ServletContextListener
 {
@@ -53,7 +52,7 @@ public class GroovyEverrestInitializedListener implements ServletContextListener
          throw new RuntimeException("EverrestProcessor not found. ");
       EverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(sctx);
       Application application = initializer.getApplication();
-      processor.addApplication(application);
-      sctx.setAttribute(EverrestProcessor.class.getName(), processor);
+      if (application != null)
+         processor.addApplication(application);
    }
 }

@@ -37,8 +37,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
  */
 public class StringEntityProviderTest extends BaseTest
 {
-
-   // 
    private static final String TEST_CYR = "\u041f\u0440\u0438\u0432\u0456\u0442";
 
    private MediaType mediaType;
@@ -51,10 +49,9 @@ public class StringEntityProviderTest extends BaseTest
       mediaType = new MediaType("text", "plain", p);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRead() throws IOException
    {
-
       MessageBodyReader reader = providers.getMessageBodyReader(String.class, null, null, mediaType);
       byte[] data = TEST_CYR.getBytes("windows-1251");
       InputStream in = new ByteArrayInputStream(data);
@@ -70,7 +67,7 @@ public class StringEntityProviderTest extends BaseTest
       assertFalse(TEST_CYR.equals(res));
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWrite() throws IOException
    {
       MessageBodyWriter writer = providers.getMessageBodyWriter(String.class, null, null, mediaType);

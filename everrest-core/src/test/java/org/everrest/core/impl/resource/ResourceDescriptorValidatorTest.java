@@ -164,7 +164,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest
          // OK
       }
 
-      @SuppressWarnings("unchecked")
+      @SuppressWarnings("rawtypes")
       @POST
       public void m2(@FormParam("a") String t, MultivaluedMap entity)
       {
@@ -184,7 +184,6 @@ public class ResourceDescriptorValidatorTest extends BaseTest
       }
    }
 
-   @SuppressWarnings("unchecked")
    @Path("/a/b")
    public static class Resource4
    {
@@ -209,6 +208,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest
          // OK
       }
 
+      @SuppressWarnings("rawtypes")
       @POST
       @Path("c/d/e")
       public void m4(@FormParam("a") String t, MultivaluedMap entity)

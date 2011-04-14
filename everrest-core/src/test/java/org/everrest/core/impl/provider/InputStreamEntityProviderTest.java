@@ -35,7 +35,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 public class InputStreamEntityProviderTest extends BaseTest
 {
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRead() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(InputStream.class, null, null, null);
@@ -51,7 +51,7 @@ public class InputStreamEntityProviderTest extends BaseTest
       assertTrue(Arrays.equals(data, data2));
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWrite() throws Exception
    {
       MessageBodyWriter writer = providers.getMessageBodyWriter(InputStream.class, null, null, null);

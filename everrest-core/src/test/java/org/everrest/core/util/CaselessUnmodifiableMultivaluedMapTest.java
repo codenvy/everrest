@@ -139,12 +139,12 @@ public class CaselessUnmodifiableMultivaluedMapTest extends BaseTest
       }
    }
 
+   @SuppressWarnings("rawtypes")
    public void testEntryRemove()
    {
       try
       {
-         map.entrySet().remove(new java.util.Map.Entry<String, List>()
-         {
+         map.entrySet().remove(new java.util.Map.Entry<String, List>() {
             public String getKey()
             {
                return "K";
@@ -166,7 +166,7 @@ public class CaselessUnmodifiableMultivaluedMapTest extends BaseTest
       {
       }
    }
-
+   @SuppressWarnings("rawtypes")
    public void testEntryRemoveAll()
    {
       try
@@ -179,6 +179,7 @@ public class CaselessUnmodifiableMultivaluedMapTest extends BaseTest
       }
    }
 
+   @SuppressWarnings("rawtypes")
    public void testEntryRetainAll()
    {
       try

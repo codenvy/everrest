@@ -40,7 +40,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 public class FileEntityProviderTest extends BaseTest
 {
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRead() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(File.class, null, null, MediaTypeHelper.DEFAULT_TYPE);
@@ -63,7 +63,7 @@ public class FileEntityProviderTest extends BaseTest
          System.out.println("Tmp file removed");
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWrite() throws Exception
    {
       MessageBodyWriter writer = providers.getMessageBodyWriter(File.class, null, null, MediaTypeHelper.DEFAULT_TYPE);

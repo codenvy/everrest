@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd" xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+   <!-- EverRest components -->
+   <component>
+      <type>org.everrest.exoplatform.EverrestInitializer</type>
+   </component>
+   <component>
+      <type>org.everrest.exoplatform.StartableApplication</type>
+   </component>
+   <component>
+      <type>org.everrest.exoplatform.ProvidersRegistry</type>
+   </component>
+   <component>
+      <type>org.everrest.exoplatform.ExoDependencySupplier</type>
+   </component>
+   <component>
+      <type>org.everrest.exoplatform.ExoRequestDispatcher</type>
+   </component>
+   <component>
+      <type>org.everrest.exoplatform.ExoRequestHandler</type>
+   </component>
+   <component>
+      <type>org.everrest.core.impl.ResourceBinderImpl</type>
+   </component>
+
+   <!-- Add Resources and Providers in container directly -->
+   <component>
+      <type>org.everrest.exoplatform.StandaloneExoResourcesTest$Resource1</type>
+   </component>
+   <component>
+      <type>org.everrest.exoplatform.StandaloneExoResourcesTest$MessageProvider</type>
+   </component>
+   
+   <!-- Add Application in container -->
+   <component>
+      <type>org.everrest.exoplatform.StandaloneExoResourcesTest$Application0</type>
+   </component>
+
+   <!-- =========================================================== -->
+   <component>
+      <type>org.everrest.exoplatform.WebAppExoResourcesTest$MessageProvider</type>
+   </component>
+   <component>
+      <type>org.everrest.exoplatform.WebAppExoResourcesTest$Resource1</type>
+   </component>
+
+</configuration>

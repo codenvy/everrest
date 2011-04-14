@@ -26,6 +26,7 @@ import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.pico.servlet.EverrestPicoFilter;
@@ -83,7 +84,7 @@ public abstract class BaseTest extends TestCase
          (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
 
       RequestHandler requestHandler =
-         new RequestHandlerImpl(resources, providers, dependencies, new EverrestConfiguration());
+         new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
    }
 

@@ -47,7 +47,7 @@ public class JsonEntityProviderTest extends BaseTest
       mediaType = new MediaType("application", "json");
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRead() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(Bean.class, null, null, mediaType);
@@ -61,7 +61,7 @@ public class JsonEntityProviderTest extends BaseTest
       assertEquals("hello", bean.getPassword());
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWrite() throws Exception
    {
       MessageBodyWriter writer = providers.getMessageBodyWriter(Bean.class, null, null, mediaType);

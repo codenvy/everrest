@@ -18,25 +18,18 @@
  */
 package org.everrest.exoplatform;
 
-import junit.framework.TestCase;
-
-import org.exoplatform.container.StandaloneContainer;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class BaseTest extends TestCase
+public class StandaloneLoadComponentsTest extends StandaloneBaseTest
 {
-   protected StandaloneContainer container;
-
-   @Override
-   protected void setUp() throws Exception
+   public void testLoadComponents()
    {
-      super.setUp();
-
-      String conf = getClass().getResource("/conf/test-configuration.xml").toString();
-      StandaloneContainer.setConfigurationURL(conf);
-      container = StandaloneContainer.getInstance();
+      assertNotNull(dependencies);
+      assertNotNull(resources);
+      assertNotNull(providersRegistry);
+      assertNotNull(requestHandler);
    }
+
 }

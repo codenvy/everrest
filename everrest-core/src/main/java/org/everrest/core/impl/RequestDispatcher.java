@@ -55,22 +55,20 @@ import javax.ws.rs.core.Response.Status;
 
 /**
  * Lookup resource which can serve request.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class RequestDispatcher
 {
-
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(RequestDispatcher.class);
-
    /** See {@link ResourceBinder}. */
    protected final ResourceBinder resourceBinder;
 
    /**
     * Constructs new instance of RequestDispatcher.
-    *
+    * 
     * @param resourceBinder See {@link ResourceBinder}
     */
    public RequestDispatcher(ResourceBinder resourceBinder)
@@ -80,7 +78,7 @@ public class RequestDispatcher
 
    /**
     * Dispatch {@link ContainerRequest} to resource which can serve request.
-    *
+    * 
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     */
@@ -95,48 +93,39 @@ public class RequestDispatcher
       // Take the tail of the request path, the tail will be requested path
       // for lower resources, e. g. ResourceClass -> Sub-resource method/locator
       String newRequestPath = getPathTail(parameterValues);
-
       // save the resource class URI in hierarchy
       context.addMatchedURI(requestPath.substring(0, requestPath.lastIndexOf(newRequestPath)));
-
       context.setParameterNames(resourceFactory.getObjectModel().getUriPattern().getParameterNames());
-
       // may thrown WebApplicationException
       Object resource = resourceFactory.getInstance(context);
-
       dispatch(request, response, context, resourceFactory, resource, newRequestPath);
    }
 
    /**
-    * Get last element from path parameters. This element will be used as
-    * request path for child resources.
-    *
-    * @param parameterValues See
-    *        {@link ApplicationContextImpl#getParameterValues()}
-    * @return last element from given list or empty string if last element is
-    *         null
+    * Get last element from path parameters. This element will be used as request path for child resources.
+    * 
+    * @param parameterValues See {@link ApplicationContextImpl#getParameterValues()}
+    * @return last element from given list or empty string if last element is null
     */
-   private static String getPathTail(List<String> parameterValues)
+   protected static final String getPathTail(List<String> parameterValues)
    {
       int i = parameterValues.size() - 1;
       return parameterValues.get(i) != null ? parameterValues.get(i) : "";
    }
 
    /**
-    * Process resource methods, sub-resource methods and sub-resource locators
-    * to find the best one for serve request.
-    *
+    * Process resource methods, sub-resource methods and sub-resource locators to find the best one for serve request.
+    * 
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param context See {@link ApplicationContextImpl}
-    * @param resourceFactory the root resource factory or resource factory which
-    *        was created by previous sub-resource locator
+    * @param resourceFactory the root resource factory or resource factory which was created by previous sub-resource
+    *           locator
     * @param resource instance of resource class
-    * @param requestPath request path, it is relative path to the base URI or
-    *        other resource which was called before (one of sub-resource
-    *        locators)
+    * @param requestPath request path, it is relative path to the base URI or other resource which was called before
+    *           (one of sub-resource locators)
     */
-   private void dispatch(GenericContainerRequest request, GenericContainerResponse response,
+   protected void dispatch(GenericContainerRequest request, GenericContainerResponse response,
       ApplicationContext context, ObjectFactory<AbstractResourceDescriptor> resourceFactory, Object resource,
       String requestPath)
    {
@@ -215,7 +204,7 @@ public class RequestDispatcher
 
    /**
     * Invoke resource methods.
-    *
+    * 
     * @param rmd See {@link ResourceMethodDescriptor}
     * @param resource instance of resource class
     * @param context See {@link ApplicationContextImpl}
@@ -237,7 +226,7 @@ public class RequestDispatcher
 
    /**
     * Invoke sub-resource methods.
-    *
+    * 
     * @param requestPath request path
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param resource instance of resource class
@@ -265,7 +254,7 @@ public class RequestDispatcher
 
    /**
     * Invoke sub-resource locators.
-    *
+    * 
     * @param requestPath request path
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @param resource instance of resource class
@@ -302,17 +291,13 @@ public class RequestDispatcher
    }
 
    /**
-    * Compare two sub-resources. One of it is
-    * {@link SubResourceMethodDescriptor} and other one id
-    * {@link SubResourceLocatorDescriptor}. First compare UriPattern, see
-    * {@link UriPattern#URIPATTERN_COMPARATOR}. NOTE URI comparator compare
-    * UriPattrens for descending sorting. So it it return negative integer then
-    * it minds SubResourceMethodDescriptor has higher priority by UriPattern
-    * comparison. If comparator return positive integer then
-    * SubResourceLocatorDescriptor has higher priority. And finally if zero was
-    * returned then UriPattern is equals, in this case
-    * SubResourceMethodDescriptor must be selected.
-    *
+    * Compare two sub-resources. One of it is {@link SubResourceMethodDescriptor} and other one id
+    * {@link SubResourceLocatorDescriptor}. First compare UriPattern, see {@link UriPattern#URIPATTERN_COMPARATOR}. NOTE
+    * URI comparator compare UriPattrens for descending sorting. So it it return negative integer then it minds
+    * SubResourceMethodDescriptor has higher priority by UriPattern comparison. If comparator return positive integer
+    * then SubResourceLocatorDescriptor has higher priority. And finally if zero was returned then UriPattern is equals,
+    * in this case SubResourceMethodDescriptor must be selected.
+    * 
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @return result of comparison sub-resources
@@ -327,9 +312,8 @@ public class RequestDispatcher
    }
 
    /**
-    * Process result of invoked method, and set {@link Response} parameters
-    * dependent of returned object.
-    *
+    * Process result of invoked method, and set {@link Response} parameters dependent of returned object.
+    * 
     * @param o result of invoked method
     * @param returnType type of returned object
     * @param request See {@link GenericContainerRequest}
@@ -339,7 +323,7 @@ public class RequestDispatcher
     * @see SubResourceMethodDescriptor
     * @see SubResourceLocatorDescriptor
     */
-   private static void processResponse(Object o, Class<?> returnType, GenericContainerRequest request,
+   private void processResponse(Object o, Class<?> returnType, GenericContainerRequest request,
       GenericContainerResponse response, List<MediaType> produces)
    {
       if (returnType == void.class || o == null)
@@ -373,7 +357,7 @@ public class RequestDispatcher
 
    /**
     * Process resource methods.
-    *
+    * 
     * @param <T> ResourceMethodDescriptor extension
     * @param rmm See {@link ResourceMethodMap}
     * @param request See {@link GenericContainerRequest}
@@ -381,7 +365,7 @@ public class RequestDispatcher
     * @param methods list for method resources
     * @return true if at least one resource method found false otherwise
     */
-   private static <T extends ResourceMethodDescriptor> boolean processResourceMethod(ResourceMethodMap<T> rmm,
+   private <T extends ResourceMethodDescriptor> boolean processResourceMethod(ResourceMethodMap<T> rmm,
       GenericContainerRequest request, GenericContainerResponse response, List<T> methods)
    {
       String method = request.getMethod();
@@ -457,17 +441,17 @@ public class RequestDispatcher
 
    /**
     * Process sub-resource methods.
-    *
+    * 
     * @param srmm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param capturingValues the list for keeping template values. See
-    *        {@link javax.ws.rs.core.UriInfo#getPathParameters()}
+    *           {@link javax.ws.rs.core.UriInfo#getPathParameters()}
     * @param methods list for method resources
     * @return true if at least one sub-resource method found false otherwise
     */
-   private static boolean processSubResourceMethod(SubResourceMethodMap srmm, String requestedPath,
+   private boolean processSubResourceMethod(SubResourceMethodMap srmm, String requestedPath,
       GenericContainerRequest request, GenericContainerResponse response, List<String> capturingValues,
       List<SubResourceMethodDescriptor> methods)
    {
@@ -510,15 +494,14 @@ public class RequestDispatcher
 
    /**
     * Process sub-resource locators.
-    *
+    * 
     * @param srlm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param capturingValues the list for keeping template values
     * @param locators list for sub-resource locators
-    * @return true if at least one SubResourceLocatorDescriptor found false
-    *         otherwise
+    * @return true if at least one SubResourceLocatorDescriptor found false otherwise
     */
-   private static boolean processSubResourceLocator(SubResourceLocatorMap srlm, String requestedPath,
+   private boolean processSubResourceLocator(SubResourceLocatorMap srlm, String requestedPath,
       List<String> capturingValues, List<SubResourceLocatorDescriptor> locators)
    {
       for (Map.Entry<UriPattern, SubResourceLocatorDescriptor> e : srlm.entrySet())
@@ -532,12 +515,12 @@ public class RequestDispatcher
 
    /**
     * Get root resource.
-    *
+    * 
     * @param parameterValues is taken from context
     * @param requestPath is taken from context
     * @return root resource
-    * @throws WebApplicationException if there is no matched root resources.
-    *         Exception with prepared error response with 'Not Found' status
+    * @throws WebApplicationException if there is no matched root resources. Exception with prepared error response with
+    *            'Not Found' status
     */
    protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
    {

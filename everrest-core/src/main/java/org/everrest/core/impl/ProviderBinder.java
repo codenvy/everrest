@@ -76,7 +76,8 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 /**
- * Gives access to common predefined provider.
+ * Gives access to common predefined provider. Users of EverRest are not
+ * expected to use this class or any of its subclasses.
  *
  * @see Providers
  * @see Provider
@@ -208,6 +209,12 @@ public class ProviderBinder implements Providers
       return ainst.get();
    }
 
+   /**
+    * Replace default set of providers by new one. This must not be used by regular
+    * users of EverRest framework.
+    * @throws SecurityException  if caller is not permitted to call this method
+    *         because to current security policy
+    */
    public static void setInstance(ProviderBinder inst)
    {
       SecurityManager security = System.getSecurityManager();
@@ -737,7 +744,8 @@ public class ProviderBinder implements Providers
             }
          }
       }
-      Collections.sort(l, MediaTypeHelper.MEDIA_TYPE_COMPARATOR);
+      if (l.size() > 1)
+         Collections.sort(l, MediaTypeHelper.MEDIA_TYPE_COMPARATOR);
       return l;
    }
 

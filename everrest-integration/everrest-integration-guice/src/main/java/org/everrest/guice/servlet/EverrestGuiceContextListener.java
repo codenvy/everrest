@@ -57,7 +57,6 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -66,20 +65,17 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: EverrestGuiceContextListener.java 106 2010-11-18 16:22:57Z
- *          andrew00x $
+ * @version $Id$
  */
 public abstract class EverrestGuiceContextListener extends GuiceServletContextListener
 {
    /**
-    * Default EverrestGuiceContextListener implementation. It gets application's
-    * FQN from context-param <i>javax.ws.rs.Application</i> and instantiate it.
-    * If such parameter is not specified then scan (if scanning is enabled) web
-    * application's folders WEB-INF/classes and WEB-INF/lib for classes which
-    * contains JAX-RS annotations. Interesting for three annotations
-    * {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS
-    * components is managed by contex-param <i>org.everrest.scan.components</i>.
-    * This parameter must be <i>true</i> to enable scanning.
+    * Default EverrestGuiceContextListener implementation. It gets application's FQN from context-param
+    * <i>javax.ws.rs.Application</i> and instantiate it. If such parameter is not specified then scan (if scanning is
+    * enabled) web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS annotations.
+    * Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS components
+    * is managed by contex-param <i>org.everrest.scan.components</i>. This parameter must be <i>true</i> to enable
+    * scanning.
     */
    public static class DefaultListener extends EverrestGuiceContextListener
    {
@@ -147,13 +143,12 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
 
    /**
     * Implementor can provide set of own {@link Module} for JAX-RS components.
-    *
+    * 
     * <pre>
     * protected List&lt;Module&gt; getModules()
     * {
     *    List&lt;Module&gt; modules = new ArrayList&lt;Module&gt;(1);
-    *    modules.add(new Module()
-    *    {
+    *    modules.add(new Module() {
     *       public void configure(Binder binder)
     *       {
     *          binder.bind(MyResource.class);
@@ -163,21 +158,19 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     *    return modules;
     * }
     * </pre>
-    *
+    * 
     * @return JAX-RS modules
     */
    protected abstract List<Module> getModules();
 
    /**
-    * Create servlet module. By default return module with one component
-    * GuiceEverrestServlet.
-    *
+    * Create servlet module. By default return module with one component GuiceEverrestServlet.
+    * 
     * @return ServletModule
     */
    protected ServletModule getServletModule()
    {
-      return new ServletModule()
-      {
+      return new ServletModule() {
          @Override
          protected void configureServlets()
          {
@@ -201,62 +194,45 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
          if (type instanceof Class)
          {
             Class clazz = (Class)type;
-            if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz))
+            // Get scope on binding. Will not initialize fields for object with
+            // scope other then Scopes.NO_SCOPE. In this case we just need avoid
+            // useless processing of constructors and fields.
+            ComponentLifecycleScope lifeCycle = ((BindingImpl<?>)binding).getScoping().isNoScope() //
+               ? ComponentLifecycleScope.PER_REQUEST //
+               : ComponentLifecycleScope.SINGLETON;
+            if (clazz.getAnnotation(Provider.class) != null)
             {
-               processor.addApplication((Application)injector.getInstance(clazz));
+               ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, lifeCycle);
+               com.google.inject.Provider<?> guiceProvider = binding.getProvider();
+               pDescriptor.accept(rdv);
+               if (ContextResolver.class.isAssignableFrom(clazz))
+                  providers.addContextResolver(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               if (ExceptionMapper.class.isAssignableFrom(clazz))
+                  providers.addExceptionMapper(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               if (MessageBodyReader.class.isAssignableFrom(clazz))
+                  providers.addMessageBodyReader(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               if (MessageBodyWriter.class.isAssignableFrom(clazz))
+                  providers.addMessageBodyWriter(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
             }
-            else
+            else if (clazz.getAnnotation(Filter.class) != null)
             {
-               // Get scope on binding. Will not initialize fields for object with
-               // scope other then Scopes.NO_SCOPE. In this case we just need avoid
-               // useless processing of constructors and fields.
-               ComponentLifecycleScope lifeCycle = ((BindingImpl<?>)binding).getScoping().isNoScope() //
-                  ? ComponentLifecycleScope.PER_REQUEST //
-                  : ComponentLifecycleScope.SINGLETON;
-               if (clazz.getAnnotation(Provider.class) != null)
-               {
-                  ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, lifeCycle);
-                  com.google.inject.Provider<?> guiceProvider = binding.getProvider();
-                  pDescriptor.accept(rdv);
-                  if (ContextResolver.class.isAssignableFrom(clazz))
-                     providers
-                        .addContextResolver(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz, lifeCycle);
+               fDescriptor.accept(rdv);
+               com.google.inject.Provider<?> guiceProvider = binding.getProvider();
 
-                  if (ExceptionMapper.class.isAssignableFrom(clazz))
-                     providers
-                        .addExceptionMapper(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
-
-                  if (MessageBodyReader.class.isAssignableFrom(clazz))
-                     providers.addMessageBodyReader(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor,
-                        guiceProvider));
-
-                  if (MessageBodyWriter.class.isAssignableFrom(clazz))
-                     providers.addMessageBodyWriter(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor,
-                        guiceProvider));
-               }
-               else if (clazz.getAnnotation(Filter.class) != null)
-               {
-                  FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz, lifeCycle);
-                  fDescriptor.accept(rdv);
-                  com.google.inject.Provider<?> guiceProvider = binding.getProvider();
-
-                  if (MethodInvokerFilter.class.isAssignableFrom(clazz))
-                     providers.addMethodInvokerFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor,
-                        guiceProvider));
-
-                  if (RequestFilter.class.isAssignableFrom(clazz))
-                     providers.addRequestFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
-
-                  if (ResponseFilter.class.isAssignableFrom(clazz))
-                     providers.addResponseFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
-               }
-               else if (clazz.getAnnotation(Path.class) != null)
-               {
-                  AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz, lifeCycle);
-                  rDescriptor.accept(rdv);
-                  com.google.inject.Provider<?> guiceProvider = binding.getProvider();
-                  resources.addResource(new GuiceObjectFactory<AbstractResourceDescriptor>(rDescriptor, guiceProvider));
-               }
+               if (MethodInvokerFilter.class.isAssignableFrom(clazz))
+                  providers.addMethodInvokerFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
+               if (RequestFilter.class.isAssignableFrom(clazz))
+                  providers.addRequestFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
+               if (ResponseFilter.class.isAssignableFrom(clazz))
+                  providers.addResponseFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
+            }
+            else if (clazz.getAnnotation(Path.class) != null)
+            {
+               AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz, lifeCycle);
+               rDescriptor.accept(rdv);
+               com.google.inject.Provider<?> guiceProvider = binding.getProvider();
+               resources.addResource(new GuiceObjectFactory<AbstractResourceDescriptor>(rDescriptor, guiceProvider));
             }
          }
       }

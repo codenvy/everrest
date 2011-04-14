@@ -60,7 +60,7 @@ public class SourceEntityProviderTest extends BaseTest
       setContext();
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testReadStreamSourceEntityProvider() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(StreamSource.class, null, null, mediaType);
@@ -76,7 +76,7 @@ public class SourceEntityProviderTest extends BaseTest
       write(out);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWriteStreamSourceEntityProvider() throws Exception
    {
       StreamSource src = new StreamSource(new ByteArrayInputStream(data));
@@ -88,7 +88,7 @@ public class SourceEntityProviderTest extends BaseTest
       write(out);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testReadSAXSourceEntityProvider() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(SAXSource.class, null, null, mediaType);
@@ -104,7 +104,7 @@ public class SourceEntityProviderTest extends BaseTest
       write(out);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWriteSAXSourceEntityProvider() throws Exception
    {
       SAXSource src = new SAXSource(new InputSource(new ByteArrayInputStream(data)));
@@ -116,7 +116,7 @@ public class SourceEntityProviderTest extends BaseTest
       write(out);
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testReadDOMSourceEntityProvider() throws Exception
    {
       MessageBodyReader reader = providers.getMessageBodyReader(DOMSource.class, null, null, mediaType);
@@ -133,7 +133,7 @@ public class SourceEntityProviderTest extends BaseTest
       assertEquals("to be or not to be", root.getFirstChild().getTextContent());
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void testWriteDOMSourceEntityProvider() throws Exception
    {
       Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(data));

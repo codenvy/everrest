@@ -19,8 +19,6 @@
 
 package org.everrest.sample.book;
 
-import org.everrest.core.Inject;
-
 import java.net.URI;
 import java.util.Collection;
 
@@ -41,7 +39,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("books")
 public class BookService
 {
-   @Inject
+   @javax.inject.Inject
    private BookStorage bookStorage;
 
    @Path("{id}")

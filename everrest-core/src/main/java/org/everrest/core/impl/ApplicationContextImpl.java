@@ -49,7 +49,6 @@ import javax.ws.rs.core.UriInfo;
  */
 public class ApplicationContextImpl implements ApplicationContext
 {
-
    /**
     * {@link ThreadLocal} ApplicationContext.
     */
@@ -73,97 +72,61 @@ public class ApplicationContextImpl implements ApplicationContext
       current.set(context);
    }
 
-   /**
-    * Values of template parameters.
-    */
-   private List<String> parameterValues = new ArrayList<String>();
-
-   /**
-    * List of matched resources.
-    */
-   private List<Object> matchedResources = new ArrayList<Object>();
-
-   /**
-    * List of not decoded matched URIs.
-    */
-   private List<String> encodedMatchedURIs = new ArrayList<String>();
-
-   /**
-    * List of decoded matched URIs.
-    */
-   private List<String> matchedURIs = new ArrayList<String>();
-
-   /**
-    * Mutable runtime attributes.
-    */
-   private Map<String, Object> attributes;
-
-   /**
-    * Properties.
-    */
-   private Map<String, String> properties;
-
-   /**
-    * See {@link GenericContainerRequest}.
-    */
+   /** See {@link GenericContainerRequest}. */
    protected GenericContainerRequest request;
 
-   /**
-    * See {@link ContainerResponse}.
-    */
+   /** See {@link ContainerResponse}. */
    protected GenericContainerResponse response;
 
-   /**
-    * Providers.
-    */
+   /** Providers. */
    protected ProviderBinder providers;
 
-   /**
-    * Absolute path, full requested URI without query string and fragment.
-    */
+   protected DependencySupplier depInjector;
+
+   /** Values of template parameters. */
+   private List<String> parameterValues = new ArrayList<String>();
+
+   /** List of matched resources. */
+   private List<Object> matchedResources = new ArrayList<Object>();
+
+   /** List of not decoded matched URIs. */
+   private List<String> encodedMatchedURIs = new ArrayList<String>();
+
+   /** List of decoded matched URIs. */
+   private List<String> matchedURIs = new ArrayList<String>();
+
+   /** Mutable runtime attributes. */
+   private Map<String, Object> attributes;
+
+   /** Properties. */
+   private Map<String, String> properties;
+
+   /** Absolute path, full requested URI without query string and fragment. */
    private URI absolutePath;
 
-   /**
-    * Decoded relative path.
-    */
+   /** Decoded relative path. */
    private String path;
 
-   /**
-    * Not decoded relative path.
-    */
+   /** Not decoded relative path. */
    private String encodedPath;
 
-   /**
-    * Not decoded path template parameters.
-    */
+   /** Not decoded path template parameters. */
    private MultivaluedMap<String, String> encodedPathParameters;
 
-   /**
-    * Decoded path template parameters.
-    */
+   /** Decoded path template parameters. */
    private MultivaluedMap<String, String> pathParameters;
 
-   /**
-    * List of not decoded path segments.
-    */
+   /** List of not decoded path segments. */
    private List<PathSegment> encodedPathSegments;
 
-   /**
-    * Decoded path segments.
-    */
+   /** Decoded path segments. */
    private List<PathSegment> pathSegments;
 
-   /**
-    * Not decoded query parameters.
-    */
+   /** Not decoded query parameters. */
    private MultivaluedMap<String, String> encodedQueryParameters;
 
-   /**
-    * Decoded query parameters.
-    */
+   /** Decoded query parameters. */
    private MultivaluedMap<String, String> queryParameters;
-
-   private DependencySupplier depInjector;
 
    /**
     * Constructs new instance of ApplicationContext.
@@ -530,4 +493,11 @@ public class ApplicationContextImpl implements ApplicationContext
       getProperties().put(name, value);
    }
 
+   /**
+    * @param providers ProviderBinder
+    */
+   public void setProviders(ProviderBinder providers)
+   {
+      this.providers = providers;
+   }
 }

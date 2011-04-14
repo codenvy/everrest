@@ -23,6 +23,7 @@ package org.everrest.core.resource;
  * 
  * @author Gennady Azarenkov
  * @version $Id$
+ * @deprecated Not use it as flag interface any more. All JAX-RS components resolving by its annotations only.
  */
 public interface ResourceContainer
 {

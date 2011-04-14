@@ -155,7 +155,7 @@ public class ParameterHelperTest extends TestCase
       // used for test
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"rawtypes"})
    public void m9(List l, Set s, SortedSet ss)
    {
       // used for test

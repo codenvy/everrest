@@ -22,6 +22,7 @@ package org.everrest.groovy;
 import junit.framework.TestCase;
 
 import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.tools.DependencySupplierImpl;
@@ -49,7 +50,7 @@ public abstract class BaseTest extends TestCase
    {
       this.resources = new ResourceBinderImpl();
       this.dependencies = new DependencySupplierImpl();
-      this.requestHandler = new RequestHandlerImpl(resources, dependencies);
+      this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), dependencies, null);
       this.providers = ProviderBinder.getInstance();
       this.launcher = new ResourceLauncher(requestHandler);
       this.groovyPublisher = new GroovyResourcePublisher(resources, dependencies);

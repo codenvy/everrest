@@ -38,7 +38,8 @@ public class InjectAnnotationTest extends BaseTest
       depInjector.addComponent(InjectableComponent.class, new InjectableComponent());
       ProviderBinder.setInstance(new ProviderBinder());
       providers = new ApplicationProviderBinder();
-      requestHandler = new RequestHandlerImpl(resources, providers, depInjector, new EverrestConfiguration());
+      requestHandler =
+         new RequestHandlerImpl(new RequestDispatcher(resources), depInjector, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
    }
 

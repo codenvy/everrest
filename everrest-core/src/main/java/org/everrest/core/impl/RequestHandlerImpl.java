@@ -48,16 +48,14 @@ import javax.ws.rs.ext.ExceptionMapper;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class RequestHandlerImpl implements RequestHandler
+public class RequestHandlerImpl implements RequestHandler
 {
-
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(RequestHandlerImpl.class);
 
    /**
-    * Application properties. Properties from this map will be copied to
-    * ApplicationContext and may be accessible via method
-    * {@link ApplicationContextImpl#getProperties()}.
+    * Application properties. Properties from this map will be copied to ApplicationContext and may be accessible via
+    * method {@link ApplicationContextImpl#getProperties()}.
     */
    private static final Map<String, String> properties = new HashMap<String, String>();
 
@@ -69,46 +67,58 @@ public final class RequestHandlerImpl implements RequestHandler
    public static void setProperty(String name, String value)
    {
       if (value == null)
-      {
          properties.remove(name);
-      }
       else
-      {
          properties.put(name, value);
-      }
    }
 
    /** See {@link RequestDispatcher}. */
    private final RequestDispatcher dispatcher;
 
-   /** ProviderBinder. */
-   private final ProviderBinder applicationProviders;
-
    private final DependencySupplier dependencySupplier;
 
    private final EverrestConfiguration config;
 
-   public RequestHandlerImpl(ProviderBinder providers, RequestDispatcher dispatcher, DependencySupplier dependencySupplier,
-      EverrestConfiguration config)
+   private final ProviderBinder providers;
+
+   /**
+    * @param dispatcher RequestDispatcher
+    * @param providers ProviderBinder. May be <code>null</code> then default set of providers used
+    * @param dependencySupplier DependencySupplier
+    * @param config EverrestConfiguration. May be <code>null</code> then default configuration used
+    */
+   public RequestHandlerImpl(RequestDispatcher dispatcher, ProviderBinder providers,
+      DependencySupplier dependencySupplier, EverrestConfiguration config)
    {
-      this.applicationProviders = providers;
-      this.config = config == null ? new EverrestConfiguration() : config;
       this.dispatcher = dispatcher;
       this.dependencySupplier = dependencySupplier;
-      // Add security check only in customized ProviderBinder.
-      if (this.applicationProviders != null && this.config.isCheckSecurity())
-         this.applicationProviders.addMethodInvokerFilter(new SecurityConstraint());
+      this.providers = providers == null ? ProviderBinder.getInstance() : providers;
+      this.config = config == null ? new EverrestConfiguration() : config;
+      if (this.config.isCheckSecurity())
+         this.providers.addMethodInvokerFilter(new SecurityConstraint());
    }
 
+   public RequestHandlerImpl(RequestDispatcher dispatcher, DependencySupplier dependencySupplier,
+      EverrestConfiguration config)
+   {
+      this(dispatcher, null, dependencySupplier, config);
+   }
+
+   /**
+    * @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future.
+    */
+   public RequestHandlerImpl(ResourceBinder resources, DependencySupplier dependencySupplier)
+   {
+      this(new RequestDispatcher(resources), null, dependencySupplier, new EverrestConfiguration());
+   }
+
+   /**
+    * @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future.
+    */
    public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier,
       EverrestConfiguration config)
    {
-      this(providers, new RequestDispatcher(resources), dependencySupplier, config);
-   }
-
-   public RequestHandlerImpl(ResourceBinder resources, DependencySupplier dependencySupplier)
-   {
-      this(null, new RequestDispatcher(resources), dependencySupplier, new EverrestConfiguration());
+      this(new RequestDispatcher(resources), providers, dependencySupplier, config);
    }
 
    /**
@@ -121,22 +131,12 @@ public final class RequestHandlerImpl implements RequestHandler
       try
       {
          if (config.isNormalizeUri())
-         {
             request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
-         }
          if (config.isHttpMethodOverride())
          {
             String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
             if (method != null)
-            {
                request.setMethod(method);
-            }
-         }
-
-         ProviderBinder providers = applicationProviders;
-         if (providers == null)
-         {
-            providers = ProviderBinder.getInstance();
          }
 
          ApplicationContext context = new ApplicationContextImpl(request, response, providers);
@@ -144,11 +144,9 @@ public final class RequestHandlerImpl implements RequestHandler
          context.setDependencySupplier(dependencySupplier);
          ApplicationContextImpl.setCurrent(context);
 
-         for (ObjectFactory<FilterDescriptor> factory : providers.getRequestFilters(context.getPath()))
-         {
-            RequestFilter f = (RequestFilter)factory.getInstance(context);
-            f.doFilter(request);
-         }
+         // Apply common request filters.
+         for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getRequestFilters(context.getPath()))
+            ((RequestFilter)factory.getInstance(context)).doFilter(request);
 
          try
          {
@@ -157,9 +155,7 @@ public final class RequestHandlerImpl implements RequestHandler
             {
                String jaxrsHeader = getJaxrsHeader(response.getStatus());
                if (jaxrsHeader != null)
-               {
                   response.getHttpHeaders().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
-               }
             }
          }
          catch (Exception e)
@@ -167,7 +163,7 @@ public final class RequestHandlerImpl implements RequestHandler
             if (e instanceof WebApplicationException)
             {
                Response errorResponse = ((WebApplicationException)e).getResponse();
-               ExceptionMapper excmap = providers.getExceptionMapper(WebApplicationException.class);
+               ExceptionMapper excmap = context.getProviders().getExceptionMapper(WebApplicationException.class);
 
                int errorStatus = errorResponse.getStatus();
                // should be some of 4xx status
@@ -175,31 +171,20 @@ public final class RequestHandlerImpl implements RequestHandler
                {
                   // Warn about error in debug mode only.
                   if (LOG.isDebugEnabled() && e.getCause() != null)
-                  {
                      LOG.warn("WebApplication exception occurs.", e.getCause());
-                  }
                }
                else
                {
                   if (e.getCause() != null)
-                  {
                      LOG.warn("WebApplication exception occurs.", e.getCause());
-                  }
                }
                // -----
                if (errorResponse.getEntity() == null)
                {
                   if (excmap != null)
-                  {
                      errorResponse = excmap.toResponse(e);
-                  }
-                  else
-                  {
-                     if (e.getMessage() != null)
-                     {
-                        errorResponse = createErrorResponse(errorStatus, e.getMessage());
-                     }
-                  }
+                  else if (e.getMessage() != null)
+                     errorResponse = createErrorResponse(errorStatus, e.getMessage());
                }
                else
                {
@@ -207,9 +192,7 @@ public final class RequestHandlerImpl implements RequestHandler
                   {
                      String jaxrsHeader = getJaxrsHeader(errorStatus);
                      if (jaxrsHeader != null)
-                     {
                         errorResponse.getMetadata().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
-                     }
                   }
                }
                response.setResponse(errorResponse);
@@ -218,22 +201,18 @@ public final class RequestHandlerImpl implements RequestHandler
             {
                Throwable cause = e.getCause();
                Class causeClazz = cause.getClass();
-               ExceptionMapper excmap = providers.getExceptionMapper(causeClazz);
+               ExceptionMapper excmap = context.getProviders().getExceptionMapper(causeClazz);
                while (causeClazz != null && excmap == null)
                {
-                  excmap = providers.getExceptionMapper(causeClazz);
+                  excmap = context.getProviders().getExceptionMapper(causeClazz);
                   if (excmap == null)
-                  {
                      causeClazz = causeClazz.getSuperclass();
-                  }
                }
                if (excmap != null)
                {
+                  // Hide error message if exception mapper exists.
                   if (LOG.isDebugEnabled())
-                  {
-                     // Hide error message if exception mapper exists.
                      LOG.warn("Internal error occurs.", cause);
-                  }
                   response.setResponse(excmap.toResponse(e.getCause()));
                }
                else
@@ -247,11 +226,10 @@ public final class RequestHandlerImpl implements RequestHandler
                throw new UnhandledException(e);
             }
          }
-         for (ObjectFactory<FilterDescriptor> factory : providers.getResponseFilters(context.getPath()))
-         {
-            ResponseFilter f = (ResponseFilter)factory.getInstance(context);
-            f.doFilter(response);
-         }
+
+         for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getResponseFilters(context.getPath()))
+            ((ResponseFilter)factory.getInstance(context)).doFilter(response);
+
          response.writeResponse();
       }
       finally
@@ -263,7 +241,7 @@ public final class RequestHandlerImpl implements RequestHandler
 
    /**
     * Create error response with specified status and body message.
-    *
+    * 
     * @param status response status
     * @param message response message
     * @return response
