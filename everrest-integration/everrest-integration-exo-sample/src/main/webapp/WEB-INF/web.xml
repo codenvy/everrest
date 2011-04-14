@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
    <context-param>
-      <param-name></param-name>
+      <param-name>everrest.exoplatform.standalone.config</param-name>
       <param-value>war:/WEB-INF/classes/conf/exo-configuration.xml</param-value>
    </context-param>
    <listener>
