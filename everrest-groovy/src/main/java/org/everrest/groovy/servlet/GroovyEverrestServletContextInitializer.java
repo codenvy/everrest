@@ -162,45 +162,6 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                   Set<URL> scripts = finder.find(filter, path);
                   if (scripts != null && scripts.size() > 0)
                   {
-                     /*for (URL script : scripts)
-                     {
-                        InputStream in = null;
-                        try
-                        {
-                           in = script.openStream();
-                           GroovyCodeSource gcs = new GroovyCodeSource(in, script.toString(), "/groovy/script/jaxrs");
-                           gcs.setCachable(false);
-                           Class<?> clazz = classLoaderProvider.getGroovyClassLoader().parseClass(gcs);
-                           if (findAnnotation(clazz, jaxrsAnnotations))
-                           {
-                              boolean added = scanned.add(clazz);
-                              if (added)
-                              {
-                                 if (LOG.isDebugEnabled())
-                                    LOG.debug("Add script from URL: " + script);
-                              }
-                              else
-                              {
-                                 LOG.warn("Skip duplicated class: " + clazz);
-                              }
-                           }
-                        }
-                        finally
-                        {
-                           if (in != null)
-                           {
-                              try
-                              {
-                                 in.close();
-                              }
-                              catch (IOException e)
-                              {
-                                 LOG.error("Error occurs when tried to close stream, " + e.getMessage());
-                              }
-                           }
-                        }
-                     }*/
-
                      SourceFile[] files = new SourceFile[scripts.size()];
                      int i = 0;
                      for (URL script : scripts)
