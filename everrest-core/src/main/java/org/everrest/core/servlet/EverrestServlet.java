@@ -18,6 +18,7 @@
  */
 package org.everrest.core.servlet;
 
+import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestProcessor;
@@ -83,7 +84,7 @@ public class EverrestServlet extends HttpServlet
             throw ioe;
          }
       }
-      catch (Exception e)
+      catch (UnhandledException e)
       {
          LOG.error(e.getMessage(), e);
          throw new ServletException(e);

@@ -19,6 +19,7 @@
 package org.everrest.exoplatform.servlet;
 
 import org.everrest.core.RequestHandler;
+import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.servlet.ServletContainerRequest;
@@ -86,7 +87,7 @@ public class EverrestExoServlet extends AbstractHttpServlet
             throw ioe;
          }
       }
-      catch (Exception e)
+      catch (UnhandledException e)
       {
          throw new ServletException(e);
       }
