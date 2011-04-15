@@ -25,7 +25,7 @@ import java.net.URL;
  * URL's filter.
  * <p>
  * Instances of this interface may be passed to the
- * {@link ScriptFinder#find(URLFilter, URL...)}.
+ * {@link ScriptFinder#find(URLFilter, URL)}.
  * </p>
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
