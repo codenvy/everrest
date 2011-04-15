@@ -1,0 +1,52 @@
+/* don't edit me */
+{
+    "arrayList":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "vector":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "linkedList":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "linkedHashSet":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "hashSet":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "list":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "collection":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "array":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "set":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+
+    "queue":[
+    {"title":"JUnit in Action","pages":386,"isdn":93011099534534,"price":19.37,"author":"Vincent Masson"}, 
+    {"title":"Beginning C# 2008 from novice to professional","pages":511,"isdn":9781590598696,"price":23.56,"author":"Christian Gross"},
+    {"title":"Advanced JavaScript. Third Edition","pages":617,"isdn":9781598220339,"price":25.99,"author":"Chuck Easttom"}],
+}

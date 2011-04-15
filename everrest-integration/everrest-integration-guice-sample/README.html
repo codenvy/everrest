@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+   <head>
+      <title>Everrest-Guice Integration Example</title>
+   </head>
+   <body>
+      <h1>EverRest-Guice Integration Example</h1>
+      <p>This is sample of integration EverRest framework with Guice container.</p>
+      <p>We will create simple books service. It should be able give access to books by id, get list all available books 
+      and add new book in storage. Service supports JSON format for transfer data to/from client.</p>
+      <ul>
+	      <li>You need add bootstrap of Book application.
+	      <pre>
+	      &lt;listener&gt;
+	         &lt;listener-class&gt;org.everrest.sample.guice.BookServiceBootstrap&lt;/listener-class&gt;
+	      &lt;/listener&gt;
+	      </pre>
+	      This is extension of org.everrest.guice.servlet.EverrestGuiceContextListener that implements method
+	      <i>getModules</i>. This method should provides list of guice modules that will be registered in EverRest
+	      framework.</li>
+	      <li>Then you need add GuiceFilter.
+	      <pre>
+	      &lt;filter&gt;
+	         &lt;filter-name&gt;guiceFilter&lt;/filter-name&gt;
+	         &lt;filter-class&gt;com.google.inject.servlet.GuiceFilter&lt;/filter-class&gt;
+	      &lt;/filter&gt;
+	      &lt;filter-mapping&gt;
+	         &lt;filter-name&gt;guiceFilter&lt;/filter-name&gt;
+	         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+	      &lt;/filter-mapping&gt;
+	      </pre></li>
+	      <li>Add modules.
+	      <pre>
+         public class BookServiceBootstrap extends EverrestGuiceContextListener
+         {
+            @Override
+            protected List&lt;Module&gt; getModules()
+            {
+               List&lt;Module&gt; modules = new ArrayList&lt;Module&gt;();
+               modules.add(new Module() {
+                  public void configure(Binder binder) {
+                     binder.bind(BookService.class);
+                     binder.bind(BookStorage.class);
+                     binder.bind(BookNotFoundExceptionMapper.class);
+                  }
+               });
+               return modules;
+            }
+         }
+	      </pre>
+	      </li>
+	      <li>EverRest components.
+	      <p><i>org.everrest.sample.guice.Book</i> - is simple Java Bean that will be used to transfer data via JSON.</p>
+	      <p><i>org.everrest.sample.guice.BookNotFoundException</i> - exception that will be thrown by
+	      <i>org.everrest.sample.guice.BookService</i> if client requested book that does not exist in storage.</p>
+	      <p><i>org.everrest.sample.guice.BookNotFoundExceptionMapper</i> - JAX-RS component that intercepts
+	      <i>org.everrest.sample.guice.BookNotFoundException</i> and send correct response to client.</p>
+	      <pre>
+         @Provider
+         @Singleton
+         public class BookNotFoundExceptionMapper implements ExceptionMapper&lt;BookNotFoundException&gt;
+         {
+            public Response toResponse(BookNotFoundException exception)
+            {
+               return Response.status(404).entity(exception.getMessage()).type("text/plain").build();
+            }
+         }
+	      </pre>
+	      <p>Annotation <i>@Singleton</i> say to Guice container we want to have the same instance of
+	      <i>org.everrest.sample.guice.BookNotFoundExceptionMapper</i> for all requests.</p>
+	      <p><i>org.everrest.sample.guice.BookService</i> - JAX-RS service that process client's requests.
+	      This is per-request resource and it inject BookStorage instance via <i>com.google.inject.Inject</i> annotation.
+	      </p>
+	      <pre>
+         @Path("books")
+         public class BookService
+         {
+            @Inject
+            private BookStorage bookStorage;
+	      ...
+	      </pre>
+	      <p><i>org.everrest.sample.guice.BookStorage</i> - storage of Books. This is singleton component of Guice
+	      container.</p>
+	      <pre>
+         @Singleton
+         public class BookStorage
+         {
+	      ...
+	      </pre></li>
+	      <li>Request mapping.
+	      <table border="1"><tbody>
+	      <tr>
+	      <th>Relative Path</th>
+         <th>HTTP Method</th>
+         <th>Description</th>
+	      </tr>
+	      <tr>
+	      <td>guice-book-service/books/{id}</td>
+	      <td>GET</td>
+	      <td>Get books with specified id. Just after server start only one book in storage and it can be accessed via
+	      id <i>101</i></td>
+	      </tr>
+	      <tr>
+	      <td>guice-book-service/books/</td>
+	      <td>GET</td>
+	      <td>Get all books from storage.</td>
+	      </tr>
+	      <tr>
+	      <td>guice-book-service/books/</td>
+	      <td>PUT</td>
+	      <td>Add new book in storage. The body of request must contains book's description in JSON format. The
+	      <i>Content-type</i> header must be set to <i>application/json</i></td>
+	      </tr>
+	      </tbody></table>
+	      </li>
+	      <li>How to try.
+	      <p>Build project.</p>
+	      <pre>mvn clean install</pre>
+	      <p>Run it with Jetty server.</p>
+         <pre>mvn jetty:run</pre>
+         <p>Point you web browser to <a href="http://localhost:8080/guice-book-service/books/101">http://localhost:8080/guice-book-service/books/101</a></p>
+         <p>If you are under linux or other unix like OS the you can use <i>curl</i> utility (often it is already installed).
+         Binary build of this utility available for windows also at <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>.
+         With <i>curl</i> you able to add new book in storage via command</p>
+         <pre>
+         curl -X PUT \
+         -H "Content-type:application/json" \
+         -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
+         http://localhost:8080/guice-book-service/books/ 
+         </pre>
+	      </li>
+      </ul>
+   </body>
+</html>
