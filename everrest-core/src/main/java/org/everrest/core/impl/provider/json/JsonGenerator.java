@@ -224,6 +224,8 @@ public class JsonGenerator
             return new StringValue((String)object);
          case ENUM :
             return new StringValue(((Enum)object).name());
+         case CLASS :
+            return new StringValue(((Class)object).getName());
          case ARRAY_BOOLEAN : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);

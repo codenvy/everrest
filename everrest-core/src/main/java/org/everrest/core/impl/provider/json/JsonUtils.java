@@ -106,7 +106,10 @@ public final class JsonUtils
       MAP,
 
       /** Enum. */
-      ENUM
+      ENUM,
+      
+      /** java.lang.Class */
+      CLASS
    }
 
    /**
@@ -145,6 +148,8 @@ public final class JsonUtils
 
       KNOWN_TYPES.put(Character.class.getName(), Types.CHAR);
       KNOWN_TYPES.put(String.class.getName(), Types.STRING);
+
+      KNOWN_TYPES.put(Class.class.getName(), Types.CLASS);
 
       // primitive types
       KNOWN_TYPES.put("boolean", Types.BOOLEAN);

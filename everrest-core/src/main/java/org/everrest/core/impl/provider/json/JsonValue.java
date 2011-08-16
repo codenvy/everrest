@@ -18,7 +18,7 @@
  */
 package org.everrest.core.impl.provider.json;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -123,7 +123,7 @@ public abstract class JsonValue
     */
    public Iterator<JsonValue> getElements()
    {
-      return new ArrayList<JsonValue>().iterator();
+      return Collections.<JsonValue>emptyList().iterator();
    }
 
    /**
@@ -133,7 +133,7 @@ public abstract class JsonValue
     */
    public Iterator<String> getKeys()
    {
-      return new ArrayList<String>().iterator();
+      return Collections.<String>emptyList().iterator();
    }
 
    /**

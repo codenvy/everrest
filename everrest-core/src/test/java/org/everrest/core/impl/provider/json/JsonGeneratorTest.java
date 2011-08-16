@@ -231,4 +231,16 @@ public class JsonGeneratorTest extends JsonTest
       assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
    }
 
+   public void testBeanClassTransf() throws Exception
+   {
+      ClassTransfBean be = new ClassTransfBean();
+      be.setKlass(ForTestClass000.class);
+      JsonValue jsonValue = JsonGenerator.createJsonObject(be);
+      //System.out.println(jsonValue);
+      assertEquals(ForTestClass000.class.getName(), jsonValue.getElement("klass").getStringValue());
+   }
+
+   public static class ForTestClass000
+   {
+   }
 }

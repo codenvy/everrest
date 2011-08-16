@@ -24,7 +24,6 @@ package org.everrest.core.impl.provider.json;
  */
 public class StringValue extends JsonValue
 {
-
    /** Value. */
    private final String value;
 
@@ -56,6 +55,61 @@ public class StringValue extends JsonValue
       return value;
    }
 
+   @Override
+   public boolean getBooleanValue()
+   {
+      return Boolean.parseBoolean(value);
+   }
+
+   @Override
+   public Number getNumberValue()
+   {
+      try
+      {
+         return Double.parseDouble(value);
+      }
+      catch (NumberFormatException e)
+      {
+         return 0;
+      }
+   }
+
+   @Override
+   public byte getByteValue()
+   {
+      return getNumberValue().byteValue();
+   }
+
+   @Override
+   public short getShortValue()
+   {
+      return getNumberValue().shortValue();
+   }
+
+   @Override
+   public int getIntValue()
+   {
+      return getNumberValue().intValue();
+   }
+
+   @Override
+   public long getLongValue()
+   {
+      return getNumberValue().longValue();
+   }
+
+   @Override
+   public float getFloatValue()
+   {
+      return getNumberValue().floatValue();
+   }
+
+   @Override
+   public double getDoubleValue()
+   {
+      return getNumberValue().doubleValue();
+   }
+
    /**
     * {@inheritDoc}
     */
@@ -73,5 +127,4 @@ public class StringValue extends JsonValue
    {
       writer.writeString(value);
    }
-
 }

@@ -489,6 +489,15 @@ public class ObjectBuilder
             return jsonValue.getStringValue().charAt(0);
          case STRING :
             return jsonValue.getStringValue();
+         case CLASS :
+            try
+            {
+               return Class.forName(jsonValue.getStringValue());
+            }
+            catch (ClassNotFoundException e)
+            {
+               return null;
+            }
          case ARRAY_BOOLEAN : {
             boolean[] params = new boolean[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
