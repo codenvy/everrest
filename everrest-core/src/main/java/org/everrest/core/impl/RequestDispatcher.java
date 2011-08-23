@@ -129,7 +129,6 @@ public class RequestDispatcher
       ApplicationContext context, ObjectFactory<AbstractResourceDescriptor> resourceFactory, Object resource,
       String requestPath)
    {
-
       List<String> parameterValues = context.getParameterValues();
       int len = parameterValues.size();
 
@@ -199,7 +198,6 @@ public class RequestDispatcher
             invokeSuResourceLocator(requestPath, locators.get(0), resource, context, request, response);
          }
       }
-
    }
 
    /**
@@ -217,11 +215,7 @@ public class RequestDispatcher
    {
       // save resource in hierarchy
       context.addMatchedResource(resource);
-
-      Class<?> returnType = rmd.getResponseType();
-      MethodInvoker invoker = context.getMethodInvoker(rmd);
-      Object o = invoker.invokeMethod(resource, rmd, context);
-      processResponse(o, returnType, request, response, rmd.produces());
+      doInvokeResource(rmd, resource, context, request, response);
    }
 
    /**
@@ -242,14 +236,18 @@ public class RequestDispatcher
       context.addMatchedResource(resource);
       // save the sub-resource method URI in hierarchy
       context.addMatchedURI(requestPath);
-      // save parameters values, actually parameters was save before, now just
-      // map parameter's names to values
+      // save parameters values, actually parameters was save before, now just map parameter's names to values
       context.setParameterNames(srmd.getUriPattern().getParameterNames());
+      doInvokeResource(srmd, resource, context, request, response);
+   }
 
-      Class<?> returnType = srmd.getResponseType();
-      MethodInvoker invoker = context.getMethodInvoker(srmd);
-      Object o = invoker.invokeMethod(resource, srmd, context);
-      processResponse(o, returnType, request, response, srmd.produces());
+   private void doInvokeResource(ResourceMethodDescriptor method, Object resource, ApplicationContext context,
+      GenericContainerRequest request, GenericContainerResponse response)
+   {
+      MethodInvoker invoker = context.getMethodInvoker(method);
+      Class<?> returnType = method.getResponseType();
+      Object o = invoker.invokeMethod(resource, method, context);
+      processResponse(o, returnType, request, response, method.produces());
    }
 
    /**
@@ -326,7 +324,7 @@ public class RequestDispatcher
    private void processResponse(Object o, Class<?> returnType, GenericContainerRequest request,
       GenericContainerResponse response, List<MediaType> produces)
    {
-      if (returnType == void.class || o == null)
+      if (o == null || o.getClass() == void.class || o.getClass() == Void.class)
       {
          response.setResponse(Response.noContent().build());
       }
@@ -334,7 +332,7 @@ public class RequestDispatcher
       {
          // get most acceptable media type for response
          MediaType contentType = request.getAcceptableMediaType(produces);
-         if (Response.class.isAssignableFrom(returnType))
+         if (Response.class.isAssignableFrom(o.getClass()))
          {
             Response r = (Response)o;
             // If content-type is not set then add it
@@ -344,7 +342,7 @@ public class RequestDispatcher
             }
             response.setResponse(r);
          }
-         else if (GenericEntity.class.isAssignableFrom(returnType))
+         else if (GenericEntity.class.isAssignableFrom(o.getClass()))
          {
             response.setResponse(Response.ok(o, contentType).build());
          }

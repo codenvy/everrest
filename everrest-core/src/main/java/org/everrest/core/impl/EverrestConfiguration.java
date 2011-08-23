@@ -31,25 +31,47 @@ public class EverrestConfiguration
 
    public static final String EVERREST_CHECK_SECURITY = "org.everrest.security";
 
-   protected boolean checkSecurity = true;
+   public static final String EVERREST_ASYNCHRONOUS = "org.everrest.asynchronous";
 
-   protected boolean httpMethodOverride = true;
+   public static final String EVERREST_ASYNCHRONOUS_POOL_SIZE = "org.everrest.asynchronous.pool.size";
 
-   protected boolean normalizeUri = false;
+   public static final String EVERREST_ASYNCHRONOUS_QUEUE_SIZE = "org.everrest.asynchronous.queue.size";
+
+   public static final String EVERREST_ASYNCHRONOUS_JOB_TIMEOUT = "org.everrest.asynchronous.job.timeout";
+
+   public static boolean defaultCheckSecurity = true;
+
+   public static boolean defaultHttpMethodOverride = true;
+
+   public static boolean defaultNormalizeUri = false;
+
+   public static boolean defaultAsynchronousSupported = true;
+
+   public static int defaultAsynchronousPoolSize = 100;
+
+   public static int defaultAsynchronousQueueSize = 100;
+
+   public static final int defaultAsynchronousJobTimeout = 60;
+
+   //
+
+   protected boolean checkSecurity = defaultCheckSecurity;
+
+   protected boolean httpMethodOverride = defaultHttpMethodOverride;
+
+   protected boolean normalizeUri = defaultNormalizeUri;
+
+   protected boolean asynchronousSupported = defaultAsynchronousSupported;
+
+   protected int asynchronousPoolSize = defaultAsynchronousPoolSize;
+
+   protected int asynchronousQueueSize = defaultAsynchronousQueueSize;
+
+   protected int asynchronousJobTimeout = defaultAsynchronousJobTimeout;
 
    public boolean isCheckSecurity()
    {
       return checkSecurity;
-   }
-
-   public boolean isHttpMethodOverride()
-   {
-      return httpMethodOverride;
-   }
-
-   public boolean isNormalizeUri()
-   {
-      return normalizeUri;
    }
 
    public void setCheckSecurity(boolean checkSecurity)
@@ -57,9 +79,19 @@ public class EverrestConfiguration
       this.checkSecurity = checkSecurity;
    }
 
+   public boolean isHttpMethodOverride()
+   {
+      return httpMethodOverride;
+   }
+
    public void setHttpMethodOverride(boolean httpMethodOverride)
    {
       this.httpMethodOverride = httpMethodOverride;
+   }
+
+   public boolean isNormalizeUri()
+   {
+      return normalizeUri;
    }
 
    public void setNormalizeUri(boolean normalizeUri)
@@ -67,4 +99,43 @@ public class EverrestConfiguration
       this.normalizeUri = normalizeUri;
    }
 
+   public boolean isAsynchronousSupported()
+   {
+      return asynchronousSupported;
+   }
+
+   public void setAsynchronousSupported(boolean asynchronousSupported)
+   {
+      this.asynchronousSupported = asynchronousSupported;
+   }
+
+   public int getAsynchronousPoolSize()
+   {
+      return asynchronousPoolSize;
+   }
+
+   public void setAsynchronousPoolSize(int asynchronousPoolSize)
+   {
+      this.asynchronousPoolSize = asynchronousPoolSize;
+   }
+
+   public int getAsynchronousQueueSize()
+   {
+      return asynchronousQueueSize;
+   }
+
+   public void setAsynchronousQueueSize(int asynchronousQueueSize)
+   {
+      this.asynchronousQueueSize = asynchronousQueueSize;
+   }
+
+   public int getAsynchronousJobTimeout()
+   {
+      return asynchronousJobTimeout;
+   }
+
+   public void setAsynchronousJobTimeout(int asynchronousJobTimeout)
+   {
+      this.asynchronousJobTimeout = asynchronousJobTimeout;
+   }
 }

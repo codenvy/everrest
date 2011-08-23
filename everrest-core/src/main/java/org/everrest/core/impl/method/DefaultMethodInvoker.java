@@ -21,6 +21,7 @@ package org.everrest.core.impl.method;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.ObjectFactory;
+import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodInvokerFilter;
@@ -81,11 +82,11 @@ public class DefaultMethodInvoker implements MethodInvoker
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
                {
-                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).entity(msg).type(
-                     MediaType.TEXT_PLAIN).build());
+                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).entity(msg)
+                     .type(MediaType.TEXT_PLAIN).build());
                }
-               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).entity(msg).type(
-                  MediaType.TEXT_PLAIN).build());
+               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).entity(msg)
+                  .type(MediaType.TEXT_PLAIN).build());
             }
          }
          else
@@ -134,8 +135,8 @@ public class DefaultMethodInvoker implements MethodInvoker
                      {
                         LOG.warn(msg);
                      }
-                     throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(
-                        msg).type(MediaType.TEXT_PLAIN).build());
+                     throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
+                        .entity(msg).type(MediaType.TEXT_PLAIN).build());
                   }
                }
                else
@@ -151,7 +152,7 @@ public class DefaultMethodInvoker implements MethodInvoker
                   {
                      if (LOG.isDebugEnabled())
                      {
-                        e.printStackTrace();
+                        LOG.error(e.getMessage(), e);
                      }
                      if (e instanceof WebApplicationException)
                      {
@@ -163,7 +164,7 @@ public class DefaultMethodInvoker implements MethodInvoker
             }
          }
       }
-      return invokeMethod(resource, methodResource, p);
+      return invokeMethod(resource, methodResource, p, context);
    }
 
    protected void beforeInvokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
@@ -175,7 +176,14 @@ public class DefaultMethodInvoker implements MethodInvoker
       }
    }
 
+   /** @deprecated Use {@link #invokeMethod(Object, GenericMethodResource, Object[], ApplicationContext)} instead. */
    protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p)
+   {
+      return invokeMethod(resource, methodResource, p, ApplicationContextImpl.getCurrent());
+   }
+
+   protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p,
+      ApplicationContext context)
    {
       try
       {
@@ -195,7 +203,7 @@ public class DefaultMethodInvoker implements MethodInvoker
       {
          if (LOG.isDebugEnabled())
          {
-            invExc.printStackTrace();
+            LOG.error(invExc.getMessage(), invExc);
          }
          // get cause of exception that method produces
          Throwable cause = invExc.getCause();

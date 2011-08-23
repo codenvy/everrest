@@ -41,8 +41,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: EverrestServletContextInitializer.java 76 2010-10-26 10:43:52Z
- *          andrew00x $
+ * @version $Id$
  */
 public class EverrestServletContextInitializer
 {
@@ -62,25 +61,19 @@ public class EverrestServletContextInitializer
    }
 
    /**
-    * Try get application's FQN from context-param javax.ws.rs.Application and
-    * instantiate it. If such parameter is not specified then scan web
-    * application's folders WEB-INF/classes and WEB-INF/lib for classes which
-    * contains JAX-RS annotations. Interesting for three annotations
-    * {@link Path}, {@link Provider} and {@link Filter} .
-    *
+    * Try get application's FQN from context-param javax.ws.rs.Application and instantiate it. If such parameter is not
+    * specified then scan web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS
+    * annotations. Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter} .
+    * 
     * @return instance of javax.ws.rs.core.Application
-    * @throws IOException if any i/o errors occur
+    * @throws IOException
+    *            if any i/o errors occur
     */
    public Application getApplication()
    {
       Application application = null;
       String applicationFQN = getParameter(JAXRS_APPLICATION);
-      boolean scan = false;
-      String scanParameter = getParameter(EVERREST_SCAN_COMPONENTS);
-      if (scanParameter != null)
-      {
-         scan = Boolean.parseBoolean(scanParameter);
-      }
+      boolean scan = getBoolean(EVERREST_SCAN_COMPONENTS, false);
       if (applicationFQN != null)
       {
          if (scan)
@@ -90,7 +83,7 @@ public class EverrestServletContextInitializer
          }
          try
          {
-            Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN.trim());
+            Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN);
             application = (Application)cl.newInstance();
          }
          catch (ClassNotFoundException e)
@@ -160,7 +153,8 @@ public class EverrestServletContextInitializer
                   }
                }
             }
-            application = new Application() {
+            application = new Application()
+            {
                public Set<Class<?>> getClasses()
                {
                   return scanned;
@@ -178,33 +172,72 @@ public class EverrestServletContextInitializer
    public EverrestConfiguration getConfiguration()
    {
       EverrestConfiguration config = new EverrestConfiguration();
-      String httpMethodOverrideParameter = getParameter(EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE);
-      if (httpMethodOverrideParameter != null)
-      {
-         config.setHttpMethodOverride(Boolean.parseBoolean(httpMethodOverrideParameter));
-      }
-      String normalizeUriParameter = getParameter(EverrestConfiguration.EVERREST_NORMALIZE_URI);
-      if (normalizeUriParameter != null)
-      {
-         config.setNormalizeUri(Boolean.parseBoolean(normalizeUriParameter));
-      }
-      String securityParameter = getParameter(EverrestConfiguration.EVERREST_CHECK_SECURITY);
-      if (securityParameter != null)
-      {
-         config.setCheckSecurity(Boolean.parseBoolean(securityParameter));
-      }
+
+      config.setHttpMethodOverride(getBoolean(EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE,
+         EverrestConfiguration.defaultHttpMethodOverride));
+
+      config.setNormalizeUri(getBoolean(EverrestConfiguration.EVERREST_NORMALIZE_URI,
+         EverrestConfiguration.defaultNormalizeUri));
+
+      config.setCheckSecurity(getBoolean(EverrestConfiguration.EVERREST_CHECK_SECURITY,
+         EverrestConfiguration.defaultCheckSecurity));
+
+      config.setAsynchronousSupported(getBoolean(EverrestConfiguration.EVERREST_ASYNCHRONOUS,
+         EverrestConfiguration.defaultAsynchronousSupported));
+
+      config.setAsynchronousPoolSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_POOL_SIZE,
+         EverrestConfiguration.defaultAsynchronousPoolSize).intValue());
+
+      config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
+         EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
+
+      config.setAsynchronousJobTimeout(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT,
+         EverrestConfiguration.defaultAsynchronousJobTimeout).intValue());
+
       return config;
    }
 
    /**
     * Get parameter with specified name from servlet context initial parameters.
-    *
-    * @param name parameter name
+    * 
+    * @param name
+    *           parameter name
     * @return value of parameter with specified name
     */
    public String getParameter(String name)
    {
-      return sctx.getInitParameter(name);
+      String str = sctx.getInitParameter(name);
+      if (str != null)
+      {
+         return str.trim();
+      }
+      return null;
    }
 
+   public boolean getBoolean(String name, boolean def)
+   {
+      String str = getParameter(name);
+      if (str != null)
+      {
+         return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str)
+            || "1".equalsIgnoreCase(str);
+      }
+      return def;
+   }
+
+   public Double getNumber(String name, double def)
+   {
+      String str = getParameter(name);
+      if (str != null)
+      {
+         try
+         {
+            return Double.parseDouble(str);
+         }
+         catch (NumberFormatException ignored)
+         {
+         }
+      }
+      return def;
+   }
 }

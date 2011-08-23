@@ -24,28 +24,39 @@ import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ResourceBinderImpl;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.ContextResolver;
 
 /**
- * Initialize required components of JAX-RS framework and deploy single JAX-RS
- * application.
- *
+ * Initialize required components of JAX-RS framework and deploy single JAX-RS application.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: RestInitializedListener.java 436 2009-10-28 06:47:29Z aparfonov
- *          $
+ * @version $Id$
  */
 public class EverrestInitializedListener implements ServletContextListener
 {
-
    /**
     * {@inheritDoc}
     */
    public void contextDestroyed(ServletContextEvent event)
    {
+      ServletContext sctx = event.getServletContext();
+      ApplicationProviderBinder providers =
+         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
+      if (providers != null)
+      {
+         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+            providers.getContextResolver(AsynchronousJobPool.class, null);
+         if (asynchJobsResolver != null)
+            asynchJobsResolver.getContext(null).stop();
+      }
    }
 
    /**
@@ -62,7 +73,22 @@ public class EverrestInitializedListener implements ServletContextListener
       EverrestConfiguration config = initializer.getConfiguration();
       ResourceBinder resources = new ResourceBinderImpl();
       ApplicationProviderBinder providers = new ApplicationProviderBinder();
-      EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, application);
+      
+      // Add some internal components depends to configuration.
+      if (config.isAsynchronousSupported())
+      {
+         providers.addContextResolver(new AsynchronousJobPool(config));
+         resources.addResource(AsynchronousJobService.class, null);
+      }
+      if (config.isCheckSecurity())
+      {
+         providers.addMethodInvokerFilter(new SecurityConstraint());
+      }
+
+      EverrestProcessor processor =
+         new EverrestProcessor(resources, providers, dependencySupplier, config, application);
+      
+      sctx.setAttribute(EverrestConfiguration.class.getName(), config);
       sctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       sctx.setAttribute(ResourceBinder.class.getName(), resources);
       sctx.setAttribute(ApplicationProviderBinder.class.getName(), providers);

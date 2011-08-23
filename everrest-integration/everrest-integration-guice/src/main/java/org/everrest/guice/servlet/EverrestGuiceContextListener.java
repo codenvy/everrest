@@ -35,9 +35,13 @@ import org.everrest.core.RequestFilter;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
@@ -107,16 +111,49 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
+
+      EverrestConfiguration config = everrestInitializer.getConfiguration();
+      // Add some internal components depends to configuration.
+      if (config.isAsynchronousSupported())
+      {
+         providers.addContextResolver(new AsynchronousJobPool(config));
+         resources.addResource(AsynchronousJobService.class, null);
+      }
+      if (config.isCheckSecurity())
+      {
+         providers.addMethodInvokerFilter(new SecurityConstraint());
+      }
+
       DependencySupplier dependencySupplier = new GuiceDependencySupplier(injector);
       processor =
-         new EverrestProcessor(resources, providers, dependencySupplier, everrestInitializer.getConfiguration(),
-            everrestInitializer.getApplication());
+         new EverrestProcessor(resources, providers, dependencySupplier, config, everrestInitializer.getApplication());
+
+      servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       servletContext.setAttribute(ResourceBinder.class.getName(), resources);
       servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
       servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
 
       processBindings(injector);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void contextDestroyed(ServletContextEvent servletContextEvent)
+   {
+      ServletContext sctx = servletContextEvent.getServletContext();
+      ApplicationProviderBinder providers =
+         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
+      if (providers != null)
+      {
+         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+            providers.getContextResolver(AsynchronousJobPool.class, null);
+         if (asynchJobsResolver != null)
+            asynchJobsResolver.getContext(null).stop();
+      }
+      super.contextDestroyed(servletContextEvent);
    }
 
    /**
@@ -148,7 +185,8 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     * protected List&lt;Module&gt; getModules()
     * {
     *    List&lt;Module&gt; modules = new ArrayList&lt;Module&gt;(1);
-    *    modules.add(new Module() {
+    *    modules.add(new Module()
+    *    {
     *       public void configure(Binder binder)
     *       {
     *          binder.bind(MyResource.class);
@@ -170,7 +208,8 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     */
    protected ServletModule getServletModule()
    {
-      return new ServletModule() {
+      return new ServletModule()
+      {
          @Override
          protected void configureServlets()
          {
@@ -210,9 +249,11 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
                if (ExceptionMapper.class.isAssignableFrom(clazz))
                   providers.addExceptionMapper(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
                if (MessageBodyReader.class.isAssignableFrom(clazz))
-                  providers.addMessageBodyReader(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+                  providers
+                     .addMessageBodyReader(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
                if (MessageBodyWriter.class.isAssignableFrom(clazz))
-                  providers.addMessageBodyWriter(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+                  providers
+                     .addMessageBodyWriter(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
             }
             else if (clazz.getAnnotation(Filter.class) != null)
             {
@@ -221,7 +262,8 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
                com.google.inject.Provider<?> guiceProvider = binding.getProvider();
 
                if (MethodInvokerFilter.class.isAssignableFrom(clazz))
-                  providers.addMethodInvokerFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
+                  providers
+                     .addMethodInvokerFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
                if (RequestFilter.class.isAssignableFrom(clazz))
                   providers.addRequestFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
                if (ResponseFilter.class.isAssignableFrom(clazz))

@@ -27,9 +27,13 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.SingletonObjectFactory;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
@@ -192,10 +196,24 @@ public abstract class EverrestExoContextListener implements ServletContextListen
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
+      
+      EverrestConfiguration config = everrestInitializer.getConfiguration();
+      // Add some internal components depends to configuration.
+      if (config.isAsynchronousSupported())
+      {
+         providers.addContextResolver(new AsynchronousJobPool(config));
+         resources.addResource(AsynchronousJobService.class, null);
+      }
+      if (config.isCheckSecurity())
+      {
+         providers.addMethodInvokerFilter(new SecurityConstraint());
+      }
+
       DependencySupplier dependencySupplier = new ExoDependencySupplier();
       processor =
-         new EverrestProcessor(resources, providers, dependencySupplier, everrestInitializer.getConfiguration(),
-            everrestInitializer.getApplication());
+         new EverrestProcessor(resources, providers, dependencySupplier, config, everrestInitializer.getApplication());
+
+      servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       servletContext.setAttribute(ResourceBinder.class.getName(), resources);
       servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
@@ -289,5 +307,15 @@ public abstract class EverrestExoContextListener implements ServletContextListen
    @Override
    public void contextDestroyed(ServletContextEvent servletContextEvent)
    {
+      ServletContext sctx = servletContextEvent.getServletContext();
+      ApplicationProviderBinder providers =
+         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
+      if (providers != null)
+      {
+         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+            providers.getContextResolver(AsynchronousJobPool.class, null);
+         if (asynchJobsResolver != null)
+            asynchJobsResolver.getContext(null).stop();
+      }
    }
 }

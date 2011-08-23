@@ -24,22 +24,31 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.Lifecycle;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.ext.ContextResolver;
 
 /**
  * HandlerMapping for EverrestProcessor.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: EverrestHandlerMapping.java 116 2010-11-22 10:39:10Z andrew00x
- *          $
+ * @version $Id$
  */
-public class EverrestHandlerMapping implements HandlerMapping
+public class EverrestHandlerMapping implements HandlerMapping, BeanFactoryPostProcessor
 {
-
    protected EverrestProcessor processor;
+   protected ResourceBinder resources;
+   protected ApplicationProviderBinder providers;
+   protected EverrestConfiguration configuration;
 
    protected EverrestHandlerMapping()
    {
@@ -65,6 +74,9 @@ public class EverrestHandlerMapping implements HandlerMapping
    public EverrestHandlerMapping(ResourceBinder resources, ApplicationProviderBinder providers,
       EverrestConfiguration configuration, DependencySupplier dependencies)
    {
+      this.resources = resources;
+      this.providers = providers;
+      this.configuration = configuration;
       processor = new EverrestProcessor(resources, providers, dependencies, configuration, null);
    }
 
@@ -81,4 +93,45 @@ public class EverrestHandlerMapping implements HandlerMapping
       return processor;
    }
 
+   /**
+    * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
+    */
+   @Override
+   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException
+   {
+      if (configuration.isAsynchronousSupported())
+      {
+         providers.addContextResolver(new AsynchronousJobPool(configuration));
+         resources.addResource(AsynchronousJobService.class, null);
+         beanFactory.registerSingleton("everrest.asynchronous.pool.lifecycle", new Lifecycle()
+         {
+            private boolean running = true;
+
+            @Override
+            public void stop()
+            {
+               ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+                  providers.getContextResolver(AsynchronousJobPool.class, null);
+               if (asynchJobsResolver != null)
+                  asynchJobsResolver.getContext(null).stop();
+               running = false;
+            }
+
+            @Override
+            public void start()
+            {
+            }
+
+            @Override
+            public boolean isRunning()
+            {
+               return running;
+            }
+         });
+      }
+      if (configuration.isCheckSecurity())
+      {
+         providers.addMethodInvokerFilter(new SecurityConstraint());
+      }
+   }
 }

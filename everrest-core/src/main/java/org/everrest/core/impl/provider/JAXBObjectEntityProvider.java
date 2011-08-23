@@ -51,9 +51,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBObjectEntityProvider implements EntityProvider<Object>
 {
-
    /** Logger. */
-   private static final Logger LOG = Logger.getLogger(JAXBObjectEntityProvider.class);
+   private static final Logger log = Logger.getLogger(JAXBObjectEntityProvider.class);
 
    /**
     * @see Providers
@@ -83,8 +82,8 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
       catch (UnmarshalException e)
       {
          // if can't read from stream (e.g. steam is empty)
-         if (LOG.isDebugEnabled())
-            e.printStackTrace();
+         if (log.isDebugEnabled())
+            log.error(e.getMessage(), e);
          return null;
       }
       catch (JAXBException e)

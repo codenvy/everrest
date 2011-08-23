@@ -53,9 +53,8 @@ import javax.xml.transform.stream.StreamSource;
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
 {
-
    /** Logger. */
-   private static final Logger LOG = Logger.getLogger(JAXBElementEntityProvider.class);
+   private static final Logger log = Logger.getLogger(JAXBElementEntityProvider.class);
 
    /**
     * @see Providers
@@ -87,8 +86,9 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
       catch (UnmarshalException e)
       {
          // if can't read from stream (e.g. steam is empty)
-         if (LOG.isDebugEnabled())
-            e.printStackTrace();
+         if (log.isDebugEnabled())
+            log.error(e.getMessage(), e);
+         
          return null;
       }
       catch (JAXBException e)

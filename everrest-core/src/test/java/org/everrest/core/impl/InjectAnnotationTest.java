@@ -43,6 +43,11 @@ public class InjectAnnotationTest extends BaseTest
       launcher = new ResourceLauncher(requestHandler);
    }
 
+   @Override
+   public void tearDown() throws Exception
+   {
+   }
+
    public static class InjectableComponent
    {
    }

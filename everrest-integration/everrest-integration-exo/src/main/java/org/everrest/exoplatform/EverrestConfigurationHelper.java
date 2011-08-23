@@ -18,24 +18,37 @@
  */
 package org.everrest.exoplatform;
 
-import org.everrest.core.DependencySupplier;
-import org.everrest.core.impl.RequestDispatcher;
-import org.everrest.core.impl.RequestHandlerImpl;
+import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.container.xml.ValueParam;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public final class ExoRequestHandler extends RequestHandlerImpl
+final class EverrestConfigurationHelper extends EverrestConfiguration
 {
-   public ExoRequestHandler(RequestDispatcher dispatcher, DependencySupplier dependencySupplier, InitParams initParams)
+   static EverrestConfiguration createEverrestConfiguration(final InitParams initParams)
    {
-      super(dispatcher, dependencySupplier, EverrestConfigurationHelper.createEverrestConfiguration(initParams));
+      // Get all parameters from init-params so not need servlet context and pass null instead. 
+      return new EverrestServletContextInitializer(null)
+      {
+         @Override
+         public String getParameter(String name)
+         {
+            if (initParams != null)
+            {
+               ValueParam vparam = initParams.getValueParam(name);
+               if (vparam != null)
+                  return vparam.getValue();
+            }
+            return null;
+         }
+      }.getConfiguration();
    }
 
-   public ExoRequestHandler(RequestDispatcher dispatcher, DependencySupplier dependencySupplier)
+   private EverrestConfigurationHelper()
    {
-      this(dispatcher, dependencySupplier, null);
    }
 }

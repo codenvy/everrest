@@ -68,6 +68,15 @@ public class ResourceLauncher
       throws Exception
    {
 
+      if (baseURI == null)
+         baseURI = "";
+
+      if (requestURI == null)
+         baseURI = "/";
+
+      if (baseURI.isEmpty() && !requestURI.startsWith("/"))
+         requestURI = "/" + requestURI;
+
       if (headers == null)
          headers = new MultivaluedMapImpl();
 

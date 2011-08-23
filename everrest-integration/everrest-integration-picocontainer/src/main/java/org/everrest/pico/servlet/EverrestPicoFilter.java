@@ -298,7 +298,6 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
    @Override
    public void destroy()
    {
-      super.destroy();
       try
       {
          currentAppContainer.remove();
@@ -309,6 +308,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       {
          log.error(e.getMessage(), e);
       }
+      super.destroy();
    }
 
    @Override

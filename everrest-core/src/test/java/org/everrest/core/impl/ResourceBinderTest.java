@@ -45,15 +45,17 @@ public class ResourceBinderTest extends BaseTest
 
    public void testBind()
    {
+      int prevSize = resources.getSize();
       resources.addResource(Resource.class, null);
-      assertEquals(1, resources.getSize());
+      assertEquals((prevSize + 1), resources.getSize());
    }
 
    public void testUnbind()
    {
+      int prevSize = resources.getSize();
       resources.addResource(Resource.class, null);
       resources.removeResource(Resource.class);
-      assertEquals(0, resources.getSize());
+      assertEquals(prevSize, resources.getSize());
    }
 
    @Path("/a/b/{c}")
@@ -95,8 +97,9 @@ public class ResourceBinderTest extends BaseTest
 
    public void testSameResourceURI()
    {
+      int initSize = resources.getSize();
       resources.addResource(SameURIResource1.class, null);
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
       try
       {
          resources.addResource(SameURIResource2.class, null);
@@ -104,11 +107,11 @@ public class ResourceBinderTest extends BaseTest
       catch (ResourcePublicationException e)
       {
       }
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
 
-      resources.clear();
+      resources.removeResource(SameURIResource1.class);
       resources.addResource(SameURIResource2.class, null);
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
       try
       {
          resources.addResource(SameURIResource1.class, null);
@@ -116,11 +119,11 @@ public class ResourceBinderTest extends BaseTest
       catch (ResourcePublicationException e)
       {
       }
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
 
-      resources.clear();
+      resources.removeResource(SameURIResource2.class);
       resources.addResource(new SameURIResource1(), null);
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
       try
       {
          resources.addResource(new SameURIResource2(), null);
@@ -128,11 +131,11 @@ public class ResourceBinderTest extends BaseTest
       catch (ResourcePublicationException e)
       {
       }
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
 
-      resources.clear();
+      resources.removeResource(SameURIResource1.class);
       resources.addResource(new SameURIResource2(), null);
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
       try
       {
          resources.addResource(new SameURIResource1(), null);
@@ -140,7 +143,7 @@ public class ResourceBinderTest extends BaseTest
       catch (ResourcePublicationException e)
       {
       }
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
    }
 
    @Path("/a/b/c/{d}/e")

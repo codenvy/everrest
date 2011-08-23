@@ -16,34 +16,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.exoplatform;
-
-import junit.framework.TestCase;
-
-import org.everrest.core.impl.ProviderBinder;
-import org.exoplatform.container.StandaloneContainer;
-
-import java.lang.reflect.Constructor;
+package org.everrest.core.impl.async;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public abstract class BaseTest extends TestCase
+@SuppressWarnings("serial")
+public class AsynchronousJobRejectedException extends Exception
 {
-   protected StandaloneContainer container;
-
-   @Override
-   protected void setUp() throws Exception
+   public AsynchronousJobRejectedException(String message)
    {
-      super.setUp();
-
-      String conf = getClass().getResource("/conf/test-configuration.xml").toString();
-      StandaloneContainer.setConfigurationURL(conf);
-      container = StandaloneContainer.getInstance();
-      // reset set of providers for each test 
-      Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
-      c.setAccessible(true);
-      ProviderBinder.setInstance(c.newInstance());
+      super(message);
    }
 }

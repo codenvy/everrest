@@ -20,15 +20,22 @@ package org.everrest.exoplatform;
 
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.util.Logger;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.xml.InitParams;
 import org.picocontainer.Startable;
 
 import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.ContextResolver;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -43,13 +50,22 @@ public class EverrestInitializer implements Startable
    private final ExoContainer container;
    private final ResourceBinder resources;
    private final ProvidersRegistry providersRegistry;
+   private final EverrestConfiguration config;
 
    public EverrestInitializer(ExoContainerContext containerContext, ResourceBinder resources,
-      ProvidersRegistry providersRegistry, StartableApplication eXo /* Be sure eXo components are initialized. */)
+      ProvidersRegistry providersRegistry, StartableApplication eXo /* Be sure eXo components are initialized. */,
+      InitParams initParams)
    {
       this.resources = resources;
       this.providersRegistry = providersRegistry;
       this.container = containerContext.getContainer();
+      this.config = EverrestConfigurationHelper.createEverrestConfiguration(initParams);
+   }
+
+   public EverrestInitializer(ExoContainerContext containerContext, ResourceBinder resources,
+      ProvidersRegistry providersRegistry, StartableApplication eXo /* Be sure eXo components are initialized. */)
+   {
+      this(containerContext, resources, providersRegistry, eXo, null);
    }
 
    /**
@@ -59,6 +75,18 @@ public class EverrestInitializer implements Startable
    @Override
    public void start()
    {
+      // Add some internal components depends to configuration.
+      if (config.isAsynchronousSupported())
+      {
+         ProviderBinder.getInstance().addContextResolver(new AsynchronousJobPool(config));
+         resources.addResource(AsynchronousJobService.class, null);
+      }
+      if (config.isCheckSecurity())
+      {
+         ProviderBinder.getInstance().addMethodInvokerFilter(new SecurityConstraint());
+      }
+
+      // Process applications.
       List allApps = container.getComponentInstancesOfType(Application.class);
       if (allApps != null && !allApps.isEmpty())
       {
@@ -73,6 +101,10 @@ public class EverrestInitializer implements Startable
    @Override
    public void stop()
    {
+      ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+         ProviderBinder.getInstance().getContextResolver(AsynchronousJobPool.class, null);
+      if (asynchJobsResolver != null)
+         asynchJobsResolver.getContext(null).stop();
    }
 
    public void addApplication(Application application)

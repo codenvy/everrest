@@ -28,6 +28,8 @@ import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
 
+import java.lang.reflect.Constructor;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
@@ -50,8 +52,11 @@ public abstract class BaseTest extends TestCase
    {
       this.resources = new ResourceBinderImpl();
       this.dependencies = new DependencySupplierImpl();
-      this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), dependencies, null);
+      Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
+      c.setAccessible(true);
+      ProviderBinder.setInstance(c.newInstance());
       this.providers = ProviderBinder.getInstance();
+      this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), dependencies, null);
       this.launcher = new ResourceLauncher(requestHandler);
       this.groovyPublisher = new GroovyResourcePublisher(resources, dependencies);
    }

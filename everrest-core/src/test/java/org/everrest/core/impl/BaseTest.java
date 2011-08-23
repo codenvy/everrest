@@ -21,6 +21,8 @@ package org.everrest.core.impl;
 import junit.framework.TestCase;
 
 import org.everrest.core.ObjectFactory;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
@@ -40,12 +42,17 @@ public abstract class BaseTest extends TestCase
 
    protected ResourceLauncher launcher;
 
+   private AsynchronousJobPool asynchronousPool;
+
    public void setUp() throws Exception
    {
       resources = new ResourceBinderImpl();
       // reset embedded providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
       providers = new ApplicationProviderBinder();
+      asynchronousPool = new AsynchronousJobPool(new EverrestConfiguration());
+      providers.addContextResolver(asynchronousPool);
+      resources.addResource(AsynchronousJobService.class, null);
       requestHandler =
          new RequestHandlerImpl(new RequestDispatcher(resources), providers, new DependencySupplierImpl(),
             new EverrestConfiguration());
@@ -59,6 +66,7 @@ public abstract class BaseTest extends TestCase
 
    public void tearDown() throws Exception
    {
+      asynchronousPool.stop();
    }
 
    public void registry(Object resource) throws Exception

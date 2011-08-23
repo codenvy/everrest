@@ -401,7 +401,10 @@ public class UriBuilderImpl extends UriBuilder
 
       Path p = method.getAnnotation(Path.class);
       if (p == null)
-         throw new IllegalArgumentException("Method " + method.getName() + " is not annotated with javax.ws.rs.Path");
+      {
+         return this;
+         //throw new IllegalArgumentException("Method " + method.getName() + " is not annotated with javax.ws.rs.Path");
+      }
 
       return path(p.value());
    }

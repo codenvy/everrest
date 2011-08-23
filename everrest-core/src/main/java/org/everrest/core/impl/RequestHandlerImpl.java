@@ -30,7 +30,6 @@ import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.UnhandledException;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.util.Logger;
 
@@ -77,9 +76,11 @@ public class RequestHandlerImpl implements RequestHandler
 
    private final DependencySupplier dependencySupplier;
 
-   private final EverrestConfiguration config;
-
    private final ProviderBinder providers;
+
+   private final boolean normalizeUriFeature;
+
+   private final boolean httpMethodOverrideFeature;
 
    /**
     * @param dispatcher RequestDispatcher
@@ -93,9 +94,10 @@ public class RequestHandlerImpl implements RequestHandler
       this.dispatcher = dispatcher;
       this.dependencySupplier = dependencySupplier;
       this.providers = providers == null ? ProviderBinder.getInstance() : providers;
-      this.config = config == null ? new EverrestConfiguration() : config;
-      if (this.config.isCheckSecurity())
-         this.providers.addMethodInvokerFilter(new SecurityConstraint());
+      if (config == null)
+         config = new EverrestConfiguration();
+      httpMethodOverrideFeature = config.isHttpMethodOverride();
+      normalizeUriFeature = config.isNormalizeUri();
    }
 
    public RequestHandlerImpl(RequestDispatcher dispatcher, DependencySupplier dependencySupplier,
@@ -130,9 +132,10 @@ public class RequestHandlerImpl implements RequestHandler
    {
       try
       {
-         if (config.isNormalizeUri())
+         if (normalizeUriFeature)
             request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
-         if (config.isHttpMethodOverride())
+         
+         if (httpMethodOverrideFeature)
          {
             String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
             if (method != null)

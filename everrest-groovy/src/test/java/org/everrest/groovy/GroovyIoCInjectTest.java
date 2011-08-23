@@ -62,7 +62,7 @@ public class GroovyIoCInjectTest extends BaseTest
 
    private void iocComponentTest(boolean singleton, ResourceId resourceId) throws Exception
    {
-      assertEquals(0, resources.getSize());
+      int initSize = resources.getSize();
       assertEquals(0, groovyPublisher.resources.size());
 
       if (singleton)
@@ -70,7 +70,7 @@ public class GroovyIoCInjectTest extends BaseTest
       else
          groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
 
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
       assertEquals(1, groovyPublisher.resources.size());
 
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();

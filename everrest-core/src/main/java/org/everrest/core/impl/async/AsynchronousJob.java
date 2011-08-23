@@ -16,34 +16,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.exoplatform;
+package org.everrest.core.impl.async;
 
-import junit.framework.TestCase;
+import org.everrest.core.resource.ResourceMethodDescriptor;
 
-import org.everrest.core.impl.ProviderBinder;
-import org.exoplatform.container.StandaloneContainer;
-
-import java.lang.reflect.Constructor;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public abstract class BaseTest extends TestCase
+class AsynchronousJob extends FutureTask<Object>
 {
-   protected StandaloneContainer container;
+   private final String jobId;
+   private final long expirationDate;
+   private final ResourceMethodDescriptor method;
 
-   @Override
-   protected void setUp() throws Exception
+   AsynchronousJob(Callable<Object> callable, String jobId, long timeout, TimeUnit unit, ResourceMethodDescriptor method)
    {
-      super.setUp();
+      super(callable);
+      this.jobId = jobId;
+      this.expirationDate = System.currentTimeMillis() + unit.toMillis(timeout);
+      this.method = method;
+   }
 
-      String conf = getClass().getResource("/conf/test-configuration.xml").toString();
-      StandaloneContainer.setConfigurationURL(conf);
-      container = StandaloneContainer.getInstance();
-      // reset set of providers for each test 
-      Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
-      c.setAccessible(true);
-      ProviderBinder.setInstance(c.newInstance());
+   public String getJobId()
+   {
+      return jobId;
+   }
+
+   public long getExpirationDate()
+   {
+      return expirationDate;
+   }
+
+   public ResourceMethodDescriptor getResourceMethod()
+   {
+      return method;
    }
 }

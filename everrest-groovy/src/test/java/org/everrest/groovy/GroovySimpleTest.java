@@ -22,6 +22,8 @@ package org.everrest.groovy;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 
+import java.util.ArrayList;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
@@ -55,7 +57,7 @@ public class GroovySimpleTest extends BaseTest
             + "def m0(@javax.ws.rs.PathParam(\"who\") String who) { return (\"hello \" + who)}" //
             + "}";
 
-      assertEquals(0, resources.getSize());
+      int initSize = resources.getSize();
       assertEquals(0, groovyPublisher.resources.size());
 
       if (singleton)
@@ -63,13 +65,13 @@ public class GroovySimpleTest extends BaseTest
       else
          groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
 
-      assertEquals(1, resources.getSize());
+      assertEquals(initSize + 1, resources.getSize());
       assertEquals(1, groovyPublisher.resources.size());
       assertTrue(groovyPublisher.isPublished(resourceId));
 
       String cs =
-         resources.getResources().get(0).getObjectModel().getObjectClass().getProtectionDomain().getCodeSource()
-            .getLocation().toString();
+         resources.getMatchedResource("/a", new ArrayList<String>()).getObjectModel().getObjectClass()
+            .getProtectionDomain().getCodeSource().getLocation().toString();
       assertEquals("file:/groovy/script/jaxrs", cs);
 
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
@@ -79,7 +81,7 @@ public class GroovySimpleTest extends BaseTest
 
       groovyPublisher.unpublishResource(resourceId);
 
-      assertEquals(0, resources.getSize());
+      assertEquals(initSize, resources.getSize());
       assertEquals(0, groovyPublisher.resources.size());
    }
 

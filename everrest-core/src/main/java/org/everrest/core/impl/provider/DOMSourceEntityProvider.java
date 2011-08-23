@@ -54,11 +54,8 @@ import javax.xml.transform.stream.StreamResult;
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
 {
-
-   /**
-    * Logger.
-    */
-   private static final Logger LOG = Logger.getLogger(DOMSourceEntityProvider.class);
+   /** Logger. */
+   private static final Logger log = Logger.getLogger(DOMSourceEntityProvider.class);
 
    /**
     * {@inheritDoc}
@@ -84,8 +81,8 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
       catch (SAXParseException saxpe)
       {
          // if can't read from stream (e.g. steam is empty)
-         if (LOG.isDebugEnabled())
-            saxpe.printStackTrace();
+         if (log.isDebugEnabled())
+            log.error(saxpe.getMessage(), saxpe);
          return null;
       }
       catch (SAXException saxe)

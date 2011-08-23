@@ -62,6 +62,11 @@ public class RequestDispatcherTest extends BaseTest
       launcher = new ResourceLauncher(requestHandler);
    }
 
+   @Override
+   public void tearDown() throws Exception
+   {
+   }
+
    @Path("/a")
    public static class Resource1
    {

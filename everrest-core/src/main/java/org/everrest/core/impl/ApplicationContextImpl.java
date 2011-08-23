@@ -23,11 +23,14 @@ import org.everrest.core.DependencySupplier;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.InitialProperties;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousMethodInvoker;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.impl.method.OptionsRequestMethodInvoker;
 import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.resource.ResourceMethodDescriptor;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -280,6 +284,17 @@ public class ApplicationContextImpl implements ApplicationContext
          // this case we provide mechanism for "fake" method invoking.
          return new OptionsRequestMethodInvoker();
       }
+      // Never use AsynchronousMethodInvoker for process SubResourceLocatorDescriptor.
+      // Locators can't be processed in asynchronous mode since it is not end point of request.
+      if ((methodDescriptor instanceof ResourceMethodDescriptor)
+         && Boolean.parseBoolean(getQueryParameters().getFirst("async")))
+      {
+         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+            getProviders().getContextResolver(AsynchronousJobPool.class, null);
+         if (asynchJobsResolver == null)
+            throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");
+         return new AsynchronousMethodInvoker(asynchJobsResolver.getContext(null));
+      }
       return new DefaultMethodInvoker();
    }
 
@@ -348,8 +363,8 @@ public class ApplicationContextImpl implements ApplicationContext
             {
                if (!pathParameters.containsKey(key))
                {
-                  pathParameters.putSingle(UriComponent.decode(key, UriComponent.PATH_SEGMENT), UriComponent.decode(
-                     encodedPathParameters.getFirst(key), UriComponent.PATH));
+                  pathParameters.putSingle(UriComponent.decode(key, UriComponent.PATH_SEGMENT),
+                     UriComponent.decode(encodedPathParameters.getFirst(key), UriComponent.PATH));
                }
             }
          }

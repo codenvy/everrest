@@ -28,6 +28,7 @@ import org.everrest.core.impl.provider.json.JsonWriter;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.impl.provider.json.JsonUtils.Types;
 import org.everrest.core.provider.EntityProvider;
+import org.everrest.core.util.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +62,8 @@ import javax.xml.transform.stream.StreamSource;
 @Produces({MediaType.APPLICATION_JSON})
 public class JsonEntityProvider<T> implements EntityProvider<T>
 {
-
+   private static final Logger log = Logger.getLogger(JsonEntityProvider.class);
+   
    // It is common task for #isReadable() and #isWriteable
    // TODO Not sure it is required but ...
    // Investigation about checking can type be write as JSON (useful JSON).
@@ -139,7 +141,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       }
       catch (JsonException e)
       {
-         //         e.printStackTrace();
+         log.error(e.getMessage(), e);
          throw new IOException("Can't read from input stream " + e);
       }
    }
@@ -206,7 +208,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       }
       catch (JsonException e)
       {
-         e.printStackTrace();
+         log.error(e.getMessage(), e);
          throw new IOException("Can't write to output stream " + e);
       }
    }
