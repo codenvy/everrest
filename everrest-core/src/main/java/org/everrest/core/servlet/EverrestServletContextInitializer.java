@@ -191,6 +191,9 @@ public class EverrestServletContextInitializer
       config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
          EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
 
+      config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE,
+         EverrestConfiguration.defaultAsynchronousCacheSize).intValue());
+
       config.setAsynchronousJobTimeout(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT,
          EverrestConfiguration.defaultAsynchronousJobTimeout).intValue());
 

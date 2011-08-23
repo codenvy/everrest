@@ -84,10 +84,13 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    /** When timeout (in minutes) reached then an asynchronous operation may be removed from the pool. */
    private final int jobTimeout;
 
+   /** Max cache size. */
+   private final int maxCacheSize;
+
    private final ExecutorService pool;
 
    private final Map<String, AsynchronousJob> jobs;
-
+   
    @SuppressWarnings("serial")
    public AsynchronousJobPool(EverrestConfiguration config)
    {
@@ -96,6 +99,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
       this.poolSize = config.getAsynchronousPoolSize();
       this.queueSize = config.getAsynchronousQueueSize();
+      this.maxCacheSize = config.getAsynchronousCacheSize();
       this.jobTimeout = config.getAsynchronousJobTimeout();
 
       RejectedExecutionHandler delegateHandler;
@@ -115,11 +119,14 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(
             queueSize), new ManyJobsPolicy(delegateHandler));
 
+      // TODO Use something more flexible (cache strategy) for setup cache behavior. 
       this.jobs = Collections.synchronizedMap(new LinkedHashMap<String, AsynchronousJob>()
       {
          @Override
          protected boolean removeEldestEntry(Entry<String, AsynchronousJob> eldest)
          {
+            if (size() > maxCacheSize)
+               return true;
             AsynchronousJob job = eldest.getValue();
             if (job.getExpirationDate() < System.currentTimeMillis())
             {
@@ -182,7 +189,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
             }
          }
       }, jobId, jobTimeout, TimeUnit.MINUTES, resourceMethod);
-      
+
       try
       {
          pool.execute(job);
@@ -191,12 +198,12 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       {
          throw new AsynchronousJobRejectedException(e.getMessage());
       }
-      
+
       jobs.put(jobId, job);
-      
+
       if (log.isDebugEnabled())
          log.debug("Add asynchronous job, ID " + jobId);
-      
+
       return jobId;
    }
 

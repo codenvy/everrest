@@ -37,6 +37,8 @@ public class EverrestConfiguration
 
    public static final String EVERREST_ASYNCHRONOUS_QUEUE_SIZE = "org.everrest.asynchronous.queue.size";
 
+   public static final String EVERREST_ASYNCHRONOUS_CACHE_SIZE = "org.everrest.asynchronous.cache.size";
+
    public static final String EVERREST_ASYNCHRONOUS_JOB_TIMEOUT = "org.everrest.asynchronous.job.timeout";
 
    public static boolean defaultCheckSecurity = true;
@@ -50,6 +52,8 @@ public class EverrestConfiguration
    public static int defaultAsynchronousPoolSize = 100;
 
    public static int defaultAsynchronousQueueSize = 100;
+
+   public static int defaultAsynchronousCacheSize = 512;
 
    public static final int defaultAsynchronousJobTimeout = 60;
 
@@ -66,6 +70,8 @@ public class EverrestConfiguration
    protected int asynchronousPoolSize = defaultAsynchronousPoolSize;
 
    protected int asynchronousQueueSize = defaultAsynchronousQueueSize;
+
+   protected int asynchronousCacheSize = defaultAsynchronousCacheSize;
 
    protected int asynchronousJobTimeout = defaultAsynchronousJobTimeout;
 
@@ -127,6 +133,16 @@ public class EverrestConfiguration
    public void setAsynchronousQueueSize(int asynchronousQueueSize)
    {
       this.asynchronousQueueSize = asynchronousQueueSize;
+   }
+
+   public int getAsynchronousCacheSize()
+   {
+      return asynchronousCacheSize;
+   }
+
+   public void setAsynchronousCacheSize(int asynchronousCacheSize)
+   {
+      this.asynchronousCacheSize = asynchronousCacheSize;
    }
 
    public int getAsynchronousJobTimeout()
