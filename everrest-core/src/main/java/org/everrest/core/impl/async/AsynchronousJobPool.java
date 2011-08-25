@@ -125,10 +125,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          @Override
          protected boolean removeEldestEntry(Entry<String, AsynchronousJob> eldest)
          {
-            if (size() > maxCacheSize)
-               return true;
             AsynchronousJob job = eldest.getValue();
-            if (job.getExpirationDate() < System.currentTimeMillis())
+            if (size() > maxCacheSize || job.getExpirationDate() < System.currentTimeMillis())
             {
                job.cancel(true);
                return true;
