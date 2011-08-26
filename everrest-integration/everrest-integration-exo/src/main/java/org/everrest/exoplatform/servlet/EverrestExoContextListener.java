@@ -173,6 +173,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
       {
          if (container != null)
             container.stop();
+         super.contextDestroyed(event);
       }
    }
 
@@ -196,7 +197,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
-      
+
       EverrestConfiguration config = everrestInitializer.getConfiguration();
       // Add some internal components depends to configuration.
       if (config.isAsynchronousSupported())
@@ -307,15 +308,9 @@ public abstract class EverrestExoContextListener implements ServletContextListen
    @Override
    public void contextDestroyed(ServletContextEvent servletContextEvent)
    {
-      ServletContext sctx = servletContextEvent.getServletContext();
-      ApplicationProviderBinder providers =
-         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
-      if (providers != null)
-      {
-         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
-            providers.getContextResolver(AsynchronousJobPool.class, null);
-         if (asynchJobsResolver != null)
-            asynchJobsResolver.getContext(null).stop();
-      }
+      ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+         providers.getContextResolver(AsynchronousJobPool.class, null);
+      if (asynchJobsResolver != null)
+         asynchJobsResolver.getContext(null).stop();
    }
 }
