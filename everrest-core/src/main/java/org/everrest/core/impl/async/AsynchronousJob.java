@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-class AsynchronousJob extends FutureTask<Object>
+public class AsynchronousJob extends FutureTask<Object>
 {
    private final String jobId;
    private final long expirationDate;

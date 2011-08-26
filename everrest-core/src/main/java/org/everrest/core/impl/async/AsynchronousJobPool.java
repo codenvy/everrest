@@ -73,7 +73,12 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
    private static final Logger log = Logger.getLogger(AsynchronousJobPool.class);
 
-   private static int counter;
+   private static long counter;
+
+   private static synchronized String nextId()
+   {
+      return Long.toString(++counter);
+   }
 
    /** Number of threads to serve asynchronous jobs. */
    private final int poolSize;
@@ -90,7 +95,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    private final ExecutorService pool;
 
    private final Map<String, AsynchronousJob> jobs;
-   
+
    @SuppressWarnings("serial")
    public AsynchronousJobPool(EverrestConfiguration config)
    {
@@ -157,7 +162,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    {
       final String jobId = nextId();
       final Method method = resourceMethod.getMethod();
-      AsynchronousJob job = new AsynchronousJob(new Callable<Object>()
+      
+      Callable<Object> c = new Callable<Object>()
       {
          @Override
          public Object call()
@@ -186,7 +192,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
                return fromThrowable(e);
             }
          }
-      }, jobId, jobTimeout, TimeUnit.MINUTES, resourceMethod);
+      };
+
+      AsynchronousJob job = new AsynchronousJob(c, jobId, jobTimeout, TimeUnit.MINUTES, resourceMethod);
 
       try
       {
@@ -245,10 +253,5 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       if (msg != null)
          return Response.serverError().entity(msg).type(MediaType.TEXT_PLAIN).build();
       return Response.serverError().build();
-   }
-
-   private synchronized String nextId()
-   {
-      return Integer.toString(++counter);
    }
 }
