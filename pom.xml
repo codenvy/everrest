@@ -95,6 +95,7 @@
       <module>everrest-groovy</module>
       <module>everrest-httpclient</module>
       <module>everrest-proxy</module>
+      <module>everrest-integration/everrest-integration-exo</module>
    </modules>
 
    <repositories>
