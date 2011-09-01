@@ -195,7 +195,7 @@ public class RequestDispatcher
             || (hasAcceptableLocator && match && compareSubResources(methods.get(0), locators.get(0)) > 0))
          {
             // sub-resource locator
-            invokeSuResourceLocator(requestPath, locators.get(0), resource, context, request, response);
+            invokeSubResourceLocator(requestPath, locators.get(0), resource, context, request, response);
          }
       }
    }
@@ -261,7 +261,7 @@ public class RequestDispatcher
     * @param response See {@link GenericContainerResponse}
     * @see SubResourceLocatorDescriptor
     */
-   private void invokeSuResourceLocator(String requestPath, SubResourceLocatorDescriptor srld, Object resource,
+   private void invokeSubResourceLocator(String requestPath, SubResourceLocatorDescriptor srld, Object resource,
       ApplicationContext context, GenericContainerRequest request, GenericContainerResponse response)
    {
       context.addMatchedResource(resource);
