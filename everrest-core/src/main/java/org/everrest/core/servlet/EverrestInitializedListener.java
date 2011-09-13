@@ -23,16 +23,20 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.impl.InternalException;
+import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.async.AsynchronousJobPool;
-import org.everrest.core.impl.async.AsynchronousJobService;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.ContextResolver;
 
 /**
  * Initialize required components of JAX-RS framework and deploy single JAX-RS application.
@@ -48,14 +52,36 @@ public class EverrestInitializedListener implements ServletContextListener
    public void contextDestroyed(ServletContextEvent event)
    {
       ServletContext sctx = event.getServletContext();
-      ApplicationProviderBinder providers =
-         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
-      if (providers != null)
+      @SuppressWarnings("unchecked")
+      List<WeakReference<Object>> l =
+         (List<WeakReference<Object>>)sctx.getAttribute("org.everrest.lifecycle.Singletons");
+      if (l != null && l.size() > 0)
       {
-         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
-            providers.getContextResolver(AsynchronousJobPool.class, null);
-         if (asynchJobsResolver != null)
-            asynchJobsResolver.getContext(null).stop();
+         RuntimeException exception = null;
+         for (WeakReference<Object> ref : l)
+         {
+            Object o = ref.get();
+            if (o != null)
+            {
+               try
+               {
+                  new LifecycleComponent(o).destroy();
+               }
+               catch (WebApplicationException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+               catch (InternalException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+            }
+         }
+         l.clear();
+         if (exception != null)
+            throw exception;
       }
    }
 
@@ -65,29 +91,28 @@ public class EverrestInitializedListener implements ServletContextListener
    public void contextInitialized(ServletContextEvent event)
    {
       ServletContext sctx = event.getServletContext();
-      EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(sctx);
-      Application application = initializer.getApplication();
       DependencySupplier dependencySupplier = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
       if (dependencySupplier == null)
          dependencySupplier = new ServletContextDependencySupplier(sctx);
-      EverrestConfiguration config = initializer.getConfiguration();
       ResourceBinder resources = new ResourceBinderImpl();
       ApplicationProviderBinder providers = new ApplicationProviderBinder();
-      
-      // Add some internal components depends to configuration.
-      if (config.isAsynchronousSupported())
-      {
-         providers.addContextResolver(new AsynchronousJobPool(config));
-         resources.addResource(AsynchronousJobService.class, null);
-      }
-      if (config.isCheckSecurity())
-      {
-         providers.addMethodInvokerFilter(new SecurityConstraint());
-      }
 
-      EverrestProcessor processor =
-         new EverrestProcessor(resources, providers, dependencySupplier, config, application);
-      
+      EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(sctx);
+      EverrestConfiguration config = initializer.getConfiguration();
+      Application application = initializer.getApplication();
+
+      EverrestApplication everrest = new EverrestApplication(config);
+      everrest.addApplication(application);
+
+      Set<Object> singletons = everrest.getSingletons();
+      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
+      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
+      for (Object o : singletons)
+         l.add(new WeakReference<Object>(o));
+      sctx.setAttribute("org.everrest.lifecycle.Singletons", l);
+
+      EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+
       sctx.setAttribute(EverrestConfiguration.class.getName(), config);
       sctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       sctx.setAttribute(ResourceBinder.class.getName(), resources);

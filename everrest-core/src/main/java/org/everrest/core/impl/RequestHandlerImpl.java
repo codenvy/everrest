@@ -24,6 +24,7 @@ import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.Lifecycle;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.RequestHandler;
@@ -145,14 +146,14 @@ public class RequestHandlerImpl implements RequestHandler
          ApplicationContext context = new ApplicationContextImpl(request, response, providers);
          context.getProperties().putAll(properties);
          context.setDependencySupplier(dependencySupplier);
+         ((Lifecycle)context).start();
          ApplicationContextImpl.setCurrent(context);
-
-         // Apply common request filters.
-         for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getRequestFilters(context.getPath()))
-            ((RequestFilter)factory.getInstance(context)).doFilter(request);
 
          try
          {
+            for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getRequestFilters(context.getPath()))
+               ((RequestFilter)factory.getInstance(context)).doFilter(request);
+
             dispatcher.dispatch(request, response);
             if (response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
             {
@@ -160,6 +161,9 @@ public class RequestHandlerImpl implements RequestHandler
                if (jaxrsHeader != null)
                   response.getHttpHeaders().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
             }
+
+            for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getResponseFilters(context.getPath()))
+               ((ResponseFilter)factory.getInstance(context)).doFilter(response);
          }
          catch (Exception e)
          {
@@ -216,7 +220,7 @@ public class RequestHandlerImpl implements RequestHandler
                   // Hide error message if exception mapper exists.
                   if (LOG.isDebugEnabled())
                      LOG.warn("Internal error occurs.", cause);
-                  response.setResponse(excmap.toResponse(e.getCause()));
+                  response.setResponse(excmap.toResponse(cause));
                }
                else
                {
@@ -230,10 +234,9 @@ public class RequestHandlerImpl implements RequestHandler
             }
          }
 
-         for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getResponseFilters(context.getPath()))
-            ((ResponseFilter)factory.getInstance(context)).doFilter(response);
-
          response.writeResponse();
+
+         ((Lifecycle)context).stop();
       }
       finally
       {

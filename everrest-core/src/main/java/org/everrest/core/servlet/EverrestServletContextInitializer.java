@@ -66,8 +66,7 @@ public class EverrestServletContextInitializer
     * annotations. Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter} .
     * 
     * @return instance of javax.ws.rs.core.Application
-    * @throws IOException
-    *            if any i/o errors occur
+    * @throws IOException if any i/o errors occur
     */
    public Application getApplication()
    {
@@ -203,8 +202,7 @@ public class EverrestServletContextInitializer
    /**
     * Get parameter with specified name from servlet context initial parameters.
     * 
-    * @param name
-    *           parameter name
+    * @param name parameter name
     * @return value of parameter with specified name
     */
    public String getParameter(String name)
@@ -223,7 +221,7 @@ public class EverrestServletContextInitializer
       if (str != null)
       {
          return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str)
-            || "1".equalsIgnoreCase(str);
+            || "1".equals(str);
       }
       return def;
    }

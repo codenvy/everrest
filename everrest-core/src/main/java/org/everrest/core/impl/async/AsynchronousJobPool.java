@@ -22,7 +22,6 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.util.Logger;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -37,6 +36,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -107,22 +107,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       this.maxCacheSize = config.getAsynchronousCacheSize();
       this.jobTimeout = config.getAsynchronousJobTimeout();
 
-      RejectedExecutionHandler delegateHandler;
-
-      try
-      {
-         Field defaultHandlerField = ThreadPoolExecutor.class.getDeclaredField("defaultHandler");
-         defaultHandlerField.setAccessible(true);
-         delegateHandler = (RejectedExecutionHandler)defaultHandlerField.get(null);
-      }
-      catch (Exception ignored)
-      {
-         delegateHandler = new ThreadPoolExecutor.AbortPolicy();
-      }
-
       this.pool =
          new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(
-            queueSize), new ManyJobsPolicy(delegateHandler));
+            queueSize), new ManyJobsPolicy(new ThreadPoolExecutor.AbortPolicy()));
 
       // TODO Use something more flexible (cache strategy) for setup cache behavior. 
       this.jobs = Collections.synchronizedMap(new LinkedHashMap<String, AsynchronousJob>()
@@ -230,6 +217,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       return false;
    }
 
+   @PreDestroy
    public void stop()
    {
       pool.shutdown();

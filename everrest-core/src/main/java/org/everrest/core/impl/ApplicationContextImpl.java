@@ -23,6 +23,7 @@ import org.everrest.core.DependencySupplier;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.InitialProperties;
+import org.everrest.core.Lifecycle;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousMethodInvoker;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
@@ -38,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
@@ -51,7 +53,7 @@ import javax.ws.rs.ext.ContextResolver;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ApplicationContextImpl implements ApplicationContext
+public class ApplicationContextImpl implements ApplicationContext, Lifecycle
 {
    /**
     * {@link ThreadLocal} ApplicationContext.
@@ -68,7 +70,7 @@ public class ApplicationContextImpl implements ApplicationContext
 
    /**
     * Set ApplicationContext for current thread.
-    *
+    * 
     * @param context the ApplicationContext.
     */
    public static void setCurrent(ApplicationContext context)
@@ -134,7 +136,7 @@ public class ApplicationContextImpl implements ApplicationContext
 
    /**
     * Constructs new instance of ApplicationContext.
-    *
+    * 
     * @param request See {@link GenricContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param providers See {@link ProviderBinder}
@@ -506,6 +508,50 @@ public class ApplicationContextImpl implements ApplicationContext
    public void setProperty(String name, String value)
    {
       getProperties().put(name, value);
+   }
+
+   /**
+    * @see org.everrest.core.Lifecycle#start()
+    */
+   @Override
+   public final void start()
+   {
+      // Nothing to do for start.
+   }
+
+   /**
+    * @see org.everrest.core.Lifecycle#stop()
+    */
+   @Override
+   public final void stop()
+   {
+      @SuppressWarnings("unchecked")
+      List<LifecycleComponent> l = (List<LifecycleComponent>)getAttributes().get("org.everrest.lifecycle.PerRequest");
+      if (l != null && l.size() > 0)
+      {
+         RuntimeException exception = null;
+         for (LifecycleComponent c : l)
+         {
+            // Remember first exception but let's to continue destroy other components.
+            try
+            {
+               c.destroy();
+            }
+            catch (WebApplicationException e)
+            {
+               if (exception == null)
+                  exception = e;
+            }
+            catch (InternalException e)
+            {
+               if (exception == null)
+                  exception = e;
+            }
+         }
+         l.clear();
+         if (exception != null)
+            throw exception;
+      }
    }
 
    /**
