@@ -59,11 +59,12 @@ public abstract class BaseTest extends TestCase
    }
 
    protected ResourceLauncher launcher;
+   private DefaultPicoContainer appContainer;
 
    public void setUp() throws Exception
    {
-      // Set caching for application scope container since it should be default behavior in real life.
-      DefaultPicoContainer appContainer = new DefaultPicoContainer(new Caching());
+      appContainer = new DefaultPicoContainer(new Caching());
+      appContainer.start();
       DefaultPicoContainer sesContainer = new DefaultPicoContainer();
       DefaultPicoContainer reqContainer = new DefaultPicoContainer();
       Composser composser = getComposser();
@@ -86,6 +87,14 @@ public abstract class BaseTest extends TestCase
       RequestHandler requestHandler =
          new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
+   }
+
+   @Override
+   protected void tearDown() throws Exception
+   {
+      appContainer.stop();
+      appContainer.dispose();
+      super.tearDown();
    }
 
    protected abstract Composser getComposser();

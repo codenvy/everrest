@@ -26,9 +26,11 @@ import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.tools.ResourceLauncher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -48,6 +50,8 @@ public abstract class BaseTest
    protected DependencySupplier dependencies;
    protected RequestHandlerImpl requestHandler;
    protected ResourceLauncher launcher;
+   @Autowired
+   protected ConfigurableListableBeanFactory factory;
 
    @Before
    public void start() throws Exception
@@ -55,5 +59,11 @@ public abstract class BaseTest
       requestHandler =
          new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
+   }
+
+   @After
+   public void stop()
+   {
+      factory.destroyScopedBean("org.everrest.lifecycle.Singletons");
    }
 }

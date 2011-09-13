@@ -20,22 +20,26 @@ package org.everrest.exoplatform;
 
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.InternalException;
+import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.async.AsynchronousJobPool;
-import org.everrest.core.impl.async.AsynchronousJobService;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
+import org.everrest.core.servlet.EverrestApplication;
 import org.everrest.core.util.Logger;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.picocontainer.Startable;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.ContextResolver;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -51,6 +55,7 @@ public class EverrestInitializer implements Startable
    private final ResourceBinder resources;
    private final ProvidersRegistry providersRegistry;
    private final EverrestConfiguration config;
+   private List<WeakReference<Object>> toStop;
 
    public EverrestInitializer(ExoContainerContext containerContext, ResourceBinder resources,
       ProvidersRegistry providersRegistry, StartableApplication eXo /* Be sure eXo components are initialized. */,
@@ -75,16 +80,15 @@ public class EverrestInitializer implements Startable
    @Override
    public void start()
    {
-      // Add some internal components depends to configuration.
-      if (config.isAsynchronousSupported())
-      {
-         ProviderBinder.getInstance().addContextResolver(new AsynchronousJobPool(config));
-         resources.addResource(AsynchronousJobService.class, null);
-      }
-      if (config.isCheckSecurity())
-      {
-         ProviderBinder.getInstance().addMethodInvokerFilter(new SecurityConstraint());
-      }
+      EverrestApplication everrest = new EverrestApplication(config);
+      Set<Object> singletons = everrest.getSingletons();
+      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
+      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
+      // obtained from container. Container must take care about its components.  
+      toStop = new ArrayList<WeakReference<Object>>(singletons.size());
+      for (Object o : singletons)
+         toStop.add(new WeakReference<Object>(o));
+      new ApplicationPublisher(resources, ProviderBinder.getInstance()).publish(everrest);
 
       // Process applications.
       List allApps = container.getComponentInstancesOfType(Application.class);
@@ -101,10 +105,34 @@ public class EverrestInitializer implements Startable
    @Override
    public void stop()
    {
-      ContextResolver<AsynchronousJobPool> asynchJobsResolver =
-         ProviderBinder.getInstance().getContextResolver(AsynchronousJobPool.class, null);
-      if (asynchJobsResolver != null)
-         asynchJobsResolver.getContext(null).stop();
+      if (toStop != null && toStop.size() > 0)
+      {
+         RuntimeException exception = null;
+         for (WeakReference<Object> ref : toStop)
+         {
+            Object o = ref.get();
+            if (o != null)
+            {
+               try
+               {
+                  new LifecycleComponent(o).destroy();
+               }
+               catch (WebApplicationException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+               catch (InternalException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+            }
+         }
+         toStop.clear();
+         if (exception != null)
+            throw exception;
+      }
    }
 
    public void addApplication(Application application)

@@ -59,11 +59,13 @@ public abstract class BaseTest extends TestCase
    }
 
    protected ResourceLauncher launcher;
+   private MockServletContext sctx;
+   private Listener listener;
 
    public void setUp() throws Exception
    {
-      MockServletContext sctx = new MockServletContext();
-      Listener listener = new Listener();
+      sctx = new MockServletContext();
+      listener = new Listener();
       listener.contextInitialized(new ServletContextEvent(sctx));
 
       DependencySupplier dependencies = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
@@ -73,6 +75,13 @@ public abstract class BaseTest extends TestCase
       RequestHandler requestHandler =
          new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
+   }
+
+   @Override
+   protected void tearDown() throws Exception
+   {
+      listener.contextDestroyed(new ServletContextEvent(sctx));
+      super.tearDown();
    }
 
    protected abstract List<Module> getModules();

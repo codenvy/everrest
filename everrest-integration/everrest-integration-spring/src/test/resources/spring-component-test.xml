@@ -13,6 +13,15 @@
 
    <bean id="everrest.providers" class="org.everrest.core.impl.ApplicationProviderBinder" />
 
+   <bean id="everrest.configuration" class="org.everrest.core.impl.EverrestConfiguration" />
+
+   <bean id="everrest.handler.mapping" class="org.everrest.spring.EverrestHandlerMapping">
+      <constructor-arg ref="everrest.resources" />
+      <constructor-arg ref="everrest.providers" />
+      <constructor-arg ref="everrest.dependencies" />
+      <constructor-arg ref="everrest.configuration" />
+   </bean>
+
    <bean class="org.everrest.spring.SpringComponentsLoader">
       <constructor-arg ref="everrest.resources"></constructor-arg>
       <constructor-arg ref="everrest.providers"></constructor-arg>

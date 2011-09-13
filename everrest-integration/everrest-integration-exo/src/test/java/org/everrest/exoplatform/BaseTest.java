@@ -24,6 +24,7 @@ import org.everrest.core.impl.ProviderBinder;
 import org.exoplatform.container.StandaloneContainer;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -45,5 +46,16 @@ public abstract class BaseTest extends TestCase
       Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
       c.setAccessible(true);
       ProviderBinder.setInstance(c.newInstance());
+   }
+
+   @Override
+   protected void tearDown() throws Exception
+   {
+      container.stop();
+      Field containerField = StandaloneContainer.class.getDeclaredField("container");
+      containerField.setAccessible(true);
+      containerField.set(null, null);
+      container = null;
+      super.tearDown();
    }
 }

@@ -24,18 +24,23 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.impl.async.AsynchronousJobPool;
-import org.everrest.core.impl.async.AsynchronousJobService;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
+import org.everrest.core.impl.InternalException;
+import org.everrest.core.impl.LifecycleComponent;
+import org.everrest.core.servlet.EverrestApplication;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.Lifecycle;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * HandlerMapping for EverrestProcessor.
@@ -45,6 +50,69 @@ import javax.ws.rs.ext.ContextResolver;
  */
 public class EverrestHandlerMapping implements HandlerMapping, BeanFactoryPostProcessor
 {
+   private static final class LifecycleDestructor implements org.springframework.context.Lifecycle
+   {
+      private final List<WeakReference<Object>> toDestroy;
+      private final AtomicBoolean started = new AtomicBoolean(true); // consider as started just after creation.
+
+      private LifecycleDestructor(List<WeakReference<Object>> toDestroy)
+      {
+         this.toDestroy = toDestroy;
+      }
+
+      @Override
+      public void start()
+      {
+      }
+
+      @Override
+      public void stop()
+      {
+         if (toDestroy != null && toDestroy.size() > 0)
+         {
+            RuntimeException exception = null;
+            for (WeakReference<Object> ref : toDestroy)
+            {
+               Object o = ref.get();
+               if (o != null)
+               {
+                  try
+                  {
+                     new LifecycleComponent(o).destroy();
+                  }
+                  catch (WebApplicationException e)
+                  {
+                     if (exception == null)
+                        exception = e;
+                  }
+                  catch (InternalException e)
+                  {
+                     if (exception == null)
+                        exception = e;
+                  }
+               }
+            }
+            toDestroy.clear();
+            started.set(false);
+            if (exception != null)
+               throw exception;
+         }
+         else
+         {
+            started.set(false);
+         }
+      }
+
+      /**
+       * @see org.springframework.context.Lifecycle#isRunning()
+       */
+      @Override
+      public boolean isRunning()
+      {
+         return started.get();
+      }
+   }
+
    protected EverrestProcessor processor;
    protected ResourceBinder resources;
    protected ApplicationProviderBinder providers;
@@ -99,39 +167,15 @@ public class EverrestHandlerMapping implements HandlerMapping, BeanFactoryPostPr
    @Override
    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException
    {
-      if (configuration.isAsynchronousSupported())
-      {
-         providers.addContextResolver(new AsynchronousJobPool(configuration));
-         resources.addResource(AsynchronousJobService.class, null);
-         beanFactory.registerSingleton("everrest.asynchronous.pool.lifecycle", new Lifecycle()
-         {
-            private boolean running = true;
-
-            @Override
-            public void stop()
-            {
-               ContextResolver<AsynchronousJobPool> asynchJobsResolver =
-                  providers.getContextResolver(AsynchronousJobPool.class, null);
-               if (asynchJobsResolver != null)
-                  asynchJobsResolver.getContext(null).stop();
-               running = false;
-            }
-
-            @Override
-            public void start()
-            {
-            }
-
-            @Override
-            public boolean isRunning()
-            {
-               return running;
-            }
-         });
-      }
-      if (configuration.isCheckSecurity())
-      {
-         providers.addMethodInvokerFilter(new SecurityConstraint());
-      }
+      EverrestApplication everrest = new EverrestApplication(configuration);
+      Set<Object> singletons = everrest.getSingletons();
+      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
+      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
+      // obtained from container. Container must take care about its components.  
+      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
+      for (Object o : singletons)
+         l.add(new WeakReference<Object>(o));
+      beanFactory.registerSingleton("org.everrest.lifecycle.Singletons", new LifecycleDestructor(l));
+      processor.addApplication(everrest);
    }
 }

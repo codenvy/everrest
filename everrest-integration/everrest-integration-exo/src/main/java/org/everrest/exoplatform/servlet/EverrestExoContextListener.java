@@ -30,16 +30,16 @@ import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.InternalException;
+import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.async.AsynchronousJobPool;
-import org.everrest.core.impl.async.AsynchronousJobService;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.servlet.EverrestApplication;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.core.util.Logger;
 import org.everrest.exoplatform.ExoDependencySupplier;
@@ -47,14 +47,20 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.StandaloneContainer;
 import org.picocontainer.ComponentAdapter;
 
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -197,22 +203,24 @@ public abstract class EverrestExoContextListener implements ServletContextListen
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
+      DependencySupplier dependencySupplier = new ExoDependencySupplier();
 
       EverrestConfiguration config = everrestInitializer.getConfiguration();
-      // Add some internal components depends to configuration.
-      if (config.isAsynchronousSupported())
-      {
-         providers.addContextResolver(new AsynchronousJobPool(config));
-         resources.addResource(AsynchronousJobService.class, null);
-      }
-      if (config.isCheckSecurity())
-      {
-         providers.addMethodInvokerFilter(new SecurityConstraint());
-      }
+      Application application = everrestInitializer.getApplication();
 
-      DependencySupplier dependencySupplier = new ExoDependencySupplier();
-      processor =
-         new EverrestProcessor(resources, providers, dependencySupplier, config, everrestInitializer.getApplication());
+      EverrestApplication everrest = new EverrestApplication(config);
+      everrest.addApplication(application);
+
+      Set<Object> singletons = everrest.getSingletons();
+      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
+      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
+      // obtained from container. Container must take care about its components.  
+      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
+      for (Object o : singletons)
+         l.add(new WeakReference<Object>(o));
+      servletContext.setAttribute("org.everrest.lifecycle.Singletons", l);
+
+      processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
@@ -245,7 +253,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                ComponentAdapter cadapter = (ComponentAdapter)iter.next();
 
                Class clazz = cadapter.getComponentImplementation();
-               if (clazz.getAnnotation(Provider.class) != null)
+               if (clazz.isAnnotationPresent(Provider.class))
                {
                   ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, lifeCycle);
                   pDescriptor.accept(rdv);
@@ -263,7 +271,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                      providers.addMessageBodyWriter(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
                         cadapter.getComponentInstance(container)));
                }
-               else if (clazz.getAnnotation(Filter.class) != null)
+               else if (clazz.isAnnotationPresent(Filter.class))
                {
                   FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz, lifeCycle);
                   fDescriptor.accept(rdv);
@@ -278,7 +286,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                      providers.addResponseFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, cadapter
                         .getComponentInstance(container)));
                }
-               else if (clazz.getAnnotation(Path.class) != null)
+               else if (clazz.isAnnotationPresent(Path.class))
                {
                   AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz, lifeCycle);
                   rDescriptor.accept(rdv);
@@ -308,9 +316,37 @@ public abstract class EverrestExoContextListener implements ServletContextListen
    @Override
    public void contextDestroyed(ServletContextEvent servletContextEvent)
    {
-      ContextResolver<AsynchronousJobPool> asynchJobsResolver =
-         providers.getContextResolver(AsynchronousJobPool.class, null);
-      if (asynchJobsResolver != null)
-         asynchJobsResolver.getContext(null).stop();
+      ServletContext servletContext = servletContextEvent.getServletContext();
+      @SuppressWarnings("unchecked")
+      List<WeakReference<Object>> l =
+         (List<WeakReference<Object>>)servletContext.getAttribute("org.everrest.lifecycle.Singletons");
+      if (l != null && l.size() > 0)
+      {
+         RuntimeException exception = null;
+         for (WeakReference<Object> ref : l)
+         {
+            Object o = ref.get();
+            if (o != null)
+            {
+               try
+               {
+                  new LifecycleComponent(o).destroy();
+               }
+               catch (WebApplicationException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+               catch (InternalException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+            }
+         }
+         l.clear();
+         if (exception != null)
+            throw exception;
+      }
    }
 }

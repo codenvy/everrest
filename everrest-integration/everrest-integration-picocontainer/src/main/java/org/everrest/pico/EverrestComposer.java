@@ -30,27 +30,33 @@ import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.InternalException;
+import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.async.AsynchronousJobPool;
-import org.everrest.core.impl.async.AsynchronousJobService;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.servlet.EverrestApplication;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.picocontainer.ComponentAdapter;
+import org.picocontainer.Disposable;
 import org.picocontainer.MutablePicoContainer;
-import org.picocontainer.Startable;
 import org.picocontainer.web.PicoServletContainerListener;
 import org.picocontainer.web.WebappComposer;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -112,6 +118,49 @@ public abstract class EverrestComposer implements WebappComposer
       }
    }
 
+   private static final class LifecycleDestructor implements Disposable
+   {
+      private final List<WeakReference<Object>> toDestroy;
+
+      private LifecycleDestructor(List<WeakReference<Object>> toDestroy)
+      {
+         this.toDestroy = toDestroy;
+      }
+
+      @Override
+      public void dispose()
+      {
+         if (toDestroy != null && toDestroy.size() > 0)
+         {
+            RuntimeException exception = null;
+            for (WeakReference<Object> ref : toDestroy)
+            {
+               Object o = ref.get();
+               if (o != null)
+               {
+                  try
+                  {
+                     new LifecycleComponent(o).destroy();
+                  }
+                  catch (WebApplicationException e)
+                  {
+                     if (exception == null)
+                        exception = e;
+                  }
+                  catch (InternalException e)
+                  {
+                     if (exception == null)
+                        exception = e;
+                  }
+               }
+            }
+            toDestroy.clear();
+            if (exception != null)
+               throw exception;
+         }
+      }
+   }
+
    protected ApplicationProviderBinder providers;
 
    protected ResourceBinder resources;
@@ -125,39 +174,25 @@ public abstract class EverrestComposer implements WebappComposer
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
+      DependencySupplier dependencySupplier = new PicoDependencySupplier();
 
       EverrestConfiguration config = everrestInitializer.getConfiguration();
-      // Add some internal components depends to configuration.
-      if (config.isAsynchronousSupported())
-      {
-         providers.addContextResolver(new AsynchronousJobPool(config));
-         resources.addResource(AsynchronousJobService.class, null);
-         container.addComponent(new Startable()
-         {
-            @Override
-            public void stop()
-            {
-               // Stop asynchronous task pool.
-               ContextResolver<AsynchronousJobPool> asynchJobsResolver =
-                  providers.getContextResolver(AsynchronousJobPool.class, null);
-               if (asynchJobsResolver != null)
-                  asynchJobsResolver.getContext(null).stop();
-            }
+      Application application = everrestInitializer.getApplication();
 
-            @Override
-            public void start()
-            {
-            }
-         });
-      }
-      if (config.isCheckSecurity())
-      {
-         providers.addMethodInvokerFilter(new SecurityConstraint());
-      }
+      EverrestApplication everrest = new EverrestApplication(config);
+      everrest.addApplication(application);
 
-      DependencySupplier dependencySupplier = new PicoDependencySupplier();
-      processor =
-         new EverrestProcessor(resources, providers, dependencySupplier, config, everrestInitializer.getApplication());
+      Set<Object> singletons = everrest.getSingletons();
+      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
+      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
+      // obtained from container. Container must take care about its components.  
+      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
+      for (Object o : singletons)
+         l.add(new WeakReference<Object>(o));
+
+      container.addComponent(new LifecycleDestructor(l));
+
+      processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);

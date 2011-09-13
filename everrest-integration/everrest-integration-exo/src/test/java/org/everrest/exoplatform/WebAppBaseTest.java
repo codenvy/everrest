@@ -47,14 +47,16 @@ public abstract class WebAppBaseTest extends BaseTest
    protected ResourceBinder resources;
    protected DependencySupplier dependencies;
    protected ApplicationProviderBinder providers;
+   private EverrestExoContextListener listener;
+   private MockServletContext sctx;
 
    @Override
    protected void setUp() throws Exception
    {
       super.setUp();
 
-      MockServletContext sctx = new MockServletContext();
-      EverrestExoContextListener listener = new EverrestExoContextListener() {
+      sctx = new MockServletContext();
+      listener = new EverrestExoContextListener() {
          @Override
          protected ExoContainer getContainer(ServletContext servletContext)
          {
@@ -72,4 +74,12 @@ public abstract class WebAppBaseTest extends BaseTest
          new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
       launcher = new ResourceLauncher(requestHandler);
    }
+
+   @Override
+   protected void tearDown() throws Exception
+   {
+      listener.contextDestroyed(new ServletContextEvent(sctx));
+      super.tearDown();
+   }
+   
 }

@@ -38,29 +38,33 @@ import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.InternalException;
+import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.async.AsynchronousJobPool;
-import org.everrest.core.impl.async.AsynchronousJobService;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.servlet.EverrestApplication;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
 import org.everrest.guice.GuiceObjectFactory;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -106,27 +110,28 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
    {
       super.contextInitialized(servletContextEvent);
       ServletContext servletContext = servletContextEvent.getServletContext();
-      Injector injector = getInjector(servletContext);
-
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
+      Injector injector = getInjector(servletContext);
+      DependencySupplier dependencySupplier = new GuiceDependencySupplier(injector);
 
       EverrestConfiguration config = everrestInitializer.getConfiguration();
-      // Add some internal components depends to configuration.
-      if (config.isAsynchronousSupported())
-      {
-         providers.addContextResolver(new AsynchronousJobPool(config));
-         resources.addResource(AsynchronousJobService.class, null);
-      }
-      if (config.isCheckSecurity())
-      {
-         providers.addMethodInvokerFilter(new SecurityConstraint());
-      }
+      Application application = everrestInitializer.getApplication();
 
-      DependencySupplier dependencySupplier = new GuiceDependencySupplier(injector);
-      processor =
-         new EverrestProcessor(resources, providers, dependencySupplier, config, everrestInitializer.getApplication());
+      EverrestApplication everrest = new EverrestApplication(config);
+      everrest.addApplication(application);
+
+      Set<Object> singletons = everrest.getSingletons();
+      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
+      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
+      // obtained from container. Container must take care about its components.  
+      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
+      for (Object o : singletons)
+         l.add(new WeakReference<Object>(o));
+      servletContext.setAttribute("org.everrest.lifecycle.Singletons", l);
+
+      processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
@@ -143,15 +148,37 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
    @Override
    public void contextDestroyed(ServletContextEvent servletContextEvent)
    {
-      ServletContext sctx = servletContextEvent.getServletContext();
-      ApplicationProviderBinder providers =
-         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
-      if (providers != null)
+      ServletContext servletContext = servletContextEvent.getServletContext();
+      @SuppressWarnings("unchecked")
+      List<WeakReference<Object>> l =
+         (List<WeakReference<Object>>)servletContext.getAttribute("org.everrest.lifecycle.Singletons");
+      if (l != null && l.size() > 0)
       {
-         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
-            providers.getContextResolver(AsynchronousJobPool.class, null);
-         if (asynchJobsResolver != null)
-            asynchJobsResolver.getContext(null).stop();
+         RuntimeException exception = null;
+         for (WeakReference<Object> ref : l)
+         {
+            Object o = ref.get();
+            if (o != null)
+            {
+               try
+               {
+                  new LifecycleComponent(o).destroy();
+               }
+               catch (WebApplicationException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+               catch (InternalException e)
+               {
+                  if (exception == null)
+                     exception = e;
+               }
+            }
+         }
+         l.clear();
+         if (exception != null)
+            throw exception;
       }
       super.contextDestroyed(servletContextEvent);
    }
