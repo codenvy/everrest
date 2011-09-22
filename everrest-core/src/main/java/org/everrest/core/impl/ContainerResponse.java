@@ -192,8 +192,14 @@ public class ContainerResponse implements GenericContainerResponse
          else
          {
             LOG.error(message);
-            throw new WebApplicationException(Response.status(Response.Status.NOT_ACCEPTABLE).entity(message).type(
-               MediaType.TEXT_PLAIN).build());
+            Response notAcceptableResponse =
+               Response.status(Response.Status.NOT_ACCEPTABLE).entity(message).type(MediaType.TEXT_PLAIN).build();
+            setResponse(notAcceptableResponse);
+            entityWriter =
+               context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
+            // Must not happen since MessageBodyWriter for String is embedded.
+            if (entityWriter == null)
+               throw new WebApplicationException(notAcceptableResponse);
          }
       }
       else
