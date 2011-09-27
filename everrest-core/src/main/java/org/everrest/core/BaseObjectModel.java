@@ -70,10 +70,10 @@ public abstract class BaseObjectModel implements ObjectModel
          {
             fields.add(new FieldInjectorImpl(clazz, jfield));
          }
-         Class<?> sc = clazz.getSuperclass();
          Package _package = clazz.getPackage();
          String resourcePackageName = _package != null ? _package.getName() : null;
-         while (sc != Object.class)
+         Class<?> sc = clazz.getSuperclass();
+         while (sc != null && sc != Object.class)
          {
             for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
             {
