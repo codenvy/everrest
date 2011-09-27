@@ -65,8 +65,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: AbstractResourceDescriptorImpl.java 292 2009-10-19 07:03:07Z
- *          aparfonov $
+ * @version $Id$
  */
 public class AbstractResourceDescriptorImpl extends BaseObjectModel implements AbstractResourceDescriptor
 {
@@ -90,9 +89,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    private final ResourceMethodMap<ResourceMethodDescriptor> resourceMethods;
 
    /**
-    * Constructs new instance of AbstractResourceDescriptor without path
-    * (sub-resource).
-    *
+    * Constructs new instance of AbstractResourceDescriptor without path (sub-resource).
+    * 
     * @param resourceClass resource class
     */
    public AbstractResourceDescriptorImpl(Class<?> resourceClass, ComponentLifecycleScope scope)
@@ -182,8 +180,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    }
 
    /**
-    * Process method of resource and separate them to three types Resource
-    * Methods, Sub-Resource Methods and Sub-Resource Locators.
+    * Process method of resource and separate them to three types Resource Methods, Sub-Resource Methods and
+    * Sub-Resource Locators.
     */
    protected void processMethods()
    {
@@ -240,8 +238,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                      new ResourceMethodDescriptorImpl(method, httpMethod.value(), params, this, consumes, produces,
                         additional);
                   ResourceMethodDescriptor exist =
-                     findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(), res
-                        .produces());
+                     findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(),
+                        res.produces());
                   if (exist == null)
                   {
                      resourceMethods.add(httpMethod.value(), res);
@@ -326,7 +324,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
    /**
     * Create list of {@link MethodParameter} .
-    *
+    * 
     * @param resourceClass class
     * @param method See {@link Method}
     * @return list of {@link MethodParameter}
@@ -398,10 +396,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /**
     * According to JSR-311:
     * <p>
-    * On receipt of a HEAD request an implementation MUST either: 1. Call method
-    * annotated with request method designation for HEAD or, if none present, 2.
-    * Call method annotated with a request method designation GET and discard
-    * any returned entity.
+    * On receipt of a HEAD request an implementation MUST either: 1. Call method annotated with request method
+    * designation for HEAD or, if none present, 2. Call method annotated with a request method designation GET and
+    * discard any returned entity.
     * </p>
     */
    protected void resolveHeadRequest()
@@ -448,10 +445,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /**
     * According to JSR-311:
     * <p>
-    * On receipt of a OPTIONS request an implementation MUST either: 1. Call
-    * method annotated with request method designation for OPTIONS or, if none
-    * present, 2. Generate an automatic response using the metadata provided by
-    * the JAX-RS annotations on the matching class and its methods.
+    * On receipt of a OPTIONS request an implementation MUST either: 1. Call method annotated with request method
+    * designation for OPTIONS or, if none present, 2. Generate an automatic response using the metadata provided by the
+    * JAX-RS annotations on the matching class and its methods.
     * </p>
     */
    protected void resolveOptionsRequest()
@@ -470,10 +466,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    }
 
    /**
-    * Get all method with at least one annotation which has annotation
-    * <i>annotation</i>. It is useful for annotation {@link javax.ws.rs.GET},
-    * etc. All HTTP method annotations has annotation {@link HttpMethod}.
-    *
+    * Get all method with at least one annotation which has annotation <i>annotation</i>. It is useful for annotation
+    * {@link javax.ws.rs.GET}, etc. All HTTP method annotations has annotation {@link HttpMethod}.
+    * 
     * @param <T> annotation type
     * @param m method
     * @param annotation annotation class
@@ -491,15 +486,14 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    }
 
    /**
-    * Tries to get JAX-RS annotation on method from the root resource class's
-    * superclass or implemented interfaces.
-    *
+    * Tries to get JAX-RS annotation on method from the root resource class's superclass or implemented interfaces.
+    * 
     * @param <T> annotation type
     * @param method method for discovering
     * @param resourceClass class that contains discovered method
     * @param annotationClass annotation type what we are looking for
-    * @param metaAnnotation false if annotation should be on method and true in
-    *        method should contain annotations that has supplied annotation
+    * @param metaAnnotation false if annotation should be on method and true in method should contain annotations that
+    *           has supplied annotation
     * @return annotation from class or its ancestor or null if nothing found
     */
    protected <T extends Annotation> T getMethodAnnotation(Method method, Class<?> resourceClass,
@@ -519,9 +513,14 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
          try
          {
-            inhMethod = resourceClass.getSuperclass().getMethod(method.getName(), method.getParameterTypes());
+            Class<?> superclass = resourceClass.getSuperclass();
+            if (superclass != null && superclass != Object.class)
+               inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
          }
          catch (NoSuchMethodException e)
+         {
+         }
+         if (inhMethod == null)
          {
             for (Class<?> intf : resourceClass.getInterfaces())
             {
@@ -560,9 +559,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    }
 
    /**
-    * Check is collection of {@link ResourceMethodDescriptor} already contains
-    * ResourceMethodDescriptor with the same media types.
-    *
+    * Check is collection of {@link ResourceMethodDescriptor} already contains ResourceMethodDescriptor with the same
+    * media types.
+    * 
     * @param rmds {@link Set} of {@link ResourceMethodDescriptor}
     * @param consumes resource method consumed media type
     * @param produces resource method produced media type
@@ -617,15 +616,14 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    }
 
    /**
-    * Get security annotation (DenyAll, RolesAllowed, PermitAll) from
-    * <code>method</code> or class <code>clazz</class> which contains method.
+    * Get security annotation (DenyAll, RolesAllowed, PermitAll) from <code>method</code> or class
+    * <code>clazz</class> which contains method.
     * Supper class or implemented interfaces will be also checked. Annotation
     * on method has the advantage on annotation on class or interface.
-    *
+    * 
     * @param method method to be checked for security annotation
     * @param clazz class which contains <code>method</code>
-    * @return one of security annotation or <code>null</code> is no such
-    *         annotation found
+    * @return one of security annotation or <code>null</code> is no such annotation found
     * @see DenyAll
     * @see RolesAllowed
     * @see PermitAll
@@ -640,19 +638,25 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          a = getAnnotation(clazz, aclasses);
          if (a == null)
          {
-            Class<?> superclass = clazz.getSuperclass();
             java.lang.reflect.Method inhMethod = null;
+            Class<?> superclass = clazz.getSuperclass();
             try
             {
-               inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
-               a = getAnnotation(inhMethod, aclasses);
+               if (superclass != null && superclass != Object.class)
+               {
+                  inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
+                  a = getAnnotation(inhMethod, aclasses);
+               }
             }
             catch (NoSuchMethodException e)
             {
             }
             if (a == null)
             {
-               a = getAnnotation(superclass, aclasses);
+               if (superclass != null && superclass != Object.class)
+               {
+                  a = getAnnotation(superclass, aclasses);
+               }
                if (a == null)
                {
                   Class<?>[] interfaces = clazz.getInterfaces();
@@ -705,8 +709,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ AbstractResourceDescriptorImpl: ");
-      sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource()).append(
-         "; class: " + getObjectClass()).append(" ]");
+      sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource())
+         .append("; class: " + getObjectClass()).append(" ]");
       return sb.toString();
    }
 
