@@ -74,23 +74,23 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
    private static final Logger log = Logger.getLogger(AsynchronousJobPool.class);
 
-   private static AtomicLong jobNumber = new AtomicLong(1);
+   private static final AtomicLong jobNumber = new AtomicLong(1);
 
    /** Number of threads to serve asynchronous jobs. */
-   protected final int poolSize;
+   private final int poolSize;
 
    /** Maximum number of task in queue. */
-   protected final int queueSize;
+   private final int queueSize;
 
    /** When timeout (in minutes) reached then an asynchronous operation may be removed from the pool. */
-   protected final int jobTimeout;
+   private final int jobTimeout;
 
    /** Max cache size. */
-   protected final int maxCacheSize;
+   private final int maxCacheSize;
 
-   protected final ExecutorService pool;
+   private final ExecutorService pool;
 
-   protected final Map<String, AsynchronousJob> jobs;
+   private final Map<String, AsynchronousJob> jobs;
 
    @SuppressWarnings("serial")
    public AsynchronousJobPool(EverrestConfiguration config)
