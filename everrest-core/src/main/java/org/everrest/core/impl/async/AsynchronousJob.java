@@ -34,7 +34,7 @@ public class AsynchronousJob extends FutureTask<Object>
    private final long expirationDate;
    private final ResourceMethodDescriptor method;
 
-   AsynchronousJob(Callable<Object> callable, String jobId, long timeout, TimeUnit unit, ResourceMethodDescriptor method)
+   protected AsynchronousJob(Callable<Object> callable, String jobId, long timeout, TimeUnit unit, ResourceMethodDescriptor method)
    {
       super(callable);
       this.jobId = jobId;

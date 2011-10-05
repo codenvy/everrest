@@ -35,6 +35,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
@@ -52,7 +53,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 {
-   private static class ManyJobsPolicy implements RejectedExecutionHandler
+   public static class ManyJobsPolicy implements RejectedExecutionHandler
    {
       private final RejectedExecutionHandler delegate;
 
@@ -73,28 +74,23 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
    private static final Logger log = Logger.getLogger(AsynchronousJobPool.class);
 
-   private static long counter;
-
-   private static synchronized String nextId()
-   {
-      return Long.toString(++counter);
-   }
+   private static AtomicLong jobNumber = new AtomicLong(1);
 
    /** Number of threads to serve asynchronous jobs. */
-   private final int poolSize;
+   protected final int poolSize;
 
    /** Maximum number of task in queue. */
-   private final int queueSize;
+   protected final int queueSize;
 
    /** When timeout (in minutes) reached then an asynchronous operation may be removed from the pool. */
-   private final int jobTimeout;
+   protected final int jobTimeout;
 
    /** Max cache size. */
-   private final int maxCacheSize;
+   protected final int maxCacheSize;
 
-   private final ExecutorService pool;
+   protected final ExecutorService pool;
 
-   private final Map<String, AsynchronousJob> jobs;
+   protected final Map<String, AsynchronousJob> jobs;
 
    @SuppressWarnings("serial")
    public AsynchronousJobPool(EverrestConfiguration config)
@@ -147,9 +143,31 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    public String addJob(final Object resource, final ResourceMethodDescriptor resourceMethod, final Object[] params)
       throws AsynchronousJobRejectedException
    {
-      final String jobId = nextId();
+      AsynchronousJob job = newJob(resource, resourceMethod, params);
+
+      try
+      {
+         pool.execute(job);
+      }
+      catch (RejectedExecutionException e)
+      {
+         throw new AsynchronousJobRejectedException(e.getMessage());
+      }
+
+      String jobId = job.getJobId();
+      jobs.put(jobId, job);
+
+      if (log.isDebugEnabled())
+         log.debug("Add asynchronous job, ID " + jobId);
+
+      return jobId;
+   }
+
+   protected AsynchronousJob newJob(final Object resource, final ResourceMethodDescriptor resourceMethod,
+      final Object[] params)
+   {
       final Method method = resourceMethod.getMethod();
-      
+
       Callable<Object> c = new Callable<Object>()
       {
          @Override
@@ -181,23 +199,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          }
       };
 
-      AsynchronousJob job = new AsynchronousJob(c, jobId, jobTimeout, TimeUnit.MINUTES, resourceMethod);
-
-      try
-      {
-         pool.execute(job);
-      }
-      catch (RejectedExecutionException e)
-      {
-         throw new AsynchronousJobRejectedException(e.getMessage());
-      }
-
-      jobs.put(jobId, job);
-
-      if (log.isDebugEnabled())
-         log.debug("Add asynchronous job, ID " + jobId);
-
-      return jobId;
+      AsynchronousJob job =
+         new AsynchronousJob(c, ("" + jobNumber.getAndIncrement()), jobTimeout, TimeUnit.MINUTES, resourceMethod);
+      return job;
    }
 
    public AsynchronousJob getJob(String jobId)
