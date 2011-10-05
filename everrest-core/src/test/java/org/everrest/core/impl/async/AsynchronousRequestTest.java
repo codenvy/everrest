@@ -26,8 +26,6 @@ import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.UUID;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -88,24 +86,6 @@ public class AsynchronousRequestTest extends BaseTest
          return new SubResource1();
       }
    }
-   
-   @Path("e")
-   public static class Resource5
-   {
-      @GET
-      public String m()
-      {
-         try
-         {
-            Thread.sleep(2000);
-         }
-         catch (InterruptedException ie)
-         {
-            return "stopped";
-         }
-         return ConversationState.getCurrent().getId();
-      }
-   }
 
    public static interface SubResource
    {
@@ -123,7 +103,7 @@ public class AsynchronousRequestTest extends BaseTest
    }
 
    //
-   
+
    public static class Msg
    {
       public String getMessage()
@@ -131,37 +111,9 @@ public class AsynchronousRequestTest extends BaseTest
          return "to be or not to be";
       }
    }
-   
-   
-   public static class ConversationState
-   {
-      private String id;
-      public ConversationState(String id)
-      {
-         this.id = id;
-      }
-     
-      private static ThreadLocal<ConversationState> current = new ThreadLocal<ConversationState>();
-
-      public static ConversationState getCurrent()
-      {
-         return current.get();
-      }
-
-      public static void setCurrent(ConversationState state)
-      {
-         current.set(state);
-      }
-      
-      public String getId()
-      {
-         return id;
-      }
-
-   }
 
    //
-   
+
    public void testRunJob() throws Exception
    {
       registry(Resource1.class);
@@ -239,38 +191,6 @@ public class AsynchronousRequestTest extends BaseTest
       assertEquals("to be or not to be", msg.getMessage());
       unregistry(Resource4.class);
    }
-   
-   public void testTreadLocalAsync() throws Exception
-   {
-      String id = UUID.randomUUID().toString();
-      ConversationState state = new ConversationState(id);
-      ConversationState.setCurrent(state);
-      registry(Resource5.class);
-      ContainerResponse response = launcher.service("GET", "/e?async=true", "", null, null, null);
-      assertEquals(202, response.getStatus());
-      String jobUrl = (String)response.getEntity();
-      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      response = getAsyncronousResponse(jobUrl, writer);
-      assertEquals(200, response.getStatus());
-      assertEquals(id, new String(writer.getBody()));
-      // Try one more time. Job must be removed from pool so expected result is 404.
-      response = launcher.service("GET", jobUrl, "", null, null, null);
-      assertEquals(404, response.getStatus());
-      unregistry(Resource5.class);
-   }
-   
-   public void testTreadLocal() throws Exception
-   {
-      String id = UUID.randomUUID().toString();
-      ConversationState state = new ConversationState(id);
-      ConversationState.setCurrent(state);
-      registry(Resource5.class);
-      ContainerResponse response = launcher.service("GET", "/e", "", null, null, null);
-      assertEquals(200, response.getStatus());
-      assertEquals(id,(String)response.getEntity());
-      unregistry(Resource5.class);
-   }
-   
 
    private ContainerResponse getAsyncronousResponse(String jobUrl, ContainerResponseWriter writer) throws Exception
    {
