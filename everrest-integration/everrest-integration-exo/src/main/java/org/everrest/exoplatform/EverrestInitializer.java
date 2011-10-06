@@ -25,7 +25,8 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.servlet.EverrestApplication;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.util.Logger;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -34,9 +35,11 @@ import org.picocontainer.Startable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
@@ -49,7 +52,7 @@ public class EverrestInitializer implements Startable
 {
    private static final Logger log = Logger.getLogger(EverrestInitializer.class);
 
-   private static int appNameCounter = 0;
+   private static final AtomicLong appNameCounter = new AtomicLong(1);
 
    private final ExoContainer container;
    private final ResourceBinder resources;
@@ -80,13 +83,22 @@ public class EverrestInitializer implements Startable
    @Override
    public void start()
    {
-      EverrestApplication everrest = new EverrestApplication(config);
-      Set<Object> singletons = everrest.getSingletons();
+      DeployApplication everrest = new DeployApplication();
+      if (config.isAsynchronousSupported())
+      {
+         everrest.singletons.add(new ExoAsynchronousJobPool(config));
+         everrest.classes.add(AsynchronousJobService.class);
+      }
+      if (config.isCheckSecurity())
+      {
+         everrest.singletons.add(new SecurityConstraint());
+      }
+
       // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
       // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
       // obtained from container. Container must take care about its components.  
-      toStop = new ArrayList<WeakReference<Object>>(singletons.size());
-      for (Object o : singletons)
+      toStop = new ArrayList<WeakReference<Object>>(everrest.singletons.size());
+      for (Object o : everrest.singletons)
          toStop.add(new WeakReference<Object>(o));
       new ApplicationPublisher(resources, ProviderBinder.getInstance()).publish(everrest);
 
@@ -137,7 +149,7 @@ public class EverrestInitializer implements Startable
 
    public void addApplication(Application application)
    {
-      String applicationName = generateApplicationName(application);
+      String applicationName = "application" + appNameCounter.getAndIncrement();
       ApplicationProviderBinder applicationProviders = new ApplicationProviderBinder();
       new ExoApplicationPublisher(resources, applicationProviders).publish(new ApplicationConfiguration(
          applicationName, application));
@@ -147,9 +159,21 @@ public class EverrestInitializer implements Startable
             + " registered. ");
    }
 
-   protected synchronized String generateApplicationName(Application application)
+   private static final class DeployApplication extends Application
    {
-      appNameCounter++;
-      return "application" + appNameCounter;
+      private final Set<Class<?>> classes = new HashSet<Class<?>>();
+      private final Set<Object> singletons = new HashSet<Object>();
+
+      @Override
+      public Set<Class<?>> getClasses()
+      {
+         return classes;
+      }
+
+      @Override
+      public Set<Object> getSingletons()
+      {
+         return singletons;
+      }
    }
 }
