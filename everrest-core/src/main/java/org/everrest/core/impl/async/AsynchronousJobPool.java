@@ -143,7 +143,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    public String addJob(final Object resource, final ResourceMethodDescriptor resourceMethod, final Object[] params)
       throws AsynchronousJobRejectedException
    {
-      AsynchronousJob job = newJob(resource, resourceMethod, params);
+      AsynchronousJob job =
+         new AsynchronousJob(newCallable(resource, resourceMethod.getMethod(), params),
+            ("" + jobNumber.getAndIncrement()), jobTimeout, TimeUnit.MINUTES, resourceMethod);
 
       try
       {
@@ -163,12 +165,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       return jobId;
    }
 
-   protected AsynchronousJob newJob(final Object resource, final ResourceMethodDescriptor resourceMethod,
-      final Object[] params)
+   protected Callable<Object> newCallable(final Object resource, final Method method, final Object[] params)
    {
-      final Method method = resourceMethod.getMethod();
-
-      Callable<Object> c = new Callable<Object>()
+      return new Callable<Object>()
       {
          @Override
          public Object call()
@@ -198,10 +197,6 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
             }
          }
       };
-
-      AsynchronousJob job =
-         new AsynchronousJob(c, ("" + jobNumber.getAndIncrement()), jobTimeout, TimeUnit.MINUTES, resourceMethod);
-      return job;
    }
 
    public AsynchronousJob getJob(String jobId)

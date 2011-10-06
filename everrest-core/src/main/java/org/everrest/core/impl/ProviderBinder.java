@@ -753,9 +753,9 @@ public class ProviderBinder implements Providers
    {
       MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(contextType);
       ContextResolver<T> resolver = null;
-      MediaTypeRange mrange = new MediaTypeRange(mediaType);
       if (pm != null)
       {
+         MediaTypeRange mrange = new MediaTypeRange(mediaType);
          while (mrange.hasNext() && resolver == null)
          {
             MediaType actual = mrange.next();
