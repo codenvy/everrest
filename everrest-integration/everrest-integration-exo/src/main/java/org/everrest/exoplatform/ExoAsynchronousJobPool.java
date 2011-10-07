@@ -21,6 +21,8 @@ package org.everrest.exoplatform;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.IdentityConstants;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
@@ -77,7 +79,12 @@ public class ExoAsynchronousJobPool extends AsynchronousJobPool implements Conte
          {
             try
             {
-               ConversationState.setCurrent(conversationStateHolder.get());
+               ConversationState saved = conversationStateHolder.get();
+               if (saved == null)
+               {
+                  saved = new ConversationState(new Identity(IdentityConstants.ANONIM));
+               }
+               ConversationState.setCurrent(saved);
                return theMethod.invoke(callable, theParams);
             }
             finally
