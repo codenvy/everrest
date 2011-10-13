@@ -34,7 +34,13 @@ import javax.ws.rs.ext.MessageBodyWriter;
  */
 public class InputStreamEntityProviderTest extends BaseTest
 {
-
+   @Override
+   public void setUp() throws Exception
+   {
+      super.setUp();
+      setContext();
+   }
+   
    @SuppressWarnings({"unchecked", "rawtypes"})
    public void testRead() throws Exception
    {

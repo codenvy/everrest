@@ -27,12 +27,24 @@ import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public abstract class BaseTest extends TestCase
 {
+   private static class EmptyStream extends InputStream
+   {
+      @Override
+      public int read() throws IOException
+      {
+         return -1;
+      }
+   }
 
    protected ProviderBinder providers;
 
@@ -61,7 +73,8 @@ public abstract class BaseTest extends TestCase
 
    protected void setContext()
    {
-      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
+      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(new ContainerRequest("", URI.create(""), URI
+         .create(""), new EmptyStream(), new MultivaluedMapImpl()), null, providers));
    }
 
    public void tearDown() throws Exception
