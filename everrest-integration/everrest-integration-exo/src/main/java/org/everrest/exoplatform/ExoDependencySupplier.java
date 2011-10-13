@@ -73,7 +73,7 @@ public class ExoDependencySupplier extends BaseDependencySupplier
       // Create javax.inject.Provider if instance of requested type may be produced by ExoContainer.
       if (entryType instanceof Class<?>)
       {
-         final ComponentAdapter cadapter = container.getComponentAdapter((Class<?>)entryType);
+         final ComponentAdapter cadapter = container.getComponentAdapterOfType((Class<?>)entryType);
          if (cadapter != null)
          {
             return new javax.inject.Provider<Object>() {
