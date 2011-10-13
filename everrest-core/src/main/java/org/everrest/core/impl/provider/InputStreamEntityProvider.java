@@ -92,12 +92,10 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream>
                fos.write(b, 0, r);
             }
             fos.close();
-            System.err.println("FILE ");               
             return new DeleteOnCloseFIS(f);
          }
          else
          {
-            System.err.println("MEM ");               
             return new ByteArrayInputStream(bos.toByteArray());
          }
       }
@@ -126,7 +124,6 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream>
             if (file.exists())
             {
                file.delete();
-System.err.println("DELETE " + file.getPath() + " " + (!file.exists()));               
             }
          }
       }
@@ -164,5 +161,4 @@ System.err.println("DELETE " + file.getPath() + " " + (!file.exists()));
          t.close();
       }
    }
-
 }
