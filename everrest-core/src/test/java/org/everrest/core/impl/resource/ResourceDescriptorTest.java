@@ -65,7 +65,7 @@ import javax.ws.rs.core.UriInfo;
 public class ResourceDescriptorTest extends BaseTest
 {
 
-   public void testFailedCreation1()
+   /*public void testFailedCreation1()
    {
       try
       {
@@ -75,7 +75,7 @@ public class ResourceDescriptorTest extends BaseTest
       catch (RuntimeException e)
       {
       }
-   }
+   }*/
 
    public void testFailedCreation2()
    {
@@ -120,7 +120,7 @@ public class ResourceDescriptorTest extends BaseTest
       {
       }
       // must warn
-      new AbstractResourceDescriptorImpl(Resource9.class, ComponentLifecycleScope.PER_REQUEST);
+      //new AbstractResourceDescriptorImpl(Resource9.class, ComponentLifecycleScope.PER_REQUEST);
    }
 
    public void testFailedCreation5()
@@ -134,7 +134,7 @@ public class ResourceDescriptorTest extends BaseTest
       {
       }
       // must warn
-      new AbstractResourceDescriptorImpl(Resource11.class, ComponentLifecycleScope.PER_REQUEST);
+      //new AbstractResourceDescriptorImpl(Resource11.class, ComponentLifecycleScope.PER_REQUEST);
    }
 
    public void testFailedCreation6()

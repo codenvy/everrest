@@ -221,14 +221,12 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             {
                Produces p = getMethodAnnotation(method, resourceClass, Produces.class, false);
                if (p == null)
-                  p = resourceClass.getAnnotation(Produces.class); // from resource
-               // class
+                  p = resourceClass.getAnnotation(Produces.class); // from resource class
                List<MediaType> produces = MediaTypeHelper.createProducesList(p);
 
                Consumes c = getMethodAnnotation(method, resourceClass, Consumes.class, false);
                if (c == null)
-                  c = resourceClass.getAnnotation(Consumes.class); // from resource
-               // class
+                  c = resourceClass.getAnnotation(Consumes.class); // from resource class
                List<MediaType> consumes = MediaTypeHelper.createConsumesList(c);
 
                if (subPath == null)
@@ -305,10 +303,12 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       int resMethodCount = resourceMethods.size() + subResourceMethods.size() + subResourceLocators.size();
       if (resMethodCount == 0)
       {
+         // Warn instead throw exception. Lets user resolve such situation. 
          String msg =
-            "Not found any resource methods, sub-resource methods" + " or sub-resource locators in "
+            "Not found any resource methods, sub-resource methods or sub-resource locators in "
                + resourceClass.getName();
-         throw new RuntimeException(msg);
+         LOG.warn(msg);
+         //throw new RuntimeException(msg);
       }
 
       // End method processing.
