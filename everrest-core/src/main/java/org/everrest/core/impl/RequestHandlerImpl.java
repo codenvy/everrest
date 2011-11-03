@@ -35,8 +35,8 @@ import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.util.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -57,7 +57,7 @@ public class RequestHandlerImpl implements RequestHandler
     * Application properties. Properties from this map will be copied to ApplicationContext and may be accessible via
     * method {@link ApplicationContextImpl#getProperties()}.
     */
-   private static final Map<String, String> properties = new HashMap<String, String>();
+   private static final Map<String, String> properties = new ConcurrentHashMap<String, String>();
 
    public static String getProperty(String name)
    {
@@ -131,6 +131,7 @@ public class RequestHandlerImpl implements RequestHandler
    public void handleRequest(GenericContainerRequest request, GenericContainerResponse response)
       throws UnhandledException, IOException
    {
+      ApplicationContext context = null;
       try
       {
          if (normalizeUriFeature)
@@ -143,7 +144,7 @@ public class RequestHandlerImpl implements RequestHandler
                request.setMethod(method);
          }
 
-         ApplicationContext context = new ApplicationContextImpl(request, response, providers);
+         context = new ApplicationContextImpl(request, response, providers);
          context.getProperties().putAll(properties);
          context.setDependencySupplier(dependencySupplier);
          ((Lifecycle)context).start();
@@ -235,13 +236,18 @@ public class RequestHandlerImpl implements RequestHandler
          }
 
          response.writeResponse();
-
-         ((Lifecycle)context).stop();
       }
       finally
       {
-         // reset application context
-         ApplicationContextImpl.setCurrent(null);
+         try
+         {
+            if (context != null)
+               ((Lifecycle)context).stop();
+         }
+         finally
+         {
+            ApplicationContextImpl.setCurrent(null);
+         }
       }
    }
 

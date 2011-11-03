@@ -20,6 +20,7 @@ package org.everrest.core.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
@@ -27,32 +28,40 @@ import java.io.IOException;
  */
 public final class FileCollector
 {
+   private static final String PREF = "everrest";
+   private static final String SUFF = ".tmp";
 
    private static class FileCollectorHolder
    {
-      private static final FileCollector INSTANCE =
-         new FileCollector(System.getProperty("java.io.tmpdir") + File.separator + "ws_jaxrs");
+      private static final String name = PREF + Long.toString(Math.abs(new SecureRandom().nextLong()));
+      private static final FileCollector collector = new FileCollector( //
+         new File(System.getProperty("java.io.tmpdir"), name));
    }
 
    public static FileCollector getInstance()
    {
-      return FileCollectorHolder.INSTANCE;
+      return FileCollectorHolder.collector;
    }
 
    private final File store;
-
-   private FileCollector(String pathname)
+   private final Thread cleaner = new Thread()
    {
-      store = new File(pathname);
-      if (!store.exists())
-         store.mkdirs();
-      Runtime.getRuntime().addShutdownHook(new Thread()
+      public void run()
       {
-         public void run()
-         {
-            clean();
-         }
-      });
+         clean();
+      }
+   };
+
+   private FileCollector(File store)
+   {
+      this.store = store;
+      try
+      {
+         Runtime.getRuntime().addShutdownHook(cleaner);
+      }
+      catch (IllegalStateException ignored)
+      {
+      }
    }
 
    /**
@@ -60,8 +69,22 @@ public final class FileCollector
     */
    public void clean()
    {
-      for (File file : store.listFiles())
-         delete(file);
+      if (store.exists())
+      {
+         delete(store);
+      }
+   }
+
+   public void stop()
+   {
+      clean();
+      try
+      {
+         Runtime.getRuntime().removeShutdownHook(cleaner);
+      }
+      catch (IllegalStateException ignored)
+      {
+      }
    }
 
    /**
@@ -73,6 +96,7 @@ public final class FileCollector
     */
    public File createFile(String fileName) throws IOException
    {
+      checkStore();
       return new File(store, fileName);
    }
 
@@ -85,26 +109,35 @@ public final class FileCollector
     */
    public File createFile() throws IOException
    {
-      return File.createTempFile("jaxrs", ".tmp", store);
+      checkStore();
+      return File.createTempFile(PREF, SUFF, store);
    }
 
    public File getStore()
    {
+      checkStore();
       return store;
    }
 
-   private void delete(File file)
+   private void checkStore()
    {
-      if (file.isDirectory())
+      if (!store.exists())
+         store.mkdirs();
+   }
+
+   private void delete(File fileOrDirectory)
+   {
+      if (fileOrDirectory.isDirectory())
       {
-         File[] children = file.listFiles();
+         File[] children = fileOrDirectory.listFiles();
          if (children.length > 0)
          {
             for (File ch : children)
+            {
                delete(ch);
+            }
          }
       }
-      file.delete();
+      fileOrDirectory.delete();
    }
-
 }

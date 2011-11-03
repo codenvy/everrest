@@ -23,6 +23,7 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.impl.FileCollector;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
@@ -53,12 +54,12 @@ public class EverrestInitializedListener implements ServletContextListener
    {
       ServletContext sctx = event.getServletContext();
       @SuppressWarnings("unchecked")
-      List<WeakReference<Object>> l =
+      List<WeakReference<Object>> singletons =
          (List<WeakReference<Object>>)sctx.getAttribute("org.everrest.lifecycle.Singletons");
-      if (l != null && l.size() > 0)
+      RuntimeException exception = null;
+      if (singletons != null && singletons.size() > 0)
       {
-         RuntimeException exception = null;
-         for (WeakReference<Object> ref : l)
+         for (WeakReference<Object> ref : singletons)
          {
             Object o = ref.get();
             if (o != null)
@@ -79,9 +80,30 @@ public class EverrestInitializedListener implements ServletContextListener
                }
             }
          }
-         l.clear();
-         if (exception != null)
-            throw exception;
+         singletons.clear();
+      }
+      
+      stopFileCollector();
+      
+      if (exception != null)
+      {
+         throw exception;
+      }
+   }
+
+   /**
+    * Stop FileCollector if FileCollector class loaded from .war file. If class is loaded by another ClassLoader than
+    * web application ClassLoader then do nothing.
+    */
+   protected void stopFileCollector()
+   {
+      FileCollector fc = FileCollector.getInstance();
+      Class<? extends FileCollector> fcClass = fc.getClass();
+      ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+      // ClassLoaders should be the same if FileCollector loaded from .war file. 
+      if (ccl == fcClass.getClassLoader())
+      {
+         fc.stop();
       }
    }
 
