@@ -29,6 +29,7 @@ import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
@@ -161,6 +162,18 @@ public abstract class EverrestComposer implements WebappComposer
       }
    }
 
+   private static final class PicoFileCollectorDestroyer extends FileCollectorDestroyer implements Disposable
+   {
+      /**
+       * @see org.picocontainer.Disposable#dispose()
+       */
+      @Override
+      public void dispose()
+      {
+         stopFileCollector();
+      }
+   }
+
    protected ApplicationProviderBinder providers;
 
    protected ResourceBinder resources;
@@ -188,9 +201,12 @@ public abstract class EverrestComposer implements WebappComposer
       // obtained from container. Container must take care about its components.  
       List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
       for (Object o : singletons)
+      {
          l.add(new WeakReference<Object>(o));
+      }
 
       container.addComponent(new LifecycleDestructor(l));
+      container.addComponent(makeFileCollectorDestroyer());
 
       processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
 
@@ -204,6 +220,11 @@ public abstract class EverrestComposer implements WebappComposer
       processComponents(container, Scope.APPLICATION);
    }
 
+   protected Disposable makeFileCollectorDestroyer()
+   {
+      return new PicoFileCollectorDestroyer();
+   }
+   
    public final void composeRequest(MutablePicoContainer container)
    {
       doComposeRequest(container);
@@ -305,5 +326,4 @@ public abstract class EverrestComposer implements WebappComposer
          }
       }
    }
-
 }

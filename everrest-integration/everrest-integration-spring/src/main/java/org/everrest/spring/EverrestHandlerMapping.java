@@ -24,6 +24,7 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.servlet.EverrestApplication;
@@ -50,12 +51,12 @@ import javax.ws.rs.WebApplicationException;
  */
 public class EverrestHandlerMapping implements HandlerMapping, BeanFactoryPostProcessor
 {
-   private static final class LifecycleDestructor implements org.springframework.context.Lifecycle
+   private static final class LifecycleDestroyer implements org.springframework.context.Lifecycle
    {
       private final List<WeakReference<Object>> toDestroy;
-      private final AtomicBoolean started = new AtomicBoolean(true); // consider as started just after creation.
+      private final AtomicBoolean started = new AtomicBoolean(true);
 
-      private LifecycleDestructor(List<WeakReference<Object>> toDestroy)
+      private LifecycleDestroyer(List<WeakReference<Object>> toDestroy)
       {
          this.toDestroy = toDestroy;
       }
@@ -103,13 +104,33 @@ public class EverrestHandlerMapping implements HandlerMapping, BeanFactoryPostPr
          }
       }
 
-      /**
-       * @see org.springframework.context.Lifecycle#isRunning()
-       */
       @Override
       public boolean isRunning()
       {
          return started.get();
+      }
+   }
+
+   private static final class SpringFileCollectorDestroyer extends FileCollectorDestroyer implements
+      org.springframework.context.Lifecycle
+   {
+      protected final AtomicBoolean started = new AtomicBoolean(true);
+
+      @Override
+      public void start()
+      {
+      }
+
+      @Override
+      public boolean isRunning()
+      {
+         return started.get();
+      }
+
+      @Override
+      public void stop()
+      {
+         stopFileCollector();
       }
    }
 
@@ -145,7 +166,7 @@ public class EverrestHandlerMapping implements HandlerMapping, BeanFactoryPostPr
       this.resources = resources;
       this.providers = providers;
       this.configuration = configuration;
-      processor = new EverrestProcessor(resources, providers, dependencies, configuration, null);
+      this.processor = new EverrestProcessor(resources, providers, dependencies, configuration, null);
    }
 
    /**
@@ -175,7 +196,13 @@ public class EverrestHandlerMapping implements HandlerMapping, BeanFactoryPostPr
       List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
       for (Object o : singletons)
          l.add(new WeakReference<Object>(o));
-      beanFactory.registerSingleton("org.everrest.lifecycle.Singletons", new LifecycleDestructor(l));
+      beanFactory.registerSingleton("org.everrest.lifecycle.Singletons", new LifecycleDestroyer(l));
+      beanFactory.registerSingleton("org.everrest.lifecycle.FileCollectorDestroyer", makeFileCollectorDestroyer());
       processor.addApplication(everrest);
+   }
+
+   protected org.springframework.context.Lifecycle makeFileCollectorDestroyer()
+   {
+      return new SpringFileCollectorDestroyer();
    }
 }

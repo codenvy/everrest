@@ -95,7 +95,7 @@ public class EverrestInitializer implements Startable
       }
 
       // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
-      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
+      // NOTE We provider life cycle control ONLY for internal components and do nothing for components
       // obtained from container. Container must take care about its components.  
       toStop = new ArrayList<WeakReference<Object>>(everrest.singletons.size());
       for (Object o : everrest.singletons)
@@ -145,6 +145,7 @@ public class EverrestInitializer implements Startable
          if (exception != null)
             throw exception;
       }
+
    }
 
    public void addApplication(Application application)

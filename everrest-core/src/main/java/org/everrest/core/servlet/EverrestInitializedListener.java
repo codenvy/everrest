@@ -23,7 +23,7 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.impl.FileCollector;
+import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
@@ -82,29 +82,18 @@ public class EverrestInitializedListener implements ServletContextListener
          }
          singletons.clear();
       }
-      
-      stopFileCollector();
-      
+
+      makeFileCollectorDestroyer().stopFileCollector();
+
       if (exception != null)
       {
          throw exception;
       }
    }
 
-   /**
-    * Stop FileCollector if FileCollector class loaded from .war file. If class is loaded by another ClassLoader than
-    * web application ClassLoader then do nothing.
-    */
-   protected void stopFileCollector()
+   protected FileCollectorDestroyer makeFileCollectorDestroyer()
    {
-      FileCollector fc = FileCollector.getInstance();
-      Class<? extends FileCollector> fcClass = fc.getClass();
-      ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-      // ClassLoaders should be the same if FileCollector loaded from .war file. 
-      if (ccl == fcClass.getClassLoader())
-      {
-         fc.stop();
-      }
+      return new FileCollectorDestroyer();
    }
 
    /**

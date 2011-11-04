@@ -29,6 +29,7 @@ import org.everrest.core.SingletonObjectFactory;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
@@ -314,16 +315,16 @@ public abstract class EverrestExoContextListener implements ServletContextListen
     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
     */
    @Override
+   @SuppressWarnings("unchecked")
    public void contextDestroyed(ServletContextEvent servletContextEvent)
    {
       ServletContext servletContext = servletContextEvent.getServletContext();
-      @SuppressWarnings("unchecked")
-      List<WeakReference<Object>> l =
+      List<WeakReference<Object>> singletons =
          (List<WeakReference<Object>>)servletContext.getAttribute("org.everrest.lifecycle.Singletons");
-      if (l != null && l.size() > 0)
+      RuntimeException exception = null;
+      if (singletons != null && singletons.size() > 0)
       {
-         RuntimeException exception = null;
-         for (WeakReference<Object> ref : l)
+         for (WeakReference<Object> ref : singletons)
          {
             Object o = ref.get();
             if (o != null)
@@ -344,9 +345,19 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                }
             }
          }
-         l.clear();
-         if (exception != null)
-            throw exception;
+         singletons.clear();
       }
+
+      makeFileCollectorDestroyer().stopFileCollector();
+
+      if (exception != null)
+      {
+         throw exception;
+      }
+   }
+   
+   protected FileCollectorDestroyer makeFileCollectorDestroyer()
+   {
+      return new FileCollectorDestroyer();
    }
 }
