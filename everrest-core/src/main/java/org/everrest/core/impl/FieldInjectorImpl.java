@@ -23,7 +23,6 @@ import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.method.ParameterHelper;
 import org.everrest.core.impl.method.ParameterResolverFactory;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
-import org.everrest.core.util.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -46,8 +45,8 @@ import javax.ws.rs.ext.Provider;
  */
 public class FieldInjectorImpl implements FieldInjector
 {
-   /** Logger. */
-   private static final Logger LOG = Logger.getLogger(FieldInjectorImpl.class);
+   ///** Logger. */
+   //private static final Logger LOG = Logger.getLogger(FieldInjectorImpl.class);
 
    /** All annotations including JAX-RS annotation. */
    private final Annotation[] annotations;
@@ -120,14 +119,6 @@ public class FieldInjectorImpl implements FieldInjector
          else if (ac == DefaultValue.class && !provider)
          {
             defaultValue = ((DefaultValue)a).value();
-         }
-         else
-         {
-            if (LOG.isDebugEnabled())
-            {
-               LOG.warn("Field " + jfield.toString() + " contains unknown or not allowed JAX-RS annotation "
-                  + a.toString() + ". It will be ignored.");
-            }
          }
       }
       this.defaultValue = defaultValue;
