@@ -53,7 +53,7 @@ public class DateHeaderDelegate extends AbstractHeaderDelegate<Date>
     */
    public String toString(Date date)
    {
-      return HeaderHelper.getDateFormats().get(0).format(date);
+      return HeaderHelper.formatDate(date);
    }
 
 }
