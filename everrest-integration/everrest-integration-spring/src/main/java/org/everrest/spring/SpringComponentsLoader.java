@@ -180,20 +180,20 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             pDescriptor.accept(rdv);
 
             if (ContextResolver.class.isAssignableFrom(beanClass))
-               getProviders().addContextResolver(
-                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               providers.addContextResolver(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
+                  beanFactory));
 
             if (ExceptionMapper.class.isAssignableFrom(beanClass))
-               getProviders().addExceptionMapper(
-                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               providers.addExceptionMapper(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
+                  beanFactory));
 
             if (MessageBodyReader.class.isAssignableFrom(beanClass))
-               getProviders().addMessageBodyReader(
-                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               providers.addMessageBodyReader(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
+                  beanFactory));
 
             if (MessageBodyWriter.class.isAssignableFrom(beanClass))
-               getProviders().addMessageBodyWriter(
-                  new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName, beanFactory));
+               providers.addMessageBodyWriter(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
+                  beanFactory));
          }
          else if (beanClass.getAnnotation(Filter.class) != null)
          {
@@ -201,23 +201,23 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             fDescriptor.accept(rdv);
 
             if (MethodInvokerFilter.class.isAssignableFrom(beanClass))
-               getProviders().addMethodInvokerFilter(
-                  new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+               providers.addMethodInvokerFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName,
+                  beanFactory));
 
             if (RequestFilter.class.isAssignableFrom(beanClass))
-               getProviders().addRequestFilter(
-                  new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+               providers
+                  .addRequestFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
 
             if (ResponseFilter.class.isAssignableFrom(beanClass))
-               getProviders().addResponseFilter(
-                  new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+               providers
+                  .addResponseFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
          }
          else if (beanClass.getAnnotation(Path.class) != null)
          {
             AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(beanClass, lifeCycle);
             rDescriptor.accept(rdv);
-            getResources().addResource(
-               new SpringObjectFactory<AbstractResourceDescriptor>(rDescriptor, beanName, beanFactory));
+            resources.addResource(new SpringObjectFactory<AbstractResourceDescriptor>(rDescriptor, beanName,
+               beanFactory));
          }
       }
    }

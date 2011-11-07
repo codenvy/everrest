@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * HandlerMapping for EverrestProcessor.
  * 
- * @deprecated SpringComponentsLoader defines a mapping for EverrestProcessor.
  * @version $Id$
+ * @deprecated Do not use it any more. SpringComponentsLoader defines a mapping for EverrestProcessor.
  */
 public class EverrestHandlerMapping implements HandlerMapping
 {

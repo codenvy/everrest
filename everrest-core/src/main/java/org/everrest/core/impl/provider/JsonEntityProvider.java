@@ -62,7 +62,7 @@ import javax.xml.transform.stream.StreamSource;
 @Produces({MediaType.APPLICATION_JSON})
 public class JsonEntityProvider<T> implements EntityProvider<T>
 {
-   private static final Logger log = Logger.getLogger(JsonEntityProvider.class);
+   private static final Logger LOG = Logger.getLogger(JsonEntityProvider.class);
    
    // It is common task for #isReadable() and #isWriteable
    // TODO Not sure it is required but ...
@@ -141,7 +141,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       }
       catch (JsonException e)
       {
-         log.error(e.getMessage(), e);
+         LOG.error(e.getMessage(), e);
          throw new IOException("Can't read from input stream " + e);
       }
    }
@@ -208,7 +208,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       }
       catch (JsonException e)
       {
-         log.error(e.getMessage(), e);
+         LOG.error(e.getMessage(), e);
          throw new IOException("Can't write to output stream " + e);
       }
    }

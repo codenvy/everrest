@@ -18,8 +18,6 @@
  */
 package org.everrest.core.impl;
 
-import javax.ws.rs.WebApplicationException;
-
 /**
  * Life cycle wrapper for JAX-RS component (resource or provider).
  */
@@ -62,11 +60,9 @@ public final class LifecycleComponent
     * Call "initialize" method on the JAX-RS component. It is up to the implementation of LifecycleMethodStrategy how to
     * find "initialize" method. This method must be called once. It is possible to have more than one method of
     * initialization but any particular order of methods invocation is not guaranteed. Any exception was thrown by
-    * "initialize" method must be wrapped by {@link InternalException}. Exception to the rule is
-    * {@link javax.ws.rs.WebApplicationException}. It must be propagated to the caller.
+    * "initialize" method must be wrapped by {@link InternalException}.
     * 
     * @throws InternalException if "initialize" method throws an exception
-    * @throws javax.ws.rs.WebApplicationException if "initialize" method throws WebApplicationException
     * @see #isInitialized()
     */
    public void initialize()
@@ -79,11 +75,9 @@ public final class LifecycleComponent
     * Call "destroy" method on the JAX-RS component. It is up to the implementation of LifecycleMethodStrategy how to
     * find "destroy" method. This method must be called once. It is possible to have more than one "destroy" method but
     * any particular order of methods invocation is not guaranteed. Any exception was thrown by "destroy" method must be
-    * wrapped by {@link InternalException}. Exception to the rule is {@link javax.ws.rs.WebApplicationException}. It
-    * must be propagated to the caller.
+    * wrapped by {@link InternalException}.
     * 
     * @throws InternalException if "destroy" method throws an exception
-    * @throws javax.ws.rs.WebApplicationException if "destroy" method throws WebApplicationException
     * @see #isDestroyed()
     */
    public void destroy()
@@ -120,6 +114,9 @@ public final class LifecycleComponent
       return state == State.DESTROYED;
    }
 
+   /**
+    * Call "initialize" and "destroy" methods of object.
+    */
    public static interface LifecycleMethodStrategy
    {
       /**
@@ -128,8 +125,7 @@ public final class LifecycleComponent
        * is not guaranteed.
        * 
        * @param o the object
-       * @throws WebApplicationException if initialize method throws WebApplicationException
-       * @throws InternalException if initialize method throws any other exception
+       * @throws InternalException if initialize method throws any exception
        */
       void invokeInitializeMethods(Object o);
 
@@ -139,8 +135,7 @@ public final class LifecycleComponent
        * guaranteed.
        * 
        * @param o the object
-       * @throws WebApplicationException if destroy method throws WebApplicationException
-       * @throws InternalException if destroy method throws any other exception
+       * @throws InternalException if destroy method throws any exception
        */
       void invokeDestroyMethods(Object o);
    }

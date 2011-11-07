@@ -90,13 +90,9 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       }
    }
 
-   protected EverrestServletContextInitializer everrestInitializer;
-
    protected ResourceBinderImpl resources;
 
    protected ApplicationProviderBinder providers;
-
-   protected EverrestProcessor processor;
 
    /**
     * {@inheritDoc}
@@ -106,7 +102,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
    {
       super.contextInitialized(sce);
       ServletContext servletContext = sce.getServletContext();
-      this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
+      EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
       Injector injector = getInjector(servletContext);
@@ -115,7 +111,8 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       Application application = everrestInitializer.getApplication();
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
-      processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+      EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+      processor.start();
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);

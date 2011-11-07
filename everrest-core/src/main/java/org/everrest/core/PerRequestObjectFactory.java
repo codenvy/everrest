@@ -75,14 +75,14 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
          LifecycleComponent lc = new LifecycleComponent(object);
          lc.initialize();
          @SuppressWarnings("unchecked")
-         List<LifecycleComponent> l =
+         List<LifecycleComponent> perRequest =
             (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
-         if (l == null)
+         if (perRequest == null)
          {
-            l = new ArrayList<LifecycleComponent>();
-            context.getAttributes().put("org.everrest.lifecycle.PerRequest", l);
+            perRequest = new ArrayList<LifecycleComponent>();
+            context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
          }
-         l.add(lc);
+         perRequest.add(lc);
       }
    }
 

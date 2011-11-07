@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.security.SecureRandom;
 
 /**
+ * Provides store for temporary files.
+ * 
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id$
  */

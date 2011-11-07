@@ -72,7 +72,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       }
    }
 
-   private static final Logger log = Logger.getLogger(AsynchronousJobPool.class);
+   private static final Logger LOG = Logger.getLogger(AsynchronousJobPool.class);
 
    private static final AtomicLong jobNumber = new AtomicLong(1);
 
@@ -159,8 +159,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       String jobId = job.getJobId();
       jobs.put(jobId, job);
 
-      if (log.isDebugEnabled())
-         log.debug("Add asynchronous job, ID " + jobId);
+      if (LOG.isDebugEnabled())
+         LOG.debug("Add asynchronous job, ID " + jobId);
 
       return jobId;
    }
@@ -234,8 +234,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
    private Response fromThrowable(Throwable t)
    {
-      if (log.isDebugEnabled())
-         log.error(t.getMessage(), t);
+      if (LOG.isDebugEnabled())
+         LOG.error(t.getMessage(), t);
       String msg = t.getMessage();
       if (msg != null)
          return Response.serverError().entity(msg).type(MediaType.TEXT_PLAIN).build();

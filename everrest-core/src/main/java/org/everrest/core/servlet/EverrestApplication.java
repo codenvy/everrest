@@ -29,6 +29,20 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 /**
+ * Defines the JAX-RS components depending on EverrestConfiguration. It is uses as 'wrapper' for custom instance of
+ * Application.
+ * <p>
+ * Usage:
+ * 
+ * <pre>
+ * EverrestProcessor processor = ...
+ * EverrestConfiguration config = ...
+ * Application app = ...
+ * EverrestApplication everrest = new EverrestApplication(config);
+ * everrest.addApplication(app);
+ * processor.addApplication(everrest);
+ * </pre>
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -70,6 +84,12 @@ public final class EverrestApplication extends Application
       return singletons;
    }
 
+   /**
+    * Add components defined by <code>application</code> to this instance.
+    * 
+    * @param application application
+    * @see Application
+    */
    public void addApplication(Application application)
    {
       if (application != null)

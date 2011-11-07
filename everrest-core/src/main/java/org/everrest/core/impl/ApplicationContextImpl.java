@@ -32,6 +32,7 @@ import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
+import org.everrest.core.util.Logger;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
@@ -55,6 +55,8 @@ import javax.ws.rs.ext.ContextResolver;
  */
 public class ApplicationContextImpl implements ApplicationContext, Lifecycle
 {
+   private static final Logger LOG = Logger.getLogger(ApplicationContextImpl.class);
+
    /**
     * {@link ThreadLocal} ApplicationContext.
     */
@@ -526,31 +528,23 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    public final void stop()
    {
       @SuppressWarnings("unchecked")
-      List<LifecycleComponent> l = (List<LifecycleComponent>)getAttributes().get("org.everrest.lifecycle.PerRequest");
-      if (l != null && l.size() > 0)
+      List<LifecycleComponent> perRequest =
+         (List<LifecycleComponent>)getAttributes().get("org.everrest.lifecycle.PerRequest");
+      if (perRequest != null && perRequest.size() > 0)
       {
-         RuntimeException exception = null;
-         for (LifecycleComponent c : l)
+         for (LifecycleComponent c : perRequest)
          {
             // Remember first exception but let's to continue destroy other components.
             try
             {
                c.destroy();
             }
-            catch (WebApplicationException e)
-            {
-               if (exception == null)
-                  exception = e;
-            }
             catch (InternalException e)
             {
-               if (exception == null)
-                  exception = e;
+               LOG.error("Unable to destroy component. ", e);
             }
          }
-         l.clear();
-         if (exception != null)
-            throw exception;
+         perRequest.clear();
       }
    }
 

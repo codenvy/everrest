@@ -154,13 +154,9 @@ public abstract class EverrestComposer implements WebappComposer
 
    protected ResourceBinder resources;
 
-   protected EverrestServletContextInitializer everrestInitializer;
-
-   protected EverrestProcessor processor;
-
    public final void composeApplication(MutablePicoContainer container, ServletContext servletContext)
    {
-      this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
+      EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
       DependencySupplier dependencySupplier = new PicoDependencySupplier();
@@ -168,7 +164,7 @@ public abstract class EverrestComposer implements WebappComposer
       Application application = everrestInitializer.getApplication();
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
-      processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+      EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
       container.addComponent(new PicoEverrestProcessorDestroyer(processor));
       container.addComponent(new PicoFileCollectorDestroyer(makeFileCollectorDestroyer()));
 
@@ -186,7 +182,7 @@ public abstract class EverrestComposer implements WebappComposer
    {
       return new FileCollectorDestroyer();
    }
-   
+
    public final void composeRequest(MutablePicoContainer container)
    {
       doComposeRequest(container);

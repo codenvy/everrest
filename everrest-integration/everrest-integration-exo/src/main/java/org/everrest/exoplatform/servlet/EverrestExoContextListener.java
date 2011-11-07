@@ -181,13 +181,9 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
    /* ================================================================================ */
 
-   protected EverrestServletContextInitializer everrestInitializer;
-
    protected ResourceBinderImpl resources;
 
    protected ApplicationProviderBinder providers;
-
-   protected EverrestProcessor processor;
 
    /**
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
@@ -196,7 +192,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
    public final void contextInitialized(ServletContextEvent sce)
    {
       ServletContext servletContext = sce.getServletContext();
-      this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
+      EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
       DependencySupplier dependencySupplier = new ExoDependencySupplier();
@@ -204,7 +200,8 @@ public abstract class EverrestExoContextListener implements ServletContextListen
       Application application = everrestInitializer.getApplication();
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
-      processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+      EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+      processor.start();
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);

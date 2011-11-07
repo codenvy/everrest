@@ -26,6 +26,7 @@ import org.everrest.core.Lifecycle;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.UnhandledException;
+import org.everrest.core.util.Logger;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -33,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 
 /**
@@ -42,6 +42,7 @@ import javax.ws.rs.core.Application;
  */
 public final class EverrestProcessor implements Lifecycle
 {
+   private static final Logger LOG = Logger.getLogger(EverrestProcessor.class.getName());
    private final RequestHandler requestHandler;
    private final ResourceBinder resources;
    private final ProviderBinder providers;
@@ -104,7 +105,6 @@ public final class EverrestProcessor implements Lifecycle
    @Override
    public void stop()
    {
-      RuntimeException exception = null;
       for (WeakReference<Object> ref : singletonsReferences)
       {
          Object o = ref.get();
@@ -114,22 +114,12 @@ public final class EverrestProcessor implements Lifecycle
             {
                new LifecycleComponent(o).destroy();
             }
-            catch (WebApplicationException e)
-            {
-               if (exception == null)
-                  exception = e;
-            }
             catch (InternalException e)
             {
-               if (exception == null)
-                  exception = e;
+               LOG.error("Unable to destroy component. ", e);
             }
          }
       }
       singletonsReferences.clear();
-      if (exception != null)
-      {
-         throw exception;
-      }
    }
 }

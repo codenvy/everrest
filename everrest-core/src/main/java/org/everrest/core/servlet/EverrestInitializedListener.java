@@ -77,6 +77,7 @@ public class EverrestInitializedListener implements ServletContextListener
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
       EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+      processor.start();
       
       sctx.setAttribute(EverrestConfiguration.class.getName(), config);
       sctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);

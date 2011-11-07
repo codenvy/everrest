@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 
 /**
@@ -162,13 +161,9 @@ public class EverrestInitializer implements Startable
                {
                   new LifecycleComponent(o).destroy();
                }
-               catch (WebApplicationException e)
-               {
-                  LOG.error(e.getMessage(), e);
-               }
                catch (InternalException e)
                {
-                  LOG.error(e.getMessage(), e);
+                  LOG.error("Unable to destroy component. ", e);
                }
             }
          }

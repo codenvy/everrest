@@ -25,9 +25,11 @@ import java.lang.reflect.Modifier;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ws.rs.WebApplicationException;
 
 /**
+ * Implementation of LifecycleComponent.LifecycleMethodStrategy that uses {@link PostConstruct} and {@link PreDestroy}
+ * annotation to find "initialize" and "destroy" methods.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -135,8 +137,6 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
                catch (InvocationTargetException e)
                {
                   Throwable t = e.getTargetException();
-                  if (t instanceof WebApplicationException)
-                     throw (WebApplicationException)t;
                   throw new InternalException(t);
                }
             }
