@@ -64,6 +64,6 @@ public abstract class BaseTest
    @After
    public void stop()
    {
-      //factory.destroyScopedBean("org.everrest.lifecycle.Singletons");
+      //factory.destroyScopedBean("org.everrest.lifecycle.SpringEverrestProcessorDestroyer");
    }
 }

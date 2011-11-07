@@ -19,35 +19,39 @@
 
 package org.everrest.spring.servlet;
 
+import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
-import org.everrest.core.impl.ApplicationPublisher;
+import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.servlet.EverrestApplication;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.spring.SpringComponentsLoader;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Application;
 
 /**
- * SpringComponentsLoader which obtains resources and providers delivered via
- * {@link Application} or obtained after scanning JAX-RS components if
- * Application is not configured as JAX-RS specification says.
- *
+ * SpringComponentsLoader which obtains resources and providers delivered via {@link Application} or obtained after
+ * scanning JAX-RS components if Application is not configured as JAX-RS specification says.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: SpringComponentsServletContextLoader.java 88 2010-11-11
- *          11:22:12Z andrew00x $
+ * @version $Id$
  */
 public class SpringComponentsServletContextLoader extends SpringComponentsLoader implements ServletContextAware
 {
-
    private ServletContext servletContext;
 
-   public SpringComponentsServletContextLoader(ResourceBinder resources, ApplicationProviderBinder providers)
+   public SpringComponentsServletContextLoader(ResourceBinder resources, ApplicationProviderBinder providers,
+      DependencySupplier dependencies)
    {
-      super(resources, providers);
+      super(resources, providers, dependencies);
+   }
+
+   public SpringComponentsServletContextLoader(ResourceBinder resources, ApplicationProviderBinder providers,
+      EverrestConfiguration configuration, DependencySupplier dependencies)
+   {
+      super(resources, providers, configuration, dependencies);
    }
 
    /**
@@ -58,14 +62,20 @@ public class SpringComponentsServletContextLoader extends SpringComponentsLoader
       this.servletContext = servletContext;
    }
 
+   /**
+    * @see org.everrest.spring.SpringComponentsLoader#makeEverrestApplication()
+    */
    @Override
-   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException
+   protected EverrestApplication makeEverrestApplication()
    {
-      super.postProcessBeanFactory(beanFactory);
+      EverrestApplication everrest = super.makeEverrestApplication();
       EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
       Application application = everrestInitializer.getApplication();
       if (application != null)
-         new ApplicationPublisher(getResources(), getProviders()).publish(application);
+      {
+         everrest.addApplication(application);
+      }
+      return everrest;
    }
 
 }
