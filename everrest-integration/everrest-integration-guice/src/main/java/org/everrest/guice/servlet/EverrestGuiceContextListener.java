@@ -39,8 +39,6 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
-import org.everrest.core.impl.InternalException;
-import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
@@ -54,17 +52,14 @@ import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
 import org.everrest.guice.GuiceObjectFactory;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -107,31 +102,19 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     * {@inheritDoc}
     */
    @Override
-   public final void contextInitialized(ServletContextEvent servletContextEvent)
+   public final void contextInitialized(ServletContextEvent sce)
    {
-      super.contextInitialized(servletContextEvent);
-      ServletContext servletContext = servletContextEvent.getServletContext();
+      super.contextInitialized(sce);
+      ServletContext servletContext = sce.getServletContext();
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
       Injector injector = getInjector(servletContext);
       DependencySupplier dependencySupplier = new GuiceDependencySupplier(injector);
-
       EverrestConfiguration config = everrestInitializer.getConfiguration();
       Application application = everrestInitializer.getApplication();
-
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
-
-      Set<Object> singletons = everrest.getSingletons();
-      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
-      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
-      // obtained from container. Container must take care about its components.  
-      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
-      for (Object o : singletons)
-         l.add(new WeakReference<Object>(o));
-      servletContext.setAttribute("org.everrest.lifecycle.Singletons", l);
-
       processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
@@ -139,7 +122,6 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       servletContext.setAttribute(ResourceBinder.class.getName(), resources);
       servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
       servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
-
       processBindings(injector);
    }
 
@@ -147,46 +129,14 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     * {@inheritDoc}
     */
    @Override
-   @SuppressWarnings("unchecked")
-   public void contextDestroyed(ServletContextEvent servletContextEvent)
+   public void contextDestroyed(ServletContextEvent sce)
    {
-      ServletContext servletContext = servletContextEvent.getServletContext();
-      List<WeakReference<Object>> singletons =
-         (List<WeakReference<Object>>)servletContext.getAttribute("org.everrest.lifecycle.Singletons");
-      RuntimeException exception = null;
-      if (singletons != null && singletons.size() > 0)
-      {
-         for (WeakReference<Object> ref : singletons)
-         {
-            Object o = ref.get();
-            if (o != null)
-            {
-               try
-               {
-                  new LifecycleComponent(o).destroy();
-               }
-               catch (WebApplicationException e)
-               {
-                  if (exception == null)
-                     exception = e;
-               }
-               catch (InternalException e)
-               {
-                  if (exception == null)
-                     exception = e;
-               }
-            }
-         }
-         singletons.clear();
-      }
-
       makeFileCollectorDestroyer().stopFileCollector();
-
-      super.contextDestroyed(servletContextEvent);
-
-      if (exception != null)
+      ServletContext sctx = sce.getServletContext();
+      EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());
+      if (processor != null)
       {
-         throw exception;
+         processor.stop();
       }
    }
 
