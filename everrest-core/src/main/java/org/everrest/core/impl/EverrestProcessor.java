@@ -22,32 +22,41 @@ package org.everrest.core.impl;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.Lifecycle;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.UnhandledException;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class EverrestProcessor
+public final class EverrestProcessor implements Lifecycle
 {
-   private RequestHandler requestHandler;
-   private ResourceBinder resources;
-   private ProviderBinder providers;
+   private final RequestHandler requestHandler;
+   private final ResourceBinder resources;
+   private final ProviderBinder providers;
+   private final List<WeakReference<Object>> singletonsReferences = new ArrayList<WeakReference<Object>>();
 
    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencies,
       EverrestConfiguration config, Application application)
    {
       this.resources = resources;
       this.providers = providers;
-      requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, config);
+      this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, config);
       if (application != null)
+      {
          addApplication(application);
+      }
    }
 
    public void process(GenericContainerRequest request, GenericContainerResponse response, EnvironmentContext envCtx)
@@ -67,7 +76,60 @@ public final class EverrestProcessor
    public void addApplication(Application application)
    {
       if (application == null)
+      {
          throw new NullPointerException("application");
+      }
       new ApplicationPublisher(resources, providers).publish(application);
+      Set<Object> singletons = application.getSingletons();
+      if (singletons != null && singletons.size() > 0)
+      {
+         for (Object o : singletons)
+         {
+            singletonsReferences.add(new WeakReference<Object>(o));
+         }
+      }
+   }
+
+   /**
+    * @see org.everrest.core.Lifecycle#start()
+    */
+   @Override
+   public void start()
+   {
+   }
+
+   /**
+    * @see org.everrest.core.Lifecycle#stop()
+    */
+   @Override
+   public void stop()
+   {
+      RuntimeException exception = null;
+      for (WeakReference<Object> ref : singletonsReferences)
+      {
+         Object o = ref.get();
+         if (o != null)
+         {
+            try
+            {
+               new LifecycleComponent(o).destroy();
+            }
+            catch (WebApplicationException e)
+            {
+               if (exception == null)
+                  exception = e;
+            }
+            catch (InternalException e)
+            {
+               if (exception == null)
+                  exception = e;
+            }
+         }
+      }
+      singletonsReferences.clear();
+      if (exception != null)
+      {
+         throw exception;
+      }
    }
 }

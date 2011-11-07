@@ -24,19 +24,11 @@ import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
-import org.everrest.core.impl.InternalException;
-import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 
 /**
@@ -50,44 +42,14 @@ public class EverrestInitializedListener implements ServletContextListener
    /**
     * {@inheritDoc}
     */
-   public void contextDestroyed(ServletContextEvent event)
+   public void contextDestroyed(ServletContextEvent sce)
    {
-      ServletContext sctx = event.getServletContext();
-      @SuppressWarnings("unchecked")
-      List<WeakReference<Object>> singletons =
-         (List<WeakReference<Object>>)sctx.getAttribute("org.everrest.lifecycle.Singletons");
-      RuntimeException exception = null;
-      if (singletons != null && singletons.size() > 0)
-      {
-         for (WeakReference<Object> ref : singletons)
-         {
-            Object o = ref.get();
-            if (o != null)
-            {
-               try
-               {
-                  new LifecycleComponent(o).destroy();
-               }
-               catch (WebApplicationException e)
-               {
-                  if (exception == null)
-                     exception = e;
-               }
-               catch (InternalException e)
-               {
-                  if (exception == null)
-                     exception = e;
-               }
-            }
-         }
-         singletons.clear();
-      }
-
       makeFileCollectorDestroyer().stopFileCollector();
-
-      if (exception != null)
+      ServletContext sctx = sce.getServletContext();
+      EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());
+      if (processor != null)
       {
-         throw exception;
+         processor.stop();
       }
    }
 
@@ -99,31 +61,23 @@ public class EverrestInitializedListener implements ServletContextListener
    /**
     * {@inheritDoc}
     */
-   public void contextInitialized(ServletContextEvent event)
+   public void contextInitialized(ServletContextEvent sce)
    {
-      ServletContext sctx = event.getServletContext();
+      ServletContext sctx = sce.getServletContext();
       DependencySupplier dependencySupplier = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
       if (dependencySupplier == null)
+      {
          dependencySupplier = new ServletContextDependencySupplier(sctx);
+      }
       ResourceBinder resources = new ResourceBinderImpl();
       ApplicationProviderBinder providers = new ApplicationProviderBinder();
-
       EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(sctx);
       EverrestConfiguration config = initializer.getConfiguration();
       Application application = initializer.getApplication();
-
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
-
-      Set<Object> singletons = everrest.getSingletons();
-      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
-      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
-      for (Object o : singletons)
-         l.add(new WeakReference<Object>(o));
-      sctx.setAttribute("org.everrest.lifecycle.Singletons", l);
-
       EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
-
+      
       sctx.setAttribute(EverrestConfiguration.class.getName(), config);
       sctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
       sctx.setAttribute(ResourceBinder.class.getName(), resources);
