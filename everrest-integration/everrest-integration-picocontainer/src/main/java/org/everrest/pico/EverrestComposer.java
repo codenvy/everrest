@@ -31,8 +31,6 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
-import org.everrest.core.impl.InternalException;
-import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
@@ -48,15 +46,10 @@ import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.web.PicoServletContainerListener;
 import org.picocontainer.web.WebappComposer;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -119,58 +112,41 @@ public abstract class EverrestComposer implements WebappComposer
       }
    }
 
-   private static final class LifecycleDestructor implements Disposable
+   private static final class PicoEverrestProcessorDestroyer implements Disposable
    {
-      private final List<WeakReference<Object>> toDestroy;
+      private final EverrestProcessor processor;
 
-      private LifecycleDestructor(List<WeakReference<Object>> toDestroy)
+      private PicoEverrestProcessorDestroyer(EverrestProcessor processor)
       {
-         this.toDestroy = toDestroy;
+         this.processor = processor;
       }
 
-      @Override
-      public void dispose()
-      {
-         if (toDestroy != null && toDestroy.size() > 0)
-         {
-            RuntimeException exception = null;
-            for (WeakReference<Object> ref : toDestroy)
-            {
-               Object o = ref.get();
-               if (o != null)
-               {
-                  try
-                  {
-                     new LifecycleComponent(o).destroy();
-                  }
-                  catch (WebApplicationException e)
-                  {
-                     if (exception == null)
-                        exception = e;
-                  }
-                  catch (InternalException e)
-                  {
-                     if (exception == null)
-                        exception = e;
-                  }
-               }
-            }
-            toDestroy.clear();
-            if (exception != null)
-               throw exception;
-         }
-      }
-   }
-
-   private static final class PicoFileCollectorDestroyer extends FileCollectorDestroyer implements Disposable
-   {
       /**
        * @see org.picocontainer.Disposable#dispose()
        */
       @Override
       public void dispose()
       {
-         stopFileCollector();
+         processor.stop();
+      }
+   }
+
+   private static final class PicoFileCollectorDestroyer implements Disposable
+   {
+      private final FileCollectorDestroyer fileCollectorDestroyer;
+
+      public PicoFileCollectorDestroyer(FileCollectorDestroyer fileCollectorDestroyer)
+      {
+         this.fileCollectorDestroyer = fileCollectorDestroyer;
+      }
+
+      /**
+       * @see org.picocontainer.Disposable#dispose()
+       */
+      @Override
+      public void dispose()
+      {
+         fileCollectorDestroyer.stopFileCollector();
       }
    }
 
@@ -188,27 +164,13 @@ public abstract class EverrestComposer implements WebappComposer
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
       DependencySupplier dependencySupplier = new PicoDependencySupplier();
-
       EverrestConfiguration config = everrestInitializer.getConfiguration();
       Application application = everrestInitializer.getApplication();
-
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
-
-      Set<Object> singletons = everrest.getSingletons();
-      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
-      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
-      // obtained from container. Container must take care about its components.  
-      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
-      for (Object o : singletons)
-      {
-         l.add(new WeakReference<Object>(o));
-      }
-
-      container.addComponent(new LifecycleDestructor(l));
-      container.addComponent(makeFileCollectorDestroyer());
-
       processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+      container.addComponent(new PicoEverrestProcessorDestroyer(processor));
+      container.addComponent(new PicoFileCollectorDestroyer(makeFileCollectorDestroyer()));
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
       servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
@@ -220,9 +182,9 @@ public abstract class EverrestComposer implements WebappComposer
       processComponents(container, Scope.APPLICATION);
    }
 
-   protected Disposable makeFileCollectorDestroyer()
+   protected FileCollectorDestroyer makeFileCollectorDestroyer()
    {
-      return new PicoFileCollectorDestroyer();
+      return new FileCollectorDestroyer();
    }
    
    public final void composeRequest(MutablePicoContainer container)
