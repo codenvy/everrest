@@ -38,6 +38,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Use this servlet for integration in eXo environment. If just need to use IoC container then
+ * use org.everrest.core.servlet.EverrestServlet. Usage of this servlet assumes that components of EverRest framework
+ * registered in ExoContainer. To do so do not use EverrestExoContextListener as bootstrap but use
+ * org.everrest.exoplatform.EverrestInitializer instead and provide corresponded configuration for ExoContainer.
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */

@@ -31,8 +31,6 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
-import org.everrest.core.impl.InternalException;
-import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
@@ -48,19 +46,14 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.StandaloneContainer;
 import org.picocontainer.ComponentAdapter;
 
-import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -113,7 +106,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
       public static final String PREFIX_WAR = "war:";
 
-      private static final Logger log = Logger.getLogger(StandaloneContainerStarter.class);
+      private static final Logger LOG = Logger.getLogger(StandaloneContainerStarter.class);
 
       private StandaloneContainer container;
 
@@ -136,7 +129,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                }
                catch (MalformedURLException e)
                {
-                  log.error("Error of configurationURL read. ", e);
+                  LOG.error("Error of configurationURL read. ", e);
                }
             }
          }
@@ -157,7 +150,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
             }
             catch (MalformedURLException e2)
             {
-               log.error("Error of addConfiguration. ", e2);
+               LOG.error("Error of addConfiguration. ", e2);
             }
          }
 
@@ -167,7 +160,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
          }
          catch (Exception e)
          {
-            log.error("Error of StandaloneContainer initialization. ", e);
+            LOG.error("Error of StandaloneContainer initialization. ", e);
          }
 
          return container;
@@ -176,11 +169,13 @@ public abstract class EverrestExoContextListener implements ServletContextListen
       /**
        * {@inheritDoc}
        */
-      public void contextDestroyed(ServletContextEvent event)
+      public void contextDestroyed(ServletContextEvent sce)
       {
          if (container != null)
+         {
             container.stop();
-         super.contextDestroyed(event);
+         }
+         super.contextDestroyed(sce);
       }
    }
 
@@ -198,29 +193,17 @@ public abstract class EverrestExoContextListener implements ServletContextListen
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
     */
    @Override
-   public final void contextInitialized(ServletContextEvent servletContextEvent)
+   public final void contextInitialized(ServletContextEvent sce)
    {
-      ServletContext servletContext = servletContextEvent.getServletContext();
+      ServletContext servletContext = sce.getServletContext();
       this.everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
       DependencySupplier dependencySupplier = new ExoDependencySupplier();
-
       EverrestConfiguration config = everrestInitializer.getConfiguration();
       Application application = everrestInitializer.getApplication();
-
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
-
-      Set<Object> singletons = everrest.getSingletons();
-      // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
-      // NOTE We provider life cycle control ONLY for components loaded via Application and do nothing for components
-      // obtained from container. Container must take care about its components.  
-      List<WeakReference<Object>> l = new ArrayList<WeakReference<Object>>(singletons.size());
-      for (Object o : singletons)
-         l.add(new WeakReference<Object>(o));
-      servletContext.setAttribute("org.everrest.lifecycle.Singletons", l);
-
       processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
 
       servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
@@ -315,47 +298,17 @@ public abstract class EverrestExoContextListener implements ServletContextListen
     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
     */
    @Override
-   @SuppressWarnings("unchecked")
-   public void contextDestroyed(ServletContextEvent servletContextEvent)
+   public void contextDestroyed(ServletContextEvent sce)
    {
-      ServletContext servletContext = servletContextEvent.getServletContext();
-      List<WeakReference<Object>> singletons =
-         (List<WeakReference<Object>>)servletContext.getAttribute("org.everrest.lifecycle.Singletons");
-      RuntimeException exception = null;
-      if (singletons != null && singletons.size() > 0)
-      {
-         for (WeakReference<Object> ref : singletons)
-         {
-            Object o = ref.get();
-            if (o != null)
-            {
-               try
-               {
-                  new LifecycleComponent(o).destroy();
-               }
-               catch (WebApplicationException e)
-               {
-                  if (exception == null)
-                     exception = e;
-               }
-               catch (InternalException e)
-               {
-                  if (exception == null)
-                     exception = e;
-               }
-            }
-         }
-         singletons.clear();
-      }
-
       makeFileCollectorDestroyer().stopFileCollector();
-
-      if (exception != null)
+      ServletContext sctx = sce.getServletContext();
+      EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());
+      if (processor != null)
       {
-         throw exception;
+         processor.stop();
       }
    }
-   
+
    protected FileCollectorDestroyer makeFileCollectorDestroyer()
    {
       return new FileCollectorDestroyer();
