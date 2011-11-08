@@ -295,7 +295,7 @@ public class RequestDispatcher
             perRequest = new ArrayList<LifecycleComponent>();
             context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
          }
-         // We do nothing for initialize resource since it created by other resource
+         // We do nothing for initialize resource since it is created by other resource
          // but we lets to process 'destroy' method.
          perRequest.add(new LifecycleComponent(resource));
       }
