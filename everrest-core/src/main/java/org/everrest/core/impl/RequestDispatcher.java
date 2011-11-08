@@ -22,6 +22,7 @@ import org.everrest.core.ApplicationContext;
 import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.Lifecycle;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.SingletonObjectFactory;
@@ -283,6 +284,21 @@ public class RequestDispatcher
          new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON);
       SingletonObjectFactory<AbstractResourceDescriptor> locResource =
          new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, resource);
+
+      if (context instanceof Lifecycle)
+      {
+         @SuppressWarnings("unchecked")
+         List<LifecycleComponent> perRequest =
+            (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
+         if (perRequest == null)
+         {
+            perRequest = new ArrayList<LifecycleComponent>();
+            context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
+         }
+         // We do nothing for initialize resource since it created by other resource
+         // but we lets to process 'destroy' method.
+         perRequest.add(new LifecycleComponent(resource));
+      }
 
       // dispatch again newly created resource
       dispatch(request, response, context, locResource, resource, newRequestPath);
