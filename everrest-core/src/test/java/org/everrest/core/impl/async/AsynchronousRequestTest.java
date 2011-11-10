@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.async;
 
-import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.provider.json.JsonParser;
@@ -192,7 +191,7 @@ public class AsynchronousRequestTest extends BaseTest
       unregistry(Resource4.class);
    }
 
-   private ContainerResponse getAsyncronousResponse(String jobUrl, ContainerResponseWriter writer) throws Exception
+   private ContainerResponse getAsyncronousResponse(String jobUrl, ByteArrayContainerResponseWriter writer) throws Exception
    {
       ContainerResponse response;
       // Limit end time to avoid infinite loop if something going wrong.
@@ -203,6 +202,7 @@ public class AsynchronousRequestTest extends BaseTest
             && System.currentTimeMillis() < endTime)
          {
             wait(300);
+            writer.reset();
          }
       }
       return response;

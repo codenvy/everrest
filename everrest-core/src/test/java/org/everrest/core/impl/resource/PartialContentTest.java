@@ -70,7 +70,7 @@ public class PartialContentTest extends BaseTest
       headers.putSingle("range", "bytes=2-5");
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse response = launcher.service("GET", "/a", "", headers, null, writer, null);
-      MultivaluedMap<String, Object> responseHeaders = response.getHttpHeaders();
+      MultivaluedMap<String, Object> responseHeaders = writer.getHeaders();
       assertEquals("4", responseHeaders.getFirst("content-length"));
       assertEquals("bytes 2-5/18", responseHeaders.getFirst("content-range"));
       assertEquals("bytes", responseHeaders.getFirst("accept-ranges"));

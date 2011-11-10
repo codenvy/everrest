@@ -20,6 +20,7 @@ package org.everrest.core.impl.provider;
 
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.impl.OutputHeadersMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -71,7 +72,7 @@ public class JsonEntityProviderTest extends BaseTest
       bean.setName("andrew");
       bean.setPassword("test");
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-      writer.writeTo(bean, Bean.class, Bean.class, null, mediaType, null, outputStream);
+      writer.writeTo(bean, Bean.class, Bean.class, null, mediaType, new OutputHeadersMap(), outputStream);
       System.out.println(new String(outputStream.toByteArray()));
    }
 

@@ -257,20 +257,23 @@ public class OtherEntityTest extends BaseTest
       ContainerResponse response = launcher.service("GET", "/bytes", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/octet-stream", response.getContentType().toString());
-      assertEquals("to be or not to be".getBytes("UTF-8").length + "", response.getHttpHeaders().getFirst(
+      assertEquals("to be or not to be".getBytes("UTF-8").length + "", writer.getHeaders().getFirst(
          HttpHeaders.CONTENT_LENGTH).toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
+      writer.reset();
       response = launcher.service("GET", "/string", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
+      writer.reset();
       response = launcher.service("GET", "/stream", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/octet-stream", response.getContentType().toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
+      writer.reset();
       response = launcher.service("GET", "/reader", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
@@ -280,6 +283,7 @@ public class OtherEntityTest extends BaseTest
       String xml = pattern.matcher(XML_DATA).replaceFirst("");
 
       h.putSingle("accept", "application/xml");
+      writer.reset();
       response = launcher.service("GET", "/dom", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
@@ -287,6 +291,7 @@ public class OtherEntityTest extends BaseTest
       result = pattern.matcher(result).replaceFirst("");
       assertEquals(xml, result);
 
+      writer.reset();
       response = launcher.service("GET", "/sax", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
@@ -294,6 +299,7 @@ public class OtherEntityTest extends BaseTest
       result = pattern.matcher(result).replaceFirst("");
       assertEquals(xml, result);
 
+      writer.reset();
       response = launcher.service("GET", "/ss", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
@@ -301,15 +307,17 @@ public class OtherEntityTest extends BaseTest
       result = pattern.matcher(result).replaceFirst("");
       assertEquals(xml, result);
 
+      writer.reset();
       response = launcher.service("GET", "/so", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/octet-stream", response.getContentType().toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
+      writer.reset();
       response = launcher.service("GET", "/response", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
-      assertEquals("to be or not to be".getBytes("UTF-8").length + "", response.getHttpHeaders().getFirst(
+      assertEquals("to be or not to be".getBytes("UTF-8").length + "", writer.getHeaders().getFirst(
          HttpHeaders.CONTENT_LENGTH).toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 

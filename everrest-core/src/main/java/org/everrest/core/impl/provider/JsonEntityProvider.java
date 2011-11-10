@@ -209,7 +209,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       catch (JsonException e)
       {
          LOG.error(e.getMessage(), e);
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream. " + e.getMessage());
       }
    }
 

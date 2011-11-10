@@ -526,6 +526,7 @@ public class JsonEntityTest extends BaseTest
       //System.out.println("collection: " + new String(writer.getBody()));
 
       // ResourceBookCollection2#m2()
+      writer.reset();
       response = launcher.service("POST", "/", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/json", response.getContentType().toString());
@@ -571,6 +572,7 @@ public class JsonEntityTest extends BaseTest
       //System.out.println("map: " + new String(writer.getBody()));
 
       // ResourceBookMap2#m2()
+      writer.reset();
       response = launcher.service("POST", "/", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/json", response.getContentType().toString());

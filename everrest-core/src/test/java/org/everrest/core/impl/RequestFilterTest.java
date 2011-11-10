@@ -21,6 +21,7 @@ package org.everrest.core.impl;
 import org.everrest.core.Filter;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.RequestFilter;
+import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 import org.everrest.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
@@ -116,10 +117,11 @@ public class RequestFilterTest extends BaseTest
    public void testWithoutFilter1() throws Exception
    {
       registry(Resource1.class);
-      ContainerResponse resp = launcher.service("GET", "/a", "", null, null, null);
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+      ContainerResponse resp = launcher.service("GET", "/a", "", null, null, writer, null);
       assertEquals(405, resp.getStatus());
-      assertEquals(1, resp.getHttpHeaders().get("allow").size());
-      assertTrue(resp.getHttpHeaders().get("allow").get(0).toString().contains("POST"));
+      assertEquals(1, writer.getHeaders().get("allow").size());
+      assertTrue(writer.getHeaders().get("allow").get(0).toString().contains("POST"));
       unregistry(Resource1.class);
    }
 
@@ -144,10 +146,11 @@ public class RequestFilterTest extends BaseTest
    public void testFilter2() throws Exception
    {
       registry(Resource1.class);
-      ContainerResponse resp = launcher.service("GET", "/a/b/c/d/e", "", null, null, null);
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+      ContainerResponse resp = launcher.service("GET", "/a/b/c/d/e", "", null, null, writer, null);
       assertEquals(405, resp.getStatus());
-      assertEquals(1, resp.getHttpHeaders().get("allow").size());
-      assertTrue(resp.getHttpHeaders().get("allow").get(0).toString().contains("DELETE"));
+      assertEquals(1, writer.getHeaders().get("allow").size());
+      assertTrue(writer.getHeaders().get("allow").get(0).toString().contains("DELETE"));
 
       // add filter that can change method
       providers.addRequestFilter(new RequestFilter2());

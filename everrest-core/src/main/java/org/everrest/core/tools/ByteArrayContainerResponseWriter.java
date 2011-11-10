@@ -20,6 +20,7 @@ package org.everrest.core.tools;
 
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.impl.OutputHeadersMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,12 +33,10 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * 
  * @see ContainerResponseWriter
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ByteArrayContainerResponseWriter.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * @version $Id$
  */
 public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
 {
-
    /**
     * Message body.
     */
@@ -47,6 +46,8 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
     * HTTP headers.
     */
    private MultivaluedMap<String, Object> headers;
+
+   private boolean commited;
 
    /**
     * {@inheritDoc}
@@ -69,7 +70,10 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
     */
    public void writeHeaders(GenericContainerResponse response) throws IOException
    {
-      headers = response.getHttpHeaders();
+      if (commited)
+         throw new IllegalStateException("Response has been commited. Unable write headers. ");
+      headers = new OutputHeadersMap(response.getHttpHeaders());
+      commited = true;
    }
 
    /**
@@ -95,6 +99,7 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
    {
       body = null;
       headers = null;
+      commited = false;
    }
 
 }

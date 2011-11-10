@@ -24,6 +24,8 @@ import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.util.Logger;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -43,6 +45,107 @@ import javax.ws.rs.ext.MessageBodyWriter;
  */
 public class ContainerResponse implements GenericContainerResponse
 {
+   /* ----------------- Write response helpers ---------------- */
+
+   /**
+    * Wrapper for underlying MessageBodyWriter. Need such wrapper to give possibility update HTTP headers but commit
+    * them before writing the response body. NotifiesOutputStream wraps original OutputStream for the HTTP body and
+    * notify OutputListener about any changes, e.g. write bytes, flush or close. OutputListener processes events
+    * and initiates process of commit HTTP headers after getting the first one.
+    */
+   private static class BodyWriter implements MessageBodyWriter<Object>
+   {
+      private final MessageBodyWriter<Object> delegate;
+      private final OutputListener writeListener;
+
+      public BodyWriter(MessageBodyWriter<Object> writer, OutputListener writeListener)
+      {
+         this.delegate = writer;
+         this.writeListener = writeListener;
+      }
+
+      @Override
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return delegate.isWriteable(type, genericType, annotations, mediaType);
+      }
+
+      @Override
+      public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      {
+         return delegate.getSize(t, type, genericType, annotations, mediaType);
+      }
+
+      @Override
+      public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
+         WebApplicationException
+      {
+         delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, new NotifiesOutputStream(
+            entityStream, writeListener));
+      }
+   }
+
+   /**
+    * Use underlying output stream as data stream. Pass all invocations to the back-end stream and notify OutputListener
+    * about changes in back-end stream.
+    */
+   private static class NotifiesOutputStream extends OutputStream
+   {
+      OutputStream delegate;
+      OutputListener writeListener;
+
+      public NotifiesOutputStream(OutputStream output, OutputListener writeListener)
+      {
+         this.delegate = output;
+         this.writeListener = writeListener;
+      }
+
+      @Override
+      public void write(int b) throws IOException
+      {
+         writeListener.onChange(null);
+         delegate.write(b);
+      }
+
+      @Override
+      public void write(byte[] b) throws IOException
+      {
+         writeListener.onChange(null);
+         delegate.write(b);
+      }
+
+      @Override
+      public void write(byte[] b, int off, int len) throws IOException
+      {
+         writeListener.onChange(null);
+         delegate.write(b, off, len);
+      }
+
+      @Override
+      public void flush() throws IOException
+      {
+         writeListener.onChange(null);
+         delegate.flush();
+      }
+
+      @Override
+      public void close() throws IOException
+      {
+         writeListener.onChange(null);
+         delegate.close();
+      }
+   }
+
+   /**
+    * Listen any changes in response output stream, e.g. write, flush, close,
+    */
+   private static interface OutputListener
+   {
+      void onChange(java.util.EventObject event) throws IOException;
+   }
+
+   /* --------------------------------------------------------- */
 
    /**
     * Logger.
@@ -214,8 +317,21 @@ public class ContainerResponse implements GenericContainerResponse
       if (context.getContainerRequest().getMethod().equals(HttpMethod.HEAD))
          entity = null;
 
-      responseWriter.writeHeaders(this);
-      responseWriter.writeBody(this, entityWriter);
+      OutputListener headersWriter = new OutputListener()
+      {
+         private boolean done;
+
+         public void onChange(java.util.EventObject event) throws IOException
+         {
+            if (!done)
+            {
+               done = true;
+               responseWriter.writeHeaders(ContainerResponse.this);
+            }
+         }
+      };
+      responseWriter.writeBody(this, new BodyWriter(entityWriter, headersWriter));
+      headersWriter.onChange(null); // Be sure headers were written.
    }
 
    /**
@@ -257,5 +373,4 @@ public class ContainerResponse implements GenericContainerResponse
    {
       return status;
    }
-
 }
