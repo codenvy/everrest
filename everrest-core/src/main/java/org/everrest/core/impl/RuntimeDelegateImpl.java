@@ -18,9 +18,8 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.core.impl.header.AcceptLanguage;
+import org.everrest.core.header.AbstractHeaderDelegate;
 import org.everrest.core.impl.header.AcceptLanguageHeaderDelegate;
-import org.everrest.core.impl.header.AcceptMediaType;
 import org.everrest.core.impl.header.AcceptMediaTypeHeaderDelegate;
 import org.everrest.core.impl.header.CacheControlHeaderDelegate;
 import org.everrest.core.impl.header.CookieHeaderDelegate;
@@ -30,25 +29,16 @@ import org.everrest.core.impl.header.LocaleHeaderDelegate;
 import org.everrest.core.impl.header.MediaTypeHeaderDelegate;
 import org.everrest.core.impl.header.NewCookieHeaderDelegate;
 import org.everrest.core.impl.header.RangeHeaderDelegate;
-import org.everrest.core.impl.header.Ranges;
 import org.everrest.core.impl.header.StringHeaderDelegate;
 import org.everrest.core.impl.header.URIHeaderDelegate;
 import org.everrest.core.impl.uri.UriBuilderImpl;
 
-import java.net.URI;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 
@@ -64,26 +54,31 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
 
    /**
     * Should be used only once for initialize.
-    *
+    * 
     * @see RuntimeDelegate#setInstance(RuntimeDelegate)
     * @see RuntimeDelegate#getInstance()
     */
    public RuntimeDelegateImpl()
    {
       // JSR-311
-      headerDelegates.put(MediaType.class, new MediaTypeHeaderDelegate());
-      headerDelegates.put(CacheControl.class, new CacheControlHeaderDelegate());
-      headerDelegates.put(Cookie.class, new CookieHeaderDelegate());
-      headerDelegates.put(NewCookie.class, new NewCookieHeaderDelegate());
-      headerDelegates.put(EntityTag.class, new EntityTagHeaderDelegate());
-      headerDelegates.put(Date.class, new DateHeaderDelegate());
+      addHeaderDelegate(new MediaTypeHeaderDelegate());
+      addHeaderDelegate(new CacheControlHeaderDelegate());
+      addHeaderDelegate(new CookieHeaderDelegate());
+      addHeaderDelegate(new NewCookieHeaderDelegate());
+      addHeaderDelegate(new EntityTagHeaderDelegate());
+      addHeaderDelegate(new DateHeaderDelegate());
       // external
-      headerDelegates.put(AcceptLanguage.class, new AcceptLanguageHeaderDelegate());
-      headerDelegates.put(AcceptMediaType.class, new AcceptMediaTypeHeaderDelegate());
-      headerDelegates.put(String.class, new StringHeaderDelegate());
-      headerDelegates.put(URI.class, new URIHeaderDelegate());
-      headerDelegates.put(Locale.class, new LocaleHeaderDelegate());
-      headerDelegates.put(Ranges.class, new RangeHeaderDelegate());
+      addHeaderDelegate(new AcceptLanguageHeaderDelegate());
+      addHeaderDelegate(new AcceptMediaTypeHeaderDelegate());
+      addHeaderDelegate(new StringHeaderDelegate());
+      addHeaderDelegate(new URIHeaderDelegate());
+      addHeaderDelegate(new LocaleHeaderDelegate());
+      addHeaderDelegate(new RangeHeaderDelegate());
+   }
+
+   public void addHeaderDelegate(AbstractHeaderDelegate<?> header)
+   {
+      headerDelegates.put(header.support(), header);
    }
 
    /**
@@ -102,7 +97,6 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
    @Override
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type)
    {
-      // TODO mechanism for use external HeaderDelegate
       return headerDelegates.get(type);
    }
 
