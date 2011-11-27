@@ -21,6 +21,7 @@ package org.everrest.exoplatform;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
+import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.tools.ResourceLauncher;
 
 /**
@@ -37,6 +38,7 @@ public abstract class StandaloneBaseTest extends BaseTest
    protected DependencySupplier dependencies;
    protected ProvidersRegistry providersRegistry;
    protected RequestHandler requestHandler;
+   protected RequestDispatcher requestDispatcher;
 
    @Override
    protected void setUp() throws Exception
@@ -47,5 +49,6 @@ public abstract class StandaloneBaseTest extends BaseTest
       providersRegistry = (ProvidersRegistry)container.getComponentInstanceOfType(ProvidersRegistry.class);
       requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
       launcher = new ResourceLauncher(requestHandler);
+      requestDispatcher = (RequestDispatcher)container.getComponentInstanceOfType(RequestDispatcher.class);
    }
 }

@@ -36,13 +36,11 @@ public class UriPattern
 {
 
    /**
-    * Sort the templates according to the string comparison of the template
-    * regular expressions.
+    * Sort the templates according to the string comparison of the template regular expressions.
     * <p>
-    * JSR-311 specification: "Sort the set of matching resource classes using
-    * the number of characters in the regular expression not resulting from
-    * template variables as the primary key and the number of matching groups as
-    * a secondary key"
+    * JSR-311 specification: "Sort the set of matching resource classes using the number of characters in the regular
+    * expression not resulting from template variables as the primary key and the number of matching groups as a
+    * secondary key"
     * </p>
     */
    public static final Comparator<UriPattern> URIPATTERN_COMPARATOR = new UriPatternComparator();
@@ -105,8 +103,7 @@ public class UriPattern
    private final String template;
 
    /**
-    * Number of characters in URI template NOT resulting from template variable
-    * substitution.
+    * Number of characters in URI template NOT resulting from template variable substitution.
     */
    private final int numberOfCharacters;
 
@@ -129,7 +126,7 @@ public class UriPattern
 
    /**
     * Constructs UriPattern.
-    *
+    * 
     * @param template the source template
     * @see {@link javax.ws.rs.Path}
     */
@@ -180,12 +177,14 @@ public class UriPattern
     */
    public int hashCode()
    {
-      return template.hashCode() + regex.hashCode();
+      int hash = 7;
+      hash = hash * 31 + regex.hashCode();
+      return hash;
    }
 
    /**
     * Get the regex pattern.
-    *
+    * 
     * @return the regex pattern
     */
    public Pattern getPattern()
@@ -195,7 +194,7 @@ public class UriPattern
 
    /**
     * Get the URI template as a String.
-    *
+    * 
     * @return the URI template
     */
    public String getTemplate()
@@ -205,7 +204,7 @@ public class UriPattern
 
    /**
     * Get the regular expression.
-    *
+    * 
     * @return the regular expression
     */
    public String getRegex()
@@ -215,7 +214,7 @@ public class UriPattern
 
    /**
     * Get the number of literal characters in the template.
-    *
+    * 
     * @return number of literal characters in the template
     */
    public int getNumberOfLiteralCharacters()
@@ -232,12 +231,10 @@ public class UriPattern
    }
 
    /**
-    * Check is URI string match to pattern. If it is then fill given list by
-    * parameter value. Before coping value list is cleared. List will be 1
-    * greater then number of keys. It can be used for check is resource is
-    * matching to requested. If resource is match the last element in list must
-    * be '/' or null.
-    *
+    * Check is URI string match to pattern. If it is then fill given list by parameter value. Before coping value list
+    * is cleared. List will be 1 greater then number of keys. It can be used for check is resource is matching to
+    * requested. If resource is match the last element in list must be '/' or null.
+    * 
     * @param uri the URI string
     * @param parameters target list
     * @return true if URI string is match to pattern, false otherwise
@@ -289,7 +286,7 @@ public class UriPattern
 
    /**
     * Create URI from URI part. Each URI part can contains templates.
-    *
+    * 
     * @param schema the schema URI part
     * @param userInfo the user info URI part
     * @param host the host name URI part
@@ -298,8 +295,7 @@ public class UriPattern
     * @param query the query string URI part
     * @param fragment the fragment URI part
     * @param values the values which must be used instead templates parameters
-    * @param encode if true then encode value before add it in URI, otherwise
-    *        value must be validate to legal characters
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
     * @return the URI string
     */
    public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
@@ -356,7 +352,7 @@ public class UriPattern
 
    /**
     * Create URI from URI part. Each URI part can contains templates.
-    *
+    * 
     * @param schema the schema URI part
     * @param userInfo the user info URI part
     * @param host the host name URI part
@@ -365,8 +361,7 @@ public class UriPattern
     * @param query the query string URI part
     * @param fragment the fragment URI part
     * @param values the values which must be used instead templates parameters
-    * @param encode if true then encode value before add it in URI, otherwise
-    *        value must be validate to legal characters
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
     * @return the URI string
     */
    public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
@@ -430,8 +425,7 @@ public class UriPattern
     * @param uriPart URI part
     * @param component the URI component
     * @param values values map
-    * @param encode if true then encode value before add it in URI, otherwise
-    *        value must be validate to legal characters
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
     */
    private static void appendUriPart(StringBuilder sb, String uriPart, int component,
       Map<String, ? extends Object> values, boolean encode)
@@ -471,17 +465,13 @@ public class UriPattern
     * @param component the URI component
     * @param sourceValues the source array of values
     * @param offset the offset in array
-    * @param values values map, keep parameter/value pair which have been
-    *        already found. From java docs:
-    *        <p>
-    *        All instances of the same template parameter will be replaced by
-    *        the same value that corresponds to the position of the first
-    *        instance of the template parameter. e.g. the template "{a}/{b}/{a}"
-    *        with values {"x", "y", "z"} will result in the the URI "x/y/x",
-    *        <i>not</i> "x/y/z".
-    *        </p>
-    * @param encode if true then encode value before add it in URI, otherwise
-    *        value must be validate to legal characters
+    * @param values values map, keep parameter/value pair which have been already found. From java docs:
+    *           <p>
+    *           All instances of the same template parameter will be replaced by the same value that corresponds to the
+    *           position of the first instance of the template parameter. e.g. the template "{a}/{b}/{a}" with values
+    *           {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i> "x/y/z".
+    *           </p>
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
     * @return offset
     */
    private static int appendUriPart(StringBuilder sb, String uriPart, int component, Object[] sourceValues, int offset,
@@ -539,7 +529,7 @@ public class UriPattern
 
    /**
     * Check does given URI string has templates.
-    *
+    * 
     * @param uri the URI which must be checked
     * @return true if URI has templates false otherwise
     */

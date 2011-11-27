@@ -25,12 +25,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -75,14 +79,92 @@ public final class MediaTypeHelper
    public static final Pattern EXT_PREFIX_SUBTYPE_PATTERN = Pattern.compile("\\*\\+(.+)");
 
    /**
+    * Builder or range acceptable media types for look up appropriate {@link MessageBodyReader},
+    * {@link MessageBodyWriter} or {@link ContextResolver}. It provider set of media types in descending ordering.
+    */
+   public static final class MediaTypeRange implements java.util.Iterator<MediaType>
+   {
+      private MediaType next;
+
+      public MediaTypeRange(MediaType type)
+      {
+         next = (type == null) ? MediaTypeHelper.DEFAULT_TYPE : type;
+      }
+
+      public boolean hasNext()
+      {
+         return next != null;
+      }
+
+      public MediaType next()
+      {
+         if (next == null)
+            throw new NoSuchElementException();
+         MediaType type = next;
+         fetchNext();
+         return type;
+      }
+
+      public void remove()
+      {
+         throw new UnsupportedOperationException();
+      }
+
+      void fetchNext()
+      {
+         MediaType mediaType = next;
+         next = null;
+         if (!mediaType.isWildcardType() && !mediaType.isWildcardSubtype())
+         {
+            // Media type such as application/xml, application/atom+xml, application/*+xml
+            // or application/xml+* .
+            String type = mediaType.getType();
+            String subType = mediaType.getSubtype();
+            Matcher extMatcher = MediaTypeHelper.EXT_SUBTYPE_PATTERN.matcher(subType);
+            if (extMatcher.matches())
+            {
+               // Media type such as application/atom+xml or application/*+xml (sub-type extended!!!)
+               String extSubtypePrefix = extMatcher.group(1);
+               String extSubtype = extMatcher.group(2);
+               if (MediaType.MEDIA_TYPE_WILDCARD.equals(extSubtypePrefix))
+               {
+                  // Media type such as 'application/*+xml' (first part is wildcard).
+                  // Next to be checked will be 'application/*'. NOTE do not use 'application/xml'
+                  // since there is no guaranty sure xml reader/writer/resolver supports xml extentions.
+                  next = new MediaType(type, MediaType.MEDIA_TYPE_WILDCARD);
+               }
+               else
+               {
+                  // Media type such as 'application/atom+xml' next to be checked will be 'application/*+xml'
+                  // Reader/writer/resolver which declared support of 'application/*+xml' should
+                  // supports 'application/atom+xml' also.
+                  next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + extSubtype);
+               }
+            }
+            else
+            {
+               // Media type without extension such as 'application/xml'.
+               // Next will be 'application/*+xml' since extensions should support pure xml as well.
+               next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + subType);
+            }
+         }
+         else if (!mediaType.isWildcardType() && mediaType.isWildcardSubtype())
+         {
+            // Type such as 'application/*' . Next one to be checked is '*/*'.
+            // This type is always last for checking in our range.
+            next = MediaTypeHelper.DEFAULT_TYPE;
+         }
+      }
+   }
+
+   /**
     * Compare two mimetypes. The main rule for sorting media types is :
     * <p>
     * <li>n / m</li>
     * <li>n / *</li>
     * <li>* / *</li>
     * <p>
-    * Method that explicitly list of media types is sorted before a method that
-    * list * / *.
+    * Method that explicitly list of media types is sorted before a method that list * / *.
     */
    public static final Comparator<MediaType> MEDIA_TYPE_COMPARATOR = new Comparator<MediaType>()
    {
@@ -129,8 +211,7 @@ public final class MediaTypeHelper
    };
 
    /**
-    * Create a list of media type for given Consumes annotation. If parameter
-    * mime is null then list with single element
+    * Create a list of media type for given Consumes annotation. If parameter mime is null then list with single element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
     * 
     * @param mime the Consumes annotation.
@@ -147,8 +228,7 @@ public final class MediaTypeHelper
    }
 
    /**
-    * Create a list of media type for given Produces annotation. If parameter
-    * mime is null then list with single element
+    * Create a list of media type for given Produces annotation. If parameter mime is null then list with single element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
     * 
     * @param mime the Produces annotation.
@@ -201,13 +281,11 @@ public final class MediaTypeHelper
    }
 
    /**
-    * Looking for accept media type with the best quality. Accept list of media
-    * type must be sorted by quality value.
+    * Looking for accept media type with the best quality. Accept list of media type must be sorted by quality value.
     * 
     * @param accept See {@link AcceptMediaType}, {@link QualityValue}
     * @param produces list of produces media type, See {@link Produces}
-    * @return quality value of best found compatible accept media type or 0.0 if
-    *         media types are not compatible
+    * @return quality value of best found compatible accept media type or 0.0 if media types are not compatible
     */
    public static float processQuality(List<MediaType> accept, List<MediaType> produces)
    {
@@ -231,21 +309,18 @@ public final class MediaTypeHelper
    }
 
    /**
-    * Check types <code>one</code> and type <code>two</code> are compatible. The
-    * operation is commutative.
+    * Check types <code>one</code> and type <code>two</code> are compatible. The operation is commutative.
     * <p>
     * Examples:
     * <ul>
     * <li><i>text/plain</i> and <i>text/*</i> are compatible</li>
-    * <li><i>application/atom+xml</i> and <i>application/atom+*</i> are
-    * compatible</li>
+    * <li><i>application/atom+xml</i> and <i>application/atom+*</i> are compatible</li>
     * </ul>
     * </p>
     * 
     * @param one media type
     * @param two media type
-    * @return <code>true</code> if types compatible and <code>false</code>
-    *         otherwise
+    * @return <code>true</code> if types compatible and <code>false</code> otherwise
     */
    public static boolean isCompatible(MediaType one, MediaType two)
    {
@@ -260,7 +335,7 @@ public final class MediaTypeHelper
       {
          return true;
       }
-      
+
       if (one.getType().equalsIgnoreCase(two.getType()))
       {
          String oneSubtype = one.getSubtype();
@@ -312,25 +387,22 @@ public final class MediaTypeHelper
    }
 
    /**
-    * Check is type <code>checkMe</code> matched to type <code>pattern</code>.
-    * NOTE The operation is NOT commutative, e.g. matching of type
-    * <code>checkMe</code> matched to <code>pattern</code> does not guaranty
-    * that <code>pattern</code> matched to <code>checkMe</code>.
+    * Check is type <code>checkMe</code> matched to type <code>pattern</code>. NOTE The operation is NOT commutative,
+    * e.g. matching of type <code>checkMe</code> matched to <code>pattern</code> does not guaranty that
+    * <code>pattern</code> matched to <code>checkMe</code>.
     * <p>
     * Examples:
     * <ul>
-    * <li><i>text/plain</i> is matched to <i>text/*</i> but type <i>text/*</i>
-    * is not matched to <i>text/plain</i></li>
-    * <li><i>application/atom+xml</i> is matched to <i>application/atom+*</i>
-    * but type <i>application/atom+*</i> is not matched to
-    * <i>application/atom+xml</i></li>
+    * <li><i>text/plain</i> is matched to <i>text/*</i> but type <i>text/*</i> is not matched to <i>text/plain</i></li>
+    * <li><i>application/atom+xml</i> is matched to <i>application/atom+*</i> but type <i>application/atom+*</i> is not
+    * matched to <i>application/atom+xml</i></li>
     * </ul>
     * </p>
     * 
     * @param pattern pattern type
     * @param checkMe type to be checked
-    * @return <code>true</code> if type <code>checkMe</code> is matched to
-    *         <code>pattern</code> and <code>false</code> otherwise
+    * @return <code>true</code> if type <code>checkMe</code> is matched to <code>pattern</code> and <code>false</code>
+    *         otherwise
     */
    public static boolean isMatched(MediaType pattern, MediaType checkMe)
    {
@@ -343,7 +415,7 @@ public final class MediaTypeHelper
       {
          return true;
       }
-      
+
       if (pattern.getType().equalsIgnoreCase(checkMe.getType()))
       {
          String patternSubtype = pattern.getSubtype();
@@ -384,7 +456,7 @@ public final class MediaTypeHelper
             }
          }
       }
-      
+
       return false;
    }
 }

@@ -63,9 +63,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -76,9 +74,9 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 /**
- * Gives access to common predefined provider. Users of EverRest are not
- * expected to use this class or any of its subclasses.
- *
+ * Gives access to common predefined provider. Users of EverRest are not expected to use this class or any of its
+ * subclasses.
+ * 
  * @see Providers
  * @see Provider
  * @see MessageBodyReader
@@ -89,94 +87,12 @@ import javax.ws.rs.ext.Providers;
  * @see RequestFilter
  * @see ResponseFilter
  * @see MethodInvokerFilter
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class ProviderBinder implements Providers
 {
-
-   /**
-    * Builder or range acceptable media types for look up appropriate
-    * {@link MessageBodyReader}, {@link MessageBodyWriter} or
-    * {@link ContextResolver}. It provider set of media types in descending
-    * ordering.
-    */
-   protected final class MediaTypeRange implements java.util.Iterator<MediaType>
-   {
-      private MediaType next;
-
-      MediaTypeRange(MediaType type)
-      {
-         next = (type == null) ? MediaTypeHelper.DEFAULT_TYPE : type;
-      }
-
-      public boolean hasNext()
-      {
-         return next != null;
-      }
-
-      public MediaType next()
-      {
-         if (next == null)
-            throw new NoSuchElementException();
-         MediaType type = next;
-         fetchNext();
-         return type;
-      }
-
-      public void remove()
-      {
-         throw new UnsupportedOperationException();
-      }
-
-      void fetchNext()
-      {
-         MediaType mediaType = next;
-         next = null;
-         if (!mediaType.isWildcardType() && !mediaType.isWildcardSubtype())
-         {
-            // Media type such as application/xml, application/atom+xml, application/*+xml
-            // or application/xml+* .
-            String type = mediaType.getType();
-            String subType = mediaType.getSubtype();
-            Matcher extMatcher = MediaTypeHelper.EXT_SUBTYPE_PATTERN.matcher(subType);
-            if (extMatcher.matches())
-            {
-               // Media type such as application/atom+xml or application/*+xml (sub-type extended!!!)
-               String extSubtypePrefix = extMatcher.group(1);
-               String extSubtype = extMatcher.group(2);
-               if (MediaType.MEDIA_TYPE_WILDCARD.equals(extSubtypePrefix))
-               {
-                  // Media type such as 'application/*+xml' (first part is wildcard).
-                  // Next to be checked will be 'application/*'. NOTE do not use 'application/xml'
-                  // since there is no guaranty sure xml reader/writer/resolver supports xml extentions.
-                  next = new MediaType(type, MediaType.MEDIA_TYPE_WILDCARD);
-               }
-               else
-               {
-                  // Media type such as 'application/atom+xml' next to be checked will be 'application/*+xml'
-                  // Reader/writer/resolver which declared support of 'application/*+xml' should
-                  // supports 'application/atom+xml' also.
-                  next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + extSubtype);
-               }
-            }
-            else
-            {
-               // Media type without extension such as 'application/xml'.
-               // Next will be 'application/*+xml' since extensions should support pure xml as well.
-               next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + subType);
-            }
-         }
-         else if (!mediaType.isWildcardType() && mediaType.isWildcardSubtype())
-         {
-            // Type such as 'application/*' . Next one to be checked is '*/*'.
-            // This type is always last for checking in our range.
-            next = MediaTypeHelper.DEFAULT_TYPE;
-         }
-      }
-   }
-
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(ProviderBinder.class);
 
@@ -210,10 +126,9 @@ public class ProviderBinder implements Providers
    }
 
    /**
-    * Replace default set of providers by new one. This must not be used by regular
-    * users of EverRest framework.
-    * @throws SecurityException  if caller is not permitted to call this method
-    *         because to current security policy
+    * Replace default set of providers by new one. This must not be used by regular users of EverRest framework.
+    * 
+    * @throws SecurityException if caller is not permitted to call this method because to current security policy
     */
    public static void setInstance(ProviderBinder inst)
    {
@@ -265,7 +180,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ContextResolver.
-    *
+    * 
     * @param clazz class of implementation ContextResolver
     */
    public void addContextResolver(@SuppressWarnings("rawtypes") Class<? extends ContextResolver> clazz)
@@ -284,7 +199,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ContextResolver.
-    *
+    * 
     * @param instance ContextResolver instance
     */
    @SuppressWarnings("rawtypes")
@@ -305,7 +220,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ExceptionMapper.
-    *
+    * 
     * @param clazz class of implementation ExceptionMapper
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -324,7 +239,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ExceptionMapper.
-    *
+    * 
     * @param instance ExceptionMapper instance
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -344,7 +259,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyReader.
-    *
+    * 
     * @param clazz class of implementation MessageBodyReader
     */
    public void addMessageBodyReader(@SuppressWarnings("rawtypes") Class<? extends MessageBodyReader> clazz)
@@ -363,7 +278,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyReader.
-    *
+    * 
     * @param instance MessageBodyReader instance
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -384,7 +299,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyWriter.
-    *
+    * 
     * @param clazz class of implementation MessageBodyWriter
     */
    public void addMessageBodyWriter(@SuppressWarnings("rawtypes") Class<? extends MessageBodyWriter> clazz)
@@ -403,7 +318,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyWriter.
-    *
+    * 
     * @param instance MessageBodyWriter instance
     */
    @SuppressWarnings("rawtypes")
@@ -424,7 +339,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MethodInvokerFilter.
-    *
+    * 
     * @param clazz class of implementation MethodInvokerFilter
     */
    public void addMethodInvokerFilter(Class<? extends MethodInvokerFilter> clazz)
@@ -443,7 +358,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MethodInvokerFilter.
-    *
+    * 
     * @param instance MethodInvokerFilter instance
     */
    public void addMethodInvokerFilter(MethodInvokerFilter instance)
@@ -463,7 +378,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request RequestFilter.
-    *
+    * 
     * @param clazz class of implementation RequestFilter
     */
    public void addRequestFilter(Class<? extends RequestFilter> clazz)
@@ -482,7 +397,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton RequestFilter.
-    *
+    * 
     * @param instance RequestFilter instance
     */
    public void addRequestFilter(RequestFilter instance)
@@ -502,7 +417,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ResponseFilter.
-    *
+    * 
     * @param clazz class of implementation ResponseFilter
     */
    public void addResponseFilter(Class<? extends ResponseFilter> clazz)
@@ -521,7 +436,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ResponseFilter.
-    *
+    * 
     * @param instance ResponseFilter instance
     */
    public void addResponseFilter(ResponseFilter instance)
@@ -541,7 +456,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Get list of most acceptable writer's media type for specified type.
-    *
+    * 
     * @param type type
     * @param genericType generic type
     * @param annotations annotations
@@ -755,7 +670,7 @@ public class ProviderBinder implements Providers
       ContextResolver<T> resolver = null;
       if (pm != null)
       {
-         MediaTypeRange mrange = new MediaTypeRange(mediaType);
+         MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
          while (mrange.hasNext() && resolver == null)
          {
             MediaType actual = mrange.next();
@@ -767,11 +682,9 @@ public class ProviderBinder implements Providers
 
    /**
     * @param <T> context resolver actual type argument
-    * @param pm MediaTypeMap that contains ProviderFactories that may produce
-    *           objects that are instance of T
+    * @param pm MediaTypeMap that contains ProviderFactories that may produce objects that are instance of T
     * @param contextType context type
-    * @param mediaType media type that can be used to restrict context resolver
-    *           choose
+    * @param mediaType media type that can be used to restrict context resolver choose
     * @return ContextResolver or null if nothing was found
     */
    @SuppressWarnings("unchecked")
@@ -801,9 +714,9 @@ public class ProviderBinder implements Providers
    }
 
    /**
-    * Looking for message body reader according to supplied entity class, entity
-    * generic type, annotations and content type.
-    *
+    * Looking for message body reader according to supplied entity class, entity generic type, annotations and content
+    * type.
+    * 
     * @param <T> message body reader actual type argument
     * @param type entity type
     * @param genericType entity generic type
@@ -815,7 +728,7 @@ public class ProviderBinder implements Providers
    protected <T> MessageBodyReader<T> doGetMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
       MediaType mediaType)
    {
-      MediaTypeRange mrange = new MediaTypeRange(mediaType);
+      MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
       Map<Class, MessageBodyReader> instanceCache = new HashMap<Class, MessageBodyReader>();
       while (mrange.hasNext())
       {
@@ -839,9 +752,9 @@ public class ProviderBinder implements Providers
    }
 
    /**
-    * Looking for message body writer according to supplied entity class, entity
-    * generic type, annotations and content type.
-    *
+    * Looking for message body writer according to supplied entity class, entity generic type, annotations and content
+    * type.
+    * 
     * @param <T> message body writer actual type argument
     * @param type entity type
     * @param genericType entity generic type
@@ -853,7 +766,7 @@ public class ProviderBinder implements Providers
    protected <T> MessageBodyWriter<T> doGetMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
       MediaType mediaType)
    {
-      MediaTypeRange mrange = new MediaTypeRange(mediaType);
+      MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
       Map<Class, MessageBodyWriter> instanceCache = new HashMap<Class, MessageBodyWriter>();
       while (mrange.hasNext())
       {
