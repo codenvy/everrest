@@ -269,6 +269,33 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
       return new ResourceAnnotationSummary(new UriPattern(type.getAnnotation(Path.class).value()));
    }
 
+   private static List<Key> makeKeys(RestfulComponentAdapter componentAdapter)
+   {
+      Class<?> type = componentAdapter.getComponentImplementation();
+      if (type.isAnnotationPresent(Filter.class))
+      {
+         // TODO
+      }
+      else if (type.isAnnotationPresent(Path.class))
+      {
+         return Collections.singletonList(new Key(makeResourceAnnotationSummary(type)));
+      }
+      else if (type.isAnnotationPresent(Provider.class))
+      {
+         ParameterizedType[] implementedInterfaces =
+            ((RestfulComponentAdapter)componentAdapter).getImplementedInterfaces();
+         List<Key> keys = new ArrayList<RestfulContainer.Key>(implementedInterfaces.length);
+         for (int i = 0; i < implementedInterfaces.length; i++)
+         {
+            ParameterizedType genericInterface = implementedInterfaces[i];
+            Class<?> rawType = (Class<?>)genericInterface.getRawType();
+            keys.add(new Key(makeProviderAnnotationSummary(type, rawType), genericInterface));
+         }
+         return keys;
+      }
+      return Collections.emptyList();
+   }
+
    /**
     * @see org.exoplatform.container.ConcurrentPicoContainer#registerComponent(org.picocontainer.ComponentAdapter)
     */
@@ -278,39 +305,16 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
    {
       if (componentAdapter instanceof RestfulComponentAdapter)
       {
-         Class<?> type = componentAdapter.getComponentImplementation();
-         ParameterizedType[] implementedInterfaces =
-            ((RestfulComponentAdapter)componentAdapter).getImplementedInterfaces();
-         lock.lock();
-         try
+         List<Key> keys = makeKeys((RestfulComponentAdapter)componentAdapter);
+         if (keys.size() > 0)
          {
-            if (type.isAnnotationPresent(Filter.class))
-            {
-               // TODO
-            }
-            else if (type.isAnnotationPresent(Path.class))
+            lock.lock();
+            try
             {
                Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
-               ComponentAdapter previous = copy.put(new Key(makeResourceAnnotationSummary(type)), componentAdapter);
-               if (previous != null)
+               for (Key key : keys)
                {
-                  throw new PicoRegistrationException("Cannot register component " + componentAdapter
-                     + " because already registered component " + previous);
-               }
-               super.registerComponent(componentAdapter);
-               restToComponentAdapters = copy;
-               return componentAdapter;
-            }
-            else if (type.isAnnotationPresent(Provider.class))
-            {
-               Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
-               for (int i = 0; i < implementedInterfaces.length; i++)
-               {
-                  ParameterizedType genericInterface = implementedInterfaces[i];
-                  Class<?> rawType = (Class<?>)genericInterface.getRawType();
-                  ComponentAdapter previous =
-                     copy
-                        .put(new Key(makeProviderAnnotationSummary(type, rawType), genericInterface), componentAdapter);
+                  ComponentAdapter previous = copy.put(key, componentAdapter);
                   if (previous != null)
                   {
                      throw new PicoRegistrationException("Cannot register component " + componentAdapter
@@ -321,10 +325,10 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
                restToComponentAdapters = copy;
                return componentAdapter;
             }
-         }
-         finally
-         {
-            lock.unlock();
+            finally
+            {
+               lock.unlock();
+            }
          }
       }
       return super.registerComponent(componentAdapter);
@@ -356,29 +360,8 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
       ComponentAdapter componentAdapter = super.unregisterComponent(componentKey);
       if (componentAdapter instanceof RestfulComponentAdapter)
       {
-         Class<?> type = componentAdapter.getComponentImplementation();
-         ParameterizedType[] implementedInterfaces =
-            ((RestfulComponentAdapter)componentAdapter).getImplementedInterfaces();
-         List<Key> keys = null;
-         if (type.isAnnotationPresent(Filter.class))
-         {
-            // TODO
-         }
-         else if (type.isAnnotationPresent(Path.class))
-         {
-            keys = Collections.singletonList(new Key(makeResourceAnnotationSummary(type)));
-         }
-         else if (type.isAnnotationPresent(Provider.class))
-         {
-            keys = new ArrayList<RestfulContainer.Key>(implementedInterfaces.length);
-            for (int i = 0; i < implementedInterfaces.length; i++)
-            {
-               ParameterizedType genericInterface = implementedInterfaces[i];
-               Class<?> rawType = (Class<?>)genericInterface.getRawType();
-               keys.add(new Key(makeProviderAnnotationSummary(type, rawType), genericInterface));
-            }
-         }
-         if (keys != null)
+         List<Key> keys = makeKeys((RestfulComponentAdapter)componentAdapter);
+         if (keys.size() > 0)
          {
             lock.lock();
             try
