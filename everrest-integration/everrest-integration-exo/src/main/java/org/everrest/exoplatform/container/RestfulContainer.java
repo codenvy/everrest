@@ -55,8 +55,22 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 /**
+ * Container intended for decoupling third part code and everrest framework. Components and adapters are searchable
+ * by annotation and type or by annotation only. Components (implementation class or instance) annotated with JAX-RS
+ * annotations &#64;Path and &#64;Provider should be registered in container as usually. After registration if class
+ * annotated with {@link javax.ws.rs.Path} it may be retrieved by method {@link #getMatchedResource(String, List)}. If
+ * class annotated with {@link javax.ws.rs.ext.Provider} and implement one of JAX-RS extension interfaces instance of
+ * component may be retrieved by corresponded methods of {@link javax.ws.rs.ext.Providers} interface. E.g:
+ * <pre>
+ * </pre>
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
+ * 
+ * @see MessageBodyReader
+ * @see MessageBodyWriter
+ * @see ContextResolver
+ * @see ExceptionMapper
  */
 @SuppressWarnings("serial")
 public class RestfulContainer extends ConcurrentPicoContainer implements Providers
