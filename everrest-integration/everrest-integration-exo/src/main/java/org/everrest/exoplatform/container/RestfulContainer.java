@@ -84,6 +84,16 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
    private volatile Map<Key, ComponentAdapter> restToComponentAdapters = new HashMap<Key, ComponentAdapter>();
    private final Lock lock = new ReentrantLock();
 
+   /**
+    * Use such key in <code>restToComponentAdapters</code> to avoid duplicate restful components. It is not enough to
+    * use just keys of component adapters since some resources or providers may be not unique for the rest framework,
+    * e.g. :
+    * <ul>
+    * <li>resource classes may be different but may have the same or matched value of &#64;Path annotation</li>
+    * <li>two ExceptionMapper may process the same type of Exception</li>
+    * <li>...</li>
+    * </ul>
+    */
    private static final class Key
    {
       final AnnotationSummary annotations;
