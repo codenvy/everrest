@@ -121,7 +121,14 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
             return false;
          }
          Key other = (Key)obj;
-         if (!annotations.equals(other.annotations))
+         if (annotations == null)
+         {
+            if (other.annotations != null)
+            {
+               return false;
+            }
+         }
+         else if (!annotations.equals(other.annotations))
          {
             return false;
          }
@@ -142,10 +149,6 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
 
    private static interface AnnotationSummary
    {
-   }
-
-   private enum EmptyAnnotationSummary implements AnnotationSummary {
-      INSTANCE;
    }
 
    private static final class ResourceAnnotationSummary implements AnnotationSummary
@@ -238,29 +241,22 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
       }
    }
 
-   private static AnnotationSummary makeAnnotationSummary(Class<?> type, Class<?> itype)
+   private static AnnotationSummary makeProviderAnnotationSummary(Class<?> type, Class<?> itype)
    {
-      if (type.isAnnotationPresent(Path.class))
-      {
-         return new ResourceAnnotationSummary(new UriPattern(type.getAnnotation(Path.class).value()));
-      }
-      else if (type.isAnnotationPresent(Provider.class))
-      {
-         // @Consumes makes sense for MessageBodyReader ONLY
-         Set<MediaType> consumes = MessageBodyReader.class == itype //
-            ? new HashSet<MediaType>(MediaTypeHelper.createConsumesList(type.getAnnotation(Consumes.class))) //
-            : null;
-         // @Produces makes sense for MessageBodyWriter or ContextResolver
-         Set<MediaType> produces = ContextResolver.class == itype || MessageBodyWriter.class == itype//
-         ? new HashSet<MediaType>(MediaTypeHelper.createProducesList(type.getAnnotation(Produces.class))) //
-            : null;
-         return new ProviderAnnotationSummary(consumes, produces);
-      }
-      else if (type.isAnnotationPresent(Filter.class))
-      {
-         return EmptyAnnotationSummary.INSTANCE;
-      }
-      throw new IllegalArgumentException();
+      // @Consumes makes sense for MessageBodyReader ONLY
+      Set<MediaType> consumes = MessageBodyReader.class == itype //
+         ? new HashSet<MediaType>(MediaTypeHelper.createConsumesList(type.getAnnotation(Consumes.class))) //
+         : null;
+      // @Produces makes sense for MessageBodyWriter or ContextResolver
+      Set<MediaType> produces = ContextResolver.class == itype || MessageBodyWriter.class == itype//
+      ? new HashSet<MediaType>(MediaTypeHelper.createProducesList(type.getAnnotation(Produces.class))) //
+         : null;
+      return new ProviderAnnotationSummary(consumes, produces);
+   }
+
+   private static AnnotationSummary makeResourceAnnotationSummary(Class<?> type)
+   {
+      return new ResourceAnnotationSummary(new UriPattern(type.getAnnotation(Path.class).value()));
    }
 
    /**
@@ -278,44 +274,50 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
          lock.lock();
          try
          {
-            Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
-            if (implementedInterfaces.length > 0)
+            if (type.isAnnotationPresent(Filter.class))
             {
+               // TODO
+            }
+            else if (type.isAnnotationPresent(Path.class))
+            {
+               Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
+               ComponentAdapter previous = copy.put(new Key(makeResourceAnnotationSummary(type)), componentAdapter);
+               if (previous != null)
+               {
+                  throw new PicoRegistrationException("Cannot register component " + componentAdapter
+                     + " because already registered component " + previous);
+               }
+               super.registerComponent(componentAdapter);
+               restToComponentAdapters = copy;
+               return componentAdapter;
+            }
+            else if (type.isAnnotationPresent(Provider.class))
+            {
+               Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
                for (int i = 0; i < implementedInterfaces.length; i++)
                {
                   ParameterizedType genericInterface = implementedInterfaces[i];
                   Class<?> rawType = (Class<?>)genericInterface.getRawType();
                   ComponentAdapter previous =
-                     copy.put(new Key(makeAnnotationSummary(type, rawType), genericInterface), componentAdapter);
+                     copy
+                        .put(new Key(makeProviderAnnotationSummary(type, rawType), genericInterface), componentAdapter);
                   if (previous != null)
                   {
                      throw new PicoRegistrationException("Cannot register component " + componentAdapter
                         + " because already registered component " + previous);
                   }
                }
+               super.registerComponent(componentAdapter);
+               restToComponentAdapters = copy;
+               return componentAdapter;
             }
-            else
-            {
-               ComponentAdapter previous = copy.put(new Key(makeAnnotationSummary(type, null)), componentAdapter);
-               if (previous != null)
-               {
-                  throw new PicoRegistrationException("Cannot register component " + componentAdapter
-                     + " because already registered component " + previous);
-               }
-            }
-            super.registerComponent(componentAdapter);
-            restToComponentAdapters = copy;
-            return componentAdapter;
          }
          finally
          {
             lock.unlock();
          }
       }
-      else
-      {
-         return super.registerComponent(componentAdapter);
-      }
+      return super.registerComponent(componentAdapter);
    }
 
    /**
@@ -347,32 +349,38 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
          Class<?> type = componentAdapter.getComponentImplementation();
          ParameterizedType[] implementedInterfaces =
             ((RestfulComponentAdapter)componentAdapter).getImplementedInterfaces();
-         List<Key> keys;
-         if (implementedInterfaces.length > 0)
+         List<Key> keys = null;
+         if (type.isAnnotationPresent(Filter.class))
+         {
+            // TODO
+         }
+         else if (type.isAnnotationPresent(Path.class))
+         {
+            keys = Collections.singletonList(new Key(makeResourceAnnotationSummary(type)));
+         }
+         else if (type.isAnnotationPresent(Provider.class))
          {
             keys = new ArrayList<RestfulContainer.Key>(implementedInterfaces.length);
             for (int i = 0; i < implementedInterfaces.length; i++)
             {
                ParameterizedType genericInterface = implementedInterfaces[i];
                Class<?> rawType = (Class<?>)genericInterface.getRawType();
-               keys.add(new Key(makeAnnotationSummary(type, rawType), genericInterface));
+               keys.add(new Key(makeProviderAnnotationSummary(type, rawType), genericInterface));
             }
          }
-         else
+         if (keys != null)
          {
-            keys = Collections.singletonList(new Key(makeAnnotationSummary(type, null)));
-         }
-
-         lock.lock();
-         try
-         {
-            Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
-            copy.keySet().removeAll(keys);
-            restToComponentAdapters = copy;
-         }
-         finally
-         {
-            lock.unlock();
+            lock.lock();
+            try
+            {
+               Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
+               copy.keySet().removeAll(keys);
+               restToComponentAdapters = copy;
+            }
+            finally
+            {
+               lock.unlock();
+            }
          }
       }
       return componentAdapter;

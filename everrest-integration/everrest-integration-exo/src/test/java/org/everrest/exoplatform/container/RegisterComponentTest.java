@@ -31,8 +31,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -53,6 +55,7 @@ import javax.ws.rs.ext.Provider;
 public class RegisterComponentTest extends StandaloneBaseTest
 {
    private RestfulContainer restfulContainer;
+   private Field restToComponentAdaptersField;
 
    @Override
    protected void setUp() throws Exception
@@ -70,6 +73,9 @@ public class RegisterComponentTest extends StandaloneBaseTest
       // Add dependencies to different containers to be sure both are resolvable.
       container.registerComponentInstance(new ConstructorDependency());
       restfulContainer.registerComponentInstance(new InjectDependency());
+
+      restToComponentAdaptersField = restfulContainer.getClass().getDeclaredField("restToComponentAdapters");
+      restToComponentAdaptersField.setAccessible(true);
    }
 
    /**
@@ -81,6 +87,24 @@ public class RegisterComponentTest extends StandaloneBaseTest
       restfulContainer.stop();
       ApplicationContextImpl.setCurrent(null);
       super.tearDown();
+   }
+
+   @SuppressWarnings("rawtypes")
+   public void testRegisterProvider() throws Exception
+   {
+      restfulContainer.registerComponentImplementation("A", A.class);
+      assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
+      restfulContainer.unregisterComponent("A");
+      assertEquals(0, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
+   }
+
+   @SuppressWarnings("rawtypes")
+   public void testRegisterResource() throws Exception
+   {
+      restfulContainer.registerComponentImplementation("X", X.class);
+      assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
+      restfulContainer.unregisterComponent("X");
+      assertEquals(0, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
    }
 
    public void testCreateProvider() throws Exception
