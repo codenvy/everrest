@@ -51,6 +51,8 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
+ * Implementation of {@link ComponentAdapter} for providing instance of JAX-RS resource of provider.
+ * 
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -69,6 +71,15 @@ public class RestfulComponentAdapter implements ComponentAdapter
    private final ObjectFactory<ObjectModel> factory;
    private final ParameterizedType[] implementedInterfaces;
 
+   /**
+    * Create new RestfulComponentAdapter for specified componentKey and class or instance.
+    * 
+    * @param componentKey the key of component
+    * @param classOrInstance the class or instance of JAX-RS resource or provider
+    * @throws NullPointerException if <code>componentKey</code> or <code>classOrInstance</code> is <code>null</code>
+    * @throws IllegalArgumentException if <code>classOrInstance</code> has neither {@link Path}, {@link Provider} nor
+    *            {@link Filter}.
+    */
    public RestfulComponentAdapter(Object componentKey, Object classOrInstance)
    {
       if (componentKey == null || classOrInstance == null)
@@ -107,7 +118,7 @@ public class RestfulComponentAdapter implements ComponentAdapter
       }
       else
       {
-         throw new IllegalArgumentException("Incorrect type or instance " + classOrInstance + ". ");
+         throw new IllegalArgumentException("Incorrect type or instance " + clazz + ". ");
       }
 
       factory =

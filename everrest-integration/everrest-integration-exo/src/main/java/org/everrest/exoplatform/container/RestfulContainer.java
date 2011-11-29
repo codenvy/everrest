@@ -55,18 +55,58 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 /**
- * Container intended for decoupling third part code and everrest framework. Components and adapters are searchable
- * by annotation and type or by annotation only. Components (implementation class or instance) annotated with JAX-RS
+ * Container intended for decoupling third part code and everrest framework. Components and adapters are searchable by
+ * annotation and type or by annotation only. Components (implementation class or instance) annotated with JAX-RS
  * annotations &#64;Path and &#64;Provider should be registered in container as usually. After registration if class
  * annotated with {@link javax.ws.rs.Path} it may be retrieved by method {@link #getMatchedResource(String, List)}. If
  * class annotated with {@link javax.ws.rs.ext.Provider} and implement one of JAX-RS extension interfaces instance of
  * component may be retrieved by corresponded methods of {@link javax.ws.rs.ext.Providers} interface. E.g:
+ * <p>
+ * Suppose we have a resource class org.example.MyResource annotated with &#64;Path(&quot;my-resource&quot;) and base
+ * URL is <code>http://example.com/</code>:
+ * </p>
+ * 
  * <pre>
+ * &#064;Path(&quot;my-resource&quot;)
+ * public class MyResource
+ * {
+ *    &#064;GET
+ *    &#064;Path(&quot;{id}&quot;)
+ *    public String get()
+ *    {
+ *    ...
+ *    }
+ * }
  * </pre>
+ * 
+ * Need register resource in container.
+ * 
+ * <pre>
+ * RestfulContainer container = ...
+ * container.registerComponentImplementation(MyResource.class);
+ * </pre>
+ * 
+ * Suppose we have a GET request for <code>http://example.com/my-resource/101</code>. We need to find resource matched
+ * to relative path <code>/my-resource/101</code>.
+ * 
+ * <pre>
+ * List&lt;String&gt; paramValues = new ArrayList&lt;String&gt;();
+ * Object resource = container.getMatchedResource(&quot;/my-resource/101&quot;, paramValues);
+ * ...
+ * </pre>
+ * 
+ * Resource should be the instance of org.example.MyResource.class. Container supports injection JAX-RS runtime
+ * information into a class field or constructor parameters with annotation {@link javax.ws.rs.core.Context}.
+ * <p>
+ * <span style="font-weight: bold">NOTE</span> Methods <code>registerXXX</code> of this container may throws
+ * {@link PicoRegistrationException} if component violates the restrictions of framework, e.g. if resource with the same
+ * URI pattern or provider with the same purpose already registered in this container.
+ * </p>
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  * 
+ * @see javax.ws.rs.core.Context
  * @see MessageBodyReader
  * @see MessageBodyWriter
  * @see ContextResolver
@@ -98,37 +138,25 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
    private volatile Map<Key, ComponentAdapter> restToComponentAdapters = new HashMap<Key, ComponentAdapter>();
    private final Lock lock = new ReentrantLock();
 
-   /**
-    * Use such key in <code>restToComponentAdapters</code> to avoid duplicate restful components. It is not enough to
-    * use just keys of component adapters since some resources or providers may be not unique for the rest framework,
-    * e.g. :
-    * <ul>
-    * <li>resource classes may be different but may have the same or matched value of &#64;Path annotation</li>
-    * <li>two ExceptionMapper may process the same type of Exception</li>
-    * <li>...</li>
-    * </ul>
-    */
-   private static final class Key
+   private static final class ProviderKey implements Key
    {
-      final AnnotationSummary annotations;
-      final Type type;
+      private final Type type;
+      private final Set<MediaType> consumes;
+      private final Set<MediaType> produces;
 
-      Key(AnnotationSummary annotations, Type type)
+      ProviderKey(Set<MediaType> consumes, Set<MediaType> produces, Type type)
       {
-         this.annotations = annotations;
+         this.consumes = consumes;
+         this.produces = produces;
          this.type = type;
-      }
-
-      Key(AnnotationSummary annotations)
-      {
-         this(annotations, null);
       }
 
       @Override
       public int hashCode()
       {
          int hash = 7;
-         hash = hash * 31 + annotations.hashCode();
+         hash = hash * 31 + (consumes == null ? 0 : consumes.hashCode());
+         hash = hash * 31 + (produces == null ? 0 : produces.hashCode());
          hash = hash * 31 + (type == null ? 0 : type.hashCode());
          return hash;
       }
@@ -144,15 +172,26 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
          {
             return false;
          }
-         Key other = (Key)obj;
-         if (annotations == null)
+         ProviderKey other = (ProviderKey)obj;
+         if (consumes == null)
          {
-            if (other.annotations != null)
+            if (other.consumes != null)
             {
                return false;
             }
          }
-         else if (!annotations.equals(other.annotations))
+         else if (!consumes.equals(other.consumes))
+         {
+            return false;
+         }
+         if (produces == null)
+         {
+            if (other.produces != null)
+            {
+               return false;
+            }
+         }
+         else if (!produces.equals(other.produces))
          {
             return false;
          }
@@ -171,15 +210,11 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
       }
    }
 
-   private static interface AnnotationSummary
-   {
-   }
-
-   private static final class ResourceAnnotationSummary implements AnnotationSummary
+   private static final class ResourceKey implements Key
    {
       private final UriPattern uriPattern;
 
-      ResourceAnnotationSummary(UriPattern uriPattern)
+      ResourceKey(UriPattern uriPattern)
       {
          this.uriPattern = uriPattern;
       }
@@ -203,86 +238,23 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
          {
             return false;
          }
-         return uriPattern.equals(((ResourceAnnotationSummary)obj).uriPattern);
+         return uriPattern.equals(((ResourceKey)obj).uriPattern);
       }
    }
 
-   private static final class ProviderAnnotationSummary implements AnnotationSummary
+   /**
+    * Use such key in <code>restToComponentAdapters</code> to avoid duplicate restful components. It is not enough to
+    * use just keys of component adapters since some resources or providers may be not unique for the rest framework,
+    * e.g. :
+    * <ul>
+    * <li>resource classes may be different but may have the same or matched value of &#64;Path annotation</li>
+    * <li>two ExceptionMapper may process the same type of Exception</li>
+    * <li>...</li>
+    * </ul>
+    */
+   private static interface Key
    {
-      private final Set<MediaType> consumes;
-      private final Set<MediaType> produces;
-
-      ProviderAnnotationSummary(Set<MediaType> consumes, Set<MediaType> produces)
-      {
-         this.consumes = consumes;
-         this.produces = produces;
-      }
-
-      @Override
-      public int hashCode()
-      {
-         int hash = 7;
-         hash = hash * 31 + (consumes == null ? 0 : consumes.hashCode());
-         hash = hash * 31 + (produces == null ? 0 : produces.hashCode());
-         return hash;
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (this == obj)
-         {
-            return true;
-         }
-         if (obj == null || getClass() != obj.getClass())
-         {
-            return false;
-         }
-         ProviderAnnotationSummary other = (ProviderAnnotationSummary)obj;
-         if (consumes == null)
-         {
-            if (other.consumes != null)
-            {
-               return false;
-            }
-         }
-         else if (!consumes.equals(other.consumes))
-         {
-            return false;
-         }
-         if (produces == null)
-         {
-            if (other.produces != null)
-            {
-               return false;
-            }
-         }
-         else if (!produces.equals(other.produces))
-         {
-            return false;
-         }
-         return true;
-      }
    }
-
-   private static AnnotationSummary makeProviderAnnotationSummary(Class<?> type, Class<?> itype)
-   {
-      // @Consumes makes sense for MessageBodyReader ONLY
-      Set<MediaType> consumes = MessageBodyReader.class == itype //
-         ? new HashSet<MediaType>(MediaTypeHelper.createConsumesList(type.getAnnotation(Consumes.class))) //
-         : null;
-      // @Produces makes sense for MessageBodyWriter or ContextResolver
-      Set<MediaType> produces = ContextResolver.class == itype || MessageBodyWriter.class == itype//
-      ? new HashSet<MediaType>(MediaTypeHelper.createProducesList(type.getAnnotation(Produces.class))) //
-         : null;
-      return new ProviderAnnotationSummary(consumes, produces);
-   }
-
-   private static AnnotationSummary makeResourceAnnotationSummary(Class<?> type)
-   {
-      return new ResourceAnnotationSummary(new UriPattern(type.getAnnotation(Path.class).value()));
-   }
-
    private static List<Key> makeKeys(RestfulComponentAdapter componentAdapter)
    {
       Class<?> type = componentAdapter.getComponentImplementation();
@@ -292,18 +264,28 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
       }
       else if (type.isAnnotationPresent(Path.class))
       {
-         return Collections.singletonList(new Key(makeResourceAnnotationSummary(type)));
+         List<Key> keys = new ArrayList<Key>(1);
+         keys.add(new ResourceKey(new UriPattern(type.getAnnotation(Path.class).value())));
+         return keys;
       }
       else if (type.isAnnotationPresent(Provider.class))
       {
          ParameterizedType[] implementedInterfaces =
             ((RestfulComponentAdapter)componentAdapter).getImplementedInterfaces();
-         List<Key> keys = new ArrayList<RestfulContainer.Key>(implementedInterfaces.length);
+         List<Key> keys = new ArrayList<Key>(implementedInterfaces.length);
          for (int i = 0; i < implementedInterfaces.length; i++)
          {
             ParameterizedType genericInterface = implementedInterfaces[i];
             Class<?> rawType = (Class<?>)genericInterface.getRawType();
-            keys.add(new Key(makeProviderAnnotationSummary(type, rawType), genericInterface));
+            // @Consumes makes sense for MessageBodyReader ONLY
+            Set<MediaType> consumes = MessageBodyReader.class == rawType //
+               ? new HashSet<MediaType>(MediaTypeHelper.createConsumesList(type.getAnnotation(Consumes.class))) //
+               : null;
+            // @Produces makes sense for MessageBodyWriter or ContextResolver
+            Set<MediaType> produces = ContextResolver.class == rawType || MessageBodyWriter.class == rawType//
+            ? new HashSet<MediaType>(MediaTypeHelper.createProducesList(type.getAnnotation(Produces.class))) //
+               : null;
+            keys.add(new ProviderKey(consumes, produces, genericInterface));
          }
          return keys;
       }
