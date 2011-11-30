@@ -96,6 +96,9 @@
       <module>everrest-httpclient</module>
       <module>everrest-proxy</module>
       <module>everrest-integration/everrest-integration-exo</module>
+      <module>everrest-integration/everrest-integration-picocontainer</module>
+      <module>everrest-integration/everrest-integration-guice</module>
+      <module>everrest-integration/everrest-integration-spring</module>
    </modules>
 
    <repositories>
