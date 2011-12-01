@@ -248,6 +248,7 @@
                <include>**/*.config</include>
                <include>**/*.groovy</include>
                <include>**/*.policy</include>
+               <include>META-INF/**</include>
             </includes>
          </resource>
       </resources>

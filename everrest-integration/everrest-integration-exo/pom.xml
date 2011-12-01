@@ -61,12 +61,12 @@
       <dependency>
          <groupId>org.exoplatform.kernel</groupId>
          <artifactId>exo.kernel.container</artifactId>
-         <version>2.3.0-CR1</version>
+         <version>2.3.4-GA</version>
       </dependency>
       <dependency>                                                                                                                                                                                             
          <groupId>org.exoplatform.core</groupId>                                                                                                                                                               
          <artifactId>exo.core.component.security.core</artifactId>
-         <version>2.4.0-CR1</version>                                                                                                                                             
+         <version>2.4.4-GA</version>                                                                                                                                             
          <exclusions>                                                                                                                                                                                          
             <exclusion>                                                                                                                                                                                        
                <groupId>javax.servlet</groupId>                                                                                                                                                                
