@@ -31,11 +31,14 @@ import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.UnhandledException;
+import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
 import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.util.Logger;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.WebApplicationException;
@@ -83,6 +86,8 @@ public class RequestHandlerImpl implements RequestHandler
 
    private final boolean httpMethodOverrideFeature;
 
+   private MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
+
    /**
     * @param dispatcher RequestDispatcher
     * @param providers ProviderBinder. May be <code>null</code> then default set of providers used
@@ -99,6 +104,12 @@ public class RequestHandlerImpl implements RequestHandler
          config = new EverrestConfiguration();
       httpMethodOverrideFeature = config.isHttpMethodOverride();
       normalizeUriFeature = config.isNormalizeUri();
+      ServiceLoader<MethodInvokerDecoratorFactory> s = ServiceLoader.load(MethodInvokerDecoratorFactory.class);
+      Iterator<MethodInvokerDecoratorFactory> iterator = s.iterator();
+      if (iterator.hasNext())
+      {
+         methodInvokerDecoratorFactory = iterator.next();
+      }
    }
 
    public RequestHandlerImpl(RequestDispatcher dispatcher, DependencySupplier dependencySupplier,
@@ -144,7 +155,7 @@ public class RequestHandlerImpl implements RequestHandler
                request.setMethod(method);
          }
 
-         context = new ApplicationContextImpl(request, response, providers);
+         context = new ApplicationContextImpl(request, response, providers, methodInvokerDecoratorFactory);
          context.getProperties().putAll(properties);
          context.setDependencySupplier(dependencySupplier);
          ((Lifecycle)context).start();

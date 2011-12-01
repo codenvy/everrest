@@ -27,6 +27,7 @@ import org.everrest.core.Lifecycle;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousMethodInvoker;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
+import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
 import org.everrest.core.impl.method.OptionsRequestMethodInvoker;
 import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.method.MethodInvoker;
@@ -136,6 +137,8 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    /** Decoded query parameters. */
    private MultivaluedMap<String, String> queryParameters;
 
+   private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
+
    /**
     * Constructs new instance of ApplicationContext.
     * 
@@ -146,9 +149,24 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
       ProviderBinder providers)
    {
+      this(request, response, providers, null);
+   }
+
+   /**
+    * Constructs new instance of ApplicationContext.
+    * 
+    * @param request See {@link GenricContainerRequest}
+    * @param response See {@link GenericContainerResponse}
+    * @param providers See {@link ProviderBinder}
+    * @param methodInvokerDecoratorFactory See {@link MethodInvokerDecoratorFactory}
+    */
+   public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
+      ProviderBinder providers, MethodInvokerDecoratorFactory methodInvokerDecoratorFactory)
+   {
       this.request = request;
       this.response = response;
       this.providers = providers;
+      this.methodInvokerDecoratorFactory = methodInvokerDecoratorFactory;
    }
 
    /**
@@ -281,12 +299,13 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    public MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor)
    {
       String method = request.getMethod();
+      MethodInvoker invoker = null;
       if ("OPTIONS".equals(method) && methodDescriptor.getMethod() == null)
       {
          // GenericMethodResource.getMethod() always return null if method for
          // "OPTIONS" request was not described in source code of service. In
          // this case we provide mechanism for "fake" method invoking.
-         return new OptionsRequestMethodInvoker();
+         invoker = new OptionsRequestMethodInvoker();
       }
       // Never use AsynchronousMethodInvoker for process SubResourceLocatorDescriptor.
       // Locators can't be processed in asynchronous mode since it is not end point of request.
@@ -297,9 +316,17 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
             getProviders().getContextResolver(AsynchronousJobPool.class, null);
          if (asynchJobsResolver == null)
             throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");
-         return new AsynchronousMethodInvoker(asynchJobsResolver.getContext(null));
+         invoker = new AsynchronousMethodInvoker(asynchJobsResolver.getContext(null));
       }
-      return new DefaultMethodInvoker();
+      if (invoker == null)
+      {
+         invoker = new DefaultMethodInvoker();
+      }
+      if (methodInvokerDecoratorFactory != null)
+      {
+         return methodInvokerDecoratorFactory.makeDecorator(invoker);
+      }
+      return invoker;
    }
 
    /**
