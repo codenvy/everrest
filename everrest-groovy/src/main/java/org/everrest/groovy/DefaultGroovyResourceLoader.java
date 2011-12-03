@@ -31,12 +31,11 @@ import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: DefaultGroovyResourceLoader.java 2680 2010-06-22 11:43:00Z
- *          aparfonov $
+ * @version $Id$
  */
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
-   private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
+   private static final String[] DEFAULT_SOURCE_FILE_EXTENSIONS = new String[]{".groovy"};
    protected URL[] roots;
 
    // TODO need configurable ?
@@ -75,7 +74,11 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
     */
    public final URL loadGroovySource(String filename) throws MalformedURLException
    {
-      return getResource(filename.replace('.', '/') + getSourceFileExtension());
+      String[] sourceFileExtensions = getSourceFileExtensions();
+      URL resource = null;
+      for (int i = 0; i < sourceFileExtensions.length && resource == null; i++)
+         resource = getResource(filename.replace('.', '/') + sourceFileExtensions[i]);
+      return resource;
    }
 
    protected URL getResource(String filename) throws MalformedURLException
@@ -90,7 +93,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
             resource = null; // Resource in cache is unreachable.
          for (int i = 0; i < roots.length && resource == null; i++)
          {
-            URL tmp = new URL(roots[i], filename);
+            URL tmp = createURL(roots[i], filename);
             if (checkResource(tmp))
                resource = tmp;
          }
@@ -101,6 +104,11 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       }
 
       return resource;
+   }
+
+   protected URL createURL(URL root, String filename) throws MalformedURLException
+   {
+      return new URL(root, filename);
    }
 
    protected boolean checkResource(URL resource)
@@ -115,9 +123,15 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          return false;
       }
    }
-   
+
+   protected String[] getSourceFileExtensions()
+   {
+      return DEFAULT_SOURCE_FILE_EXTENSIONS;
+   }
+
+   @Deprecated
    protected String getSourceFileExtension()
    {
-      return DEFAULT_SOURCE_FILE_EXTENSION;
-   }   
+      return DEFAULT_SOURCE_FILE_EXTENSIONS[0];
+   }
 }
