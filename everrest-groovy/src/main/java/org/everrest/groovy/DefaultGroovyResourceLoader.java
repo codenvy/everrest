@@ -35,7 +35,7 @@ import java.util.Map.Entry;
  */
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
-   private static final String[] DEFAULT_SOURCE_FILE_EXTENSIONS = new String[]{".groovy"};
+   private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
    protected URL[] roots;
 
    // TODO need configurable ?
@@ -126,12 +126,12 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 
    protected String[] getSourceFileExtensions()
    {
-      return DEFAULT_SOURCE_FILE_EXTENSIONS;
+      return new String[]{DEFAULT_SOURCE_FILE_EXTENSION};
    }
 
    @Deprecated
    protected String getSourceFileExtension()
    {
-      return DEFAULT_SOURCE_FILE_EXTENSIONS[0];
+      return DEFAULT_SOURCE_FILE_EXTENSION;
    }
 }
