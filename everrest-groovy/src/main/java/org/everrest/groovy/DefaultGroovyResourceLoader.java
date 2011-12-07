@@ -28,6 +28,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -36,12 +43,15 @@ import java.util.Map.Entry;
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
-   protected URL[] roots;
-
-   // TODO need configurable ?
-   private int maxEntries = 512;
 
    protected final Map<String, URL> resources;
+   protected URL[] roots;
+
+   private int maxEntries = 256;
+   /** Tasks to find URL or groovy source by file name. */
+   private final ConcurrentHashMap<String, Future<URL>> tasks;
+   /** The queue of tasks to find URL or groovy source by file name. */
+   private final ConcurrentLinkedQueue<String> queue;
 
    @SuppressWarnings("serial")
    public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
@@ -51,17 +61,23 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       {
          String str = roots[i].toString();
          if (str.charAt(str.length() - 1) != '/')
+         {
             this.roots[i] = new URL(str + '/');
+         }
          else
+         {
             this.roots[i] = roots[i];
+         }
       }
-      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>()
+      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>(maxEntries + 1, 1.0f, true)
       {
          protected boolean removeEldestEntry(Entry<String, URL> eldest)
          {
             return size() > maxEntries;
          }
       });
+      tasks = new ConcurrentHashMap<String, Future<URL>>();
+      queue = new ConcurrentLinkedQueue<String>();
    }
 
    public DefaultGroovyResourceLoader(URL root) throws MalformedURLException
@@ -76,33 +92,111 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    {
       String[] sourceFileExtensions = getSourceFileExtensions();
       URL resource = null;
+      String _filename = filename.replace('.', '/');
       for (int i = 0; i < sourceFileExtensions.length && resource == null; i++)
-         resource = getResource(filename.replace('.', '/') + sourceFileExtensions[i]);
+      {
+         resource = getResource(_filename + sourceFileExtensions[i]);
+      }
       return resource;
    }
 
-   protected URL getResource(String filename) throws MalformedURLException
+   protected URL getResource(final String filename) throws MalformedURLException
    {
-      filename = filename.intern();
-      URL resource = null;
-      synchronized (filename)
+      URL resource = resources.get(filename);
+      if (resource != null && checkResource(resource))
       {
-         resource = resources.get(filename);
-         boolean inCache = resource != null;
-         if (inCache && !checkResource(resource))
-            resource = null; // Resource in cache is unreachable.
-         for (int i = 0; i < roots.length && resource == null; i++)
-         {
-            URL tmp = createURL(roots[i], filename);
-            if (checkResource(tmp))
-               resource = tmp;
-         }
-         if (resource != null)
-            resources.put(filename, resource);
-         else if (inCache)
-            resources.remove(filename);
+         return resource;
       }
 
+      Future<URL> task = tasks.get(filename);
+      if (task == null)
+      {
+         Callable<URL> callable = new Callable<URL>()
+         {
+            @Override
+            public URL call() throws Exception
+            {
+               return findResourceURL(filename);
+            }
+         };
+         FutureTask<URL> f = new FutureTask<URL>(callable);
+         task = tasks.putIfAbsent(filename, f);
+         if (task == null)
+         {
+            // Remove 'eldest' tasks. Tasks kept in FIFO order.
+            int size = queue.size();
+            while (size > maxEntries)
+            {
+               String eldest = queue.poll();
+               if (eldest != null && tasks.remove(eldest) != null)
+               {
+                  size--;
+               }
+            }
+            queue.add(filename);
+            task = f;
+            f.run();
+         }
+      }
+      try
+      {
+         return task.get();
+      }
+      catch (CancellationException e)
+      {
+         tasks.remove(filename, task);
+      }
+      catch (InterruptedException e)
+      {
+         Thread.currentThread().interrupt();
+      }
+      catch (ExecutionException e)
+      {
+         final Throwable cause = e.getCause();
+         if (cause instanceof MalformedURLException)
+         {
+            throw (MalformedURLException)cause;
+         }
+         if (cause instanceof Error)
+         {
+            throw (Error)cause;
+         }
+         if (cause instanceof RuntimeException)
+         {
+            throw (RuntimeException)cause;
+         }
+         throw new RuntimeException(cause);
+      }
+      return null;
+   }
+
+   
+   
+   
+   protected URL findResourceURL(String filename) throws MalformedURLException
+   {
+      URL resource = resources.get(filename);
+      boolean inCache = resource != null;
+      if (inCache && !checkResource(resource))
+      {
+         resource = null; // Resource in cache is unreachable.
+      }
+      for (int i = 0; i < roots.length && resource == null; i++)
+      {
+         URL tmp = createURL(roots[i], filename);
+         if (checkResource(tmp))
+         {
+            resource = tmp;
+         }
+      }
+      if (resource != null)
+      {
+         resources.put(filename, resource);
+      }
+      else if (inCache)
+      {
+         resources.remove(filename);
+      }
       return resource;
    }
 

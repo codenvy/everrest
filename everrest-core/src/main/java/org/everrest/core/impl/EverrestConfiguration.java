@@ -49,7 +49,7 @@ public class EverrestConfiguration
 
    public static boolean defaultAsynchronousSupported = true;
 
-   public static int defaultAsynchronousPoolSize = 100;
+   public static int defaultAsynchronousPoolSize = 10;
 
    public static int defaultAsynchronousQueueSize = 100;
 
