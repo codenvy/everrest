@@ -94,13 +94,6 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 
    protected URL getResource(String filename) throws MalformedURLException
    {
-      URL resource = resources.get(filename);
-      if (resource != null && checkResource(resource))
-      {
-         // The resource could be found in the cache and is reachable
-         return resource;
-      }
-      
       FileNameLock lock = locks.get(filename);
       if (lock == null)
       {
@@ -112,6 +105,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          }
       }
 
+      URL resource = null;
       synchronized (lock)
       {
          resource = resources.get(filename);
