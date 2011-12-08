@@ -28,13 +28,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -43,15 +39,12 @@ import java.util.concurrent.FutureTask;
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
-
-   protected final Map<String, URL> resources;
    protected URL[] roots;
 
    private int maxEntries = 256;
-   /** Tasks to find URL or groovy source by file name. */
-   private final ConcurrentHashMap<String, Future<URL>> tasks;
-   /** The queue of tasks to find URL or groovy source by file name. */
-   private final ConcurrentLinkedQueue<String> queue;
+
+   protected final Map<String, URL> resources;
+   final ConcurrentMap<String, FileNameLock> locks;
 
    @SuppressWarnings("serial")
    public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
@@ -76,8 +69,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
             return size() > maxEntries;
          }
       });
-      tasks = new ConcurrentHashMap<String, Future<URL>>();
-      queue = new ConcurrentLinkedQueue<String>();
+      locks = new ConcurrentHashMap<String, FileNameLock>();
    }
 
    public DefaultGroovyResourceLoader(URL root) throws MalformedURLException
@@ -92,110 +84,58 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    {
       String[] sourceFileExtensions = getSourceFileExtensions();
       URL resource = null;
-      String _filename = filename.replace('.', '/');
+      filename = filename.replace('.', '/');
       for (int i = 0; i < sourceFileExtensions.length && resource == null; i++)
       {
-         resource = getResource(_filename + sourceFileExtensions[i]);
+         resource = getResource(filename + sourceFileExtensions[i]);
       }
       return resource;
    }
 
-   protected URL getResource(final String filename) throws MalformedURLException
+   protected URL getResource(String filename) throws MalformedURLException
    {
       URL resource = resources.get(filename);
       if (resource != null && checkResource(resource))
       {
+         // The resource could be found in the cache and is reachable
          return resource;
       }
+      
+      FileNameLock lock = locks.get(filename);
+      if (lock == null)
+      {
+         FileNameLock l = new FileNameLock();
+         lock = locks.putIfAbsent(filename, l);
+         if (lock == null)
+         {
+            lock = l;
+         }
+      }
 
-      Future<URL> task = tasks.get(filename);
-      if (task == null)
+      synchronized (lock)
       {
-         Callable<URL> callable = new Callable<URL>()
+         resource = resources.get(filename);
+         boolean inCache = resource != null;
+         if (inCache && !checkResource(resource))
          {
-            @Override
-            public URL call() throws Exception
+            resource = null; // Resource in cache is unreachable.
+         }
+         for (int i = 0; i < roots.length && resource == null; i++)
+         {
+            URL tmp = createURL(roots[i], filename);
+            if (checkResource(tmp))
             {
-               return findResourceURL(filename);
+               resource = tmp;
             }
-         };
-         FutureTask<URL> f = new FutureTask<URL>(callable);
-         task = tasks.putIfAbsent(filename, f);
-         if (task == null)
-         {
-            // Remove 'eldest' tasks. Tasks kept in FIFO order.
-            int size = queue.size();
-            while (size > maxEntries)
-            {
-               String eldest = queue.poll();
-               if (eldest != null && tasks.remove(eldest) != null)
-               {
-                  size--;
-               }
-            }
-            queue.add(filename);
-            task = f;
-            f.run();
          }
-      }
-      try
-      {
-         return task.get();
-      }
-      catch (CancellationException e)
-      {
-         tasks.remove(filename, task);
-      }
-      catch (InterruptedException e)
-      {
-         Thread.currentThread().interrupt();
-      }
-      catch (ExecutionException e)
-      {
-         final Throwable cause = e.getCause();
-         if (cause instanceof MalformedURLException)
+         if (resource != null)
          {
-            throw (MalformedURLException)cause;
+            resources.put(filename, resource);
          }
-         if (cause instanceof Error)
+         else if (inCache)
          {
-            throw (Error)cause;
+            resources.remove(filename);
          }
-         if (cause instanceof RuntimeException)
-         {
-            throw (RuntimeException)cause;
-         }
-         throw new RuntimeException(cause);
-      }
-      return null;
-   }
-
-   
-   
-   
-   protected URL findResourceURL(String filename) throws MalformedURLException
-   {
-      URL resource = resources.get(filename);
-      boolean inCache = resource != null;
-      if (inCache && !checkResource(resource))
-      {
-         resource = null; // Resource in cache is unreachable.
-      }
-      for (int i = 0; i < roots.length && resource == null; i++)
-      {
-         URL tmp = createURL(roots[i], filename);
-         if (checkResource(tmp))
-         {
-            resource = tmp;
-         }
-      }
-      if (resource != null)
-      {
-         resources.put(filename, resource);
-      }
-      else if (inCache)
-      {
-         resources.remove(filename);
       }
       return resource;
    }
@@ -227,5 +167,31 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    protected String getSourceFileExtension()
    {
       return DEFAULT_SOURCE_FILE_EXTENSION;
+   }
+
+   private static final class FileNameLock
+   {
+      private static final AtomicInteger counter = new AtomicInteger();
+      private final int hash = counter.incrementAndGet();
+
+      @Override
+      public int hashCode()
+      {
+         return hash;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         if (this == obj)
+         {
+            return true;
+         }
+         if (obj == null || getClass() != obj.getClass())
+         {
+            return false;
+         }
+         return hash == ((FileNameLock)obj).hash;
+      }
    }
 }
