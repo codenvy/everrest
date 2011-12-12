@@ -109,11 +109,12 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       synchronized (lock)
       {
          resource = resources.get(filename);
-         boolean inCache = resource != null;
-         if (inCache && !checkResource(resource))
+         final boolean inCache = resource != null;
+         if (inCache && checkResource(resource))
          {
-            resource = null; // Resource in cache is unreachable.
+            return resource;
          }
+         resource = null; // Resource in cache is unreachable.
          for (int i = 0; i < roots.length && resource == null; i++)
          {
             URL tmp = createURL(roots[i], filename);

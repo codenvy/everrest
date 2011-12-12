@@ -48,7 +48,7 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
    }
 
    @Override
-   protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p,
+   public Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p,
       ApplicationContext context)
    {
       try

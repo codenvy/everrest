@@ -46,25 +46,16 @@ import javax.ws.rs.ext.MessageBodyReader;
 
 /**
  * Invoker for Resource Method, Sub-Resource Method and SubResource Locator.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class DefaultMethodInvoker implements MethodInvoker
 {
-
-   /** Logger. */
-   private static final Logger LOG = Logger.getLogger(DefaultMethodInvoker.class);
-
-   /**
-    * {@inheritDoc}
-    */
    @SuppressWarnings({"unchecked", "rawtypes"})
-   public final Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
+   public static Object[] makeMethodParameters(GenericMethodResource methodResource, ApplicationContext context)
    {
-      beforeInvokeMethod(methodResource, methodResource, context);
-
-      Object[] p = new Object[methodResource.getMethodParameters().size()];
+      Object[] params = new Object[methodResource.getMethodParameters().size()];
       int i = 0;
       for (MethodParameter mp : methodResource.getMethodParameters())
       {
@@ -74,7 +65,7 @@ public class DefaultMethodInvoker implements MethodInvoker
             ParameterResolver<?> pr = ParameterResolverFactory.createParameterResolver(a);
             try
             {
-               p[i++] = pr.resolve(mp, context);
+               params[i++] = pr.resolve(mp, context);
             }
             catch (Exception e)
             {
@@ -94,7 +85,7 @@ public class DefaultMethodInvoker implements MethodInvoker
             InputStream entityStream = context.getContainerRequest().getEntityStream();
             if (entityStream == null)
             {
-               p[i++] = null;
+               params[i++] = null;
             }
             else
             {
@@ -125,12 +116,14 @@ public class DefaultMethodInvoker implements MethodInvoker
                      // to determine reader required for content but
                      // 'Unsupported Media Type' (415) status looks strange if
                      // there is no content at all.
-                     p[i++] = null;
+                     params[i++] = null;
                   }
                   else
                   {
                      String msg =
-                        "Media type " + contentType + " is not supported. There is no corresponded entity reader.";
+                        "Media type " + contentType
+                           + " is not supported. There is no corresponded entity reader for type "
+                           + mp.getParameterClass();
                      if (LOG.isDebugEnabled())
                      {
                         LOG.warn(msg);
@@ -144,7 +137,7 @@ public class DefaultMethodInvoker implements MethodInvoker
                   try
                   {
                      MultivaluedMap<String, String> headers = context.getContainerRequest().getRequestHeaders();
-                     p[i++] =
+                     params[i++] =
                         entityReader.readFrom(mp.getParameterClass(), mp.getGenericType(), mp.getAnnotations(),
                            contentType, headers, entityStream);
                   }
@@ -164,7 +157,20 @@ public class DefaultMethodInvoker implements MethodInvoker
             }
          }
       }
-      return invokeMethod(resource, methodResource, p, context);
+      return params;
+   }
+
+   /** Logger. */
+   private static final Logger LOG = Logger.getLogger(DefaultMethodInvoker.class);
+
+   /**
+    * {@inheritDoc}
+    */
+   public final Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
+   {
+      beforeInvokeMethod(methodResource, methodResource, context);
+      Object[] params = makeMethodParameters(methodResource, context);
+      return invokeMethod(resource, methodResource, params, context);
    }
 
    protected void beforeInvokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
@@ -182,12 +188,12 @@ public class DefaultMethodInvoker implements MethodInvoker
       return invokeMethod(resource, methodResource, p, ApplicationContextImpl.getCurrent());
    }
 
-   protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p,
+   public Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] params,
       ApplicationContext context)
    {
       try
       {
-         return methodResource.getMethod().invoke(resource, p);
+         return methodResource.getMethod().invoke(resource, params);
       }
       catch (IllegalArgumentException argExc)
       {
