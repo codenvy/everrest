@@ -27,7 +27,7 @@
    <groupId>org.everrest</groupId>
    <artifactId>everrest-parent</artifactId>
    <name>EverRest :: Parent</name>
-   <version>1.0.1-SNAPSHOT</version>
+   <version>1.0.1</version>
    <packaging>pom</packaging>
 
    <organization>
@@ -41,7 +41,13 @@
          <url>http://www.opensource.org/licenses/lgpl-license.php</url>
       </license>
    </licenses>
-
+   
+   <scm>                                                                                                                       
+      <connection>scm:svn:http://everrest.googlecode.com/svn/tags/everrest-parent-1.0.1</connection>                                                  
+      <developerConnection>scm:svn:https://everrest.googlecode.com/svn/tags/everrest-parent-1.0.1</developerConnection>                               
+      <url>http://code.google.com/p/everrest/source/browse/tags/everrest-parent-1.0.1</url>                                                                 
+   </scm>
+   
    <distributionManagement>
       <repository>
          <id>repository.exoplatform.org</id>
@@ -57,7 +63,7 @@
       <exo.product.name>everrest</exo.product.name>
       <exo.product.specification>1.0</exo.product.specification>
 
-      <org.everrest.version>1.0.1-SNAPSHOT</org.everrest.version>
+      <org.everrest.version>1.0.1</org.everrest.version>
 
       <javax.ws.rs.version>1.0</javax.ws.rs.version>
       <javax.servlet.version>2.4</javax.servlet.version>
