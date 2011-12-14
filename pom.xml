@@ -30,6 +30,23 @@
    <version>1.0.2-SNAPSHOT</version>
    <packaging>pom</packaging>
 
+   <description>everREST is a project which provides a way to build RESTful applications using own complete implementation of JAX-RS specification (a.k.a JSR-311)
+   </description>
+   
+   <url>http://code.google.com/p/everrest/</url>
+
+   <developers>
+      <developer>
+         <id>andrew00x</id>
+         <name>Andrey Parfonov</name>
+         <email>andrew00x@gmail.com</email>
+         <roles>
+            <role>architect</role>
+            <role>developer</role>
+         </roles>
+      </developer>
+   </developers>
+
    <organization>
       <name>eXo Platform SAS</name>
       <url>http://www.exoplatform.com</url>
@@ -42,10 +59,10 @@
       </license>
    </licenses>
    
-   <scm>                                                                                                                       
-      <connection>scm:svn:http://everrest.googlecode.com/svn/trunk/</connection>                                                  
-      <developerConnection>scm:svn:https://everrest.googlecode.com/svn/trunk/</developerConnection>                               
-      <url>http://code.google.com/p/everrest/source/browse/</url>                                                                 
+   <scm> 
+      <connection>scm:svn:http://everrest.googlecode.com/svn/trunk/</connection> 
+      <developerConnection>scm:svn:https://everrest.googlecode.com/svn/trunk/</developerConnection> 
+      <url>http://code.google.com/p/everrest/source/browse/</url> 
    </scm>
    
    <distributionManagement>
