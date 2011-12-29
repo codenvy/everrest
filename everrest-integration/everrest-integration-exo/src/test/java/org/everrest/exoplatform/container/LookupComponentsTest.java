@@ -20,6 +20,7 @@ package org.everrest.exoplatform.container;
 
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.exoplatform.StandaloneBaseTest;
+import org.picocontainer.ComponentAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +75,8 @@ public class LookupComponentsTest extends StandaloneBaseTest
    {
       restfulContainer.registerComponentImplementation("X", X.class);
       List<String> params = new ArrayList<String>();
-      Object x = restfulContainer.getMatchedResource("/x/message", params);
+      ComponentAdapter xAdapter = restfulContainer.getMatchedResource("/x/message", params);
+      Object x = xAdapter.getComponentInstance(restfulContainer);
       assertTrue(x instanceof X);
       assertEquals(1, params.size());
       assertEquals("/message", params.get(0));
@@ -87,7 +89,8 @@ public class LookupComponentsTest extends StandaloneBaseTest
       List<String> params = new ArrayList<String>();
       // Two resource matched to request path but Y must be selected
       // since it has more characters in @Path template.
-      Object y = restfulContainer.getMatchedResource("/x/message", params);
+      ComponentAdapter yAdapter = restfulContainer.getMatchedResource("/x/message", params);
+      Object y = yAdapter.getComponentInstance(restfulContainer);
       assertTrue(y instanceof Y);
       assertEquals(2, params.size());
       assertEquals("message", params.get(0));

@@ -21,7 +21,10 @@ package org.everrest.exoplatform;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.container.xml.PropertiesParam;
+import org.exoplatform.container.xml.Property;
 import org.exoplatform.container.xml.ValueParam;
+import java.util.Iterator;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -29,10 +32,12 @@ import org.exoplatform.container.xml.ValueParam;
  */
 final class EverrestConfigurationHelper extends EverrestConfiguration
 {
+   static final String DEFAULT_RESTFUL_CONTAINER_NAME = "everrest";
+
    static EverrestConfiguration createEverrestConfiguration(final InitParams initParams)
    {
       // Get all parameters from init-params so not need servlet context and pass null instead. 
-      return new EverrestServletContextInitializer(null)
+      EverrestConfiguration configuration = new EverrestServletContextInitializer(null)
       {
          @Override
          public String getParameter(String name)
@@ -41,11 +46,26 @@ final class EverrestConfigurationHelper extends EverrestConfiguration
             {
                ValueParam vparam = initParams.getValueParam(name);
                if (vparam != null)
+               {
                   return vparam.getValue();
+               }
             }
             return null;
          }
       }.getConfiguration();
+      if (initParams != null)
+      {
+         PropertiesParam properties = initParams.getPropertiesParam("properties");
+         if (properties != null)
+         {
+            for (Iterator<Property> iterator = properties.getPropertyIterator(); iterator.hasNext(); )
+            {
+               Property prop = iterator.next();
+               configuration.setProperty(prop.getName(), prop.getValue());
+            }
+         }
+      }
+      return configuration;
    }
 
    private EverrestConfigurationHelper()

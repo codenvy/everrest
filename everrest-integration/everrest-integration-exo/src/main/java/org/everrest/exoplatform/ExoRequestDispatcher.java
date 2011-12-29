@@ -29,8 +29,14 @@ import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.exoplatform.container.RestfulComponentAdapter;
+import org.everrest.exoplatform.container.RestfulContainer;
+import org.everrest.exoplatform.container.RestfulContainerProvider;
+import org.exoplatform.container.ExoContainerContext;
+import org.picocontainer.ComponentAdapter;
 
 import java.util.List;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -40,9 +46,7 @@ public final class ExoRequestDispatcher extends RequestDispatcher
 {
    private final ProvidersRegistry providersRegistry;
 
-   /**
-    * @param resourceBinder
-    */
+   /** @param resourceBinder */
    public ExoRequestDispatcher(ResourceBinder resourceBinder, ProvidersRegistry providersRegistry)
    {
       super(resourceBinder);
@@ -59,7 +63,7 @@ public final class ExoRequestDispatcher extends RequestDispatcher
       ApplicationContext context = ApplicationContextImpl.getCurrent();
       String requestPath = context.getPath(false);
       List<String> parameterValues = context.getParameterValues();
-      ObjectFactory<AbstractResourceDescriptor> resourceFactory = getRootResourse(parameterValues, requestPath);
+      ObjectFactory<AbstractResourceDescriptor> resourceFactory = getRootResource(parameterValues, requestPath);
       AbstractResourceDescriptor resourceDescriptor = resourceFactory.getObjectModel();
       if (resourceDescriptor instanceof ApplicationResource)
       {
@@ -70,7 +74,9 @@ public final class ExoRequestDispatcher extends RequestDispatcher
             ((ApplicationContextImpl)context).setProviders(appProviders);
             // Apply application specific request filters if any.
             for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getRequestFilters(context.getPath()))
+            {
                ((RequestFilter)factory.getInstance(context)).doFilter(request);
+            }
          }
       }
       String newRequestPath = getPathTail(parameterValues);
@@ -80,4 +86,33 @@ public final class ExoRequestDispatcher extends RequestDispatcher
       dispatch(request, response, context, resourceFactory, resource, newRequestPath);
    }
 
+   @Override
+   protected ObjectFactory<AbstractResourceDescriptor> getRootResource(List<String> parameterValues, String requestPath)
+   {
+      ObjectFactory<AbstractResourceDescriptor> resource;
+      try
+      {
+         resource = super.getRootResource(parameterValues, requestPath);
+      }
+      catch (WebApplicationException wae)
+      {
+         if (404 == wae.getResponse().getStatus())
+         {
+            RestfulContainerProvider provider =
+               (RestfulContainerProvider)ExoContainerContext.getCurrentContainer().getComponentInstance("RestfulContainerProvider");
+            if (null != provider)
+            {
+               RestfulContainer container = provider.get();
+               RestfulComponentAdapter resourceAdapter =
+                  (RestfulComponentAdapter)container.getMatchedResource(requestPath, parameterValues);
+               if (null != resourceAdapter)
+               {
+                  return (ObjectFactory)resourceAdapter.getFactory();
+               }
+            }
+         }
+         throw wae;
+      }
+      return resource;
+   }
 }

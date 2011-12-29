@@ -33,8 +33,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
@@ -52,6 +55,36 @@ import javax.ws.rs.ext.Provider;
  */
 abstract class ComponentsFinder extends AbstractPicoVisitor
 {
+   private static final Set<ComponentFilter> COMPONENT_FILTERS = new LinkedHashSet<ComponentFilter>();
+
+   static
+   {
+      for (ComponentFilter f : ServiceLoader.load(ComponentFilter.class))
+      {
+         COMPONENT_FILTERS.add(f);
+      }
+   }
+
+   static List<ComponentAdapter> withFilters(List<ComponentAdapter> source)
+   {
+      if (source.size() == 0 || COMPONENT_FILTERS.size() == 0)
+      {
+         return source;
+      }
+      List<ComponentAdapter> result = new ArrayList<ComponentAdapter>();
+      for (ComponentAdapter component : source)
+      {
+         for (ComponentFilter f : COMPONENT_FILTERS)
+         {
+            if (f.accept(component))
+            {
+               result.add(component);
+            }
+         }
+      }
+      return result;
+   }
+
    final Class<? extends Annotation> annotation;
 
    ComponentsFinder(Class<? extends Annotation> annotation)
@@ -127,7 +160,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor
             {
                ComponentAdapter componentAdapter = matched.values().iterator().next();
                matched.clear();
-               return componentAdapter.getComponentInstance((PicoContainer)container);
+               return componentAdapter;
             }
             else
             {
@@ -135,7 +168,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor
                Arrays.sort(keys, UriPattern.URIPATTERN_COMPARATOR);
                ComponentAdapter componentAdapter = matched.get(keys[0]);
                matched.clear();
-               return componentAdapter.getComponentInstance((PicoContainer)container);
+               return componentAdapter;
             }
          }
          finally
@@ -151,7 +184,11 @@ abstract class ComponentsFinder extends AbstractPicoVisitor
       public void visitContainer(PicoContainer pico)
       {
          checkTraversal();
-         components.addAll(((RestfulContainer)pico).getComponentAdapters(annotation));
+         components.addAll(
+            withFilters(
+               ((RestfulContainer)pico).getComponentAdapters(annotation)
+            )
+         );
       }
    }
 
@@ -221,7 +258,11 @@ abstract class ComponentsFinder extends AbstractPicoVisitor
       public void visitContainer(PicoContainer pico)
       {
          checkTraversal();
-         components.addAll(((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyWriter.class, annotation));
+         components.addAll(
+            withFilters(
+               ((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyWriter.class, annotation)
+            )
+         );
       }
    }
 
@@ -291,7 +332,11 @@ abstract class ComponentsFinder extends AbstractPicoVisitor
       public void visitContainer(PicoContainer pico)
       {
          checkTraversal();
-         components.addAll(((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyReader.class, annotation));
+         components.addAll(
+            withFilters(
+               ((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyReader.class, annotation)
+            )
+         );
       }
    }
 
@@ -348,7 +393,11 @@ abstract class ComponentsFinder extends AbstractPicoVisitor
       public void visitContainer(PicoContainer pico)
       {
          checkTraversal();
-         components.addAll(((RestfulContainer)pico).getComponentAdaptersOfType(ExceptionMapper.class, annotation));
+         components.addAll(
+            withFilters(
+               ((RestfulContainer)pico).getComponentAdaptersOfType(ExceptionMapper.class, annotation)
+            )
+         );
       }
    }
 
@@ -426,13 +475,17 @@ abstract class ComponentsFinder extends AbstractPicoVisitor
       public void visitContainer(PicoContainer pico)
       {
          checkTraversal();
-         components.addAll(((RestfulContainer)pico).getComponentAdaptersOfType(ContextResolver.class, annotation));
+         components.addAll(
+            withFilters(
+               ((RestfulContainer)pico).getComponentAdaptersOfType(ContextResolver.class, annotation)
+            )
+         );
       }
    }
 
-   static Object findResource(PicoContainer pico, String requestPath, List<String> parameterValues)
+   static ComponentAdapter findResource(PicoContainer pico, String requestPath, List<String> parameterValues)
    {
-      return new ResourceFinder(Path.class, requestPath, parameterValues).traverse(pico);
+      return (ComponentAdapter)new ResourceFinder(Path.class, requestPath, parameterValues).traverse(pico);
    }
 
    @SuppressWarnings("unchecked")

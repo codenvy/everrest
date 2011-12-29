@@ -22,6 +22,10 @@
    <component>
       <type>org.everrest.core.impl.ResourceBinderImpl</type>
    </component>
+   <component>
+      <key>RestfulContainerProvider</key>
+      <type>org.everrest.exoplatform.container.RestfulContainerProvider</type>
+   </component>
 
    <!-- Add Resources and Providers in container directly -->
    <component>

@@ -100,4 +100,13 @@ public class ExoDependencySupplier extends BaseDependencySupplier
          return provider.get();
       return null;
    }
+
+   /**
+    * @see org.everrest.core.BaseDependencySupplier#getComponentByName(java.lang.String)
+    */
+   @Override
+   public Object getComponentByName(String name)
+   {
+      return ExoContainerContext.getCurrentContainer().getComponentInstance(name);
+   }
 }

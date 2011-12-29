@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2010 eXo Platform SAS.
+/*
+ * Copyright (C) 2011 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,27 +16,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.everrest.exoplatform.container;
 
-package org.everrest.pico;
-
-import org.everrest.core.BaseDependencySupplier;
-import org.everrest.pico.servlet.EverrestPicoFilter;
+import org.exoplatform.container.ExoContainerContext;
+import javax.inject.Provider;
 
 /**
+ * Provider may be used to get instance of RestfulContainer. It can be used for:
+ * <ul>
+ * <li>lazy initialization of RestfulContainer</li>
+ * <li>if have circular dependency problem</li>
+ * </ul>
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public class PicoDependencySupplier extends BaseDependencySupplier
+public class RestfulContainerProvider implements Provider<RestfulContainer>
 {
    @Override
-   public Object getComponent(Class<?> type)
+   public RestfulContainer get()
    {
-      return EverrestPicoFilter.getComponent(type);
-   }
-
-   @Override
-   public Object getComponentByName(String name)
-   {
-      return EverrestPicoFilter.getComponent(name);
+      return (RestfulContainer)ExoContainerContext.getCurrentContainer().getComponentInstance("everrest");
    }
 }

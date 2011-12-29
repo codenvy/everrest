@@ -271,6 +271,21 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       return object;
    }
 
+   public static Object getComponent(Object key)
+   {
+      // Since containers are inherited start lookup components from top
+      // container. It is application scope container in our case.
+      Object object = null;
+      object = getAppContainer().getComponent(key);
+      if (object == null)
+         object = getSessionContainer().getComponent(key);
+      if (object == null)
+         object = getRequestContainer().getComponent(key);
+      if (object == null && log.isDebugEnabled())
+         log.debug("Component " + key + " not found in any containers.");
+      return object;
+   }
+
    static MutablePicoContainer getAppContainer()
    {
       MutablePicoContainer container = currentAppContainer.get();

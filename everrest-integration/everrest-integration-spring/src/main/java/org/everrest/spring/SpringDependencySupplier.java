@@ -35,12 +35,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  */
 public final class SpringDependencySupplier extends BaseDependencySupplier implements BeanFactoryAware
 {
-
    private BeanFactory beanFactory;
 
-   /**
-    * {@inheritDoc}
-    */
+   @Override
    public Object getComponent(Class<?> type)
    {
       try
@@ -53,12 +50,22 @@ public final class SpringDependencySupplier extends BaseDependencySupplier imple
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   @Override
+   public Object getComponentByName(String name)
+   {
+      try
+      {
+         return beanFactory.getBean(name);
+      }
+      catch (NoSuchBeanDefinitionException be)
+      {
+         return null;
+      }
+   }
+
+   @Override
    public void setBeanFactory(BeanFactory beanFactory) throws BeansException
    {
       this.beanFactory = beanFactory;
    }
-
 }

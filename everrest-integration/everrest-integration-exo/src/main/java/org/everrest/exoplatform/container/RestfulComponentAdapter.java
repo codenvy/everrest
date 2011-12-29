@@ -52,7 +52,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * Implementation of {@link ComponentAdapter} for providing instance of JAX-RS resource of provider.
- * 
+ *
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -73,12 +73,12 @@ public class RestfulComponentAdapter implements ComponentAdapter
 
    /**
     * Create new RestfulComponentAdapter for specified componentKey and class or instance.
-    * 
+    *
     * @param componentKey the key of component
     * @param classOrInstance the class or instance of JAX-RS resource or provider
     * @throws NullPointerException if <code>componentKey</code> or <code>classOrInstance</code> is <code>null</code>
     * @throws IllegalArgumentException if <code>classOrInstance</code> has neither {@link Path}, {@link Provider} nor
-    *            {@link Filter}.
+    * {@link Filter}.
     */
    public RestfulComponentAdapter(Object componentKey, Object classOrInstance)
    {
@@ -131,19 +131,25 @@ public class RestfulComponentAdapter implements ComponentAdapter
       return factory.getObjectModel();
    }
 
+   public ObjectFactory<ObjectModel> getFactory()
+   {
+      return factory;
+   }
+
    ParameterizedType[] getImplementedInterfaces()
    {
       return implementedInterfaces;
    }
 
-   /**
-    * @see org.picocontainer.ComponentAdapter#getComponentInstance(org.picocontainer.PicoContainer)
-    */
+   /** @see org.picocontainer.ComponentAdapter#getComponentInstance(org.picocontainer.PicoContainer) */
    @Override
-   public Object getComponentInstance(PicoContainer container) throws PicoInitializationException,
+   public Object getComponentInstance(final PicoContainer container) throws PicoInitializationException,
       PicoIntrospectionException
    {
-      ApplicationContext context = ApplicationContextImpl.getCurrent();
+      // ComponentAdapter always create instance of component by using ObjectFactory instance.
+      // PicoContainer (version 1.x) can't provide all required dependencies.
+      // ComponentAdapter in this case is just facade for ObjectFactory.
+      final ApplicationContext context = ApplicationContextImpl.getCurrent();
       if (context == null)
       {
          throw new IllegalStateException("ApplicationContext is not initialized. ");
@@ -151,7 +157,23 @@ public class RestfulComponentAdapter implements ComponentAdapter
       DependencySupplier dependencies = context.getDependencySupplier();
       try
       {
-         context.setDependencySupplier(new ContainerDependencySupplier(container, dependencies));
+         context.setDependencySupplier(new BaseDependencySupplier()
+         {
+            public Object getComponent(Class<?> type)
+            {
+               Object object = container.getComponentInstanceOfType(type);
+               if (object != null)
+               {
+                  return object;
+               }
+               DependencySupplier contextDependencySupplier = context.getDependencySupplier();
+               if (contextDependencySupplier != null)
+               {
+                  return contextDependencySupplier.getComponent(type);
+               }
+               return null;
+            }
+         });
          return factory.getInstance(context);
       }
       finally
@@ -160,36 +182,27 @@ public class RestfulComponentAdapter implements ComponentAdapter
       }
    }
 
-   /**
-    * @see org.picocontainer.ComponentAdapter#verify(org.picocontainer.PicoContainer)
-    */
+   /** @see org.picocontainer.ComponentAdapter#verify(org.picocontainer.PicoContainer) */
    @Override
    public void verify(PicoContainer container) throws PicoIntrospectionException
    {
    }
 
-   /**
-    * @see org.picocontainer.ComponentAdapter#accept(org.picocontainer.PicoVisitor)
-    */
+   /** @see org.picocontainer.ComponentAdapter#accept(org.picocontainer.PicoVisitor) */
    @Override
    public void accept(PicoVisitor visitor)
    {
       visitor.visitComponentAdapter(this);
    }
 
-   /**
-    * @see org.picocontainer.ComponentAdapter#getComponentKey()
-    */
+   /** @see org.picocontainer.ComponentAdapter#getComponentKey() */
    @Override
    public Object getComponentKey()
    {
       return componentKey;
    }
 
-   /**
-    * @see org.picocontainer.ComponentAdapter#getComponentImplementation()
-    */
-   @SuppressWarnings("rawtypes")
+   /** @see org.picocontainer.ComponentAdapter#getComponentImplementation() */
    @Override
    public Class getComponentImplementation()
    {
@@ -201,6 +214,8 @@ public class RestfulComponentAdapter implements ComponentAdapter
    {
       return "RestfulComponentAdapter [" + getComponentKey() + "]";
    }
+
+   //
 
    @SuppressWarnings("rawtypes")
    private static final Class[] KNOWN_INTERFACES = new Class[]{MessageBodyReader.class, MessageBodyWriter.class,
@@ -223,7 +238,7 @@ public class RestfulComponentAdapter implements ComponentAdapter
          if (implementedInterfaces.size() == 0)
          {
             throw new IllegalArgumentException("Type " + type
-               + " annotatited with @javax.ws.rs.ext.Provider but does not implement any of the interfaces: "
+               + " annotated with @javax.ws.rs.ext.Provider but does not implement any of the interfaces: "
                + Arrays.toString(KNOWN_INTERFACES));
          }
 
@@ -251,37 +266,5 @@ public class RestfulComponentAdapter implements ComponentAdapter
          return getGenericInterface(itype, sc);
       }
       return null;
-   }
-
-   //
-
-   private static class ContainerDependencySupplier extends BaseDependencySupplier
-   {
-      private final PicoContainer container;
-      private final DependencySupplier delegate;
-
-      public ContainerDependencySupplier(PicoContainer container, DependencySupplier dependencies)
-      {
-         this.container = container;
-         this.delegate = dependencies;
-      }
-
-      /**
-       * @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class)
-       */
-      @Override
-      public Object getComponent(Class<?> type)
-      {
-         Object object = container.getComponentInstanceOfType(type);
-         if (object != null)
-         {
-            return object;
-         }
-         if (delegate != null)
-         {
-            return delegate.getComponent(type);
-         }
-         return null;
-      }
    }
 }
