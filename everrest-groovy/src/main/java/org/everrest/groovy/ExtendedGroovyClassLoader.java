@@ -82,7 +82,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
             ModuleNode module = classNode.getModule();
             if (module != null)
             {
-               targetClassNode = (ClassNode)module.getClasses().get(0);
+               targetClassNode = module.getClasses().get(0);
                targetSunit = module.getContext();
             }
             if (targetSunit == sunit && targetClassNode == classNode)
@@ -182,7 +182,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
    {
       synchronized (sourceCache)
       {
-         Class target = (Class)sourceCache.get(fileName);
+         Class target = sourceCache.get(fileName);
          if (target == null)
          {
             CodeSource cs = new CodeSource(getCodeSource(), (java.security.cert.Certificate[])null);
