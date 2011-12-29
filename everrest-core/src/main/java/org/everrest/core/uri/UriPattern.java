@@ -247,10 +247,7 @@ public class UriPattern
 
       if (uri == null || uri.length() == 0)
       {
-         if (pattern == null)
-            return true;
-
-         return false;
+         return pattern == null;
       }
       else if (pattern == null)
       {

@@ -32,13 +32,13 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
 
    /**
     * External annotations for parameter, external it mind some other then
-    * contains in {@link ParameterHelper#METHOD_PARAMETER_ANNOTATIONS_MAP}.
+    * contains in {@link ParameterHelper#RESOURCE_METHOD_PARAMETER_ANNOTATIONS}.
     */
    private final Annotation[] additional;
 
    /**
     * One of annotations from
-    * {@link ParameterHelper#METHOD_PARAMETER_ANNOTATIONS_MAP}.
+    * {@link ParameterHelper#RESOURCE_METHOD_PARAMETER_ANNOTATIONS}.
     */
    private final Annotation annotation;
 
@@ -142,9 +142,17 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ MethodParameter: ");
-      sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass()).append(
-         "; generic-type: " + getGenericType()).append("; default-value: " + getDefaultValue()).append(
-         "; encoded: " + isEncoded()).append(" ]");
+      sb.append("annotation: ");
+      sb.append(getAnnotation());
+      sb.append("; type: ");
+      sb.append(getParameterClass());
+      sb.append("; generic-type: ");
+      sb.append(getGenericType());
+      sb.append("; default-value: ");
+      sb.append(getDefaultValue());
+      sb.append("; encoded: ");
+      sb.append(isEncoded());
+      sb.append(" ]");
       return sb.toString();
    }
 

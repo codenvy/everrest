@@ -92,8 +92,15 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ FilterDescriptorImpl: ");
-      sb.append("path: " + getPathValue() + "; ").append("filter class: " + getObjectClass() + "; ").append(
-         getConstructorDescriptors() + "; ").append(getFieldInjectors()).append(" ]");
+      sb.append("path: ");
+      sb.append(getPathValue());
+      sb.append("; filter class: ");
+      sb.append(getObjectClass());
+      sb.append("; ");
+      sb.append(getConstructorDescriptors());
+      sb.append("; ");
+      sb.append(getFieldInjectors());
+      sb.append(" ]");
       return sb.toString();
    }
 

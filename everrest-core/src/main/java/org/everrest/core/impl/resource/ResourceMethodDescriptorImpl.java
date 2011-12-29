@@ -175,9 +175,17 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ ResourceMethodDescriptorImpl: ");
-      sb.append("resource: " + getParentResource() + "; ").append("HTTP method: " + getHttpMethod() + "; ").append(
-         "produces media type: " + produces() + "; ").append("consumes media type: " + consumes() + "; ").append(
-         "return type: " + getResponseType()).append("] ]");
+      sb.append("resource: ");
+      sb.append(getParentResource());
+      sb.append("; HTTP method: ");
+      sb.append(getHttpMethod());
+      sb.append("; produces media type: ");
+      sb.append(produces());
+      sb.append("; consumes media type: ");
+      sb.append(consumes());
+      sb.append("; return type: ");
+      sb.append(getResponseType());
+      sb.append("] ]");
       return sb.toString();
    }
 

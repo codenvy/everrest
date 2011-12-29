@@ -295,7 +295,7 @@ public class JsonWriter
       }
       catch (IOException e)
       {
-         new JsonException(e.getMessage(), e);
+         throw new JsonException(e.getMessage(), e);
       }
    }
 
@@ -310,7 +310,7 @@ public class JsonWriter
       }
       catch (IOException e)
       {
-         new JsonException(e.getMessage(), e);
+         throw new JsonException(e.getMessage(), e);
       }
    }
 

@@ -254,9 +254,17 @@ public class FieldInjectorImpl implements FieldInjector
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ FieldInjectorImpl: ");
-      sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass())
-         .append("; generic-type : " + getGenericType()).append("; default-value: " + getDefaultValue())
-         .append("; encoded: " + isEncoded()).append(" ]");
+      sb.append("annotation: ");
+      sb.append(getAnnotation());
+      sb.append("; type: ");
+      sb.append(getParameterClass());
+      sb.append("; generic-type : ");
+      sb.append(getGenericType());
+      sb.append("; default-value: ");
+      sb.append(getDefaultValue());
+      sb.append("; encoded: ");
+      sb.append(isEncoded());
+      sb.append(" ]");
       return sb.toString();
    }
 

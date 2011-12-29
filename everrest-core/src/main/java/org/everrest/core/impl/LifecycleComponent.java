@@ -25,7 +25,7 @@ public final class LifecycleComponent
 {
    /** State of component. */
    private enum State {
-      INITIALIZED, DESTROYED;
+      INITIALIZED, DESTROYED
    }
 
    private static final LifecycleMethodStrategy defaultStrategy = new AnnotatedLifecycleMethodStrategy();

@@ -470,7 +470,7 @@ public class JsonEntityTest extends BaseTest
       assertEquals("application/json", response.getContentType().toString());
       JsonParser parser = new JsonParser();
       parser.parse(new ByteArrayInputStream(writer.getBody()));
-      Book[] book = (Book[])ObjectBuilder.createArray(new Book[0].getClass(), parser.getJsonObject());
+      Book[] book = (Book[])ObjectBuilder.createArray(Book[].class, parser.getJsonObject());
       assertEquals("Hamlet", book[0].getTitle());
       assertEquals("William Shakespeare", book[0].getAuthor());
       assertTrue(book[0].isSendByPost());
@@ -485,7 +485,7 @@ public class JsonEntityTest extends BaseTest
       assertEquals(200, response.getStatus());
       assertEquals("application/json", response.getContentType().toString());
       parser.parse(new ByteArrayInputStream(writer.getBody()));
-      book = (Book[])ObjectBuilder.createArray(new Book[0].getClass(), parser.getJsonObject());
+      book = (Book[])ObjectBuilder.createArray(Book[].class, parser.getJsonObject());
       assertEquals("Hamlet", book[0].getTitle());
       assertEquals("William Shakespeare", book[0].getAuthor());
       assertTrue(book[0].isSendByPost());

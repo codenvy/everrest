@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 eXo Platform SAS.
+ * Copyright (C) 2011 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,36 +16,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.core.impl.provider.json;
+package org.everrest.core.impl.header;
 
-import java.util.List;
+import org.everrest.core.impl.BaseTest;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public class BookStorage
+public class DateHeaderTest extends BaseTest
 {
-
-   private List<Book> books;
-
-   public void setBooks(List<Book> b)
+   public void testParseANSI() throws Exception
    {
-      books = b;
+      // EEE MMM d HH:mm:ss yyyy
+      String date = "THU DEC 29 12:03:50 2011";
+      HeaderHelper.parseDateHeader(date);
    }
 
-   public List<Book> getBooks()
+   public void testParseRFC_1036() throws Exception
    {
-      return books;
+      // EEEE, dd-MMM-yy HH:mm:ss zzz
+      String date = "Thursday, 29-Dec-11 12:03:50 EST";
+      HeaderHelper.parseDateHeader(date);
    }
 
-   @Override
-   public String toString()
+   public void testParseRFC_1123() throws Exception
    {
-      StringBuilder sb = new StringBuilder();
-      for (Book b : books)
-         sb.append(b.toString());
-      return sb.toString();
+      // EEE, dd MMM yyyy HH:mm:ss zzz
+      String date = "Thu, 29 Dec 2011 12:03:50 GMT";
+      HeaderHelper.parseDateHeader(date);
    }
-
 }

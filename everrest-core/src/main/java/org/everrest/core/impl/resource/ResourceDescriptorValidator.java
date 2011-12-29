@@ -291,7 +291,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
          {
             try
             {
-               return (String.class == (Class<?>)genericTypes[0]) && (String.class == (Class<?>)genericTypes[1]);
+               return (String.class == genericTypes[0]) && (String.class == genericTypes[1]);
             }
             catch (ClassCastException e)
             {

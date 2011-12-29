@@ -68,7 +68,7 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream>
          // If request is asynchronous spool content of stream to file or memory.
          int bufferSize =
             context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
-               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt((String)context.getProperties().get(
+               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt(context.getProperties().get(
                   RequestHandler.WS_RS_BUFFER_SIZE));
 
          ByteArrayOutputStream bos = new ByteArrayOutputStream();

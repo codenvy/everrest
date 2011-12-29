@@ -127,7 +127,7 @@ public class Book
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append("Book:{").append("Author: ").append(author).append(" ").append("Title: ").append(title).append(" ")
          .append("Pages: ").append(pages).append(" ").append("Price: ").append(price).append(" ").append("ISDN: ")
          .append(isdn).append("Availability: ").append(availability).append(" ").append("Delivery: ").append(delivery)

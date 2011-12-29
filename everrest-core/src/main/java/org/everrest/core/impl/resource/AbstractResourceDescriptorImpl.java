@@ -709,8 +709,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ AbstractResourceDescriptorImpl: ");
-      sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource())
-         .append("; class: " + getObjectClass()).append(" ]");
+      sb.append("path: ");
+      sb.append(getPathValue());
+      sb.append("; isRootResource: ");
+      sb.append(isRootResource());
+      sb.append("; class: ");
+      sb.append(getObjectClass());
+      sb.append(" ]");
       return sb.toString();
    }
 

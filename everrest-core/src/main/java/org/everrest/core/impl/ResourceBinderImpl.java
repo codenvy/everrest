@@ -105,7 +105,6 @@ public class ResourceBinderImpl implements ResourceBinder
             }
             catch (InterruptedException e)
             {
-               ;
             }
             if (!cleanerStop)
             {
@@ -136,7 +135,6 @@ public class ResourceBinderImpl implements ResourceBinder
                   }
                   catch (NumberFormatException e)
                   {
-                     ;
                   }
                }
                if (expirationDate > 0 && expirationDate < System.currentTimeMillis())
@@ -347,9 +345,8 @@ public class ResourceBinderImpl implements ResourceBinder
             Class<?> resourceClass = next.getObjectModel().getObjectClass();
             if (clazz.equals(resourceClass))
             {
-               iter.remove();
                resource = next;
-               break;
+               iter.remove();
             }
          }
          if (resource != null)
@@ -378,9 +375,8 @@ public class ResourceBinderImpl implements ResourceBinder
             UriPattern resourcePattern = next.getObjectModel().getUriPattern();
             if (pattern.equals(resourcePattern))
             {
-               iter.remove();
                resource = next;
-               break;
+               iter.remove();
             }
          }
          if (resource != null)

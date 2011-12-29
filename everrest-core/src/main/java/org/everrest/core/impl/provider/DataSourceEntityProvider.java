@@ -121,7 +121,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource>
       ApplicationContext context = ApplicationContextImpl.getCurrent();
       int bufferSize =
          context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE
-            : Integer.parseInt((String)context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE));
+            : Integer.parseInt(context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE));
       ByteArrayOutputStream bout = new ByteArrayOutputStream(bufferSize);
 
       int bytes = -1;

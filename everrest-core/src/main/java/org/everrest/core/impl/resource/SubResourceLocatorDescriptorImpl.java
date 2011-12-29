@@ -155,8 +155,13 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");
-      sb.append("resource: " + getParentResource() + "; ").append("path: " + getPathValue() + "; ").append(
-         "return type: " + getResponseType()).append(" ]");
+      sb.append("resource: ");
+      sb.append(getParentResource());
+      sb.append("; path: ");
+      sb.append(getPathValue());
+      sb.append("; return type: ");
+      sb.append(getResponseType());
+      sb.append(" ]");
       return sb.toString();
    }
 }

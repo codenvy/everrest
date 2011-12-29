@@ -91,11 +91,18 @@ public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderD
    public String toString()
    {
       StringBuilder sb = new StringBuilder("[ ProviderDescriptorImpl: ");
-      sb.append("provider class: " + getObjectClass() + "; ").append("produces media type: " + produces() + "; ")
-         .append("consumes media type: " + consumes() + "; ").append(getConstructorDescriptors() + "; ").append(
-            getFieldInjectors()).append(" ]");
+      sb.append("provider class: ");
+      sb.append(getObjectClass());
+      sb.append("; produces media type: ");
+      sb.append(produces());
+      sb.append("; consumes media type: ");
+      sb.append(consumes());
+      sb.append("; ");
+      sb.append(getConstructorDescriptors());
+      sb.append("; ");
+      sb.append(getFieldInjectors());
+      sb.append(" ]");
       return sb.toString();
-
    }
 
 }

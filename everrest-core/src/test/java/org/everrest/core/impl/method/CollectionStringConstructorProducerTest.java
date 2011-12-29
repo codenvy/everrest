@@ -42,12 +42,11 @@ public class CollectionStringConstructorProducerTest extends TestCase
          new CollectionStringConstructorProducer(List.class, Integer.class.getConstructor(String.class));
       MultivaluedMap<String, String> multivaluedMap = new MultivaluedMapImpl();
       multivaluedMap.putSingle("number", "2147483647");
-      List<String> l1 = (List<String>)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
+      List l1 = (List)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
       assertEquals(1, l1.size());
       assertEquals(2147483647, l1.get(0));
       // test with default value
-      List<String> l2 =
-         (List<String>)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
+      List l2 = (List)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
       assertEquals(1, l2.size());
       assertEquals(-2147483647, l2.get(0));
    }
@@ -59,12 +58,11 @@ public class CollectionStringConstructorProducerTest extends TestCase
          new CollectionStringConstructorProducer(Set.class, Integer.class.getConstructor(String.class));
       MultivaluedMap<String, String> multivaluedMap = new MultivaluedMapImpl();
       multivaluedMap.putSingle("number", "2147483647");
-      Set<String> s1 = (Set<String>)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
+      Set s1 = (Set)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
       assertEquals(1, s1.size());
       assertEquals(2147483647, s1.iterator().next());
       // test with default value
-      Set<String> s2 =
-         (Set<String>)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
+      Set s2 = (Set)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
       assertEquals(1, s2.size());
       assertEquals(-2147483647, s2.iterator().next());
    }
@@ -76,13 +74,13 @@ public class CollectionStringConstructorProducerTest extends TestCase
          new CollectionStringConstructorProducer(SortedSet.class, Integer.class.getConstructor(String.class));
       MultivaluedMap<String, String> multivaluedMap = new MultivaluedMapImpl();
       multivaluedMap.putSingle("number", "2147483647");
-      SortedSet<String> ss1 =
-         (SortedSet<String>)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
+      SortedSet ss1 =
+         (SortedSet)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
       assertEquals(1, ss1.size());
       assertEquals(2147483647, ss1.iterator().next());
       // test with default value
-      SortedSet<String> ss2 =
-         (SortedSet<String>)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
+      SortedSet ss2 =
+         (SortedSet)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
       assertEquals(1, ss2.size());
       assertEquals(-2147483647, ss2.iterator().next());
    }

@@ -408,7 +408,7 @@ public class ObjectBuilder
 
                   if (JsonUtils.isKnownType(methodParameterClass))
                   {
-                     method.invoke(object, new Object[]{createObjectKnownTypes(methodParameterClass, childJsonValue)});
+                     method.invoke(object, createObjectKnownTypes(methodParameterClass, childJsonValue));
                   }
                   else
                   {
@@ -420,12 +420,12 @@ public class ObjectBuilder
                         {
                            Class c = methodParameterClass;
                            Enum<?> en = Enum.valueOf(c, childJsonValue.getStringValue());
-                           method.invoke(object, new Object[]{en});
+                           method.invoke(object, en);
                         }
                         else if (parameterType == Types.ARRAY_OBJECT)
                         {
                            Object array = createArray(methodParameterClass, childJsonValue);
-                           method.invoke(object, new Object[]{array});
+                           method.invoke(object, array);
                         }
                         else if (parameterType == Types.COLLECTION)
                         {

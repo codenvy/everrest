@@ -124,15 +124,15 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
                }
                catch (IllegalArgumentException e)
                {
-                  new InternalException(e);
+                  throw new InternalException(e);
                }
                catch (IllegalAccessException e)
                {
-                  new InternalException(e);
+                  throw new InternalException(e);
                }
                catch (SecurityException e)
                {
-                  new InternalException(e);
+                  throw new InternalException(e);
                }
                catch (InvocationTargetException e)
                {

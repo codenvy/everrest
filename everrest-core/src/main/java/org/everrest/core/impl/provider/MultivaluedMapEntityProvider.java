@@ -63,9 +63,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
          {
             ParameterizedType t = (ParameterizedType)genericType;
             Type[] ta = t.getActualTypeArguments();
-            if (ta.length == 2 && ta[0] == String.class && ta[1] == String.class)
-               return true;
-            return false;
+            return ta.length == 2 && ta[0] == String.class && ta[1] == String.class;
          }
          catch (ClassCastException e)
          {

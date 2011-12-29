@@ -100,7 +100,7 @@ public class ProviderBinder implements Providers
    private static final RuntimePermission PROVIDERS_PERMISSIONS = new RuntimePermission("providersManagePermission");
 
    /** Providers binder instance. */
-   private static AtomicReference<ProviderBinder> ainst = new AtomicReference<ProviderBinder>();
+   private static final AtomicReference<ProviderBinder> ainst = new AtomicReference<ProviderBinder>();
 
    /**
     * @return instance of {@link ProviderBinder}

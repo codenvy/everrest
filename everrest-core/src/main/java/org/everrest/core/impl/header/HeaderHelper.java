@@ -424,14 +424,16 @@ public final class HeaderHelper
     */
    public static Date parseDateHeader(String header)
    {
-      try
+      for (SimpleDateFormat format : DateFormats.formats)
       {
-         for (SimpleDateFormat format : DateFormats.formats)
+         try
+         {
             return ((SimpleDateFormat)format.clone()).parse(header);
-      }
-      catch (ParseException e)
-      {
-         // ignore all ParseException now
+         }
+         catch (ParseException e)
+         {
+            // ignore all ParseException now
+         }
       }
       // no one format was found
       throw new IllegalArgumentException("Not found appropriated date format for " + header);
@@ -594,7 +596,7 @@ public final class HeaderHelper
    }
 
    /**
-    * Check is given string token. Token may contains only US-ASCII characters except separators, {@link #SEPARTORS} and
+    * Check is given string token. Token may contains only US-ASCII characters except separators, {@link #SEPARATORS} and
     * controls.
     * 
     * @param token the token

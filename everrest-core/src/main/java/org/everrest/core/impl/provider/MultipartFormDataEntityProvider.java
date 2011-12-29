@@ -72,11 +72,7 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
          {
             ParameterizedType t = (ParameterizedType)genericType;
             Type[] ta = t.getActualTypeArguments();
-            if (ta.length == 1 && ta[0] == FileItem.class)
-            {
-               return true;
-            }
-            return false;
+            return ta.length == 1 && ta[0] == FileItem.class;
          }
          catch (ClassCastException e)
          {
@@ -99,7 +95,7 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          int bufferSize =
             context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
-               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt((String)context.getProperties().get(
+               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt(context.getProperties().get(
                   RequestHandler.WS_RS_BUFFER_SIZE));
 
          DefaultFileItemFactory factory =

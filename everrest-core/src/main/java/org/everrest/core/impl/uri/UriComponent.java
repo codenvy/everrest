@@ -261,7 +261,6 @@ public final class UriComponent
             outputBuffer.append(inputBuffer);
             inputBuffer = "";
          }
-         continue;
       }
       return outputBuffer.toString();
    }

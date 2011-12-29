@@ -89,7 +89,7 @@ public class RequestDispatcher
       String requestPath = context.getPath(false);
       List<String> parameterValues = context.getParameterValues();
 
-      ObjectFactory<AbstractResourceDescriptor> resourceFactory = getRootResourse(parameterValues, requestPath);
+      ObjectFactory<AbstractResourceDescriptor> resourceFactory = getRootResource(parameterValues, requestPath);
 
       // Take the tail of the request path, the tail will be requested path
       // for lower resources, e. g. ResourceClass -> Sub-resource method/locator
@@ -187,13 +187,12 @@ public class RequestDispatcher
          // the same then sub-resource method has higher priority, otherwise
          // sub-resource with 'higher' URI pattern selected.
          if ((!hasAcceptableLocator && match)
-            || (hasAcceptableLocator && match && compareSubResources(methods.get(0), locators.get(0)) < 0))
+            || (match && (compareSubResources(methods.get(0), locators.get(0)) < 0)))
          {
             // sub-resource method
             invokeSubResourceMethod(requestPath, methods.get(0), resource, context, request, response);
          }
-         else if ((hasAcceptableLocator && !match)
-            || (hasAcceptableLocator && match && compareSubResources(methods.get(0), locators.get(0)) > 0))
+         else if ((!match) || (compareSubResources(methods.get(0), locators.get(0)) > 0))
          {
             // sub-resource locator
             invokeSubResourceLocator(requestPath, locators.get(0), resource, context, request, response);

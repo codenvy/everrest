@@ -395,7 +395,6 @@ public class RequestDispatcherTest extends BaseTest
          assertNotNull(request);
          assertNotNull(this.something);
          assertNotNull(super.something);
-         assertTrue(this.something instanceof SecurityContext);
          assertTrue(super.something instanceof UriInfo);
          assertNotNull(sc);
          assertNotNull(header);

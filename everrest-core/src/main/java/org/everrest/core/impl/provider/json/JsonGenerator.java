@@ -165,7 +165,7 @@ public class JsonGenerator
                try
                {
                   // Get result of invoke method get...
-                  Object invokeResult = method.invoke(object, new Object[0]);
+                  Object invokeResult = method.invoke(object);
                   if (JsonUtils.getType(invokeResult) != null)
                   {
                      jsonRootValue.addElement(key, createJsonValue(invokeResult));

@@ -47,7 +47,7 @@ public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag>
       if (header == null)
          throw new IllegalArgumentException();
 
-      boolean isWeak = header.startsWith("W/") ? true : false;
+      boolean isWeak = header.startsWith("W/");
 
       String value;
       // cut 'W/' prefix if exists

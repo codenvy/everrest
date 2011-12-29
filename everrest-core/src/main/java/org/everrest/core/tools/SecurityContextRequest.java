@@ -69,7 +69,7 @@ class SecurityContextRequest extends ContainerRequest
    @Override
    public boolean isSecure()
    {
-      return sctx != null ? sctx.isSecure() : false;
+      return sctx != null && sctx.isSecure();
    }
 
    /**
@@ -78,7 +78,7 @@ class SecurityContextRequest extends ContainerRequest
    @Override
    public boolean isUserInRole(String role)
    {
-      return sctx != null ? sctx.isUserInRole(role) : false;
+      return sctx != null && sctx.isUserInRole(role);
    }
 
 }
