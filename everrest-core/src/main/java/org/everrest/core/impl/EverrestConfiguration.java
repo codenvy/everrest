@@ -19,6 +19,9 @@
 
 package org.everrest.core.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
@@ -74,6 +77,8 @@ public class EverrestConfiguration
    protected int asynchronousCacheSize = defaultAsynchronousCacheSize;
 
    protected int asynchronousJobTimeout = defaultAsynchronousJobTimeout;
+
+   protected final Map<String, Object> properties = new HashMap<String, Object>();
 
    public boolean isCheckSecurity()
    {
@@ -153,5 +158,22 @@ public class EverrestConfiguration
    public void setAsynchronousJobTimeout(int asynchronousJobTimeout)
    {
       this.asynchronousJobTimeout = asynchronousJobTimeout;
+   }
+
+   public Object getProperty(String name)
+   {
+      return properties.get(name);
+   }
+
+   public void setProperty(String name, Object value)
+   {
+      if (value == null)
+      {
+         properties.remove(name);
+      }
+      else
+      {
+         properties.put(name, value);
+      }
    }
 }

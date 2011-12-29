@@ -43,7 +43,7 @@ public interface DependencySupplier
    /**
     * Get instance of <code>type</code>.
     *
-    * @param parameter required parameter class
+    * @param type required parameter class
     * @return object of required type or null if instance described by
     *         <code>type</code> may not be produced
     * @throws RuntimeException if any error occurs while creating instance

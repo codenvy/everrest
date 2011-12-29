@@ -31,21 +31,52 @@ public abstract class BaseDependencySupplier implements DependencySupplier
 {
    protected final Class<? extends Annotation> injectAnnotationClass;
 
+   protected final DependencyNameDetector nameDetector;
+
+   public BaseDependencySupplier(Class<? extends Annotation> injectAnnotationClass, DependencyNameDetector nameDetector)
+   {
+      if (injectAnnotationClass == null)
+      {
+         throw new IllegalArgumentException("Inject annotation class may not be null. ");
+      }
+      this.injectAnnotationClass = injectAnnotationClass;
+      this.nameDetector = nameDetector;
+   }
+
    public BaseDependencySupplier(Class<? extends Annotation> injectAnnotationClass)
    {
       if (injectAnnotationClass == null)
+      {
          throw new IllegalArgumentException("Inject annotation class may not be null. ");
+      }
       this.injectAnnotationClass = injectAnnotationClass;
+      nameDetector = null;
    }
 
    public BaseDependencySupplier()
    {
-      this(javax.inject.Inject.class);
+      this(javax.inject.Inject.class, new DependencyNameDetector()
+      {
+         @Override
+         public String getName(Parameter parameter)
+         {
+            for (Annotation a : parameter.getAnnotations())
+            {
+               if (javax.inject.Named.class.isInstance(a))
+               {
+                  String name = ((javax.inject.Named)a).value();
+                  if (!name.isEmpty())
+                  {
+                     return name;
+                  }
+               }
+            }
+            return null;
+         }
+      });
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public final Object getComponent(Parameter parameter)
    {
       boolean injectable = false;
@@ -67,17 +98,40 @@ public abstract class BaseDependencySupplier implements DependencySupplier
       }
       if (injectable)
       {
+         String name = nameDetector != null ? nameDetector.getName(parameter) : null;
+         if (name != null)
+         {
+            return getComponentByName(name);
+         }
          Class<?> parameterClass = parameter.getParameterClass();
          if (isProvider(parameterClass))
+         {
             return getProvider(parameter.getGenericType());
+         }
          return getComponent(parameterClass);
       }
       return null;
    }
 
    /**
+    * Get instance of dependency by name. This is optional capability so by default this method returns
+    * <code>null</code>.
+    * Override it if back-end (e.g. IoC container) supports getting components by key (name).
+    *
+    * @param name of dependency
+    * @return object of required type or null if instance described by
+    *         <code>name</code> may not be produced
+    * @throws RuntimeException if any error occurs while creating instance
+    * of <code>name</code>
+    */
+   public Object getComponentByName(String name)
+   {
+      return null;
+   }
+
+   /**
     * Check is <code>clazz</code> is javax.inject.Provider (not subclass of it).
-    * 
+    *
     * @param clazz class to be checked
     * @return <code>true</code> if <code>clazz</code> is javax.inject.Provider and
     *         <code>false</code> otherwise
@@ -89,7 +143,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier
 
    /**
     * Get Provider of type <code>providerType</code>.
-    * 
+    *
     * @param <T> type of Provider
     * @param providerType
     * @return Provider
@@ -97,20 +151,29 @@ public abstract class BaseDependencySupplier implements DependencySupplier
    public javax.inject.Provider<?> getProvider(Type providerType)
    {
       if (!(providerType instanceof ParameterizedType))
+      {
          throw new RuntimeException("Cannot inject provider without type parameter. ");
+      }
       final Type actualType = ((ParameterizedType)providerType).getActualTypeArguments()[0];
       Class<?> componentType;
       if (actualType instanceof Class)
+      {
          componentType = (Class<?>)actualType;
+      }
       else if (actualType instanceof ParameterizedType)
+      {
          componentType = (Class<?>)((ParameterizedType)actualType).getRawType();
+      }
       else
+      {
          throw new RuntimeException("Unsupported type " + actualType + ". ");
+      }
       final Class<?> fcomponentType = componentType;
-      
+
       // javax.inject.Provider#get() may return null. Such behavior may be unexpected by caller.
       // May be overridden if back-end (e.g. IoC container) provides better solution. 
-      return new javax.inject.Provider<Object>() {
+      return new javax.inject.Provider<Object>()
+      {
          @Override
          public Object get()
          {

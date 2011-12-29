@@ -75,4 +75,8 @@ public class DummySecurityContext implements SecurityContext
       return userRoles.contains(role);
    }
 
+   public Set<String> getUserRoles()
+   {
+      return userRoles;
+   }
 }

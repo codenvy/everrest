@@ -108,7 +108,7 @@ public class RequestDispatcher
     * @param parameterValues See {@link ApplicationContextImpl#getParameterValues()}
     * @return last element from given list or empty string if last element is null
     */
-   protected static final String getPathTail(List<String> parameterValues)
+   protected static String getPathTail(List<String> parameterValues)
    {
       int i = parameterValues.size() - 1;
       return parameterValues.get(i) != null ? parameterValues.get(i) : "";
@@ -527,16 +527,22 @@ public class RequestDispatcher
       return !locators.isEmpty();
    }
 
+   @Deprecated
+   protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
+   {
+      return getRootResource(parameterValues, requestPath);
+   }
+
    /**
     * Get root resource.
-    * 
+    *
     * @param parameterValues is taken from context
     * @param requestPath is taken from context
     * @return root resource
     * @throws WebApplicationException if there is no matched root resources. Exception with prepared error response with
     *            'Not Found' status
     */
-   protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
+   protected ObjectFactory<AbstractResourceDescriptor> getRootResource(List<String> parameterValues, String requestPath)
    {
       ObjectFactory<AbstractResourceDescriptor> resourceFactory =
          resourceBinder.getMatchedResource(requestPath, parameterValues);
