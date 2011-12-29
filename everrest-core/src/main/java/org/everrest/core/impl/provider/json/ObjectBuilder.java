@@ -362,13 +362,20 @@ public class ObjectBuilder
       }
 
       T object = null;
-      try
+      if (clazz.isInterface())
       {
-         object = clazz.newInstance();
+         object = JsonUtils.createProxy(clazz);
       }
-      catch (Exception e)
+      else
       {
-         throw new JsonException("Unable instantiate object. " + e.getMessage(), e);
+         try
+         {
+            object = clazz.newInstance();
+         }
+         catch (Exception e)
+         {
+            throw new JsonException("Unable instantiate object. " + e.getMessage(), e);
+         }
       }
 
       Method[] methods = clazz.getMethods();

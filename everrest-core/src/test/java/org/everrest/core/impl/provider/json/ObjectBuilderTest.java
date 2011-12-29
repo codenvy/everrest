@@ -355,7 +355,7 @@ public class ObjectBuilderTest extends JsonTest
       parser.parse(new ByteArrayInputStream(jsonString.getBytes()));
       JsonValue jsonValue = parser.getJsonObject();
       //System.out.println(jsonValue);
-      ConvertFromStringValuBean o = ObjectBuilder.createObject(ConvertFromStringValuBean.class, jsonValue);
+      ConvertFromStringValueBean o = ObjectBuilder.createObject(ConvertFromStringValueBean.class, jsonValue);
       assertEquals(1, o.getB());
       assertEquals(2, o.getS());
       assertEquals(3, o.getI());
@@ -365,7 +365,20 @@ public class ObjectBuilderTest extends JsonTest
       assertEquals(true, o.isBool());
    }
 
-   public static class ConvertFromStringValuBean
+   public void testInterfaces() throws Exception
+   {
+      JsonParser jsonParser = new JsonParser();
+      jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
+         .getResourceAsStream("BookStorage.txt")));
+      JsonValue jv = jsonParser.getJsonObject();
+      IBookStorage o = ObjectBuilder.createObject(IBookStorage.class, jv);
+      assertEquals(3, o.getBooks().size());
+      assertEquals(sourceCollection.get(0).getIsdn(), o.getBooks().get(0).getIsdn());
+      assertEquals(sourceCollection.get(1).getIsdn(), o.getBooks().get(1).getIsdn());
+      assertEquals(sourceCollection.get(2).getIsdn(), o.getBooks().get(2).getIsdn());
+   }
+
+   public static class ConvertFromStringValueBean
    {
       private byte b;
       private short s;

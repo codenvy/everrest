@@ -19,7 +19,10 @@
 package org.everrest.core.impl.provider.json;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
@@ -166,17 +169,17 @@ public final class JsonUtils
       KNOWN_TYPES.put("null", Types.NULL);
 
       // arrays
-      KNOWN_TYPES.put(new boolean[0].getClass().getName(), Types.ARRAY_BOOLEAN);
+      KNOWN_TYPES.put(boolean[].class.getName(), Types.ARRAY_BOOLEAN);
 
-      KNOWN_TYPES.put(new byte[0].getClass().getName(), Types.ARRAY_BYTE);
-      KNOWN_TYPES.put(new short[0].getClass().getName(), Types.ARRAY_SHORT);
-      KNOWN_TYPES.put(new int[0].getClass().getName(), Types.ARRAY_INT);
-      KNOWN_TYPES.put(new long[0].getClass().getName(), Types.ARRAY_LONG);
-      KNOWN_TYPES.put(new double[0].getClass().getName(), Types.ARRAY_DOUBLE);
-      KNOWN_TYPES.put(new float[0].getClass().getName(), Types.ARRAY_FLOAT);
+      KNOWN_TYPES.put(byte[].class.getName(), Types.ARRAY_BYTE);
+      KNOWN_TYPES.put(short[].class.getName(), Types.ARRAY_SHORT);
+      KNOWN_TYPES.put(int[].class.getName(), Types.ARRAY_INT);
+      KNOWN_TYPES.put(long[].class.getName(), Types.ARRAY_LONG);
+      KNOWN_TYPES.put(double[].class.getName(), Types.ARRAY_DOUBLE);
+      KNOWN_TYPES.put(float[].class.getName(), Types.ARRAY_FLOAT);
 
-      KNOWN_TYPES.put(new char[0].getClass().getName(), Types.ARRAY_CHAR);
-      KNOWN_TYPES.put(new String[0].getClass().getName(), Types.ARRAY_STRING);
+      KNOWN_TYPES.put(char[].class.getName(), Types.ARRAY_CHAR);
+      KNOWN_TYPES.put(String[].class.getName(), Types.ARRAY_STRING);
    }
 
    /**
@@ -221,11 +224,11 @@ public final class JsonUtils
                break;
             default :
                if (c < '\u0010')
-                  sb.append("\\u000" + Integer.toHexString(c));
+                  sb.append("\\u000").append(Integer.toHexString(c));
                else if ((c < '\u0020' && c > '\u0009') || (c >= '\u0080' && c < '\u00a0'))
-                  sb.append("\\u00" + Integer.toHexString(c));
+                  sb.append("\\u00").append(Integer.toHexString(c));
                else if (c >= '\u2000' && c < '\u2100')
-                  sb.append("\\u" + Integer.toHexString(c));
+                  sb.append("\\u").append(Integer.toHexString(c));
                else
                   sb.append(c);
                break;
@@ -243,7 +246,7 @@ public final class JsonUtils
     */
    public static boolean isKnownType(Object o)
    {
-      return o == null ? true : isKnownType(o.getClass());
+      return (o == null) || isKnownType(o.getClass());
    }
 
    /**
@@ -258,7 +261,7 @@ public final class JsonUtils
    }
 
    /**
-    * Get 'type' of Object. @see {@link KNOWN_TYPES} .
+    * Get 'type' of Object. @see {@link #KNOWN_TYPES} .
     *
     * @param o Object.
     * @return 'type'.
@@ -281,7 +284,7 @@ public final class JsonUtils
    }
 
    /**
-    * Get 'type' of Class. @see {@link KNOWN_TYPES} .
+    * Get 'type' of Class. @see {@link #KNOWN_TYPES} .
     *
     * @param clazz Class.
     * @return 'type'.
@@ -323,9 +326,70 @@ public final class JsonUtils
       return set;
    }
 
+   public static <T> T createProxy(Class<T> interf) {
+      if (interf == null)
+         throw new NullPointerException();
+      if (!interf.isInterface())
+         throw new IllegalArgumentException("Type '" + interf.getSimpleName() + "' is not interface. ");
+      return (T)Proxy.newProxyInstance(interf.getClassLoader(), new Class[]{interf}, new BeanProxy());
+   }
+
+   private static final class BeanProxy implements InvocationHandler
+   {
+      private final Map<String, Object> values = new HashMap<String, Object>();
+
+      @Override
+      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+      {
+         String key = key(method);
+         if (key != null)
+         {
+            if (null == args)
+            {
+                // Getter.
+               return values.get(key);
+            }
+            // Setter.
+            values.put(key, args[0]);
+         }
+         // Neither getter nor setter. Cannot process such methods.
+         return null;
+      }
+
+      private static String key(Method method)
+      {
+         String name = method.getName();
+         if ("getClass".equals(name)
+            || "getMetaClass".equals(name)
+            || "setMetaClass".equals(name))
+         {
+            return null;
+         }
+
+         Class<?>[] parameters = method.getParameterTypes();
+         String key = null;
+         if (name.startsWith("set") && name.length() > 3 && parameters.length == 1)
+         {
+            key = name.substring(3);
+         }
+         else if (name.startsWith("get") && name.length() > 3 && parameters.length == 0)
+         {
+            key = name.substring(3);
+         }
+         else if (name.startsWith("is") && name.length() > 2 && parameters.length == 0 && method.getReturnType() == boolean.class)
+         {
+            key = name.substring(2);
+         }
+         if (key != null)
+         {
+            key = key.length() > 1 ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
+         }
+         return key;
+      }
+   }
+
    /** Must not be created. */
    private JsonUtils()
    {
    }
-
 }
