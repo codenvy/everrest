@@ -329,9 +329,7 @@ class IdempotentSequence
       return UNKNOWN;
    }
 
-   /**
-    * Test code.
-    */
+/*
    public static void main(String args[])
    {
       IdempotentSequence seq = new IdempotentSequence();
@@ -381,4 +379,5 @@ class IdempotentSequence
 
       System.out.println("Tests finished");
    }
+*/
 }

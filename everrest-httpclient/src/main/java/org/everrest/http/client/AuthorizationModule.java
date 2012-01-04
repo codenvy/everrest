@@ -1,5 +1,5 @@
 /*
- * @(#)AuthorizationModule.java				0.3-3 06/05/2001
+ * @(#)AuthorizationModule.java   0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschal�r

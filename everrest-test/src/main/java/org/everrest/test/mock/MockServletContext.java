@@ -208,7 +208,6 @@ public class MockServletContext implements ServletContext
       }
       catch (IOException e)
       {
-         e.printStackTrace();
       }
       return null;
    }

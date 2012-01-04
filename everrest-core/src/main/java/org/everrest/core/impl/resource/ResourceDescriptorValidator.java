@@ -300,8 +300,6 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
          }
       }
       // not parameterized type
-      // TODO must be tolerant for not parameterized type and use string as
-      // default ?
       return false;
    }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)URI.java						0.3-3 06/05/2001
+ * @(#)URI.java 0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschal�r
@@ -79,8 +79,8 @@ public class URI
     * <PRE>
     * base   = http://a/b/c/d;p?q
     * rel    = http:g
-    * result = http:g		(correct)
-    * result = http://a/b/c/g	(backwards compatible)
+    * result = http:g          (correct)
+    * result = http://a/b/c/g  (backwards compatible)
     * </PRE>
     * 
     * See rfc-2396, section 5.2, step 3, second paragraph.
@@ -560,9 +560,14 @@ public class URI
    public static String canonicalizePath(String path)
    {
       int idx, len = path.length();
-      if (!((idx = path.indexOf("/.")) != -1 && (idx == len - 2 || path.charAt(idx + 2) == '/' || (path.charAt(idx + 2) == '.' && (idx == len - 3 || path
-         .charAt(idx + 3) == '/')))))
+      if (!((idx = path.indexOf("/.")) != -1
+         && (idx == len - 2
+         || path.charAt(idx + 2) == '/'
+         || (path.charAt(idx + 2) == '.'
+         && (idx == len - 3 || path.charAt(idx + 3) == '/')))))
+      {
          return path;
+      }
 
       char[] p = new char[path.length()]; // clean path
       path.getChars(0, p.length, p, 0);
@@ -1435,22 +1440,20 @@ public class URI
       }
    }
 
-   /**
-    * Run test set.
-    * 
-    * @exception Exception if any test fails
-    */
+/*
    public static void main(String args[]) throws Exception
    {
       System.err.println();
       System.err.println("*** URI Tests ...");
 
-      /*
+      */
+/*
        * Relative URI test set, taken from Section C of rfc-2396 and Roy's test1.
        * All Roy's URI parser tests can be found at
        * http://www.ics.uci.edu/~fielding/url/ The tests have been augmented by a
        * few for the IPv6 syntax
-       */
+       *//*
+
 
       URI base = new URI("http://a/b/c/d;p?q");
 
@@ -1509,9 +1512,11 @@ public class URI
          testParser(base, "http:", "http:");
       testParser(base, "./g:h", "http://a/b/c/g:h");
 
-      /*
+      */
+/*
        * Roy's test2
-       */
+       *//*
+
       base = new URI("http://a/b/c/d;p?q=1/2");
 
       testParser(base, "g", "http://a/b/c/g");
@@ -1533,9 +1538,11 @@ public class URI
       testParser(base, "../../", "http://a/");
       testParser(base, "../../g", "http://a/g");
 
-      /*
+      */
+/*
        * Roy's test3
-       */
+       *//*
+
       base = new URI("http://a/b/c/d;p=1/2?q");
 
       testParser(base, "g", "http://a/b/c/d;p=1/g");
@@ -1552,13 +1559,16 @@ public class URI
       testParser(base, "../../", "http://a/b/");
       testParser(base, "../../g", "http://a/b/g");
 
-      /*
+      */
+/*
        * Roy's test4
-       */
+       *//*
+
       base = new URI("fred:///s//a/b/c");
 
       testParser(base, "g:h", "g:h");
-      /*
+      */
+/*
        * we have to skip these, as usesGeneraicSyntax("fred") returns false and we
        * therefore don't parse relative URI's here. But test5 is the same except
        * that the http scheme is used. testParser(base, "g", "fred:///s//a/b/g");
@@ -1571,12 +1581,15 @@ public class URI
        * "fred:///s//"); testParser(base, "../../g", "fred:///s//g");
        * testParser(base, "../../../g", "fred:///s/g"); testParser(base,
        * "../../../../g", "fred:///g");
-       */
+       *//*
+
       testPE(base, "g");
 
-      /*
+      */
+/*
        * Roy's test5
-       */
+       *//*
+
       base = new URI("http:///s//a/b/c");
 
       testParser(base, "g:h", "g:h");
@@ -1596,9 +1609,11 @@ public class URI
       testParser(base, "../../../g", "http:///s/g");
       testParser(base, "../../../../g", "http:///g");
 
-      /*
+      */
+/*
        * Some additional parser tests
-       */
+       *//*
+
       base = new URI("http://s");
 
       testParser(base, "ftp:h", "ftp:h");
@@ -1631,9 +1646,11 @@ public class URI
       testParser(base, "k", "http://s/k");
       testParser(base, "k?l", "http://s/k?l");
 
-      /*
+      */
+/*
        * Parser tests for semi-generic syntax
-       */
+       *//*
+
       base = new URI("ldap:");
 
       testParser(base, "ldap:", "ldap:");
@@ -1696,7 +1713,9 @@ public class URI
       testParser(base, "?g", "ldap://s/?g");
       testParser(base, "#g", "ldap://s/%23g");
 
-      /* equality tests */
+      */
+/* equality tests *//*
+
 
       // protocol
       testNotEqual("http://a/", "nntp://a/");
@@ -1801,6 +1820,7 @@ public class URI
 
       System.err.println("*** Tests finished successfuly");
    }
+*/
 
    private static final String nl = System.getProperty("line.separator");
 

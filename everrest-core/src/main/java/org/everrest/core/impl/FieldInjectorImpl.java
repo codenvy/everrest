@@ -19,6 +19,7 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.ApplicationContext;
+import org.everrest.core.DependencySupplier;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.impl.method.ParameterHelper;
 import org.everrest.core.impl.method.ParameterResolverFactory;
@@ -207,9 +208,17 @@ public class FieldInjectorImpl implements FieldInjector
       {
          Object value = null;
          if (annotation != null)
+         {
             value = ParameterResolverFactory.createParameterResolver(annotation).resolve(this, context);
-         else if (context.getDependencySupplier() != null)
-            value = context.getDependencySupplier().getComponent(this);
+         }
+         else
+         {
+            DependencySupplier dependencies = context.getDependencySupplier();
+            if (dependencies != null)
+            {
+               value = dependencies.getComponent(this);
+            }
+         }
 
          if (value != null)
          {
@@ -220,11 +229,12 @@ public class FieldInjectorImpl implements FieldInjector
             else
             {
                if (!Modifier.isPublic(jfield.getModifiers()))
+               {
                   jfield.setAccessible(true);
+               }
                jfield.set(resource, value);
             }
          }
-         // TODO Need to throw exception if value == null ?????
       }
       catch (Throwable e)
       {
@@ -232,7 +242,9 @@ public class FieldInjectorImpl implements FieldInjector
          {
             Class<?> ac = annotation.annotationType();
             if (ac == PathParam.class || ac == QueryParam.class || ac == MatrixParam.class)
+            {
                throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
+            }
             throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
          }
          throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());

@@ -237,7 +237,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public String encodeRedirectURL(String url)
    {
-      return url; // TODO encode
+      return url;
    }
 
    /**
@@ -245,7 +245,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public String encodeRedirectUrl(String url)
    {
-      return url;// TODO encode
+      return url;
    }
 
    /**
@@ -253,7 +253,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public String encodeURL(String url)
    {
-      return url;// TODO encode
+      return url;
    }
 
    /**
@@ -261,7 +261,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public String encodeUrl(String url)
    {
-      return url;// TODO encode
+      return url;
    }
 
    /**
@@ -443,8 +443,7 @@ public class MockHttpServletResponse implements HttpServletResponse
 
    public String getContentType()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return contentType;
    }
 
    public void setCharacterEncoding(String encoding)

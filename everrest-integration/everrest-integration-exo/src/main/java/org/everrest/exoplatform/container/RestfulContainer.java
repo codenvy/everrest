@@ -271,7 +271,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
       Class<?> type = componentAdapter.getComponentImplementation();
       if (type.isAnnotationPresent(Filter.class))
       {
-         // TODO
+         // TODO: avoid duplication of few filters even if they are registered with different keys in container.
       }
       else if (type.isAnnotationPresent(Path.class))
       {

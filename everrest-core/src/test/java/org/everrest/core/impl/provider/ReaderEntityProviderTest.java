@@ -68,7 +68,7 @@ public class ReaderEntityProviderTest extends BaseTest
       assertFalse(TEST_CYR.equals(resstr));
    }
 
-   //   TODO Check! Test fails on systems which use not UTF-8 encoding.
+   //   Test fails on systems which use not UTF-8 encoding.
    //   
    //   @SuppressWarnings("unchecked")
    //   public void testWrite() throws Exception

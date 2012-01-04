@@ -65,7 +65,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
    private static final Logger LOG = Logger.getLogger(JsonEntityProvider.class);
    
    // It is common task for #isReadable() and #isWriteable
-   // TODO Not sure it is required but ...
+   // Not sure it is required but ...
    // Investigation about checking can type be write as JSON (useful JSON).
    // Probably should be better added this checking in JSON framework.
    // Or probably enough check only content type 'application/json'

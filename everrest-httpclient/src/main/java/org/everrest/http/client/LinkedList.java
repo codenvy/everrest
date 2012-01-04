@@ -150,6 +150,7 @@ class LinkedList
       return elem;
    }
 
+/*
    public static void main(String args[]) throws Exception
    {
       // LinkedList Test Suite
@@ -216,6 +217,7 @@ class LinkedList
 
       System.err.println("\n*** Tests finished successfuly");
    }
+*/
 }
 
 /**

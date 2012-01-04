@@ -168,7 +168,6 @@ public class ResourceBinderImpl implements ResourceBinder
    {
       // Initialize RuntimeDelegate instance
       // This is first component in life cycle what needs.
-      // TODO better solution to initialize RuntimeDelegate
       RuntimeDelegate rd = new RuntimeDelegateImpl();
       RuntimeDelegate.setInstance(rd);
    }

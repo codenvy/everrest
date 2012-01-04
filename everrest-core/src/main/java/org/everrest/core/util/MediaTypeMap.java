@@ -71,7 +71,6 @@ public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
          // should e compared lexicographically, otherwise new entry with the
          // same 'weight' will be not added in map.
          if (r == 0)
-            // TODO weak solution
             r = _toString(o1).compareToIgnoreCase(_toString(o2));
          return r;
       }

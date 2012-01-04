@@ -200,6 +200,8 @@ import javax.xml.stream.XMLStreamWriter;
  */
 public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstants
 {
+   private static final Logger LOG = Logger.getLogger(HTTPConnection.class);
+
    /** The current version of this package. */
    public final static String version = "RPT-HTTPClient/0.3-3";
 
@@ -1530,7 +1532,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (XMLStreamException e)
       {
-         e.printStackTrace();
+         LOG.error(e.getMessage(), e);
          throw new IOException("Can't write XML data to output stream.");
       }
       return response;
@@ -1656,7 +1658,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (XMLStreamException e)
       {
-         e.printStackTrace();
+         LOG.error(e.getMessage(), e);
          throw new IOException("Can't write XML data to output stream.");
       }
       return response;
@@ -1714,7 +1716,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (XMLStreamException e)
       {
-         e.printStackTrace();
+         LOG.error(e.getMessage(), e);
          throw new IOException("Can't write XML request.");
       }
       finally
@@ -3921,8 +3923,11 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       try
       {
          if (ServerProtocolVersion >= HTTP_1_1
-            || ((((Proxy_Host == null || Protocol == HTTPS) && (con = resp.getHeader("Connection")) != null) || ((Proxy_Host != null && Protocol != HTTPS) && (con =
-               resp.getHeader("Proxy-Connection")) != null)) && Util.hasToken(con, "keep-alive")))
+            || ((((Proxy_Host == null || Protocol == HTTPS)
+            && (con = resp.getHeader("Connection")) != null)
+            || ((Proxy_Host != null && Protocol != HTTPS)
+            && (con = resp.getHeader("Proxy-Connection")) != null))
+            && Util.hasToken(con, "keep-alive")))
          {
             doesKeepAlive = true;
             keepAliveUnknown = false;

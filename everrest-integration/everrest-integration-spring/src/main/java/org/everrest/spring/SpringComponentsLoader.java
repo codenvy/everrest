@@ -153,7 +153,8 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
    }
 
    /**
-    * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
+    * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(
+    * org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
     */
    @Override
    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException

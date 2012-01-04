@@ -462,7 +462,6 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          o.add(new OptionsRequestResourceMethodDescriptorImpl(null, "OPTIONS", mps, this, consumes, produces,
             new Annotation[0]));
       }
-      // TODO need process sub-resources ?
    }
 
    /**

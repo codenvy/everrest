@@ -33,9 +33,9 @@ import org.everrest.groovy.URLFilter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -50,40 +50,37 @@ import javax.ws.rs.ext.Provider;
  */
 public class GroovyEverrestServletContextInitializer extends EverrestServletContextInitializer
 {
-
-   public static final String EVERREST_GROOVY_ROOT_RESOURCES = "org.everrest.groovy.root.resources";
-
-   public static final String EVERREST_GROOVY_APPLICATION = "org.everrest.groovy.Application";
-
-   public static final String EVERREST_GROOVY_SCAN_COMPONENTS = "org.everrest.groovy.scan.components";
-
    private static final Logger LOG = Logger.getLogger(GroovyEverrestServletContextInitializer.class);
 
-   protected GroovyClassLoaderProvider classLoaderProvider;
+   public static final String EVERREST_GROOVY_ROOT_RESOURCES = "org.everrest.groovy.root.resources";
+   public static final String EVERREST_GROOVY_APPLICATION = "org.everrest.groovy.Application";
+   public static final String EVERREST_GROOVY_SCAN_COMPONENTS = "org.everrest.groovy.scan.components";
 
+   protected final GroovyClassLoaderProvider classLoaderProvider;
    protected final URL[] groovyClassPath;
 
    public GroovyEverrestServletContextInitializer(ServletContext sctx)
    {
       super(sctx);
-      String inputRootResources = getParameter(GroovyEverrestServletContextInitializer.EVERREST_GROOVY_ROOT_RESOURCES);
-      Set<URL> rootResources = new LinkedHashSet<URL>();
-      if (inputRootResources != null)
-      {
-         try
-         {
-            for (String s : inputRootResources.split(","))
-               rootResources.add(new URL(s.trim()));
-         }
-         catch (MalformedURLException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      this.groovyClassPath = rootResources.toArray(new URL[rootResources.size()]);
-      this.classLoaderProvider = new GroovyClassLoaderProvider();
+      classLoaderProvider = new GroovyClassLoaderProvider();
+
       try
       {
+         String rootResourcesParameter = getParameter(EVERREST_GROOVY_ROOT_RESOURCES);
+         if (rootResourcesParameter != null)
+         {
+            String[] tokens = rootResourcesParameter.split(",");
+            groovyClassPath = new URL[tokens.length];
+            for (int i = 0; i < tokens.length; i++)
+            {
+               groovyClassPath[i] = URI.create(tokens[i]).toURL();
+            }
+         }
+         else
+         {
+            groovyClassPath = new URL[0];
+         }
+
          classLoaderProvider.getGroovyClassLoader().setResourceLoader(new DefaultGroovyResourceLoader(groovyClassPath));
       }
       catch (MalformedURLException e)
@@ -99,21 +96,15 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
    @Override
    public Application getApplication()
    {
-      String groovyApplicationFQN = getParameter(EVERREST_GROOVY_APPLICATION);
+      final String groovyApplicationFQN = getParameter(EVERREST_GROOVY_APPLICATION);
+      final boolean scan = getBoolean(EVERREST_GROOVY_SCAN_COMPONENTS, false);
       Application groovyApplication = null;
-      boolean scan = false;
-      String scanParameter = getParameter(EVERREST_GROOVY_SCAN_COMPONENTS);
-      if (scanParameter != null)
-      {
-         scan = Boolean.parseBoolean(scanParameter);
-      }
+
       if (groovyApplicationFQN != null)
       {
          if (scan)
          {
-            String msg =
-               "Scan of Groovy JAX-RS components is disabled cause to specified 'org.everrest.groovy.Application'.";
-            LOG.warn(msg);
+            LOG.warn("Scan of Groovy JAX-RS components is disabled cause to specified 'org.everrest.groovy.Application'.");
          }
 
          Class<?> applicationClass;
@@ -143,7 +134,9 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
       {
          try
          {
-            URLFilter filter = new URLFilter()
+            final Set<Class<?>> scanned = new HashSet<Class<?>>();
+            final Class[] jaxrsAnnotations = new Class[]{Path.class, Provider.class, Filter.class};
+            final URLFilter filter = new URLFilter()
             {
                public boolean accept(URL url)
                {
@@ -151,32 +144,36 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                }
             };
 
-            final Set<Class<?>> scanned = new HashSet<Class<?>>();
-            Class[] jaxrsAnnotations = new Class[]{Path.class, Provider.class, Filter.class};
-            for (URL path : groovyClassPath)
+            for (int i = 0; i < groovyClassPath.length; i++)
             {
-               String protocol = path.getProtocol();
+               final URL path = groovyClassPath[i];
+               final String protocol = path.getProtocol();
                ScriptFinder finder = ScriptFinderFactory.getScriptFinder(protocol);
                if (finder != null)
                {
-                  Set<URL> scripts = finder.find(filter, path);
-                  if (scripts != null && scripts.size() > 0)
+                  URL[] scripts = finder.find(filter, path);
+                  if (scripts != null && scripts.length > 0)
                   {
-                     SourceFile[] files = new SourceFile[scripts.size()];
-                     int i = 0;
-                     for (URL script : scripts)
-                        files[i++] = new SourceFile(script);
-                     Class[] classes = classLoaderProvider.getGroovyClassLoader().parseClasses(files);
-                     for (int j = 0; j < classes.length; j++)
+                     SourceFile[] files = new SourceFile[scripts.length];
+
+                     for (int k = 0; k < scripts.length; k++)
                      {
-                        Class clazz = classes[j];
+                        files[k] = new SourceFile(scripts[k]);
+                     }
+
+                     Class[] classes = classLoaderProvider.getGroovyClassLoader().parseClasses(files);
+                     for (int k = 0; k < classes.length; k++)
+                     {
+                        Class clazz = classes[k];
                         if (findAnnotation(clazz, jaxrsAnnotations))
                         {
                            boolean added = scanned.add(clazz);
                            if (added)
                            {
                               if (LOG.isDebugEnabled())
+                              {
                                  LOG.debug("Add class : " + clazz);
+                              }
                            }
                            else
                            {
@@ -188,10 +185,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                }
                else
                {
-                  String msg =
-                     "Skip URL : " + path + ". Protocol '" + protocol
-                        + "' is not supported for scan JAX-RS components. ";
-                  LOG.warn(msg);
+                  LOG.warn("Skip URL : " + path + ". Protocol '" + protocol + "' is not supported for scan JAX-RS components. ");
                }
             }
             groovyApplication = new Application()
@@ -221,5 +215,4 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
       }
       return false;
    }
-
 }

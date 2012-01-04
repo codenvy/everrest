@@ -21,7 +21,6 @@ package org.everrest.groovy;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
 
 /**
  * Look up script files.
@@ -39,9 +38,9 @@ public interface ScriptFinder
     * @param filter URL filter
     * @param root root URL from which look up should be stated
     * @return URLs of all resources that were found, may return whether
-    *         <code>null</code> or empty set if scripts were not found
+    *         <code>null</code> or empty array if scripts were not found
     * @throws MalformedURLException if the URL is invalid
     */
-   Set<URL> find(URLFilter filter, URL root) throws MalformedURLException;
+   URL[] find(URLFilter filter, URL root) throws MalformedURLException;
 
 }

@@ -492,7 +492,6 @@ public class ObjectBuilder
          case DOUBLE :
             return jsonValue.getDoubleValue();
          case CHAR :
-            // TODO check String length
             return jsonValue.getStringValue().charAt(0);
          case STRING :
             return jsonValue.getStringValue();
@@ -579,7 +578,6 @@ public class ObjectBuilder
             char[] params = new char[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
-            // TODO better checking an transformation string to char
             while (values.hasNext())
             {
                params[i++] = values.next().getStringValue().charAt(0);

@@ -99,8 +99,8 @@ public final class ExoRequestDispatcher extends RequestDispatcher
       {
          if (404 == wae.getResponse().getStatus())
          {
-            RestfulContainerProvider provider =
-               (RestfulContainerProvider)ExoContainerContext.getCurrentContainer().getComponentInstance("RestfulContainerProvider");
+            RestfulContainerProvider provider = (RestfulContainerProvider)ExoContainerContext.getCurrentContainer()
+               .getComponentInstance("RestfulContainerProvider");
             if (null != provider)
             {
                RestfulContainer container = provider.get();

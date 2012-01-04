@@ -149,13 +149,12 @@ public class ResourceDescriptorTest extends BaseTest
       }
    }
 
+/*
    public void testNotPublicMethodAnnotated()
    {
-      // TODO Mechanism for checking log messages. There is some sections in
-      // JAX-RS specification that said 'should warn...'. Need control this
-      // messages in some way.
       new AbstractResourceDescriptorImpl(Resource14.class, ComponentLifecycleScope.PER_REQUEST);
    }
+*/
 
    // ====================== all of this resource are not valid =========================
 

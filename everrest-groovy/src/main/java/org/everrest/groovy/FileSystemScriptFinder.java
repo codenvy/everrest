@@ -21,10 +21,11 @@ package org.everrest.groovy;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.net.URL;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Scanner of Groovy scripts on local file system.
@@ -34,48 +35,52 @@ import java.util.Set;
  */
 public class FileSystemScriptFinder implements ScriptFinder
 {
-
-   private static final String PROTOCOL = "file";
-
    /**
     * {@inheritDoc}
     */
-   public Set<URL> find(URLFilter filter, URL root) throws MalformedURLException
+   public URL[] find(URLFilter filter, URL root) throws MalformedURLException
    {
-      Set<URL> result = new LinkedHashSet<URL>();
       // Be sure protocol is supported.
-      if (PROTOCOL.equals(root.getProtocol()))
+      if ("file".equals(root.getProtocol()))
       {
-         try
+         File file = new File(URI.create(root.toString()));
+         if (file.isDirectory())
          {
-            File file = new File(root.toURI());
-            find(file, filter, result);
-         }
-         catch (URISyntaxException e)
-         {
-            throw new IllegalArgumentException(e.getMessage());
+            return find(file, filter);
          }
       }
-      return result;
+      return new URL[0];
    }
 
-   private void find(File f, URLFilter filter, Set<URL> result) throws MalformedURLException
+   private URL[] find(File directory, URLFilter filter) throws MalformedURLException
    {
-      for (File s : f.listFiles())
+      List<URL> files = new ArrayList<URL>();
+      LinkedList<File> q = new LinkedList<File>();
+      q.add(directory);
+      while (!q.isEmpty())
       {
-         if (!s.isFile())
+         File current = q.pop();
+         File[] list = current.listFiles();
+         if (list != null)
          {
-            find(s, filter, result);
-         }
-         else
-         {
-            URL url = s.toURI().toURL();
-            if (filter.accept(url))
+            for (int i = 0; i < list.length; i++)
             {
-               result.add(url);
+               final File f = list[i];
+               if (f.isDirectory())
+               {
+                  q.push(f);
+               }
+               else
+               {
+                  URL url = f.toURI().toURL();
+                  if (filter.accept(url))
+                  {
+                     files.add(url);
+                  }
+               }
             }
          }
       }
+      return files.toArray(new URL[files.size()]);
    }
-
 }

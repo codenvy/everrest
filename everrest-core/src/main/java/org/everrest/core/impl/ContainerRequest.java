@@ -452,7 +452,6 @@ public class ContainerRequest implements GenericContainerRequest
     */
    public Locale getLanguage()
    {
-      // TODO Not efficient implementation, header map can be checked few times
       if (contentLanguage == null && httpHeaders.getFirst(CONTENT_LANGUAGE) != null)
          contentLanguage = Language.getLocale(httpHeaders.getFirst(CONTENT_LANGUAGE));
 
@@ -464,7 +463,6 @@ public class ContainerRequest implements GenericContainerRequest
     */
    public MediaType getMediaType()
    {
-      // TODO Not efficient implementation, if header map can be checked few times
       if (contentType == null && httpHeaders.getFirst(CONTENT_TYPE) != null)
          contentType = MediaType.valueOf(httpHeaders.getFirst(CONTENT_TYPE));
 
@@ -508,7 +506,6 @@ public class ContainerRequest implements GenericContainerRequest
 
       EntityTag otherEtag = EntityTag.valueOf(ifMatch);
 
-      // TODO check is status 412 valid if one of tag is weak
       if ((etag.isWeak() || otherEtag.isWeak()) // one of tag is weak
          || (!"*".equals(otherEtag.getValue()) && !etag.getValue().equals(otherEtag.getValue())))
          return Response.status(Response.Status.PRECONDITION_FAILED);

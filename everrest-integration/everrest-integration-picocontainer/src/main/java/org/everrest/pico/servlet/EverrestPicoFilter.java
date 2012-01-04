@@ -332,7 +332,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
    {
       // Add injectors for some components required by JAX-RS resources and providers.
 
-      // TODO Still have issue with injected components via constructors. JAX-RS
+      // NOTE: Still have issue with injected components via constructors. JAX-RS
       // specification provide wide set of annotations that can be applied to
       // wide set of Java types, e.g. @CookieParam, @QueryParam, etc. See
       // section 3.1.2 of JAX-RS specification. How to do it with picocontainer ???

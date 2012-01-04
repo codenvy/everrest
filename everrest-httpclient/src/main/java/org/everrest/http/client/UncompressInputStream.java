@@ -32,6 +32,8 @@
 
 package org.everrest.http.client;
 
+import org.everrest.core.util.Logger;
+
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FilterInputStream;
@@ -69,6 +71,8 @@ class UncompressInputStream extends FilterInputStream
       else
          return -1;
    }
+
+   private static final Logger LOG = Logger.getLogger(UncompressInputStream.class);
 
    // string table stuff
    private static final int TBL_CLEAR = 0x100;
@@ -176,8 +180,8 @@ class UncompressInputStream extends FilterInputStream
                l_n_bits++;
                l_maxcode = (l_n_bits == maxbits) ? l_maxmaxcode : (1 << l_n_bits) - 1;
 
-               if (debug)
-                  System.err.println("Code-width expanded to " + l_n_bits);
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Code-width expanded to " + l_n_bits);
 
                l_bitmask = (1 << l_n_bits) - 1;
                l_bit_pos = resetbuf(l_bit_pos);
@@ -217,8 +221,8 @@ class UncompressInputStream extends FilterInputStream
                l_maxcode = (1 << l_n_bits) - 1;
                l_bitmask = l_maxcode;
 
-               if (debug)
-                  System.err.println("Code tables reset");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Code tables reset");
 
                l_bit_pos = resetbuf(l_bit_pos);
                continue main_loop;
@@ -393,10 +397,10 @@ class UncompressInputStream extends FilterInputStream
       if ((header & HDR_FREE) > 0)
          throw new IOException("Header bit 6 set");
 
-      if (debug)
+      if (LOG.isDebugEnabled())
       {
-         System.err.println("block mode: " + block_mode);
-         System.err.println("max bits:   " + maxbits);
+         LOG.debug("block mode: " + block_mode);
+         LOG.debug("max bits:   " + maxbits);
       }
 
       // initialize stuff
@@ -418,8 +422,7 @@ class UncompressInputStream extends FilterInputStream
          tab_suffix[idx] = (byte)idx;
    }
 
-   private static final boolean debug = false;
-
+/*
    public static void main(String args[]) throws Exception
    {
       if (args.length != 1)
@@ -447,4 +450,5 @@ class UncompressInputStream extends FilterInputStream
       System.err.println("Decompressed " + tot + " bytes");
       System.err.println("Time: " + (end - beg) / 1000. + " seconds");
    }
+*/
 }

@@ -27,7 +27,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MockHttpSession.
  * 
