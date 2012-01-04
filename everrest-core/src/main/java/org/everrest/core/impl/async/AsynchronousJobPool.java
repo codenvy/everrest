@@ -22,7 +22,6 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.util.Logger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,15 +37,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PreDestroy;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 /**
  * Pool of asynchronous jobs.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -66,8 +62,10 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
       {
          if (executor.getPoolSize() >= executor.getCorePoolSize())
+         {
             throw new RejectedExecutionException(
                "Can't accept new asynchronous request. Too many asynchronous jobs in progress. ");
+         }
          delegate.rejectedExecution(r, executor);
       }
    }
@@ -96,7 +94,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    public AsynchronousJobPool(EverrestConfiguration config)
    {
       if (config == null)
+      {
          config = new EverrestConfiguration();
+      }
 
       this.poolSize = config.getAsynchronousPoolSize();
       this.queueSize = config.getAsynchronousQueueSize();
@@ -124,9 +124,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       });
    }
 
-   /**
-    * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
-    */
+   /** @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class) */
    @Override
    public AsynchronousJobPool getContext(Class<?> type)
    {
@@ -143,9 +141,13 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    public String addJob(final Object resource, final ResourceMethodDescriptor resourceMethod, final Object[] params)
       throws AsynchronousJobRejectedException
    {
-      AsynchronousJob job =
-         new AsynchronousJob(newCallable(resource, resourceMethod.getMethod(), params),
-            ("" + jobNumber.getAndIncrement()), jobTimeout, TimeUnit.MINUTES, resourceMethod);
+      AsynchronousJob job = new AsynchronousJob(
+         newCallable(resource, resourceMethod.getMethod(), params),
+         Long.toString(jobNumber.getAndIncrement()),
+         jobTimeout,
+         TimeUnit.MINUTES,
+         resourceMethod
+      );
 
       try
       {
@@ -160,7 +162,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       jobs.put(jobId, job);
 
       if (LOG.isDebugEnabled())
+      {
          LOG.debug("Add asynchronous job, ID " + jobId);
+      }
 
       return jobId;
    }
@@ -170,31 +174,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       return new Callable<Object>()
       {
          @Override
-         public Object call()
+         public Object call() throws Exception
          {
-            try
-            {
-               return method.invoke(resource, params);
-            }
-            catch (InvocationTargetException e)
-            {
-               Throwable cause = e.getCause();
-               if (WebApplicationException.class == cause.getClass())
-                  return ((WebApplicationException)cause).getResponse();
-               return fromThrowable(cause);
-            }
-            catch (IllegalArgumentException e)
-            {
-               return fromThrowable(e);
-            }
-            catch (IllegalAccessException e)
-            {
-               return fromThrowable(e);
-            }
-            catch (Throwable e)
-            {
-               return fromThrowable(e);
-            }
+            return method.invoke(resource, params);
          }
       };
    }
@@ -210,7 +192,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       if (job != null)
       {
          if (stopJob)
+         {
             job.cancel(true);
+         }
          return true;
       }
       return false;
@@ -223,22 +207,14 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       try
       {
          if (!pool.awaitTermination(5, TimeUnit.SECONDS))
+         {
             pool.shutdownNow();
+         }
       }
       catch (InterruptedException e)
       {
          pool.shutdownNow();
          Thread.currentThread().interrupt();
       }
-   }
-
-   private Response fromThrowable(Throwable t)
-   {
-      if (LOG.isDebugEnabled())
-         LOG.error(t.getMessage(), t);
-      String msg = t.getMessage();
-      if (msg != null)
-         return Response.serverError().entity(msg).type(MediaType.TEXT_PLAIN).build();
-      return Response.serverError().build();
    }
 }

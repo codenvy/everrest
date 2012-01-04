@@ -19,7 +19,9 @@
 package org.everrest.core.impl.async;
 
 import org.everrest.core.GenericContainerRequest;
+import org.everrest.core.impl.InternalException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.DELETE;
@@ -39,8 +41,8 @@ import javax.ws.rs.ext.Providers;
 /**
  * Service to get result of invocation asynchronous job from {@link AsynchronousJobPool}.
  * Instance of AsynchronousJobPool obtained in instance of this class via mechanism of injections.
- * This resource must always be deployed as per-request resource. 
- * 
+ * This resource must always be deployed as per-request resource.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -56,8 +58,10 @@ public class AsynchronousJobService
       AsynchronousJobPool pool = getJobPool();
       AsynchronousJob async = pool.getJob(jobId);
       if (async == null)
+      {
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
             .entity("Job " + jobId + " not found. ").type(MediaType.TEXT_PLAIN).build());
+      }
       if (async.isDone())
       {
          Object result;
@@ -67,11 +71,21 @@ public class AsynchronousJobService
          }
          catch (InterruptedException e)
          {
-            throw new WebApplicationException(e);
+            throw new InternalException(e);
          }
          catch (ExecutionException e)
          {
-            throw new WebApplicationException(e);
+            Throwable theCause = e.getCause();
+            if (theCause instanceof InvocationTargetException)
+            {
+               theCause = ((InvocationTargetException)theCause).getTargetException();
+               if (theCause instanceof WebApplicationException)
+               {
+                  throw (WebApplicationException)theCause;
+               }
+               throw new InternalException(theCause);
+            }
+            throw new InternalException(e);
          }
          finally
          {
@@ -88,8 +102,10 @@ public class AsynchronousJobService
             {
                Response response = (Response)result;
                if (response.getMetadata().getFirst(HttpHeaders.CONTENT_TYPE) == null && response.getEntity() != null)
+               {
                   response.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE,
                      ((GenericContainerRequest)request).getAcceptableMediaType(async.getResourceMethod().produces()));
+               }
                return response;
             }
             else
@@ -113,8 +129,10 @@ public class AsynchronousJobService
    {
       AsynchronousJobPool jobPool = getJobPool();
       if (!jobPool.removeJob(jobId, true))
+      {
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
             .entity("Job " + jobId + " not found. ").type(MediaType.TEXT_PLAIN).build());
+      }
    }
 
    private AsynchronousJobPool getJobPool()
@@ -124,7 +142,9 @@ public class AsynchronousJobService
          ContextResolver<AsynchronousJobPool> asynchJobsResolver =
             providers.getContextResolver(AsynchronousJobPool.class, null);
          if (asynchJobsResolver != null)
+         {
             return asynchJobsResolver.getContext(null);
+         }
       }
       throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");
    }

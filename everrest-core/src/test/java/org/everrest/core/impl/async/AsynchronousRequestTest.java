@@ -120,7 +120,7 @@ public class AsynchronousRequestTest extends BaseTest
       assertEquals(202, response.getStatus());
       String jobUrl = (String)response.getEntity();
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      response = getAsyncronousResponse(jobUrl, writer);
+      response = getAsynchronousResponse(jobUrl, writer);
       assertEquals(200, response.getStatus());
       assertEquals("asynchronous response", new String(writer.getBody()));
       // Try one more time. Job must be removed from pool so expected result is 404.
@@ -150,7 +150,7 @@ public class AsynchronousRequestTest extends BaseTest
       assertEquals(202, response.getStatus());
       String jobUrl = (String)response.getEntity();
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      response = getAsyncronousResponse(jobUrl, writer);
+      response = getAsynchronousResponse(jobUrl, writer);
       assertEquals(200, response.getStatus());
       assertEquals("application/json", response.getContentType().toString());
       JsonParser parser = new JsonParser();
@@ -167,10 +167,10 @@ public class AsynchronousRequestTest extends BaseTest
       assertEquals(202, response.getStatus());
       String jobUrl = (String)response.getEntity();
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      response = getAsyncronousResponse(jobUrl, writer);
+      response = getAsynchronousResponse(jobUrl, writer);
       assertEquals(500, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
-      assertEquals("test process exceptions in asynchronous mode", new String(writer.getBody()));
+      assertEquals("java.lang.RuntimeException: test process exceptions in asynchronous mode", new String(writer.getBody()));
       unregistry(Resource3.class);
    }
 
@@ -181,7 +181,7 @@ public class AsynchronousRequestTest extends BaseTest
       assertEquals(202, response.getStatus());
       String jobUrl = (String)response.getEntity();
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      response = getAsyncronousResponse(jobUrl, writer);
+      response = getAsynchronousResponse(jobUrl, writer);
       assertEquals(200, response.getStatus());
       assertEquals("application/json", response.getContentType().toString());
       JsonParser parser = new JsonParser();
@@ -191,7 +191,7 @@ public class AsynchronousRequestTest extends BaseTest
       unregistry(Resource4.class);
    }
 
-   private ContainerResponse getAsyncronousResponse(String jobUrl, ByteArrayContainerResponseWriter writer) throws Exception
+   private ContainerResponse getAsynchronousResponse(String jobUrl, ByteArrayContainerResponseWriter writer) throws Exception
    {
       ContainerResponse response;
       // Limit end time to avoid infinite loop if something going wrong.
