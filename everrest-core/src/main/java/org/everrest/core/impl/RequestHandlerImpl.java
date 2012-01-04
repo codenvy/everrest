@@ -190,12 +190,12 @@ public class RequestHandlerImpl implements RequestHandler
                {
                   // Warn about error in debug mode only.
                   if (LOG.isDebugEnabled() && e.getCause() != null)
-                     LOG.warn("WebApplication exception occurs.", e.getCause());
+                     LOG.debug("WebApplication exception occurs.", e.getCause());
                }
                else
                {
                   if (e.getCause() != null)
-                     LOG.warn("WebApplication exception occurs.", e.getCause());
+                     LOG.error("WebApplication exception occurs.", e.getCause());
                }
                // -----
                if (errorResponse.getEntity() == null)
@@ -231,7 +231,7 @@ public class RequestHandlerImpl implements RequestHandler
                {
                   // Hide error message if exception mapper exists.
                   if (LOG.isDebugEnabled())
-                     LOG.warn("Internal error occurs.", cause);
+                     LOG.debug("Internal error occurs.", cause);
                   response.setResponse(excmap.toResponse(cause));
                }
                else
