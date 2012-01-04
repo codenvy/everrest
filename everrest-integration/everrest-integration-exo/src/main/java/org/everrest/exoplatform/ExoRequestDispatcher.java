@@ -36,6 +36,7 @@ import org.exoplatform.container.ExoContainerContext;
 import org.picocontainer.ComponentAdapter;
 
 import java.util.List;
+
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -103,11 +104,14 @@ public final class ExoRequestDispatcher extends RequestDispatcher
             if (null != provider)
             {
                RestfulContainer container = provider.get();
-               RestfulComponentAdapter resourceAdapter =
-                  (RestfulComponentAdapter)container.getMatchedResource(requestPath, parameterValues);
-               if (null != resourceAdapter)
+               if (null != container)
                {
-                  return (ObjectFactory)resourceAdapter.getFactory();
+                  RestfulComponentAdapter resourceAdapter =
+                     (RestfulComponentAdapter)container.getMatchedResource(requestPath, parameterValues);
+                  if (null != resourceAdapter)
+                  {
+                     return (ObjectFactory)resourceAdapter.getFactory();
+                  }
                }
             }
          }

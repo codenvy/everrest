@@ -53,6 +53,8 @@ public class ExoAsynchronousJobPool extends AsynchronousJobPool implements Conte
    protected Callable<Object> newCallable(Object resource, Method method, Object[] params)
    {
       final Callable<Object> callable = super.newCallable(resource, method, params);
+      java.lang.reflect.Proxy.newProxyInstance(callable.getClass().getClassLoader(), callable
+         .getClass().getInterfaces(), new ConversationStateRestoreHandler(callable)).toString();
       return (Callable<Object>)java.lang.reflect.Proxy.newProxyInstance(callable.getClass().getClassLoader(), callable
          .getClass().getInterfaces(), new ConversationStateRestoreHandler(callable));
    }
@@ -60,9 +62,9 @@ public class ExoAsynchronousJobPool extends AsynchronousJobPool implements Conte
    private static final class ConversationStateRestoreHandler implements InvocationHandler
    {
       private final WeakReference<ConversationState> conversationStateHolder;
-      private final Object callable;
+      private final Callable callable;
 
-      public ConversationStateRestoreHandler(Object callable)
+      public ConversationStateRestoreHandler(Callable callable)
       {
          this.callable = callable;
          // Copy ConversationState from a 'main' thread.
@@ -85,13 +87,15 @@ public class ExoAsynchronousJobPool extends AsynchronousJobPool implements Conte
                   saved = new ConversationState(new Identity(IdentityConstants.ANONIM));
                }
                ConversationState.setCurrent(saved);
-               return theMethod.invoke(callable, theParams);
+               // Directly call method 'call' to simplify exception's handling.
+               return callable.call();
             }
             finally
             {
                ConversationState.setCurrent(null);
             }
          }
+         // Call other methods with reflection. It may be 'hashCode', 'equals' or 'toString' methods.
          return theMethod.invoke(callable, theParams);
       }
    }

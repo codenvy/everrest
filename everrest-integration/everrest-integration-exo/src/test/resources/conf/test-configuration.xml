@@ -26,6 +26,10 @@
       <key>RestfulContainerProvider</key>
       <type>org.everrest.exoplatform.container.RestfulContainerProvider</type>
    </component>
+   <component>
+      <key>everrest</key>
+      <type>org.everrest.exoplatform.container.RestfulContainer</type>
+   </component>
 
    <!-- Add Resources and Providers in container directly -->
    <component>
