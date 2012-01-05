@@ -1824,6 +1824,7 @@ public class URI
 
    private static final String nl = System.getProperty("line.separator");
 
+/*
    private static void testParser(URI base, String relURI, String result) throws Exception
    {
       if (!(new URI(base, relURI).toExternalForm().equals(result)))
@@ -1890,4 +1891,5 @@ public class URI
          throw new Exception("Test failed: " + nl + "  escaped-string: " + escaped + nl + "  unescaped:      "
             + unescape(escaped, null) + nl + "  expected:       " + raw);
    }
+*/
 }

@@ -97,7 +97,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
     */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      // say as support all objects, see _TODO_ above
+      // say as support all objects
       //return Object.class.isAssignableFrom(type);
       return !isIgnored(type);
    }
@@ -159,7 +159,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
     */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      // say as support all objects, see _TODO_ above
+      // say as support all objects
       //return Object.class.isAssignableFrom(type);
       return !isIgnored(type);
    }
