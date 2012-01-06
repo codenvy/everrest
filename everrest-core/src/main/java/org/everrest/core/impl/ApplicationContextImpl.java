@@ -561,7 +561,6 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       {
          for (LifecycleComponent c : perRequest)
          {
-            // Remember first exception but let's to continue destroy other components.
             try
             {
                c.destroy();
