@@ -21,6 +21,7 @@ package org.everrest.core.impl;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.ConstructorParameter;
+import org.everrest.core.DependencySupplier;
 import org.everrest.core.impl.method.ParameterHelper;
 import org.everrest.core.impl.method.ParameterResolver;
 import org.everrest.core.impl.method.ParameterResolverFactory;
@@ -231,34 +232,38 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
             {
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
+               {
                   throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
+               }
 
                throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
             }
          }
          else
          {
-            // XXX need to use @Inject annotation here ???
-
             // If parameter not has not annotation then get constructor parameter
-            // from DependencyInjector, this is out of scope JAX-RS specification.
-
-            if (context.getDependencySupplier() == null)
+            // from DependencySupplier, this is out of scope JAX-RS specification.
+            DependencySupplier dependencies = context.getDependencySupplier();
+            if (dependencies == null)
             {
-               String msg =
-                  "Can't instantiate resource " + resourceClass
-                     + ". DependencyInjector not found, not able get required parameter " + cp;
+               String msg = "Can't instantiate resource "
+                  + resourceClass.getName()
+                  + ". DependencySupplier not found, constructor's parameter of type "
+                  + cp.getGenericType()
+                  + " could not be injected. ";
                LOG.error(msg);
                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
                   .type(MediaType.TEXT_PLAIN).build());
             }
 
-            Object tmp = context.getDependencySupplier().getComponent(cp);
+            Object tmp = dependencies.getComponent(cp);
             if (tmp == null)
             {
-               String msg =
-                  "Can't instantiate resource " + resourceClass + " by using constructor " + this
-                     + ". Not found parameter " + cp;
+               String msg = "Can't instantiate resource "
+                  + resourceClass.getName()
+                  + ". Constructor's parameter of type "
+                  + cp.getGenericType()
+                  + " could not be injected. ";
                LOG.error(msg);
                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
                   .type(MediaType.TEXT_PLAIN).build());
