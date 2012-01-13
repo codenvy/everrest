@@ -74,12 +74,6 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
    private static final AtomicLong jobNumber = new AtomicLong(1);
 
-   /** Number of threads to serve asynchronous jobs. */
-   private final int poolSize;
-
-   /** Maximum number of task in queue. */
-   private final int queueSize;
-
    /** When timeout (in minutes) reached then an asynchronous operation may be removed from the pool. */
    private final int jobTimeout;
 
@@ -98,8 +92,10 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          config = new EverrestConfiguration();
       }
 
-      this.poolSize = config.getAsynchronousPoolSize();
-      this.queueSize = config.getAsynchronousQueueSize();
+      /* Number of threads to serve asynchronous jobs. */
+      int poolSize = config.getAsynchronousPoolSize();
+      /* Maximum number of task in queue. */
+      int queueSize = config.getAsynchronousQueueSize();
       this.maxCacheSize = config.getAsynchronousCacheSize();
       this.jobTimeout = config.getAsynchronousJobTimeout();
 

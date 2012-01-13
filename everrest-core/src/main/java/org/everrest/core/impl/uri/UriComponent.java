@@ -204,7 +204,6 @@ public final class UriComponent
             inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/") + 1, inputBuffer.length());
             continue;
          }
-         else
          // if the input buffer begins with a prefix of "/./" or "/.", where "." is
          // a complete path segment, then replace that prefix with "/" in the input buffer.
          // http://www.unix.com.ua/rfc/rfc3986.html#sB.
@@ -219,7 +218,6 @@ public final class UriComponent
             inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/", 1), inputBuffer.length());
             continue;
          }
-         else
          // if the input buffer begins with a prefix of "/../" or "/..", where ".."
          // is a complete path segment, then replace that prefix with "/" in the input buffer and
          // remove the last segment and its preceding "/" (if any) from the output buffer.
@@ -236,7 +234,6 @@ public final class UriComponent
             outputBuffer.delete(outputBuffer.lastIndexOf("/"), outputBuffer.length());
             continue;
          }
-         else
          // if the input buffer consists only of "." or "..", then remove that from
          // the input buffer.
          // http://www.unix.com.ua/rfc/rfc3986.html#sD.
@@ -245,7 +242,6 @@ public final class UriComponent
             inputBuffer = "";
             continue;
          }
-         else
          // move the first path segment in the input buffer to the end of the
          // output buffer, including the initial "/" character (if any) and any subsequent
          // characters up to, but not including, the next "/" character or the end of the

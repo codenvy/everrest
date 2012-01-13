@@ -53,7 +53,7 @@ public interface ObjectModel
    Class<?> getObjectClass();
 
    /**
-    * @param key
+    * @param key property name
     * @return property by key
     * @see #getProperties()
     */

@@ -84,7 +84,7 @@ public class UriBuilderImpl extends UriBuilder
     * {@inheritDoc}
     */
    @Override
-   public URI buildFromMap(Map<String, ? extends Object> values)
+   public URI buildFromMap(Map<String, ?> values)
    {
       encode();
       String uri =
@@ -104,7 +104,7 @@ public class UriBuilderImpl extends UriBuilder
     * {@inheritDoc}
     */
    @Override
-   public URI buildFromEncodedMap(Map<String, ? extends Object> values)
+   public URI buildFromEncodedMap(Map<String, ?> values)
    {
       encode();
       String uri =

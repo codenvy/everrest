@@ -68,6 +68,10 @@ public class FieldInjectorImpl implements FieldInjector
    /** See {@link java.lang.reflect.Field} . */
    private final java.lang.reflect.Field jfield;
 
+   /**
+    * Setter for field. If setter available it will be used for field initialization.
+    * Otherwise field initialized directly.
+    */
    private final Method setter;
 
    /**
@@ -85,12 +89,10 @@ public class FieldInjectorImpl implements FieldInjector
       boolean encoded = false;
 
       // is resource provider
-      boolean provider = resourceClass.getAnnotation(Provider.class) != null;
-      List<String> allowedAnnotation;
-      if (provider)
-         allowedAnnotation = ParameterHelper.PROVIDER_FIELDS_ANNOTATIONS;
-      else
-         allowedAnnotation = ParameterHelper.RESOURCE_FIELDS_ANNOTATIONS;
+      final boolean provider = resourceClass.getAnnotation(Provider.class) != null;
+      List<String> allowedAnnotation = provider
+         ? ParameterHelper.PROVIDER_FIELDS_ANNOTATIONS
+         : ParameterHelper.RESOURCE_FIELDS_ANNOTATIONS;
 
       for (Annotation a : annotations)
       {
@@ -104,10 +106,9 @@ public class FieldInjectorImpl implements FieldInjector
             }
             else
             {
-               String msg =
+               throw new RuntimeException(
                   "JAX-RS annotations on one of fields " + jfield.toString() + " are equivocality. Annotations: "
-                     + annotation.toString() + " and " + a.toString() + " can't be applied to one field.";
-               throw new RuntimeException(msg);
+                  + annotation.toString() + " and " + a.toString() + " can't be applied to one field. ");
             }
 
             // @Encoded has not sense for Provider. Provider may use only @Context annotation for fields

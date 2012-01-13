@@ -143,17 +143,20 @@ public interface ExtHttpHeaders extends HttpHeaders
    /**
     * JCR-specific header to add an opportunity to create nodes of the specific
     * types via WebDAV.
+    * @deprecated
     */
    public static final String FILE_NODETYPE = "File-NodeType";
 
    /**
     * JCR-specific header to add an opportunity to create nodes of the specific
     * types via WebDAV.
+    * @deprecated
     */
    public static final String CONTENT_NODETYPE = "Content-NodeType";
 
    /**
     * JCR-specific header to add an opportunity to set node mixins via WebDAV.
+    * @deprecated
     */
    public static final String CONTENT_MIXINTYPES = "Content-MixinTypes";
 

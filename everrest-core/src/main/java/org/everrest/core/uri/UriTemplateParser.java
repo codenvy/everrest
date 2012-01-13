@@ -139,17 +139,23 @@ public class UriTemplateParser
    public final int[] getGroupIndexes()
    {
       if (names.isEmpty())
+      {
          return null;
+      }
       int[] indxs = new int[names.size() + 1];
       indxs[0] = 1;
       for (int i = 1; i < indxs.length; i++)
+      {
          indxs[i] = indxs[i - 1] + groupIndexes.get(i - 1);
+      }
 
       // Check are groups indexes goes one by one.
       for (int i = 0; i < indxs.length; i++)
       {
          if (indxs[i] != i + 1)
+         {
             return indxs;
+         }
       }
       return null;
    }
@@ -234,14 +240,18 @@ public class UriTemplateParser
       for (; p < length; p++)
       {
          char ch = str.charAt(p);
-         if (ch == ' ')
-            continue; // skip whitespace
-         else if (Character.isLetterOrDigit(ch) || ch == '-' || ch == '_' || ch == '.')
+         if (Character.isLetterOrDigit(ch) || ch == '-' || ch == '_' || ch == '.')
+         {
             sb.append(ch);
+         }
          else if (ch == ':')
+         {
             break;
-         else
+         }
+         else if (ch != ' ') // skip whitespace
+         {
             throw new IllegalArgumentException("Wrong character at part " + str);
+         }
       }
       name = sb.toString();
       // TODO remove restriction that not allowed have few path parameters with
@@ -249,7 +259,9 @@ public class UriTemplateParser
       // be the same. E.g. /a/{x}/b/{x} and /a/{x:\d+}/b/{x:\d+} must be allowed,
       // but /a/{x}/b/{x:\d+} is not allowed. This task is not high priority.
       if (names.contains(name))
+      {
          throw new IllegalArgumentException("URI template variables name " + name + " already registered.");
+      }
       names.add(name);
       return p;
    }
@@ -270,7 +282,9 @@ public class UriTemplateParser
          char ch = str.charAt(i);
          // check is character corresponds to regular expression character
          if (REGEX_CHARACTERS.indexOf(ch) != -1)
+         {
             regex.append('\\');
+         }
 
          regex.append(ch);
          normalizedTemplate.append(ch);

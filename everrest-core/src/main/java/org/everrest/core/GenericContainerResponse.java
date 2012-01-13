@@ -33,7 +33,7 @@ public interface GenericContainerResponse
 {
 
    /**
-    * Set response. New response can be override old one.
+    * Set response. New response can override old one.
     * 
     * @param response See {@link Response}
     */

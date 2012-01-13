@@ -58,7 +58,6 @@ public class JsonWriter
     * Constructs JsonWriter.
     * 
     * @param out OutputStream.
-    * @throws UnsupportedEncodingException
     */
    public JsonWriter(OutputStream out)
    {

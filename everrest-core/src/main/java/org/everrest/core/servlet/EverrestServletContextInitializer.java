@@ -66,7 +66,6 @@ public class EverrestServletContextInitializer
     * annotations. Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter} .
     * 
     * @return instance of javax.ws.rs.core.Application
-    * @throws IOException if any i/o errors occur
     */
    public Application getApplication()
    {

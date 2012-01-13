@@ -158,13 +158,15 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       public boolean contains(Object o)
       {
          if (!(o instanceof Entry))
+         {
             return false;
+         }
          Entry e = (Entry)o;
          Object k = e.getKey();
          Object v = e.getValue();
-         if ((k == null || k instanceof String) && (v == null || v instanceof List))
-            return m.entrySet().contains(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
-         return false;
+         return (k == null || k instanceof String)
+            && (v == null || v instanceof List)
+            && m.entrySet().contains(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
       }
 
       /**
@@ -202,13 +204,15 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       public boolean remove(Object o)
       {
          if (!(o instanceof Entry))
+         {
             return false;
+         }
          Entry e = (Entry)o;
          Object k = e.getKey();
          Object v = e.getValue();
-         if ((k == null || k instanceof String) && (v == null || v instanceof List))
-            return m.entrySet().remove(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
-         return false;
+         return (k == null || k instanceof String)
+            && (v == null || v instanceof List)
+            && m.entrySet().remove(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
       }
 
       /**
@@ -249,10 +253,10 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       public boolean contains(Object o)
       {
          if (o == null)
+         {
             return m.keySet().contains(new CaselessStringWrapper(null));
-         if (!(o instanceof String))
-            return false;
-         return m.keySet().contains(new CaselessStringWrapper((String)o));
+         }
+         return o instanceof String && m.keySet().contains(new CaselessStringWrapper((String)o));
       }
 
       /**
@@ -288,10 +292,10 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       public boolean remove(Object o)
       {
          if (o == null)
+         {
             return m.keySet().remove(new CaselessStringWrapper(null));
-         if (!(o instanceof String))
-            return false;
-         return m.keySet().remove(new CaselessStringWrapper((String)o));
+         }
+         return o instanceof String && m.keySet().remove(new CaselessStringWrapper((String)o));
       }
 
       /**
@@ -429,11 +433,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       {
          return m.containsKey(new CaselessStringWrapper(null));
       }
-      if (!(key instanceof String))
-      {
-         return false;
-      }
-      return m.containsKey(new CaselessStringWrapper((String)key));
+      return key instanceof String && m.containsKey(new CaselessStringWrapper((String)key));
    }
 
    /**

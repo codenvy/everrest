@@ -109,15 +109,17 @@ public class Language
    public boolean isCompatible(Language other)
    {
       if (other == null)
+      {
          return false;
+      }
       if ("*".equals(getPrimaryTag()))
+      {
          return true;
+      }
       // primary tags match and sub-tag not specified (any matches)
       // if 'accept-language' is 'en' then 'en-us' and 'en-gb' is matches
-      if (getPrimaryTag().equalsIgnoreCase(other.getPrimaryTag()) && "".equals(getSubTag()))
-         return true;
-
-      return this.toString().equalsIgnoreCase(other.toString());
+      return (getPrimaryTag().equalsIgnoreCase(other.getPrimaryTag()) && getSubTag().isEmpty())
+         || this.toString().equalsIgnoreCase(other.toString());
    }
 
    /**
@@ -127,10 +129,10 @@ public class Language
    {
       StringBuilder sb = new StringBuilder();
       sb.append(getPrimaryTag());
-      if (!"".equals(getSubTag()))
+      if (!getSubTag().isEmpty())
+      {
          sb.append('-').append(getSubTag());
-
+      }
       return sb.toString();
    }
-
 }

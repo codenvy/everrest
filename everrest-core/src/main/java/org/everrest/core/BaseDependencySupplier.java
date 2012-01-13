@@ -144,9 +144,8 @@ public abstract class BaseDependencySupplier implements DependencySupplier
    /**
     * Get Provider of type <code>providerType</code>.
     *
-    * @param <T> type of Provider
     * @param providerType
-    * @return Provider
+    * @return Provider the instance of javax.inject.Provider for specified <code>providerType</code>
     */
    public javax.inject.Provider<?> getProvider(Type providerType)
    {

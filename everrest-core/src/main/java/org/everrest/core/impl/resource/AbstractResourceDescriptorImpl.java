@@ -92,6 +92,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     * Constructs new instance of AbstractResourceDescriptor without path (sub-resource).
     * 
     * @param resourceClass resource class
+    * @param scope the components lifecycle scope
     */
    public AbstractResourceDescriptorImpl(Class<?> resourceClass, ComponentLifecycleScope scope)
    {
@@ -198,7 +199,6 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   || ac == Path.class || ac == PathParam.class || ac == Produces.class || ac == QueryParam.class || ac
                   .getAnnotation(HttpMethod.class) != null))
             {
-
                LOG.warn("Non-public method at resource " + toString() + " annotated with JAX-RS annotation: " + a);
             }
          }
@@ -221,12 +221,16 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             {
                Produces p = getMethodAnnotation(method, resourceClass, Produces.class, false);
                if (p == null)
+               {
                   p = resourceClass.getAnnotation(Produces.class); // from resource class
+               }
                List<MediaType> produces = MediaTypeHelper.createProducesList(p);
 
                Consumes c = getMethodAnnotation(method, resourceClass, Consumes.class, false);
                if (c == null)
+               {
                   c = resourceClass.getAnnotation(Consumes.class); // from resource class
+               }
                List<MediaType> consumes = MediaTypeHelper.createConsumesList(c);
 
                if (subPath == null)
@@ -244,10 +248,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   }
                   else
                   {
-                     String msg =
-                        "Two resource method " + res + " and " + exist
-                           + " with the same HTTP method, consumes and produces found.";
-                     throw new RuntimeException(msg);
+                     throw new RuntimeException("Two resource method " + res + " and " + exist
+                        + " with the same HTTP method, consumes and produces found.");
                   }
                }
                else
@@ -256,13 +258,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   SubResourceMethodDescriptor subRes =
                      new SubResourceMethodDescriptorImpl(new PathValue(subPath.value()), method, httpMethod.value(),
                         params, this, consumes, produces, additional);
-                  SubResourceMethodDescriptor exist = null;
+
                   ResourceMethodMap<SubResourceMethodDescriptor> rmm =
                      subResourceMethods.getMethodMap(subRes.getUriPattern());
                   // rmm is never null, empty map instead
 
                   List<SubResourceMethodDescriptor> l = rmm.getList(httpMethod.value());
-                  exist =
+                  SubResourceMethodDescriptor exist =
                      (SubResourceMethodDescriptor)findMethodResourceMediaType(l, subRes.consumes(), subRes.produces());
                   if (exist == null)
                   {
@@ -270,10 +272,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   }
                   else
                   {
-                     String msg =
-                        "Two sub-resource method " + subRes + " and " + exist
-                           + " with the same HTTP method, path, consumes and produces found.";
-                     throw new RuntimeException(msg);
+                     throw new RuntimeException("Two sub-resource method " + subRes + " and " + exist
+                        + " with the same HTTP method, path, consumes and produces found.");
                   }
                }
             }
@@ -291,10 +291,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   }
                   else
                   {
-                     String msg =
-                        "Two sub-resource locators " + loc + " and " + subResourceLocators.get(loc.getUriPattern())
-                           + " with the same path found.";
-                     throw new RuntimeException(msg);
+                     throw new RuntimeException("Two sub-resource locators " + loc + " and "
+                        + subResourceLocators.get(loc.getUriPattern()) + " with the same path found.");
                   }
                }
             }
@@ -319,6 +317,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
       resourceMethods.sort();
       subResourceMethods.sort();
+
       // sub-resource locators already sorted
    }
 
@@ -333,7 +332,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    {
       Class<?>[] parameterClasses = method.getParameterTypes();
       if (parameterClasses.length == 0)
+      {
          return java.util.Collections.emptyList();
+      }
 
       Type[] parameterGenTypes = method.getGenericParameterTypes();
       Annotation[][] annotations = method.getParameterAnnotations();
@@ -406,7 +407,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
       List<ResourceMethodDescriptor> getRes = resourceMethods.get(HttpMethod.GET);
       if (getRes == null || getRes.size() == 0)
+      {
          return; // nothing to do, there is not 'GET' methods
+      }
 
       // If there is no methods for 'HEAD' anyway never return null.
       // Instead null empty List will be returned.
@@ -415,28 +418,29 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       for (ResourceMethodDescriptor rmd : getRes)
       {
          if (findMethodResourceMediaType(headRes, rmd.consumes(), rmd.produces()) == null)
+         {
             headRes.add(new ResourceMethodDescriptorImpl(rmd.getMethod(), HttpMethod.HEAD, rmd.getMethodParameters(),
                this, rmd.consumes(), rmd.produces(), rmd.getAnnotations()));
+         }
       }
       for (ResourceMethodMap<SubResourceMethodDescriptor> rmm : subResourceMethods.values())
       {
          List<SubResourceMethodDescriptor> getSubres = rmm.get(HttpMethod.GET);
          if (getSubres == null || getSubres.size() == 0)
+         {
             continue; // nothing to do, there is not 'GET' methods
+         }
 
          // If there is no methods for 'HEAD' anyway never return null.
          // Instead null empty List will be returned.
          List<SubResourceMethodDescriptor> headSubres = rmm.getList(HttpMethod.HEAD);
-
-         Iterator<SubResourceMethodDescriptor> i = getSubres.iterator();
-         while (i.hasNext())
+         for (SubResourceMethodDescriptor srmd : getSubres)
          {
-            SubResourceMethodDescriptor srmd = i.next();
             if (findMethodResourceMediaType(headSubres, srmd.consumes(), srmd.produces()) == null)
             {
                headSubres.add(new SubResourceMethodDescriptorImpl(srmd.getPathValue(), srmd.getMethod(),
-                  HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(), srmd
-                     .getAnnotations()));
+                  HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(),
+                  srmd.getAnnotations()));
             }
          }
       }
@@ -479,7 +483,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       {
          T endPoint = null;
          if ((endPoint = a.annotationType().getAnnotation(annotation)) != null)
+         {
             return endPoint;
+         }
       }
       return null;
    }
@@ -499,22 +505,19 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       Class<T> annotationClass, boolean metaAnnotation)
    {
 
-      T annotation = null;
-      if (metaAnnotation)
-         annotation = getMetaAnnotation(method, annotationClass);
-      else
-         annotation = method.getAnnotation(annotationClass);
+      T annotation = metaAnnotation ? getMetaAnnotation(method, annotationClass) : method.getAnnotation(annotationClass);
 
       if (annotation == null)
       {
-
          Method inhMethod = null;
 
          try
          {
             Class<?> superclass = resourceClass.getSuperclass();
             if (superclass != null && superclass != Object.class)
+            {
                inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
+            }
          }
          catch (NoSuchMethodException e)
          {
@@ -533,10 +536,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   }
                   else
                   {
-                     String msg =
-                        "JAX-RS annotation on method " + inhMethod.getName() + " of resource " + toString()
-                           + " is equivocality.";
-                     throw new RuntimeException(msg);
+                     throw new RuntimeException("JAX-RS annotation on method " + inhMethod.getName() + " of resource "
+                        + toString()                        + " is equivocality.");
                   }
                }
                catch (NoSuchMethodException exc)
@@ -571,44 +572,19 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    {
 
       ResourceMethodDescriptor matched = null;
-      for (T rmd : rmds)
+      for (Iterator<T> iterator = rmds.iterator(); matched == null && iterator.hasNext(); )
       {
-         if (rmd.consumes().size() != consumes.size())
-            return null;
-         if (rmd.produces().size() != produces.size())
-            return null;
-         for (MediaType c1 : rmd.consumes())
+         T rmd = iterator.next();
+
+         if (rmd.consumes().size() != consumes.size() || rmd.produces().size() != produces.size())
          {
-            boolean eq = false;
-            for (MediaType c2 : consumes)
-            {
-               if (c1.equals(c2))
-               {
-                  eq = true;
-                  break;
-               }
-            }
-            if (!eq)
-               return null;
+            continue;
          }
 
-         for (MediaType p1 : rmd.produces())
+         if (rmd.consumes().containsAll(consumes) && rmd.produces().containsAll(produces))
          {
-            boolean eq = false;
-            for (MediaType p2 : produces)
-            {
-               if (p1.equals(p2))
-               {
-                  eq = true;
-                  break;
-               }
-            }
-            if (!eq)
-               return null;
+            matched = rmd; // matched resource method
          }
-
-         matched = rmd; // matched resource method
-         break;
       }
 
       return matched;

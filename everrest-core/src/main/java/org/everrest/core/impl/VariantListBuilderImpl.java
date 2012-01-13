@@ -19,6 +19,7 @@
 package org.everrest.core.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -110,9 +111,7 @@ public class VariantListBuilderImpl extends VariantListBuilder
    @Override
    public VariantListBuilder encodings(String... encs)
    {
-      for (String enc : encs)
-         encodings.add(enc);
-
+      Collections.addAll(encodings, encs);
       return this;
    }
 
@@ -122,9 +121,7 @@ public class VariantListBuilderImpl extends VariantListBuilder
    @Override
    public VariantListBuilder languages(Locale... langs)
    {
-      for (Locale lang : langs)
-         languages.add(lang);
-
+      Collections.addAll(languages, langs);
       return this;
    }
 
@@ -134,9 +131,7 @@ public class VariantListBuilderImpl extends VariantListBuilder
    @Override
    public VariantListBuilder mediaTypes(MediaType... mediaTypes)
    {
-      for (MediaType mediaType : mediaTypes)
-         mediatypes.add(mediaType);
-
+      Collections.addAll(mediatypes, mediaTypes);
       return this;
    }
 

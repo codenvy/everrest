@@ -104,6 +104,7 @@ public class AsyncTest extends StandaloneBaseTest
             && System.currentTimeMillis() < endTime)
          {
             wait(100);
+            writer.reset();
          }
       }
       return response;

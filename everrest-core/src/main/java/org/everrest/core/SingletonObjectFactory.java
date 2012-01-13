@@ -29,7 +29,7 @@ public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFact
 {
 
    /**
-    * @see ObjectModel.
+    * @see ObjectModel
     */
    protected final T model;
 

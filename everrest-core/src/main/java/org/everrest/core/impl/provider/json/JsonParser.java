@@ -342,7 +342,7 @@ public class JsonParser
                   return '/';
                }
             }
-            else if (c == -1 || c > ' ')
+            else if (c > ' ')
             {
                break;
             }

@@ -165,11 +165,7 @@ public class UriPattern
     */
    public boolean equals(Object obj)
    {
-      if (obj == null)
-         return false;
-      if (obj.getClass() != getClass())
-         return false;
-      return getRegex().equals(((UriPattern)obj).getRegex());
+      return obj != null && obj.getClass() == getClass() && getRegex().equals(((UriPattern)obj).getRegex());
    }
 
    /**
@@ -243,7 +239,9 @@ public class UriPattern
    {
 
       if (parameters == null)
+      {
          throw new IllegalArgumentException("list is null");
+      }
 
       if (uri == null || uri.length() == 0)
       {
@@ -256,18 +254,24 @@ public class UriPattern
 
       Matcher m = pattern.matcher(uri);
       if (!m.matches())
+      {
          return false;
+      }
 
       parameters.clear();
       if (groupIndexes == null)
       {
          for (int i = 1; i <= m.groupCount(); i++)
+         {
             parameters.add(m.group(i));
+         }
       }
       else
       {
          for (int i = 0; i < groupIndexes.length - 1; i++)
+         {
             parameters.add(m.group(groupIndexes[i]));
+         }
       }
       return true;
 
@@ -296,7 +300,7 @@ public class UriPattern
     * @return the URI string
     */
    public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
-      String query, String fragment, Map<String, ? extends Object> values, boolean encode)
+      String query, String fragment, Map<String, ?> values, boolean encode)
    {
 
       StringBuilder sb = new StringBuilder();
@@ -384,7 +388,9 @@ public class UriPattern
             sb.append('@');
          }
          if (host != null)
+         {
             p = appendUriPart(sb, host, UriComponent.HOST, values, p, m, encode);
+         }
 
          if (port != -1)
          {
@@ -397,7 +403,9 @@ public class UriPattern
       if (path != null)
       {
          if (sb.length() > 0 && path.length() > 0 && path.charAt(0) != '/')
+         {
             sb.append('/');
+         }
          p = appendUriPart(sb, path, UriComponent.PATH, values, p, m, encode);
       }
 
@@ -425,7 +433,7 @@ public class UriPattern
     * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
     */
    private static void appendUriPart(StringBuilder sb, String uriPart, int component,
-      Map<String, ? extends Object> values, boolean encode)
+      Map<String, ?> values, boolean encode)
    {
 
       if (!hasUriTemplates(uriPart))

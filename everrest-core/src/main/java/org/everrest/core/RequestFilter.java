@@ -20,7 +20,7 @@ package org.everrest.core;
 
 /**
  * Process the original {@link GenericContainerRequest} before it dispatch by
- * {@link ResourceDispatcher}. NOTE this method must be not called directly, it
+ * {@link org.everrest.core.impl.RequestDispatcher}. NOTE this method must be not called directly, it
  * is part of REST framework, otherwise {@link ApplicationContext} may contains
  * wrong parameters.
  * 

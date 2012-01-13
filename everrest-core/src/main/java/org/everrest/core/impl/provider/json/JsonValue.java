@@ -179,7 +179,7 @@ public abstract class JsonValue
     */
    public Number getNumberValue()
    {
-      return Integer.valueOf(getIntValue());
+      return getIntValue();
    }
 
    /**

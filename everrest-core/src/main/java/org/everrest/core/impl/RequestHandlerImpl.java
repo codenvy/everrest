@@ -71,9 +71,13 @@ public class RequestHandlerImpl implements RequestHandler
    public static void setProperty(String name, String value)
    {
       if (value == null)
+      {
          properties.remove(name);
+      }
       else
+      {
          properties.put(name, value);
+      }
    }
 
    /** See {@link RequestDispatcher}. */
@@ -102,7 +106,9 @@ public class RequestHandlerImpl implements RequestHandler
       this.dependencySupplier = dependencySupplier;
       this.providers = providers == null ? ProviderBinder.getInstance() : providers;
       if (config == null)
+      {
          config = new EverrestConfiguration();
+      }
       httpMethodOverrideFeature = config.isHttpMethodOverride();
       normalizeUriFeature = config.isNormalizeUri();
       ServiceLoader<MethodInvokerDecoratorFactory> s = ServiceLoader.load(MethodInvokerDecoratorFactory.class);

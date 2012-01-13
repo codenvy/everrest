@@ -43,6 +43,7 @@ public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMe
     * @param parentResource parent resource for this method
     * @param consumes list of media types which this method can consume
     * @param produces list of media types which this method can produce
+    * @param additional additional annotations
     */
    public OptionsRequestResourceMethodDescriptorImpl(Method method, String httpMethod,
       List<MethodParameter> parameters, AbstractResourceDescriptor parentResource, List<MediaType> consumes,

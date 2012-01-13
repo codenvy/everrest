@@ -33,7 +33,6 @@ import java.util.List;
  */
 public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFactory<T>
 {
-
    /**
     * Object model that at least gives possibility to create object instance. Should provide full set of available
     * constructors and object fields.
@@ -43,7 +42,7 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
    protected final T model;
 
    /**
-    * @param model any extension of ObectModel
+    * @param model any extension of ObjectModel
     */
    public PerRequestObjectFactory(T model)
    {
@@ -62,7 +61,9 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
       if (fieldInjectors != null && fieldInjectors.size() > 0)
       {
          for (FieldInjector injector : fieldInjectors)
+         {
             injector.inject(object, context);
+         }
       }
       doPostConstruct(object, context);
       return object;
@@ -93,5 +94,4 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
    {
       return model;
    }
-
 }

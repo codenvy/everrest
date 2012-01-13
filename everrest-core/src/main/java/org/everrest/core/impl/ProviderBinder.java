@@ -128,6 +128,7 @@ public class ProviderBinder implements Providers
    /**
     * Replace default set of providers by new one. This must not be used by regular users of EverRest framework.
     * 
+    * @param inst instance of ProviderBinder
     * @throws SecurityException if caller is not permitted to call this method because to current security policy
     */
    public static void setInstance(ProviderBinder inst)

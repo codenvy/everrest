@@ -27,10 +27,7 @@ package org.everrest.core.impl.header;
  */
 public class Token
 {
-
-   /**
-    * Token.
-    */
+   /** Token. */
    private String token;
 
    /**
@@ -57,10 +54,6 @@ public class Token
     */
    public boolean isCompatible(Token other)
    {
-      if ("*".equals(token))
-         return true;
-
-      return token.equalsIgnoreCase(other.getToken());
+      return "*".equals(token) || token.equalsIgnoreCase(other.getToken());
    }
-
 }

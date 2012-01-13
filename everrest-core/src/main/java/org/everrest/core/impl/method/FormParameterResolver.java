@@ -66,15 +66,15 @@ public class FormParameterResolver extends ParameterResolver<FormParam>
       TypeProducer typeProducer =
          ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
 
-      MediaType conetentType = context.getHttpHeaders().getMediaType();
+      MediaType contentType = context.getHttpHeaders().getMediaType();
       MessageBodyReader reader =
-         context.getProviders().getMessageBodyReader(MultivaluedMap.class, FORM_TYPE, null, conetentType);
+         context.getProviders().getMessageBodyReader(MultivaluedMap.class, FORM_TYPE, null, contentType);
       if (reader == null)
          throw new IllegalStateException("Can't find appropriate entity reader for entity type "
-            + MultivaluedMap.class.getName() + " and content-type " + conetentType);
+            + MultivaluedMap.class.getName() + " and content-type " + contentType);
 
       MultivaluedMap<String, String> form =
-         (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, conetentType, context
+         (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, contentType, context
             .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
       return typeProducer.createValue(param, form, parameter.getDefaultValue());
    }

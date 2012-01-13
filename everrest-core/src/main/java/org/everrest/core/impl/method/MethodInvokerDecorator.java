@@ -33,7 +33,7 @@ public abstract class MethodInvokerDecorator implements MethodInvoker
    protected final MethodInvoker decoratedInvoker;
 
    /**
-    * @param decoratedInvoker
+    * @param decoratedInvoker decorated MethodInvoker
     */
    public MethodInvokerDecorator(MethodInvoker decoratedInvoker)
    {

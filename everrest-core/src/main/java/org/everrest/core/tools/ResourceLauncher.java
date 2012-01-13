@@ -69,16 +69,24 @@ public class ResourceLauncher
    {
 
       if (baseURI == null)
+      {
          baseURI = "";
+      }
 
       if (requestURI == null)
-         baseURI = "/";
+      {
+         requestURI = "/";
+      }
 
       if (baseURI.isEmpty() && !requestURI.startsWith("/"))
+      {
          requestURI = "/" + requestURI;
+      }
 
       if (headers == null)
+      {
          headers = new MultivaluedMapImpl();
+      }
 
       ByteArrayInputStream in = null;
       if (data != null)
@@ -88,11 +96,15 @@ public class ResourceLauncher
       }
 
       if (env == null)
+      {
          env = new EnvironmentContext();
+      }
       EnvironmentContext.setCurrent(env);
 
       if (writer == null)
+      {
          writer = new DummyContainerResponseWriter();
+      }
 
       SecurityContext sctx = (SecurityContext)env.get(SecurityContext.class);
 

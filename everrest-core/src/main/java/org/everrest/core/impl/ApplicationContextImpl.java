@@ -142,7 +142,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    /**
     * Constructs new instance of ApplicationContext.
     * 
-    * @param request See {@link GenricContainerRequest}
+    * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param providers See {@link ProviderBinder}
     */
@@ -155,7 +155,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    /**
     * Constructs new instance of ApplicationContext.
     * 
-    * @param request See {@link GenricContainerRequest}
+    * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param providers See {@link ProviderBinder}
     * @param methodInvokerDecoratorFactory See {@link MethodInvokerDecoratorFactory}

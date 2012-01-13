@@ -105,7 +105,6 @@ public final class FileCollector
    /**
     * Create new file with generated name in storage.
     * 
-    * @param fileName file name
     * @return newly created file
     * @throws IOException if any i/o error occurs
     */

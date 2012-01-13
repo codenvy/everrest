@@ -39,7 +39,7 @@ public interface RequestHandler
    public static final String WS_RS_BUFFER_SIZE = "ws.rs.buffersize";
 
    /**
-    * Max buffer size attribute value. See {@link WS_RS_BUFFER_SIZE}.
+    * Max buffer size attribute value. See {@link #WS_RS_BUFFER_SIZE}.
     */
    public static final int WS_RS_BUFFER_SIZE_VALUE = 204800;
 
@@ -49,6 +49,8 @@ public interface RequestHandler
     *
     * @param request HTTP request
     * @param response HTTP response
+    * @throws java.io.IOException if any i/o exceptions occurs
+    * @throws UnhandledException if any other errors occurs
     */
    void handleRequest(GenericContainerRequest request, GenericContainerResponse response) throws UnhandledException, IOException;
 

@@ -95,12 +95,36 @@ public class ResourceDescriptorTest extends BaseTest
       {
          new AbstractResourceDescriptorImpl(Resource3.class, ComponentLifecycleScope.PER_REQUEST);
          fail("Should be failed here, resource has two methods that have tha same HTTP method, consumes and produces annotation");
+      }
+      catch (RuntimeException e)
+      {
+      }
+      try
+      {
          new AbstractResourceDescriptorImpl(Resource4.class, ComponentLifecycleScope.PER_REQUEST);
          fail("Should be failed here, resource has two methods that have tha same HTTP method, consumes and produces annotation");
+      }
+      catch (RuntimeException e)
+      {
+      }
+      try
+      {
          new AbstractResourceDescriptorImpl(Resource5.class, ComponentLifecycleScope.PER_REQUEST);
          fail("Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
+      }
+      catch (RuntimeException e)
+      {
+      }
+      try
+      {
          new AbstractResourceDescriptorImpl(Resource6.class, ComponentLifecycleScope.PER_REQUEST);
          fail("Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
+      }
+      catch (RuntimeException e)
+      {
+      }
+      try
+      {
          new AbstractResourceDescriptorImpl(Resource7.class, ComponentLifecycleScope.PER_REQUEST);
          fail("Should be failed here, resource has two methods that have tha same path");
       }
@@ -197,6 +221,8 @@ public class ResourceDescriptorTest extends BaseTest
    @Path("a")
    public static class Resource4
    {
+
+
       @GET
       @Consumes({"text/xml", "application/xml", "application/xml+xhtml"})
       @Produces("text/plain")
@@ -204,10 +230,18 @@ public class ResourceDescriptorTest extends BaseTest
       {
       }
 
+
       @GET
       @Consumes({"application/xml", "text/xml", "application/xml+xhtml"})
       @Produces("text/plain")
       public void m2()
+      {
+      }
+
+      @GET
+//      @Consumes({"application/xml", "text/xml", "application/xml+xhtml1"})
+//      @Produces("text/plain")
+      public void m0()
       {
       }
    }

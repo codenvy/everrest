@@ -64,13 +64,13 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer
    static
    {
       Map<String, Object> m = new HashMap<String, Object>(7);
-      m.put("boolean", Boolean.valueOf(false));
-      m.put("byte", Byte.valueOf((byte)0));
-      m.put("short", Short.valueOf((short)0));
-      m.put("int", Integer.valueOf(0));
-      m.put("long", Long.valueOf(0L));
-      m.put("float", Float.valueOf(0.0F));
-      m.put("double", Double.valueOf(0.0d));
+      m.put("boolean", false);
+      m.put("byte", (byte)0);
+      m.put("short", (short)0);
+      m.put("int", 0);
+      m.put("long", 0l);
+      m.put("float", 0.0f);
+      m.put("double", 0.0d);
       PRIMITIVE_TYPE_DEFAULTS = Collections.unmodifiableMap(m);
    }
 
