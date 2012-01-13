@@ -27,6 +27,7 @@ import org.everrest.core.impl.method.ParameterResolver;
 import org.everrest.core.impl.method.ParameterResolverFactory;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.util.Logger;
+import org.everrest.core.util.Tracer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -128,12 +129,10 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
             boolean encoded = false;
 
             // is resource provider
-            boolean provider = resourceClass.getAnnotation(Provider.class) != null;
-            List<String> allowedAnnotation;
-            if (provider)
-               allowedAnnotation = ParameterHelper.PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS;
-            else
-               allowedAnnotation = ParameterHelper.RESOURCE_CONSTRUCTOR_PARAMETER_ANNOTATIONS;
+            final boolean provider = resourceClass.getAnnotation(Provider.class) != null;
+            List<String> allowedAnnotation = provider
+               ? ParameterHelper.PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS
+               : ParameterHelper.RESOURCE_CONSTRUCTOR_PARAMETER_ANNOTATIONS;
 
             for (Annotation a : annotations[i])
             {
@@ -147,10 +146,9 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                   }
                   else
                   {
-                     String msg =
-                        "JAX-RS annotations on one of constructor parameters are equivocality. " + "Annotations: "
-                           + annotation + " and " + a + " can't be applied to one parameter.";
-                     throw new RuntimeException(msg);
+                     throw new RuntimeException(
+                        "JAX-RS annotations on one of constructor parameters are equivocality. Annotations: "
+                           + annotation + " and " + a  + " can't be applied to one parameter. ");
                   }
 
                   // @Encoded has not sense for Provider. Provider may use only
@@ -169,7 +167,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                else
                {
                   LOG.warn("Constructor parameter contains unknown or not valid JAX-RS annotation " + a
-                     + ". It will be ignored.");
+                     + ". It will be ignored. ");
                }
             }
 
@@ -231,11 +229,10 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
             catch (Exception e)
             {
                Class<?> ac = a.annotationType();
-               if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
+               if (ac == PathParam.class || ac == QueryParam.class || ac == MatrixParam.class)
                {
                   throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
                }
-
                throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
             }
          }
@@ -251,7 +248,14 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                   + ". DependencySupplier not found, constructor's parameter of type "
                   + cp.getGenericType()
                   + " could not be injected. ";
+
                LOG.error(msg);
+
+               if (Tracer.isTracingEnabled())
+               {
+                  Tracer.trace(msg);
+               }
+
                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
                   .type(MediaType.TEXT_PLAIN).build());
             }
@@ -264,7 +268,14 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                   + ". Constructor's parameter of type "
                   + cp.getGenericType()
                   + " could not be injected. ";
+
                LOG.error(msg);
+
+               if (Tracer.isTracingEnabled())
+               {
+                  Tracer.trace(msg);
+               }
+
                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
                   .type(MediaType.TEXT_PLAIN).build());
             }
@@ -301,7 +312,9 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
          Throwable cause = invExc.getCause();
          // if WebApplicationException than it may contain response
          if (WebApplicationException.class == cause.getClass())
+         {
             throw (WebApplicationException)cause;
+         }
 
          throw new InternalException(cause);
       }
@@ -320,7 +333,9 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
       StringBuilder sb = new StringBuilder("[ ConstructorInjectorImpl: ");
       sb.append("constructor: " + getConstructor().getName() + "; ");
       for (ConstructorParameter cp : getParameters())
+      {
          sb.append(cp.toString()).append(" ");
+      }
       sb.append(" ]");
       return sb.toString();
    }

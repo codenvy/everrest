@@ -39,6 +39,7 @@ import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodMap;
 import org.everrest.core.uri.UriPattern;
 import org.everrest.core.util.Logger;
+import org.everrest.core.util.Tracer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -148,9 +149,20 @@ public class RequestDispatcher
          if (!match)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("Not found resource method for method " + request.getMethod());
+            }
 
             return; // Error Response is preset
+         }
+         else
+         {
+            if (Tracer.isTracingEnabled())
+            {
+               Tracer.trace("Matched resource method for method \"" + request.getMethod()
+                  + "\", media type \"" + request.getMediaType()
+                  + "\" = (" + methods.get(0).getMethod() + ")");
+            }
          }
 
          invokeResourceMethod(methods.get(0), resource, context, request, response);
@@ -161,12 +173,28 @@ public class RequestDispatcher
          List<SubResourceMethodDescriptor> methods = new ArrayList<SubResourceMethodDescriptor>();
          // check sub-resource methods
          boolean match = processSubResourceMethod(srmm, requestPath, request, response, parameterValues, methods);
+
+         if (match && Tracer.isTracingEnabled())
+         {
+            Tracer.trace("Matched sub-resource method for method \"" + request.getMethod()
+               + "\", path \"" + requestPath
+               + "\", media type \"" + request.getMediaType()
+               + "\" = (" + methods.get(0).getMethod() + ")");
+         }
+
          // check sub-resource locators
          List<SubResourceLocatorDescriptor> locators = new ArrayList<SubResourceLocatorDescriptor>();
          boolean hasAcceptableLocator = processSubResourceLocator(srlm, requestPath, parameterValues, locators);
 
+         if (hasAcceptableLocator && Tracer.isTracingEnabled())
+         {
+            Tracer.trace("Matched sub-resource locator for path \"" + requestPath
+               + "\", media type \"" + request.getMediaType()
+               + "\" = (" + locators.get(0).getMethod() + ")");
+         }
+
          // Sub-resource method or sub-resource locator should be found,
-         // otherwise error response with corresponding status.
+         // otherwise error response with corresponding status set.
          // If sub-resource locator not found status must be Not Found (404).
          // If sub-resource method not found then can be few statuses to
          // return, in this case don't care about locators, just return status
@@ -175,8 +203,10 @@ public class RequestDispatcher
          if (!match && !hasAcceptableLocator)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("Not found sub-resource methods nor sub-resource locators for path " + requestPath
                   + " and method " + request.getMethod());
+            }
 
             return; // Error Response is preset
          }
@@ -190,11 +220,23 @@ public class RequestDispatcher
             || (match && (compareSubResources(methods.get(0), locators.get(0)) < 0)))
          {
             // sub-resource method
+
+            if (Tracer.isTracingEnabled())
+            {
+               Tracer.trace("Sub-resource method (" + methods.get(0).getMethod() + ") selected. ");
+            }
+
             invokeSubResourceMethod(requestPath, methods.get(0), resource, context, request, response);
          }
          else if ((!match) || (compareSubResources(methods.get(0), locators.get(0)) > 0))
          {
             // sub-resource locator
+
+            if (Tracer.isTracingEnabled())
+            {
+               Tracer.trace("Sub-resource locator (" + locators.get(0).getMethod() + ") selected. ");
+            }
+
             invokeSubResourceLocator(requestPath, locators.get(0), resource, context, request, response);
          }
       }
@@ -299,6 +341,11 @@ public class RequestDispatcher
          perRequest.add(new LifecycleComponent(resource));
       }
 
+      if (Tracer.isTracingEnabled())
+      {
+         Tracer.trace("Sub-resource for request path \"" + newRequestPath + "\" = (" + resource + ")");
+      }
+
       // dispatch again newly created resource
       dispatch(request, response, context, locResource, resource, newRequestPath);
    }
@@ -319,9 +366,7 @@ public class RequestDispatcher
    {
       int r = UriPattern.URIPATTERN_COMPARATOR.compare(srmd.getUriPattern(), srld.getUriPattern());
       // NOTE If patterns are the same sub-resource method has priority
-      if (r == 0)
-         return -1;
-      return r;
+      return r == 0 ? -1 : r;
    }
 
    /**
@@ -400,7 +445,9 @@ public class RequestDispatcher
          for (T rmd : rmds)
          {
             if (MediaTypeHelper.isConsume(rmd.consumes(), contentType))
+            {
                methods.add(rmd);
+            }
          }
       }
 
@@ -413,7 +460,7 @@ public class RequestDispatcher
 
       List<MediaType> acceptable = request.getAcceptableMediaTypes();
       float previousQValue = 0.0F;
-      int n = 0, p = 0;
+      int n, p = 0;
       for (ListIterator<T> i = methods.listIterator(); i.hasNext();)
       {
          n = i.nextIndex();
@@ -440,7 +487,9 @@ public class RequestDispatcher
             {
                i.next();
                if (n == p)
+               {
                   break; // get index p in list then stop removing
+               }
             }
          }
 
@@ -475,7 +524,9 @@ public class RequestDispatcher
          {
             int len = capturingValues.size();
             if (capturingValues.get(len - 1) != null && !"/".equals(capturingValues.get(len - 1)))
+            {
                continue;
+            }
 
             rmm = e.getValue();
             break;
@@ -499,7 +550,9 @@ public class RequestDispatcher
          @SuppressWarnings("rawtypes")
          Iterator i = l.iterator();
          while (i.hasNext())
+         {
             methods.add((SubResourceMethodDescriptor)i.next());
+         }
       }
 
       return match;
@@ -551,11 +604,21 @@ public class RequestDispatcher
          {
             LOG.debug("Root resource not found for " + requestPath);
          }
+
          // Stop here, there is no matched root resource
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
             .entity("There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN)
             .build());
       }
+
+      if (Tracer.isTracingEnabled())
+      {
+         AbstractResourceDescriptor model = resourceFactory.getObjectModel();
+         Tracer.trace("Matched root resource for request path \"" + requestPath
+            + "\" = (@Path \"" + model.getPathValue().getPath() + "\", " + model.getObjectClass() + ")"
+         );
+      }
+
       return resourceFactory;
    }
 }

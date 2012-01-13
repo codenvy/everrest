@@ -28,6 +28,7 @@ import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.util.Logger;
+import org.everrest.core.util.Tracer;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -136,6 +137,13 @@ public class DefaultMethodInvoker implements MethodInvoker
                {
                   try
                   {
+                     if (Tracer.isTracingEnabled())
+                     {
+                        Tracer.trace("Matched MessageBodyReader for type " + mp.getParameterClass()
+                           + ", media type " + contentType
+                           + " = (" + entityReader + ")");
+                     }
+
                      MultivaluedMap<String, String> headers = context.getContainerRequest().getRequestHeaders();
                      params[i++] =
                         entityReader.readFrom(mp.getParameterClass(), mp.getGenericType(), mp.getAnnotations(),

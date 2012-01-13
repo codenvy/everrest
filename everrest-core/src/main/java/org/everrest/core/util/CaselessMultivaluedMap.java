@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -303,7 +304,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
 
    }
 
-   class ExtMultivaluedMapImpl extends HashMap<CaselessStringWrapper, List<T>> implements
+   class ExtMultivaluedMapImpl extends LinkedHashMap<CaselessStringWrapper, List<T>> implements
       ExtMultivaluedMap<CaselessStringWrapper, T>
    {
 
@@ -372,6 +373,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          list.clear();
          list.add(value);
       }
+
    }
 
    // ---------------------------------------------

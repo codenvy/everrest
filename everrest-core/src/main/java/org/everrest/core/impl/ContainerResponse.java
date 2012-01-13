@@ -22,6 +22,7 @@ import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.util.Logger;
+import org.everrest.core.util.Tracer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -200,14 +201,14 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
+   @Override
    public void setResponse(Response response)
    {
-      this.response = response;
       if (response == null)
       {
-         reset();
-         return;
+         throw new NullPointerException("Response may no be null. ");
       }
+      this.response = response;
 
       status = response.getStatus();
       headers = response.getMetadata();
@@ -237,31 +238,38 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
+   @Override
    public Response getResponse()
    {
       return response;
    }
 
-   /**
-    * Reset to default status.
-    */
-   private void reset()
-   {
-      this.status = Response.Status.NO_CONTENT.getStatusCode();
-      this.entity = null;
-      this.entityType = null;
-      this.contentType = null;
-      this.headers = null;
-   }
+//   /**
+//    * Reset to default status.
+//    */
+//   private void reset()
+//   {
+//      this.status = Response.Status.NO_CONTENT.getStatusCode();
+//      this.entity = null;
+//      this.entityType = null;
+//      this.contentType = null;
+//      this.headers = null;
+//   }
 
    /**
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
+   @Override
    public void writeResponse() throws IOException
    {
       if (entity == null)
       {
+         if (Tracer.isTracingEnabled())
+         {
+            Tracer.addTraceHeaders(this);
+         }
+
          responseWriter.writeHeaders(this);
          return;
       }
@@ -275,14 +283,18 @@ public class ContainerResponse implements GenericContainerResponse
          List<MediaType> l = context.getProviders().getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
          contentType = context.getContainerRequest().getAcceptableMediaType(l);
          if (contentType == null || contentType.isWildcardType() || contentType.isWildcardSubtype())
+         {
             contentType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+         }
 
          this.contentType = contentType;
          getHttpHeaders().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
       }
+
       @SuppressWarnings("rawtypes")
       MessageBodyWriter entityWriter =
          context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
+
       if (entityWriter == null)
       {
          String message = "Not found writer for " + entity.getClass() + " and MIME type " + contentType;
@@ -295,27 +307,43 @@ public class ContainerResponse implements GenericContainerResponse
          else
          {
             LOG.error(message);
+
             Response notAcceptableResponse =
                Response.status(Response.Status.NOT_ACCEPTABLE).entity(message).type(MediaType.TEXT_PLAIN).build();
             setResponse(notAcceptableResponse);
             entityWriter =
-               context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
-            // Must not happen since MessageBodyWriter for String is embedded.
+               context.getProviders().getMessageBodyWriter(String.class, null, null, contentType);
+
             if (entityWriter == null)
+            {
+               // Must not happen since MessageBodyWriter for String is embedded.
                throw new WebApplicationException(notAcceptableResponse);
+            }
          }
       }
       else
       {
+         if (Tracer.isTracingEnabled())
+         {
+            Tracer.trace("Matched MessageBodyWriter for type " + entity.getClass()
+               + ", media type " + contentType
+               + " = (" + entityWriter + ")");
+         }
+
          if (getHttpHeaders().getFirst(HttpHeaders.CONTENT_LENGTH) == null)
          {
             long contentLength = entityWriter.getSize(entity, entity.getClass(), entityType, null, contentType);
             if (contentLength >= 0)
+            {
                getHttpHeaders().putSingle(HttpHeaders.CONTENT_LENGTH, Long.toString(contentLength));
+            }
          }
       }
+
       if (context.getContainerRequest().getMethod().equals(HttpMethod.HEAD))
+      {
          entity = null;
+      }
 
       OutputListener headersWriter = new OutputListener()
       {
@@ -330,6 +358,12 @@ public class ContainerResponse implements GenericContainerResponse
             }
          }
       };
+
+      if (Tracer.isTracingEnabled())
+      {
+         Tracer.addTraceHeaders(this);
+      }
+
       responseWriter.writeBody(this, new BodyWriter(entityWriter, headersWriter));
       headersWriter.onChange(null); // Be sure headers were written.
    }
@@ -337,6 +371,7 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
+   @Override
    public MediaType getContentType()
    {
       return contentType;
@@ -345,6 +380,7 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
+   @Override
    public Type getEntityType()
    {
       return entityType;
@@ -353,6 +389,7 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
+   @Override
    public Object getEntity()
    {
       return entity;
@@ -361,6 +398,7 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
+   @Override
    public MultivaluedMap<String, Object> getHttpHeaders()
    {
       return headers;
@@ -369,6 +407,7 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * {@inheritDoc}
     */
+   @Override
    public int getStatus()
    {
       return status;

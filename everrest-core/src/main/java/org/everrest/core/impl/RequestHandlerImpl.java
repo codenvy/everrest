@@ -34,6 +34,7 @@ import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
 import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.util.Logger;
+import org.everrest.core.util.Tracer;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -145,65 +146,102 @@ public class RequestHandlerImpl implements RequestHandler
       ApplicationContext context = null;
       try
       {
-         if (normalizeUriFeature)
-            request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
-         
-         if (httpMethodOverrideFeature)
-         {
-            String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
-            if (method != null)
-               request.setMethod(method);
-         }
-
          context = new ApplicationContextImpl(request, response, providers, methodInvokerDecoratorFactory);
          context.getProperties().putAll(properties);
          context.setDependencySupplier(dependencySupplier);
          ((Lifecycle)context).start();
          ApplicationContextImpl.setCurrent(context);
 
+         if (normalizeUriFeature)
+         {
+            request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
+         }
+
+         if (httpMethodOverrideFeature)
+         {
+            String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
+            if (method != null)
+            {
+               if (Tracer.isTracingEnabled())
+               {
+                  Tracer.trace("Override HTTP method from \"X-HTTP-Method-Override\" header "
+                     + request.getMethod() + " => " + method);
+               }
+
+               request.setMethod(method);
+            }
+         }
+
          try
          {
             for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getRequestFilters(context.getPath()))
+            {
                ((RequestFilter)factory.getInstance(context)).doFilter(request);
+            }
 
             dispatcher.dispatch(request, response);
+
             if (response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
             {
                String jaxrsHeader = getJaxrsHeader(response.getStatus());
                if (jaxrsHeader != null)
+               {
                   response.getHttpHeaders().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
+               }
             }
 
             for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getResponseFilters(context.getPath()))
+            {
                ((ResponseFilter)factory.getInstance(context)).doFilter(response);
+            }
          }
          catch (Exception e)
          {
             if (e instanceof WebApplicationException)
             {
                Response errorResponse = ((WebApplicationException)e).getResponse();
-               ExceptionMapper excmap = context.getProviders().getExceptionMapper(WebApplicationException.class);
 
                int errorStatus = errorResponse.getStatus();
+               Throwable cause = e.getCause();
                // should be some of 4xx status
                if (errorStatus < 500)
                {
                   // Warn about error in debug mode only.
-                  if (LOG.isDebugEnabled() && e.getCause() != null)
-                     LOG.debug("WebApplication exception occurs.", e.getCause());
+                  if (LOG.isDebugEnabled() && cause != null)
+                  {
+                     LOG.debug("WebApplicationException occurs.", cause);
+                  }
                }
                else
                {
-                  if (e.getCause() != null)
-                     LOG.error("WebApplication exception occurs.", e.getCause());
+                  if (cause != null)
+                  {
+                     LOG.error("WebApplicationException occurs.", cause);
+                  }
                }
+
+               if (Tracer.isTracingEnabled())
+               {
+                  Tracer.trace("WebApplicationException occurs, cause = (" + cause + ")");
+               }
+
                // -----
+               ExceptionMapper exceptionMapper = context.getProviders().getExceptionMapper(WebApplicationException.class);
                if (errorResponse.getEntity() == null)
                {
-                  if (excmap != null)
-                     errorResponse = excmap.toResponse(e);
+                  if (exceptionMapper != null)
+                  {
+                     if (Tracer.isTracingEnabled())
+                     {
+                        Tracer.trace("Found ExceptionMapper for WebApplicationException = (" + exceptionMapper + ")");
+                     }
+
+                     errorResponse = exceptionMapper.toResponse(e);
+                  }
                   else if (e.getMessage() != null)
+                  {
                      errorResponse = createErrorResponse(errorStatus, e.getMessage());
+                  }
                }
                else
                {
@@ -211,32 +249,52 @@ public class RequestHandlerImpl implements RequestHandler
                   {
                      String jaxrsHeader = getJaxrsHeader(errorStatus);
                      if (jaxrsHeader != null)
+                     {
                         errorResponse.getMetadata().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
+                     }
                   }
                }
+
                response.setResponse(errorResponse);
             }
             else if (e instanceof InternalException)
             {
                Throwable cause = e.getCause();
-               Class causeClazz = cause.getClass();
-               ExceptionMapper excmap = context.getProviders().getExceptionMapper(causeClazz);
-               while (causeClazz != null && excmap == null)
+
+               if (Tracer.isTracingEnabled())
                {
-                  excmap = context.getProviders().getExceptionMapper(causeClazz);
-                  if (excmap == null)
-                     causeClazz = causeClazz.getSuperclass();
+                  Tracer.trace("InternalException occurs, cause = (" + cause + ")");
                }
-               if (excmap != null)
+
+               Class causeClazz = cause.getClass();
+               ExceptionMapper exceptionMapper = context.getProviders().getExceptionMapper(causeClazz);
+               while (causeClazz != null && exceptionMapper == null)
+               {
+                  exceptionMapper = context.getProviders().getExceptionMapper(causeClazz);
+                  if (exceptionMapper == null)
+                  {
+                     causeClazz = causeClazz.getSuperclass();
+                  }
+               }
+
+               if (exceptionMapper != null)
                {
                   // Hide error message if exception mapper exists.
                   if (LOG.isDebugEnabled())
-                     LOG.debug("Internal error occurs.", cause);
-                  response.setResponse(excmap.toResponse(cause));
+                  {
+                     LOG.debug("InternalException occurs.", cause);
+                  }
+
+                  if (Tracer.isTracingEnabled())
+                  {
+                     Tracer.trace("Found ExceptionMapper for " + cause.getClass() + " = (" + exceptionMapper + ")");
+                  }
+
+                  response.setResponse(exceptionMapper.toResponse(cause));
                }
                else
                {
-                  LOG.error("Internal error occurs.", cause);
+                  LOG.error("InternalException occurs.", cause);
                   throw new UnhandledException(e.getCause());
                }
             }
@@ -253,7 +311,9 @@ public class RequestHandlerImpl implements RequestHandler
          try
          {
             if (context != null)
+            {
                ((Lifecycle)context).stop();
+            }
          }
          finally
          {
