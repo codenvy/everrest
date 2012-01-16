@@ -55,34 +55,53 @@ public class UriPattern
        */
       public int compare(UriPattern o1, UriPattern o2)
       {
-         if (o1 == null & o2 == null)
+         if (o1 == null && o2 == null)
+         {
             return 0;
+         }
          if (o1 == null)
+         {
             return 1;
+         }
          if (o2 == null)
+         {
             return -1;
+         }
 
-         if ("".equals(o1.getTemplate()) && "".equals(o2.getTemplate()))
+         if (o1.getTemplate().isEmpty() && o2.getTemplate().isEmpty())
+         {
             return 0;
-         if ("".equals(o1.getTemplate()))
+         }
+         if (o1.getTemplate().isEmpty())
+         {
             return 1;
-         if ("".equals(o2.getTemplate()))
+         }
+         if (o2.getTemplate().isEmpty())
+         {
             return -1;
+         }
 
          if (o1.getNumberOfLiteralCharacters() < o2.getNumberOfLiteralCharacters())
+         {
             return 1;
+         }
          if (o1.getNumberOfLiteralCharacters() > o2.getNumberOfLiteralCharacters())
+         {
             return -1;
+         }
 
          // pattern with two variables less the pattern with four variables
          if (o1.getParameterNames().size() < o2.getParameterNames().size())
+         {
             return 1;
+         }
          if (o1.getParameterNames().size() > o2.getParameterNames().size())
+         {
             return -1;
+         }
 
          return o1.getRegex().compareTo(o2.getRegex());
       }
-
    }
 
    /**
@@ -126,14 +145,16 @@ public class UriPattern
 
    /**
     * Constructs UriPattern.
-    * 
+    *
     * @param template the source template
     * @see {@link javax.ws.rs.Path}
     */
    public UriPattern(String template)
    {
       if (template.length() > 0 && template.charAt(0) != '/')
+      {
          template = "/" + template;
+      }
 
       UriTemplateParser parser = new UriTemplateParser(template);
       this.template = parser.getTemplate();
@@ -155,7 +176,9 @@ public class UriPattern
 
       String regex = parser.getRegex();
       if (regex.endsWith("/"))
+      {
          regex = regex.substring(0, regex.length() - 1);
+      }
       this.regex = regex + URI_PATTERN_TAIL;
       this.pattern = Pattern.compile(this.regex);
    }
@@ -180,7 +203,7 @@ public class UriPattern
 
    /**
     * Get the regex pattern.
-    * 
+    *
     * @return the regex pattern
     */
    public Pattern getPattern()
@@ -190,7 +213,7 @@ public class UriPattern
 
    /**
     * Get the URI template as a String.
-    * 
+    *
     * @return the URI template
     */
    public String getTemplate()
@@ -200,7 +223,7 @@ public class UriPattern
 
    /**
     * Get the regular expression.
-    * 
+    *
     * @return the regular expression
     */
    public String getRegex()
@@ -210,7 +233,7 @@ public class UriPattern
 
    /**
     * Get the number of literal characters in the template.
-    * 
+    *
     * @return number of literal characters in the template
     */
    public int getNumberOfLiteralCharacters()
@@ -230,7 +253,7 @@ public class UriPattern
     * Check is URI string match to pattern. If it is then fill given list by parameter value. Before coping value list
     * is cleared. List will be 1 greater then number of keys. It can be used for check is resource is matching to
     * requested. If resource is match the last element in list must be '/' or null.
-    * 
+    *
     * @param uri the URI string
     * @param parameters target list
     * @return true if URI string is match to pattern, false otherwise
@@ -243,7 +266,7 @@ public class UriPattern
          throw new IllegalArgumentException("list is null");
       }
 
-      if (uri == null || uri.length() == 0)
+      if (uri == null || uri.isEmpty())
       {
          return pattern == null;
       }
@@ -274,7 +297,6 @@ public class UriPattern
          }
       }
       return true;
-
    }
 
    /**
@@ -287,7 +309,7 @@ public class UriPattern
 
    /**
     * Create URI from URI part. Each URI part can contains templates.
-    * 
+    *
     * @param schema the schema URI part
     * @param userInfo the user info URI part
     * @param host the host name URI part
@@ -300,9 +322,8 @@ public class UriPattern
     * @return the URI string
     */
    public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
-      String query, String fragment, Map<String, ?> values, boolean encode)
+                                            String query, String fragment, Map<String, ?> values, boolean encode)
    {
-
       StringBuilder sb = new StringBuilder();
       if (schema != null)
       {
@@ -313,36 +334,40 @@ public class UriPattern
       {
          sb.append('/').append('/');
 
-         if (userInfo != null && userInfo.length() > 0)
+         if (!(userInfo == null || userInfo.isEmpty()))
          {
             appendUriPart(sb, userInfo, UriComponent.USER_INFO, values, encode);
             sb.append('@');
          }
          if (host != null)
+         {
             appendUriPart(sb, host, UriComponent.HOST, values, encode);
+         }
 
          if (port != -1)
          {
             sb.append(':');
-            appendUriPart(sb, "" + port, UriComponent.PORT, values, encode);
+            appendUriPart(sb, Integer.toString(port), UriComponent.PORT, values, encode);
          }
 
       }
 
-      if (path != null)
+      if (!(path == null || path.isEmpty()))
       {
-         if (sb.length() > 0 && path.length() > 0 && path.charAt(0) != '/')
+         if (sb.length() > 0 && path.charAt(0) != '/')
+         {
             sb.append('/');
+         }
          appendUriPart(sb, path, UriComponent.PATH, values, encode);
       }
 
-      if (query != null && query.length() > 0)
+      if (!(query == null || query.isEmpty()))
       {
          sb.append('?');
          appendUriPart(sb, query, UriComponent.QUERY, values, encode);
       }
 
-      if (fragment != null && fragment.length() > 0)
+      if (!(fragment == null || fragment.isEmpty()))
       {
          sb.append('#');
          appendUriPart(sb, fragment, UriComponent.FRAGMENT, values, encode);
@@ -353,7 +378,7 @@ public class UriPattern
 
    /**
     * Create URI from URI part. Each URI part can contains templates.
-    * 
+    *
     * @param schema the schema URI part
     * @param userInfo the user info URI part
     * @param host the host name URI part
@@ -366,9 +391,8 @@ public class UriPattern
     * @return the URI string
     */
    public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
-      String query, String fragment, Object[] values, boolean encode)
+                                            String query, String fragment, Object[] values, boolean encode)
    {
-
       Map<String, String> m = new HashMap<String, String>();
       StringBuilder sb = new StringBuilder();
       int p = 0;
@@ -382,11 +406,12 @@ public class UriPattern
       {
          sb.append('/').append('/');
 
-         if (userInfo != null && userInfo.length() > 0)
+         if (!(userInfo == null || userInfo.isEmpty()))
          {
             p = appendUriPart(sb, userInfo, UriComponent.USER_INFO, values, p, m, encode);
             sb.append('@');
          }
+
          if (host != null)
          {
             p = appendUriPart(sb, host, UriComponent.HOST, values, p, m, encode);
@@ -395,34 +420,32 @@ public class UriPattern
          if (port != -1)
          {
             sb.append(':');
-            p = appendUriPart(sb, "" + port, UriComponent.PORT, values, p, m, encode);
+            p = appendUriPart(sb, Integer.toString(port), UriComponent.PORT, values, p, m, encode);
          }
-
       }
 
-      if (path != null)
+      if (!(path == null || path.isEmpty()))
       {
-         if (sb.length() > 0 && path.length() > 0 && path.charAt(0) != '/')
+         if (sb.length() > 0 && path.charAt(0) != '/')
          {
             sb.append('/');
          }
          p = appendUriPart(sb, path, UriComponent.PATH, values, p, m, encode);
       }
 
-      if (query != null && query.length() > 0)
+      if (!(query == null || query.isEmpty()))
       {
          sb.append('?');
          p = appendUriPart(sb, query, UriComponent.QUERY, values, p, m, encode);
       }
 
-      if (fragment != null && fragment.length() > 0)
+      if (!(fragment == null || fragment.isEmpty()))
       {
          sb.append('#');
-         p = appendUriPart(sb, fragment, UriComponent.FRAGMENT, values, p, m, encode);
+         appendUriPart(sb, fragment, UriComponent.FRAGMENT, values, p, m, encode);
       }
 
       return sb.toString();
-
    }
 
    /**
@@ -433,7 +456,7 @@ public class UriPattern
     * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
     */
    private static void appendUriPart(StringBuilder sb, String uriPart, int component,
-      Map<String, ?> values, boolean encode)
+                                     Map<String, ?> values, boolean encode)
    {
 
       if (!hasUriTemplates(uriPart))
@@ -452,7 +475,9 @@ public class UriPattern
 
          Object o = values.get(param);
          if (o == null)
+         {
             throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
+         }
 
          String value = o.toString();
          sb.append(encode ? UriComponent.encode(value, component, true) : UriComponent.recognizeEncode(value,
@@ -480,9 +505,8 @@ public class UriPattern
     * @return offset
     */
    private static int appendUriPart(StringBuilder sb, String uriPart, int component, Object[] sourceValues, int offset,
-      Map<String, String> values, boolean encode)
+                                    Map<String, String> values, boolean encode)
    {
-
       if (!hasUriTemplates(uriPart))
       {
          sb.append(uriPart);
@@ -509,7 +533,9 @@ public class UriPattern
             // Value is unknown, we met it first time, then process it and keep in
             // map. Value will be encoded (or validate)before putting in map.
             if (offset < sourceValues.length)
+            {
                value = sourceValues[offset++].toString();
+            }
 
             if (value != null)
             {
@@ -520,8 +546,9 @@ public class UriPattern
                sb.append(value);
             }
             else
+            {
                throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
-
+            }
          }
          start = m.end();
       }
@@ -534,7 +561,7 @@ public class UriPattern
 
    /**
     * Check does given URI string has templates.
-    * 
+    *
     * @param uri the URI which must be checked
     * @return true if URI has templates false otherwise
     */
@@ -542,5 +569,4 @@ public class UriPattern
    {
       return uri.indexOf('{') != -1;
    }
-
 }

@@ -68,7 +68,7 @@ public class JAXBEntityProviderTest extends BaseTest
    public static JAXBElement<Book> m(JAXBElement<Book> je)
    {
       return je;
-   };
+   }
 
    @SuppressWarnings({"unchecked", "rawtypes"})
    public void testReadJAXBElement() throws Exception

@@ -81,7 +81,7 @@ public class MethodReturnTypeTest extends BaseTest
       @Path("/6")
       public String m6()
       {
-         return new String("body");
+         return "body";
       }
 
    }

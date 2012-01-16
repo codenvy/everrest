@@ -78,10 +78,10 @@ public class StringConstructorProducerTest extends TestCase
    {
       StringConstructorProducer StringConstructorProducer =
          new StringConstructorProducer(Boolean.class.getConstructor(String.class));
-      assertEquals(new Boolean("true"), StringConstructorProducer.createValue("true"));
+      assertEquals(true, StringConstructorProducer.createValue("true"));
    }
 
-   public void testCuctomTypeStringConstructor() throws Exception
+   public void testCustomTypeStringConstructor() throws Exception
    {
       TypeProducer t = ParameterHelper.createTypeProducer(StringConstructor.class, null);
       MultivaluedMap<String, String> values = new MultivaluedMapImpl();

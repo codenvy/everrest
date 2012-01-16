@@ -36,48 +36,29 @@ import javax.ws.rs.core.UriBuilderException;
  */
 public class UriBuilderImpl extends UriBuilder
 {
-
-   /**
-    * Scheme, e.g. http, https, etc.
-    */
+   /** Scheme, e.g. http, https, etc. */
    private String schema;
 
-   /**
-    * User info, such as user:password.
-    */
+   /** User info, such as user:password. */
    private String userInfo;
 
-   /**
-    * Host name.
-    */
+   /** Host name.*/
    private String host;
 
-   /**
-    * Server port.
-    */
+   /** Server port.*/
    private int port = -1;
 
-   /**
-    * Path.
-    */
+   /** Path. */
    private StringBuilder path = new StringBuilder();
 
-   /**
-    * Query string.
-    */
+   /** Query string. */
    private StringBuilder query = new StringBuilder();
 
-   /**
-    * Fragment.
-    */
+   /** Fragment. */
    private String fragment;
 
-   /**
-    * Default constructor.
-    */
    public UriBuilderImpl()
    {
-
    }
 
    /**
@@ -87,9 +68,16 @@ public class UriBuilderImpl extends UriBuilder
    public URI buildFromMap(Map<String, ?> values)
    {
       encode();
-      String uri =
-         UriPattern.createUriWithValues(schema, userInfo, host, port, path.toString(), query.toString(), fragment,
-            values, true);
+      String uri = UriPattern.createUriWithValues(
+         schema,
+         userInfo,
+         host,
+         port,
+         path.toString(),
+         query.toString(),
+         fragment,
+         values,
+         true);
       try
       {
          return new URI(uri);
@@ -107,9 +95,16 @@ public class UriBuilderImpl extends UriBuilder
    public URI buildFromEncodedMap(Map<String, ?> values)
    {
       encode();
-      String uri =
-         UriPattern.createUriWithValues(schema, userInfo, host, port, path.toString(), query.toString(), fragment,
-            values, false);
+      String uri = UriPattern.createUriWithValues(
+         schema,
+         userInfo,
+         host,
+         port,
+         path.toString(),
+         query.toString(),
+         fragment,
+         values,
+         false);
       try
       {
          return new URI(uri);
@@ -127,9 +122,16 @@ public class UriBuilderImpl extends UriBuilder
    public URI build(Object... values)
    {
       encode();
-      String uri =
-         UriPattern.createUriWithValues(schema, userInfo, host, port, path.toString(), query.toString(), fragment,
-            values, true);
+      String uri = UriPattern.createUriWithValues(
+         schema,
+         userInfo,
+         host,
+         port,
+         path.toString(),
+         query.toString(),
+         fragment,
+         values,
+         true);
       try
       {
          return new URI(uri);
@@ -147,9 +149,16 @@ public class UriBuilderImpl extends UriBuilder
    public URI buildFromEncoded(Object... values)
    {
       encode();
-      String uri =
-         UriPattern.createUriWithValues(schema, userInfo, host, port, path.toString(), query.toString(), fragment,
-            values, false);
+      String uri = UriPattern.createUriWithValues(
+         schema,
+         userInfo,
+         host,
+         port,
+         path.toString(),
+         query.toString(),
+         fragment,
+         values,
+         false);
       try
       {
          return new URI(uri);
@@ -173,7 +182,6 @@ public class UriBuilderImpl extends UriBuilder
       // encoding/decoding again when updating/removing of matrix parameter
       // performed.
       encodePath();
-
       encodeQuery();
       encodeFragment();
    }
@@ -183,18 +191,20 @@ public class UriBuilderImpl extends UriBuilder
     */
    private void encodePath()
    {
-      if (path.length() == 0)
-         return;
-      // We are assumes matrix parameters is parameters added to last segment
-      // of URI. Check  ';' after last '/'.
-      int p = path.lastIndexOf("/");
-      p = path.indexOf(";", p < 0 ? 0 : p);
-      // If ';' not found then not need encode since path segments itself already encoded.
-      if (p < 0)
-         return;
-      String t = path.toString();
-      path.setLength(0);
-      path.append(UriComponent.recognizeEncode(t, UriComponent.PATH, true));
+      if (path.length() > 0)
+      {
+         // We are assumes matrix parameters is parameters added to last segment
+         // of URI. Check  ';' after last '/'.
+         int p = path.lastIndexOf("/");
+         p = path.indexOf(";", p < 0 ? 0 : p);
+         // If ';' not found then not need encode since path segments itself already encoded.
+         if (p >= 0)
+         {
+            String t = path.toString();
+            path.setLength(0);
+            path.append(UriComponent.recognizeEncode(t, UriComponent.PATH, true));
+         }
+      }
    }
 
    /**
@@ -202,36 +212,43 @@ public class UriBuilderImpl extends UriBuilder
     */
    private void encodeQuery()
    {
-      if (query.length() == 0)
-         return;
-
-      String str = query.toString();
-      query.setLength(0);
-      int p = 0;
-      int n = 0;
-      while (p < str.length())
+      if (query.length() > 0)
       {
-
-         if (str.charAt(p) == '=') // something like a=x&=y
-            throw new UriBuilderException("Query parameter length is 0");
-
-         n = str.indexOf('&', p);
-         if (n < 0)
-            n = str.length();
-
-         if (n > p)
+         String str = query.toString();
+         query.setLength(0);
+         int p = 0;
+         while (p < str.length())
          {
-            // skip empty pair, like a=x&&b=y
-            String pair = str.substring(p, n);
-            if (query.length() > 0)
-               query.append('&');
 
-            if (pair.charAt(pair.length() - 1) == '=')
-               pair = pair.substring(0, pair.length() - 1);
-            // decode string and keep special character '='
-            query.append(UriComponent.recognizeEncode(pair, UriComponent.QUERY, true));
+            if (str.charAt(p) == '=') // something like a=x&=y
+            {
+               throw new UriBuilderException("Query parameter name is empty. ");
+            }
+
+            int n = str.indexOf('&', p);
+            if (n < 0)
+            {
+               n = str.length();
+            }
+
+            if (n > p)
+            {
+               // skip empty pair, like a=x&&b=y
+               String pair = str.substring(p, n);
+               if (query.length() > 0)
+               {
+                  query.append('&');
+               }
+
+               if (pair.charAt(pair.length() - 1) == '=')
+               {
+                  pair = pair.substring(0, pair.length() - 1);
+               }
+               // encode string and keep special character '='
+               query.append(UriComponent.recognizeEncode(pair, UriComponent.QUERY, true));
+            }
+            p = n + 1;
          }
-         p = n + 1;
       }
    }
 
@@ -240,9 +257,10 @@ public class UriBuilderImpl extends UriBuilder
     */
    private void encodeFragment()
    {
-      if (fragment == null || fragment.length() == 0)
-         return;
-      fragment = UriComponent.recognizeEncode(fragment, UriComponent.FRAGMENT, true);
+      if (!(fragment == null || fragment.isEmpty()))
+      {
+         fragment = UriComponent.recognizeEncode(fragment, UriComponent.FRAGMENT, true);
+      }
    }
 
    /**
@@ -265,8 +283,8 @@ public class UriBuilderImpl extends UriBuilder
       this.userInfo = cloned.userInfo;
       this.host = cloned.host;
       this.port = cloned.port;
-      this.path = new StringBuilder().append(cloned.path);
-      this.query = new StringBuilder().append(cloned.query);
+      this.path = new StringBuilder(cloned.path);
+      this.query = new StringBuilder(cloned.query);
       this.fragment = cloned.fragment;
    }
 
@@ -276,14 +294,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder fragment(String fragment)
    {
-      if (fragment == null)
-      {
-         this.fragment = null;
-         return this;
-      }
-      //this.fragment = fragment;
-      this.fragment = UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
-
+      this.fragment = fragment == null ? null : UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
       return this;
    }
 
@@ -293,11 +304,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder host(String host)
    {
-      if (host != null)
-         this.host = UriComponent.recognizeEncode(host, UriComponent.HOST, true);
-      else
-         this.host = null;
-
+      this.host = host == null ? null : UriComponent.recognizeEncode(host, UriComponent.HOST, true);
       return this;
    }
 
@@ -308,33 +315,26 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder matrixParam(String name, Object... values)
    {
       if (name == null)
+      {
          throw new IllegalArgumentException("Name is null");
+      }
       if (values == null)
+      {
          throw new IllegalArgumentException("Values are null");
+      }
 
-      if (path.length() > 0)
-         path.append(';');
-
-      int length = values.length;
-
-      for (int i = 0; i < length; i++)
+      for (int i = 0, length = values.length; i < length; i++)
       {
          Object o = values[i];
          if (o == null)
+         {
             throw new IllegalArgumentException("Value is null");
-
-         String value = o.toString();
-
-         path.append(name).append('=');
-
-         if (value.length() > 0)
-            path.append(value);
-
-         // don't add ';' after last matrix parameter
-         if (i < length - 1)
-            path.append(';');
+         }
+         path.append(';');
+         path.append(name);
+         path.append('=');
+         path.append(o.toString());
       }
-
       return this;
    }
 
@@ -344,32 +344,36 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(String p)
    {
-      if (path == null)
+      if (p == null)
+      {
          throw new IllegalArgumentException("Path segments are null");
-
-      if (p.length() == 0)
-         return this;
-
-      // each segment can contains own '/' DO NOT escape it (UriComponent.PATH)
-      p = UriComponent.recognizeEncode(p, UriComponent.PATH, true);
-
-      boolean finalSlash = path.length() > 0 && path.charAt(path.length() - 1) == '/';
-      boolean startSlash = p.charAt(0) == '/';
-
-      if (finalSlash && startSlash)
-      {
-         if (p.length() > 1)
-            path.append(p.substring(1));
-      }
-      else if (path.length() > 0 && !finalSlash && !startSlash)
-      {
-         path.append('/').append(p);
-      }
-      else
-      {
-         path.append(p);
       }
 
+      if (!p.isEmpty())
+      {
+         // each segment can contains own '/' DO NOT escape it (UriComponent.PATH)
+         p = UriComponent.recognizeEncode(p, UriComponent.PATH, true);
+
+         boolean finalSlash = path.length() > 0 && path.charAt(path.length() - 1) == '/';
+         boolean startSlash = p.charAt(0) == '/';
+
+         if (finalSlash && startSlash)
+         {
+            if (p.length() > 1)
+            {
+               path.append(p.substring(1));
+            }
+         }
+         else if (path.length() > 0 && !finalSlash && !startSlash)
+         {
+            path.append('/');
+            path.append(p);
+         }
+         else
+         {
+            path.append(p);
+         }
+      }
       return this;
    }
 
@@ -381,11 +385,15 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder path(Class resource)
    {
       if (resource == null)
+      {
          throw new IllegalArgumentException("Resource is null");
+      }
 
       Annotation annotation = resource.getAnnotation(Path.class);
       if (annotation == null)
-         throw new IllegalArgumentException("Resource is not annotated with javax.ws.rs.Path");
+      {
+         throw new IllegalArgumentException("Class is not annotated with javax.ws.rs.Path");
+      }
 
       return path(((Path)annotation).value());
    }
@@ -397,16 +405,11 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder path(Method method)
    {
       if (method == null)
-         throw new IllegalArgumentException("Methods are null");
-
-      Path p = method.getAnnotation(Path.class);
-      if (p == null)
       {
-         return this;
-         //throw new IllegalArgumentException("Method " + method.getName() + " is not annotated with javax.ws.rs.Path");
+         throw new IllegalArgumentException("Method is null");
       }
-
-      return path(p.value());
+      Path p = method.getAnnotation(Path.class);
+      return p == null ? this : path(p.value());
    }
 
    /**
@@ -417,31 +420,39 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder path(Class resource, String method)
    {
       if (resource == null)
+      {
          throw new IllegalArgumentException("Resource is null");
+      }
 
       if (method == null)
+      {
          throw new IllegalArgumentException("Method name is null");
+      }
 
-      path(resource);
-      boolean found = false;
       Method[] methods = resource.getMethods();
 
-      for (Method m : methods)
+      Method matched = null;
+      for (int i = 0, length = methods.length; i < length; i++)
       {
-         if (found && m.getName().equals(method))
+         Method m = methods[i];
+         if (matched != null && m.getName().equals(method))
          {
             throw new IllegalArgumentException("More then one method with name " + method + " found");
          }
          else if (m.getName().equals(method))
          {
-            path(m);
-            found = true;
+            matched = m;
          }
       }
 
       // no one method found
-      if (!found)
+      if (matched == null)
+      {
          throw new IllegalArgumentException("Method " + method + " not found at resource class " + resource.getName());
+      }
+
+      path(resource);
+      path(matched);
 
       return this;
    }
@@ -453,7 +464,9 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder port(int port)
    {
       if (port < -1)
-         throw new IllegalArgumentException();
+      {
+         throw new IllegalArgumentException("Invalid port " + port);
+      }
       this.port = port;
       return this;
    }
@@ -465,32 +478,29 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder queryParam(String name, Object... values)
    {
       if (name == null)
+      {
          throw new IllegalArgumentException("Name is null");
+      }
       if (values == null)
+      {
          throw new IllegalArgumentException("Values are null");
+      }
 
-      if (query.length() > 0)
-         query.append('&');
-
-      int length = values.length;
-
-      // add values
-      for (int i = 0; i < length; i++)
+      // Add values.
+      for (int i = 0, length = values.length; i < length; i++)
       {
          Object o = values[i];
          if (o == null)
+         {
             throw new IllegalArgumentException("Value is null");
-
-         String s = o.toString();
-
-         query.append(name).append('=');
-
-         if (s.length() > 0)
-            query.append(s);
-
-         // don't add '&' after last query pair
-         if (i < length - 1)
+         }
+         if (query.length() > 0)
+         {
             query.append('&');
+         }
+         query.append(name);
+         query.append('=');
+         query.append(o.toString());
       }
 
       return this;
@@ -503,32 +513,55 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder replaceMatrixParam(String name, Object... values)
    {
       if (name == null)
+      {
          throw new IllegalArgumentException("Name is null");
+      }
 
       if (path.length() > 0)
       {
-         int p = path.lastIndexOf("/");
+         String str = path.toString();
+         int p = str.lastIndexOf('/');
+         // Start of matrix params.
+         p = str.indexOf(';', p < 0 ? 0 : p);
 
-         // slash not found , then start search for ; from begin of string
-         if (p == -1)
-            p = 0;
-
-         p = path.indexOf(";", p); // <<<<<<< start point for processing
-
-         while ((p = path.indexOf(name, p)) > 0)
+         if (p >= 0)
          {
-            int n = path.indexOf(";", p);
+            // Trim current matrix parameters.
+            path.setLength(p);
 
-            if (n == -1)
-               n = path.length();
+            // Append all parameters we need to keep to the path.
+            while (p < str.length())
+            {
+               int n = str.indexOf(';', p);
+               if (n < 0)
+               {
+                  n = str.length();
+               }
 
-            p = p > 0 ? p - 1 : 0; // p decrements, because want remove previous ';'
-            path.replace(p, n, "");
+               if (n > p)
+               {
+                  String pair = str.substring(p, n);
+                  int eq = pair.indexOf('=');
+                  String pairName = eq > 0 ? pair.substring(0, eq) : pair;
+
+                  if (!name.equals(pairName))
+                  {
+                     if (path.length() > 0)
+                     {
+                        path.append(';');
+                     }
+                     path.append(pair);
+                  }
+               }
+               p = n + 1;
+            }
          }
       }
 
       if (values != null && values.length > 0)
+      {
          matrixParam(name, values);
+      }
 
       return this;
    }
@@ -539,22 +572,25 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder replaceMatrix(String matrix)
    {
-      // search ';' which goes after '/' at final path segment
+      // Search ';' which goes after '/' at final path segment.
       if (path.length() > 0)
       {
          int p = path.lastIndexOf("/");
-
-         // slash not found , then start search for ; from begin of string
-         if (p == -1)
-            p = 0;
-
-         p = path.indexOf(";", p);
-         path.setLength(p + 1);
+         // If slash not found , then start search for ; from begin of string.
+         p = path.indexOf(";", p < 0 ? 0 : p);
+         if (p >= 0)
+         {
+            // Trim current matrix parameters.
+            path.setLength(p);
+         }
       }
 
-      // if have values add it
-      if (matrix != null && matrix.length() > 0)
+      // If have values add them.
+      if (!(matrix == null || matrix.isEmpty()))
+      {
+         path.append(';');
          path.append(matrix);
+      }
 
       return this;
    }
@@ -566,8 +602,10 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder replacePath(String p)
    {
       path.setLength(0);
-      path(p);
-
+      if (!(p == null || p.isEmpty()))
+      {
+         path(p);
+      }
       return this;
    }
 
@@ -578,29 +616,51 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder replaceQueryParam(String name, Object... values)
    {
       if (name == null)
-         throw new IllegalArgumentException("Name is null");
-
-      // first remove old parameters, they can go not one by one,
-      // try found all of it
-      int p = 0;
-      while ((p = query.indexOf(name, p)) >= 0)
       {
-         int n = query.indexOf("&", p);
-
-         if (n < 0)
-            n = query.length();
-
-         p = p > 0 ? p - 1 : 0; // want remove previous '&' if it exists
-         query.replace(p, n, "");
-
-         // remove first '&' if presents
-         if (query.charAt(0) == '&')
-            query.deleteCharAt(0);
+         throw new IllegalArgumentException("Name is null");
       }
 
-      // now add new one
+      if (query.length() > 0)
+      {
+         int p = 0;
+         // Freeze state of query string.
+         String str = query.toString();
+         // Erase raw query.
+         query.setLength(0);
+         while (p < str.length())
+         {
+            // Split frozen string by '&' and copy in StringBuilder the pairs we need to keep.
+            int n = str.indexOf('&', p);
+            if (n < 0)
+            {
+               n = str.length();
+            }
+
+            // Do nothing for sequence such as '&&'.
+            if (n > p)
+            {
+               String pair = str.substring(p, n);
+               int eq = pair.indexOf('=');
+               String pairName = eq > 0 ? pair.substring(0, eq) : pair;
+
+               if (!name.equals(pairName))
+               {
+                  if (query.length() > 0)
+                  {
+                     query.append('&');
+                  }
+                  query.append(pair);
+               }
+            }
+            p = n + 1;
+         }
+      }
+
+      // Add new parameters to the end of raw query.
       if (values != null && values.length > 0)
+      {
          queryParam(name, values);
+      }
 
       return this;
    }
@@ -613,8 +673,10 @@ public class UriBuilderImpl extends UriBuilder
    {
       query.setLength(0);
 
-      if (queryString != null && queryString.length() > 0)
+      if (!(queryString == null || queryString.isEmpty()))
+      {
          query.append(queryString);
+      }
 
       return this;
    }
@@ -625,11 +687,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder scheme(String schema)
    {
-      if (schema != null)
-         this.schema = UriComponent.validate(schema, UriComponent.SCHEME, true);
-      else
-         this.schema = null;
-
+      this.schema = schema != null ? UriComponent.validate(schema, UriComponent.SCHEME, true) : null;
       return this;
    }
 
@@ -640,15 +698,24 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder schemeSpecificPart(String ssp)
    {
       if (ssp == null)
+      {
          throw new IllegalArgumentException("Scheme specific part (ssp) is null");
+      }
 
       StringBuilder sb = new StringBuilder();
 
       if (schema != null)
-         sb.append(schema).append(':').append(UriComponent.recognizeEncode(ssp, UriComponent.SSP, true));
+      {
+         sb.append(schema);
+         sb.append(':');
+         sb.append(UriComponent.recognizeEncode(ssp, UriComponent.SSP, true));
+      }
 
-      if (fragment != null && fragment.length() > 0)
-         sb.append('#').append(fragment);
+      if (!(fragment == null || fragment.isEmpty()))
+      {
+         sb.append('#');
+         sb.append(fragment);
+      }
 
       URI uri;
       try
@@ -678,10 +745,14 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder segment(String... segments)
    {
       if (segments == null)
+      {
          throw new IllegalArgumentException("Path segments is null");
+      }
 
-      for (String p : segments)
-         path(p);
+      for (int i = 0, length = segments.length; i < length; i++)
+      {
+         path(segments[i]);
+      }
 
       return this;
    }
@@ -693,34 +764,46 @@ public class UriBuilderImpl extends UriBuilder
    public UriBuilder uri(URI uri)
    {
       if (uri == null)
+      {
          throw new IllegalArgumentException("URI is null");
+      }
 
       if (uri.getScheme() != null)
+      {
          schema = uri.getScheme();
+      }
 
       if (uri.getRawUserInfo() != null)
+      {
          userInfo = uri.getRawUserInfo();
+      }
 
       if (uri.getHost() != null)
+      {
          host = uri.getHost();
+      }
 
       if (uri.getPort() != -1)
+      {
          port = uri.getPort();
+      }
 
-      if (uri.getRawPath() != null && uri.getRawPath().length() > 0)
+      if (!(uri.getRawPath() == null || uri.getRawPath().isEmpty()))
       {
          path.setLength(0);
          path.append(uri.getRawPath());
       }
 
-      if (uri.getRawQuery() != null && uri.getRawQuery().length() > 0)
+      if (!(uri.getRawQuery() == null || uri.getRawQuery().isEmpty()))
       {
          query.setLength(0);
          query.append(uri.getRawQuery());
       }
 
       if (uri.getRawFragment() != null)
+      {
          fragment = uri.getRawFragment();
+      }
 
       return this;
    }
@@ -731,12 +814,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder userInfo(String userInfo)
    {
-      if (userInfo != null)
-         this.userInfo = UriComponent.recognizeEncode(userInfo, UriComponent.USER_INFO, true);
-      else
-         this.userInfo = null;
-
+      this.userInfo = userInfo != null ? UriComponent.recognizeEncode(userInfo, UriComponent.USER_INFO, true) : null;
       return this;
    }
-
 }

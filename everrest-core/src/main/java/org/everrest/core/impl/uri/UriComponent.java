@@ -39,14 +39,6 @@ import javax.ws.rs.core.UriBuilder;
  */
 public final class UriComponent
 {
-
-   /**
-    * Constructor.
-    */
-   private UriComponent()
-   {
-   }
-
    // Components of URI, see http://gbiv.com/protocols/uri/rfc/rfc3986.htm
    /** Scheme URI component. */
    public static final int SCHEME = 0;
@@ -154,12 +146,16 @@ public final class UriComponent
    {
       StringBuilder sb = new StringBuilder();
       if (statement.length() != 3 || statement.charAt(1) != '-')
+      {
          throw new IllegalArgumentException("Illegal format of source string, e. g. A-Z");
+      }
 
       char end = statement.charAt(2);
 
       for (char c = statement.charAt(0); c <= end; c++)
+      {
          sb.append(c);
+      }
 
       return sb.toString();
    }
@@ -201,13 +197,13 @@ public final class UriComponent
          // http://www.unix.com.ua/rfc/rfc3986.html#sA.
          if (inputBuffer.startsWith("../") || inputBuffer.startsWith("./"))
          {
-            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/") + 1, inputBuffer.length());
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf('/') + 1, inputBuffer.length());
             continue;
          }
          // if the input buffer begins with a prefix of "/./" or "/.", where "." is
          // a complete path segment, then replace that prefix with "/" in the input buffer.
          // http://www.unix.com.ua/rfc/rfc3986.html#sB.
-         if (inputBuffer.startsWith("/./") || (inputBuffer.startsWith("/.") && isComplitePathSeg(".", inputBuffer)))
+         if (inputBuffer.startsWith("/./") || (inputBuffer.startsWith("/.") && isCompletePathSeg(".", inputBuffer)))
          {
             if (inputBuffer.equals("/."))
             {
@@ -215,14 +211,14 @@ public final class UriComponent
                outputBuffer.append("/");
                continue;
             }
-            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/", 1), inputBuffer.length());
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf('/', 1), inputBuffer.length());
             continue;
          }
          // if the input buffer begins with a prefix of "/../" or "/..", where ".."
          // is a complete path segment, then replace that prefix with "/" in the input buffer and
          // remove the last segment and its preceding "/" (if any) from the output buffer.
          // http://www.unix.com.ua/rfc/rfc3986.html#sC.
-         if (inputBuffer.startsWith("/../") || (inputBuffer.startsWith("/..") && isComplitePathSeg("..", inputBuffer)))
+         if (inputBuffer.startsWith("/../") || (inputBuffer.startsWith("/..") && isCompletePathSeg("..", inputBuffer)))
          {
             if (inputBuffer.equals("/.."))
             {
@@ -230,7 +226,7 @@ public final class UriComponent
                outputBuffer.delete(outputBuffer.lastIndexOf("/") + 1, outputBuffer.length());
                continue;
             }
-            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/", 1), inputBuffer.length());
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf('/', 1), inputBuffer.length());
             outputBuffer.delete(outputBuffer.lastIndexOf("/"), outputBuffer.length());
             continue;
          }
@@ -247,10 +243,10 @@ public final class UriComponent
          // characters up to, but not including, the next "/" character or the end of the
          // input buffer.
          // http://www.unix.com.ua/rfc/rfc3986.html#sE.
-         if (inputBuffer.indexOf("/") != inputBuffer.lastIndexOf('/'))
+         if (inputBuffer.indexOf('/') != inputBuffer.lastIndexOf('/'))
          {
-            outputBuffer.append(inputBuffer.substring(0, inputBuffer.indexOf("/", 1)));
-            inputBuffer = inputBuffer.substring(inputBuffer.indexOf("/", 1));
+            outputBuffer.append(inputBuffer.substring(0, inputBuffer.indexOf('/', 1)));
+            inputBuffer = inputBuffer.substring(inputBuffer.indexOf('/', 1));
          }
          else
          {
@@ -269,19 +265,9 @@ public final class UriComponent
     * @param path whole path
     * @return true if segment is complete path segment false otherwise
     */
-   private static boolean isComplitePathSeg(String segment, String path)
+   private static boolean isCompletePathSeg(String segment, String path)
    {
-      boolean result = false;
-      int segPlace = path.indexOf(segment);
-      if (path.equals("/" + segment))
-      {
-         result = true;
-      }
-      else if ((path.charAt(segPlace + segment.length()) == '/'))
-      {
-         result = true;
-      }
-      return result;
+      return path.equals("/" + segment) || (path.charAt(path.indexOf(segment) + segment.length()) == '/');
    }
 
    /**
@@ -295,7 +281,9 @@ public final class UriComponent
    public static String encode(String str, int component, boolean containsUriParams)
    {
       if (str == null)
+      {
          throw new IllegalArgumentException();
+      }
       return encodingInt(str, component, containsUriParams, false);
    }
 
@@ -312,13 +300,14 @@ public final class UriComponent
       for (int i = 0; i < str.length(); i++)
       {
          char ch = str.charAt(i);
-
-         if ((ch < 128 && !needEncode(ch, component)) || ((ch == '{' || ch == '}') && containsUriParams) || ch == '%')
+         if ((!(ch >= 128 || needEncode(ch, component)))
+            || (containsUriParams && (ch == '{' || ch == '}'))
+            || (ch == '%'))
+         {
             continue;
-
+         }
          throw new IllegalArgumentException("Illegal character, index " + i + ": " + str);
       }
-
       return str;
    }
 
@@ -337,7 +326,9 @@ public final class UriComponent
    public static String recognizeEncode(String str, int component, boolean containsUriParams)
    {
       if (str == null)
+      {
          throw new IllegalArgumentException();
+      }
       return encodingInt(str, component, containsUriParams, true);
    }
 
@@ -350,68 +341,50 @@ public final class UriComponent
     */
    private static String encodingInt(String str, int component, boolean containsUriParams, boolean recognizeEncoded)
    {
-      StringBuilder sb = null;
-      int l = str.length();
-      for (int i = 0; i < l; i++)
-      {
-         char ch = str.charAt(i);
+      int length = str.length();
 
-         if (ch == '%' && recognizeEncoded)
+      boolean encode = false;
+      for (int i = 0; i < length && !encode; i++)
+      {
+         encode = needEncode(str.charAt(i), component);
+      }
+
+      if (encode)
+      {
+         StringBuilder sb = new StringBuilder();
+         for (int i = 0; i < length; i++)
          {
-            if (checkHexCharacters(str, i))
+            char ch = str.charAt(i);
+
+            if (ch == '%' && recognizeEncoded)
             {
-               if (sb != null)
-               {
-                  sb.append(ch).append(str.charAt(++i)).append(str.charAt(++i));
-               }
-            }
-            else
-            {
-               if (sb == null)
-               {
-                  sb = new StringBuilder();
-                  sb.append(str.substring(0, i));
-               }
-               //               addPercentEncoded(ch, sb); // in fact add '%25'
-               sb.append(PERCENT);
-            }
-         }
-         else if (ch < 128 && !needEncode(ch, component))
-         {
-            if (sb != null)
-            {
-               sb.append(ch);
-            }
-         }
-         else
-         {
-            if ((ch == '{' || ch == '}') && containsUriParams)
-            {
-               if (sb != null)
+               if (checkHexCharacters(str, i))
                {
                   sb.append(ch);
-               }
-            }
-            else
-            {
-               if (sb == null)
-               {
-                  sb = new StringBuilder();
-                  sb.append(str.substring(0, i));
-               }
-               if (ch < 128)
-               {
-                  //                  addPercentEncoded(ch, sb);
-                  sb.append(ENCODED[component][ch]);
+                  sb.append(str.charAt(++i));
+                  sb.append(str.charAt(++i));
                }
                else
                {
-                  addUTF8Encoded(ch, sb);
+                  sb.append(PERCENT);
                }
             }
+            else if (containsUriParams && (ch == '{' || ch == '}'))
+            {
+               sb.append(ch);
+            }
+            else if (ch < 128)
+            {
+               sb.append(needEncode(ch, component) ? ENCODED[component][ch] : ch);
+            }
+            else
+            {
+               addUTF8Encoded(ch, sb);
+            }
          }
+         return sb.toString();
       }
-      return sb != null ? sb.toString() : str;
+      return str;
    }
 
    /**
@@ -426,44 +399,48 @@ public final class UriComponent
    public static String decode(String str, int component)
    {
       if (str == null)
+      {
          throw new IllegalArgumentException("Decoded string is null");
+      }
 
-      int p = 0;
-      int l = str.length();
-      StringBuilder sb = new StringBuilder();
+      int length = str.length();
 
-      if (l < 3 && str.indexOf('%') > 0)
-         throw new IllegalArgumentException("Mailformed string " + str);
+      if (length < 3 && str.indexOf('%') > 0)
+      {
+         throw new IllegalArgumentException("Malformed string " + str);
+      }
 
-      p = str.lastIndexOf('%');
-      if (p > 0 && p > l - 3)
-         throw new IllegalArgumentException("Mailformed string at index " + p);
+      int p = str.lastIndexOf('%');
+      if (p > 0 && p > (length - 3))
+      {
+         throw new IllegalArgumentException("Malformed string at index " + p);
+      }
 
       p = 0; // reset pointer
-      while (p < l)
+      StringBuilder sb = new StringBuilder();
+      ByteArrayOutputStream out = new NoSyncByteArrayOutputStream(4);
+      while (p < length)
       {
          char c = str.charAt(p);
-         if (c != '%')
+         if (c == '%')
          {
-            // NOTE can be potential problem but we can't ignore this
-            if (c == '+')
-               sb.append(' ');
-            else
-               sb.append(c);
-
-            p++;
-         }
-         else
-         {
-            ByteArrayOutputStream out = new NoSyncByteArrayOutputStream(4);
             p = percentDecode(str, p, out);
             byte[] buff = out.toByteArray();
 
             if (buff.length == 1 && (buff[0] & 0xFF) < 128)
+            {
                sb.append((char)buff[0]);
+            }
             else
+            {
                addUTF8Decoded(buff, sb);
+            }
             out.reset();
+         }
+         else
+         {
+            sb.append(c == '+' ? ' ' : c);
+            p++;
          }
       }
       return sb.toString();
@@ -504,7 +481,9 @@ public final class UriComponent
    {
       ByteBuffer buf = UTF8.encode("" + c);
       while (buf.hasRemaining())
+      {
          addPercentEncoded(buf.get() & 0xFF, sb);
+      }
    }
 
    /**
@@ -517,21 +496,22 @@ public final class UriComponent
     */
    private static int percentDecode(String str, int p, ByteArrayOutputStream out)
    {
-      int l = str.length();
-      for (;;)
+      int length = str.length();
+      for (; ; )
       {
          char hc = getHexCharacter(str, ++p); // higher char
          char lc = getHexCharacter(str, ++p); // lower char
 
-         int r =
-            (Character.isDigit(hc) ? hc - '0' : hc - 'A' + 10) << 4
-               | (Character.isDigit(lc) ? lc - '0' : lc - 'A' + 10);
+         int r = ((Character.isDigit(hc) ? hc - '0' : hc - 'A' + 10) << 4)
+            | (Character.isDigit(lc) ? lc - '0' : lc - 'A' + 10);
 
          out.write((byte)r);
          p++;
 
-         if (p == l || str.charAt(p) != '%')
+         if (p == length || str.charAt(p) != '%')
+         {
             break;
+         }
       }
 
       return p;
@@ -548,8 +528,10 @@ public final class UriComponent
     */
    public static boolean checkHexCharacters(String s, int p)
    {
-      if (p > s.length() - 3)
+      if (p > (s.length() - 3))
+      {
          return false;
+      }
       try
       {
          getHexCharacter(s, ++p);
@@ -573,11 +555,19 @@ public final class UriComponent
    private static char getHexCharacter(String s, int p)
    {
       char c = s.charAt(p);
-      if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'))
+      if (c >= '0' && c <= '9')
+      {
          return c;
+      }
+      if (c >= 'A' && c <= 'F')
+      {
+         return c;
+      }
       if (c >= 'a' && c <= 'f')
+      {
          return Character.toUpperCase(c);
-      throw new IllegalArgumentException("Mailformed string at index " + p);
+      }
+      throw new IllegalArgumentException("Malformed string at index " + p);
    }
 
    /**
@@ -602,28 +592,30 @@ public final class UriComponent
     */
    public static List<PathSegment> parsePathSegments(String path, boolean decode)
    {
-      List<PathSegment> l = new ArrayList<PathSegment>();
-      if (path == null || path.length() == 0)
-         return l;
-
-      // remove leading slash
-      if (path.charAt(0) == '/')
-         path = path.substring(1);
-
-      int p = 0;
-      int n = 0;
-      while (n < path.length())
+      List<PathSegment> result = new ArrayList<PathSegment>();
+      if (!(path == null || path.isEmpty()))
       {
-         n = path.indexOf('/', p);
-         if (n == -1)
-            n = path.length();
+         // remove leading slash
+         if (path.charAt(0) == '/')
+         {
+            path = path.substring(1);
+         }
 
-         l.add(PathSegmentImpl.fromString(path.substring(p, n), decode));
-         p = n + 1;
+         int p = 0;
+         int n = 0;
+         while (n < path.length())
+         {
+            n = path.indexOf('/', p);
+            if (n < 0)
+            {
+               n = path.length();
+            }
 
+            result.add(PathSegmentImpl.fromString(path.substring(p, n), decode));
+            p = n + 1;
+         }
       }
-
-      return l;
+      return result;
    }
 
    /**
@@ -635,39 +627,47 @@ public final class UriComponent
     */
    public static MultivaluedMap<String, String> parseQueryString(String rawQuery, boolean decode)
    {
-      MultivaluedMap<String, String> m = new MultivaluedMapImpl();
-      if (rawQuery == null || rawQuery.length() == 0)
-         return m;
-
-      int p = 0;
-      int n = 0;
-      while (n < rawQuery.length())
+      MultivaluedMap<String, String> result = new MultivaluedMapImpl();
+      if (!(rawQuery == null || rawQuery.isEmpty()))
       {
-         n = rawQuery.indexOf('&', p);
-         if (n == -1)
-            n = rawQuery.length();
-
-         String pair = rawQuery.substring(p, n);
-         if (pair.length() == 0)
-            continue;
-
-         String name;
-         String value = ""; // default value
-         int eq = pair.indexOf('=');
-         if (eq == -1) // no value, default is ""
-            name = pair;
-         else
+         int p = 0;
+         int n = 0;
+         while (n < rawQuery.length())
          {
-            name = pair.substring(0, eq);
-            value = pair.substring(eq + 1);
+            n = rawQuery.indexOf('&', p);
+            if (n < 0)
+            {
+               n = rawQuery.length();
+            }
+
+            String pair = rawQuery.substring(p, n);
+            if (!pair.isEmpty())
+            {
+               String name;
+               String value;
+               int eq = pair.indexOf('=');
+               if (eq < 0)
+               {
+                  // no value
+                  name = pair;
+                  value = "";
+               }
+               else
+               {
+                  name = pair.substring(0, eq);
+                  value = pair.substring(eq + 1);
+               }
+
+               result.add(decode ? decode(name, QUERY) : name, decode ? decode(value, QUERY) : value);
+
+               p = n + 1;
+            }
          }
-
-         m.add(decode ? decode(name, QUERY) : name, decode ? decode(value, QUERY) : value);
-
-         p = n + 1;
       }
-
-      return m;
+      return result;
    }
 
+   private UriComponent()
+   {
+   }
 }
