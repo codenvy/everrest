@@ -37,6 +37,7 @@ import org.picocontainer.ComponentAdapter;
 
 import java.util.List;
 
+import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -99,11 +100,10 @@ public final class ExoRequestDispatcher extends RequestDispatcher
       {
          if (404 == wae.getResponse().getStatus())
          {
-            RestfulContainerProvider provider = (RestfulContainerProvider)ExoContainerContext.getCurrentContainer()
-               .getComponentInstance("RestfulContainerProvider");
+            Provider provider = (Provider)ExoContainerContext.getCurrentContainer().getComponentInstance("RestfulContainerProvider");
             if (null != provider)
             {
-               RestfulContainer container = provider.get();
+               RestfulContainer container = (RestfulContainer)provider.get();
                if (null != container)
                {
                   RestfulComponentAdapter resourceAdapter =
