@@ -40,7 +40,8 @@ public final class JsonUtils
    static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
    /** Known types. */
-   public enum Types {
+   public enum Types
+   {
 
       /** Byte. */
       BYTE,
@@ -110,7 +111,7 @@ public final class JsonUtils
 
       /** Enum. */
       ENUM,
-      
+
       /** java.lang.Class */
       CLASS
    }
@@ -118,7 +119,8 @@ public final class JsonUtils
    /**
     * Types of Json tokens.
     */
-   public enum JsonToken {
+   public enum JsonToken
+   {
       /** JSON object, "key":{value1, ... } . */
       object,
 
@@ -201,36 +203,44 @@ public final class JsonUtils
       {
          switch (c)
          {
-            case '\n' :
+            case '\n':
                sb.append("\\n");
                break;
-            case '\r' :
+            case '\r':
                sb.append("\\r");
                break;
-            case '\t' :
+            case '\t':
                sb.append("\\t");
                break;
-            case '\b' :
+            case '\b':
                sb.append("\\b");
                break;
-            case '\f' :
+            case '\f':
                sb.append("\\f");
                break;
-            case '\\' :
+            case '\\':
                sb.append("\\\\");
                break;
-            case '"' :
+            case '"':
                sb.append("\\\"");
                break;
-            default :
+            default:
                if (c < '\u0010')
+               {
                   sb.append("\\u000").append(Integer.toHexString(c));
+               }
                else if ((c < '\u0020' && c > '\u0009') || (c >= '\u0080' && c < '\u00a0'))
+               {
                   sb.append("\\u00").append(Integer.toHexString(c));
+               }
                else if (c >= '\u2000' && c < '\u2100')
+               {
                   sb.append("\\u").append(Integer.toHexString(c));
+               }
                else
+               {
                   sb.append(c);
+               }
                break;
          }
       }
@@ -269,17 +279,29 @@ public final class JsonUtils
    public static Types getType(Object o)
    {
       if (o == null)
+      {
          return Types.NULL;
+      }
       if (KNOWN_TYPES.get(o.getClass().getName()) != null)
+      {
          return KNOWN_TYPES.get(o.getClass().getName());
+      }
       if (o instanceof Enum)
+      {
          return Types.ENUM;
+      }
       if (o instanceof Object[])
+      {
          return Types.ARRAY_OBJECT;
+      }
       if (o instanceof Collection)
+      {
          return Types.COLLECTION;
+      }
       if (o instanceof Map)
+      {
          return Types.MAP;
+      }
       return null;
    }
 
@@ -292,15 +314,25 @@ public final class JsonUtils
    public static Types getType(Class<?> clazz)
    {
       if (KNOWN_TYPES.get(clazz.getName()) != null)
+      {
          return KNOWN_TYPES.get(clazz.getName());
+      }
       if (Enum.class.isAssignableFrom(clazz))
+      {
          return Types.ENUM;
+      }
       if (clazz.isArray())
+      {
          return Types.ARRAY_OBJECT;
+      }
       if (Collection.class.isAssignableFrom(clazz))
+      {
          return Types.COLLECTION;
+      }
       if (Map.class.isAssignableFrom(clazz))
+      {
          return Types.MAP;
+      }
       return null;
    }
 
@@ -326,11 +358,16 @@ public final class JsonUtils
       return set;
    }
 
-   public static <T> T createProxy(Class<T> interf) {
+   public static <T> T createProxy(Class<T> interf)
+   {
       if (interf == null)
+      {
          throw new NullPointerException();
+      }
       if (!interf.isInterface())
+      {
          throw new IllegalArgumentException("Type '" + interf.getSimpleName() + "' is not interface. ");
+      }
       return (T)Proxy.newProxyInstance(interf.getClassLoader(), new Class[]{interf}, new BeanProxy());
    }
 
@@ -344,11 +381,46 @@ public final class JsonUtils
          String key = key(method);
          if (key != null)
          {
-            if (null == args)
+            // It is getter if there is no argument.
+            if (args == null)
             {
-                // Getter.
-               return values.get(key);
+               Object value = values.get(key);
+               Class<?> valueType;
+               if (value == null && (valueType = method.getReturnType()).isPrimitive())
+               {
+                  // Cannot return null for primitive types return default values instead.
+                  if (Boolean.TYPE == valueType)
+                  {
+                     value = false;
+                  }
+                  else if (Byte.TYPE == valueType)
+                  {
+                     value = (byte)0;
+                  }
+                  else if (Short.TYPE == valueType)
+                  {
+                     value = (short)0;
+                  }
+                  else if (Integer.TYPE == valueType)
+                  {
+                     value = 0;
+                  }
+                  else if (Long.TYPE == valueType)
+                  {
+                     value = 0l;
+                  }
+                  else if (Float.TYPE == valueType)
+                  {
+                     value = 0.0f;
+                  }
+                  else if (Double.TYPE == valueType)
+                  {
+                     value = 0.0d;
+                  }
+               }
+               return value;
             }
+
             // Setter.
             values.put(key, args[0]);
          }
