@@ -342,7 +342,7 @@ public class JsonGenerator
          }
          case MAP :
             JsonValue jsonObject = new ObjectValue();
-            Map<String, Object> map = new HashMap<String, Object>((Map<String, Object>)object);
+            Map<String, Object> map = (Map<String, Object>)object;
             Set<String> keys = map.keySet();
             for (String k : keys)
             {
