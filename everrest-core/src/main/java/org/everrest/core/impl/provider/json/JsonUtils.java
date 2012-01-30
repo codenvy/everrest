@@ -401,6 +401,10 @@ public final class JsonUtils
                   {
                      value = (short)0;
                   }
+                  else if (Character.TYPE == valueType)
+                  {
+                     value = (char)0;
+                  }
                   else if (Integer.TYPE == valueType)
                   {
                      value = 0;
