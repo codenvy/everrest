@@ -122,6 +122,13 @@
       <module>everrest-integration/everrest-integration-picocontainer</module>
       <module>everrest-integration/everrest-integration-guice</module>
       <module>everrest-integration/everrest-integration-spring</module>
+      <module>everrest-samples/book-service</module>
+      <module>everrest-samples/groovy-book-service</module>
+      <module>everrest-integration/everrest-integration-exo-sample</module>
+      <module>everrest-integration/everrest-integration-picocontainer-sample</module>
+      <module>everrest-integration/everrest-integration-guice-sample</module>
+      <module>everrest-integration/everrest-integration-spring-sample</module>
+      <module>everrest-project-template-war</module>
    </modules>
 
    <repositories>
