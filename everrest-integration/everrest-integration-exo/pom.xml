@@ -19,7 +19,8 @@
     02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
    <modelVersion>4.0.0</modelVersion>
 
@@ -64,16 +65,16 @@
          <artifactId>exo.kernel.container</artifactId>
          <version>2.3.4-GA</version>
       </dependency>
-      <dependency>                                                                                                                                                                                             
-         <groupId>org.exoplatform.core</groupId>                                                                                                                                                               
+      <dependency> 
+         <groupId>org.exoplatform.core</groupId>
          <artifactId>exo.core.component.security.core</artifactId>
-         <version>2.4.4-GA</version>                                                                                                                                             
-         <exclusions>                                                                                                                                                                                          
-            <exclusion>                                                                                                                                                                                        
-               <groupId>javax.servlet</groupId>                                                                                                                                                                
-               <artifactId>servlet-api</artifactId>                                                                                                                                                            
-            </exclusion>                                                                                                                                                                                       
-         </exclusions>                                                                                                                                                                                         
+         <version>2.4.4-GA</version>
+         <exclusions>
+            <exclusion>
+               <groupId>javax.servlet</groupId>
+               <artifactId>servlet-api</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
    </dependencies>
 </project>
