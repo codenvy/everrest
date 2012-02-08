@@ -37,10 +37,6 @@ import javax.ws.rs.core.MediaType;
 public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashMap<String, List<T>> implements
    ExtMultivaluedMap<String, T>
 {
-
-   /**
-    * Serial version UID.
-    */
    private static final long serialVersionUID = 8930689464134153848L;
 
    /**
@@ -51,19 +47,22 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
    private static final Comparator<ResourceMethodDescriptor> RESOURCE_METHOD_COMPARATOR =
       new Comparator<ResourceMethodDescriptor>()
       {
-
+         @Override
          public int compare(ResourceMethodDescriptor o1, ResourceMethodDescriptor o2)
          {
             int r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(getLast(o1.consumes()), getLast(o2.consumes()));
             if (r == 0)
+            {
                r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(getLast(o1.produces()), getLast(o2.produces()));
-            // More precise goes first.
-            // e.g.
-            // [a/b, y/z] and [a/b] then second one goes first 
+            }
             if (r == 0)
+            {
                r = o1.consumes().size() - o2.consumes().size();
+            }
             if (r == 0)
+            {
                r = o1.produces().size() - o2.produces().size();
+            }
             return r;
          }
 
@@ -71,12 +70,9 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
          {
             return l.get(l.size() - 1);
          }
-
       };
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<T> getList(String httpMethod)
    {
       List<T> l = get(httpMethod);
@@ -88,55 +84,52 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
       return l;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void add(String httpMethod, T resourceMethod)
    {
       if (resourceMethod == null)
+      {
          return;
+      }
       List<T> l = getList(httpMethod);
       l.add(resourceMethod);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public T getFirst(String httpMethod)
    {
       List<T> l = getList(httpMethod);
       return l != null && l.size() > 0 ? l.get(0) : null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void putSingle(String httpMethod, T resourceMethod)
    {
       if (resourceMethod == null)
+      {
          return;
+      }
       List<T> l = getList(httpMethod);
       l.clear();
       l.add(resourceMethod);
    }
 
-   /**
-    * Sort each collections in map.
-    */
+   /** Sort each collections in map. */
    public void sort()
    {
       for (List<T> l : values())
+      {
          Collections.sort(l, RESOURCE_METHOD_COMPARATOR);
+      }
    }
 
    /**
     * Get HTTP method names to use it in 'Allow' header.
-    * 
+    *
     * @return collection of method names
     */
    public Collection<String> getAllow()
    {
       return keySet();
    }
-
 }

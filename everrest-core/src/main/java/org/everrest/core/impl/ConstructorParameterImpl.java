@@ -25,32 +25,22 @@ import java.lang.reflect.Type;
 
 /**
  * Describes constructor's parameter.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class ConstructorParameterImpl implements ConstructorParameter
 {
-
-   /**
-    * All annotations including JAX-RS annotation.
-    */
+   /** All annotations including JAX-RS annotation. */
    private final Annotation[] additional;
 
-   /**
-    * One of JAX-RS annotations.
-    */
+   /** One of JAX-RS annotations. */
    private final Annotation annotation;
 
-   /**
-    * Parameter type. See
-    * {@link java.lang.reflect.Constructor#getGenericParameterTypes()} .
-    */
+   /** Parameter type. See {@link java.lang.reflect.Constructor#getGenericParameterTypes()} . */
    private final Type type;
 
-   /**
-    * Parameter class. See {@link java.lang.reflect.Constructor#getParameterTypes()}
-    */
+   /** Parameter class. See {@link java.lang.reflect.Constructor#getParameterTypes()} */
    private final Class<?> clazz;
 
    /**
@@ -60,24 +50,22 @@ public class ConstructorParameterImpl implements ConstructorParameter
     */
    private final String defaultValue;
 
-   /**
-    * See {@link javax.ws.rs.Encoded}.
-    */
+   /** See {@link javax.ws.rs.Encoded}. */
    private final boolean encoded;
 
    /**
     * Constructs new instance of MethodParameter.
-    * 
+    *
     * @param annotation see {@link #annotation}
     * @param additional see {@link #additional}
     * @param clazz parameter class
     * @param type generic parameter type
     * @param defaultValue default value for parameter. See
-    *        {@link javax.ws.rs.DefaultValue}.
+    * {@link javax.ws.rs.DefaultValue}.
     * @param encoded true if parameter must not be decoded false otherwise
     */
    public ConstructorParameterImpl(Annotation annotation, Annotation[] additional, Class<?> clazz, Type type,
-      String defaultValue, boolean encoded)
+                                   String defaultValue, boolean encoded)
    {
       this.annotation = annotation;
       this.additional = additional;
@@ -87,57 +75,43 @@ public class ConstructorParameterImpl implements ConstructorParameter
       this.encoded = encoded;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation getAnnotation()
    {
       return annotation;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation[] getAnnotations()
    {
       return additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getDefaultValue()
    {
       return defaultValue;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Class<?> getParameterClass()
    {
       return clazz;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Type getGenericType()
    {
       return type;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isEncoded()
    {
       return encoded;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {

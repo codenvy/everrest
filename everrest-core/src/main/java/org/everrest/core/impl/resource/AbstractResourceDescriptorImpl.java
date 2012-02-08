@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -90,7 +89,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
    /**
     * Constructs new instance of AbstractResourceDescriptor without path (sub-resource).
-    * 
+    *
     * @param resourceClass resource class
     * @param scope the components lifecycle scope
     */
@@ -124,57 +123,43 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       processMethods();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitAbstractResourceDescriptor(this);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public PathValue getPathValue()
    {
       return path;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public ResourceMethodMap<ResourceMethodDescriptor> getResourceMethods()
    {
       return resourceMethods;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public SubResourceLocatorMap getSubResourceLocators()
    {
       return subResourceLocators;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public SubResourceMethodMap getSubResourceMethods()
    {
       return subResourceMethods;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriPattern getUriPattern()
    {
       return uriPattern;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isRootResource()
    {
       return path != null;
@@ -195,9 +180,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             Class<?> ac = a.annotationType();
             if (!Modifier.isPublic(method.getModifiers())
                && (ac == CookieParam.class || ac == Consumes.class || ac == Context.class || ac == DefaultValue.class
-                  || ac == Encoded.class || ac == FormParam.class || ac == HeaderParam.class || ac == MatrixParam.class
-                  || ac == Path.class || ac == PathParam.class || ac == Produces.class || ac == QueryParam.class || ac
-                  .getAnnotation(HttpMethod.class) != null))
+               || ac == Encoded.class || ac == FormParam.class || ac == HeaderParam.class || ac == MatrixParam.class
+               || ac == Path.class || ac == PathParam.class || ac == Produces.class || ac == QueryParam.class || ac
+               .getAnnotation(HttpMethod.class) != null))
             {
                LOG.warn("Non-public method at resource " + toString() + " annotated with JAX-RS annotation: " + a);
             }
@@ -323,7 +308,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
    /**
     * Create list of {@link MethodParameter} .
-    * 
+    *
     * @param resourceClass class
     * @param method See {@link Method}
     * @return list of {@link MethodParameter}
@@ -471,7 +456,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /**
     * Get all method with at least one annotation which has annotation <i>annotation</i>. It is useful for annotation
     * {@link javax.ws.rs.GET}, etc. All HTTP method annotations has annotation {@link HttpMethod}.
-    * 
+    *
     * @param <T> annotation type
     * @param m method
     * @param annotation annotation class
@@ -492,17 +477,17 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
    /**
     * Tries to get JAX-RS annotation on method from the root resource class's superclass or implemented interfaces.
-    * 
+    *
     * @param <T> annotation type
     * @param method method for discovering
     * @param resourceClass class that contains discovered method
     * @param annotationClass annotation type what we are looking for
     * @param metaAnnotation false if annotation should be on method and true in method should contain annotations that
-    *           has supplied annotation
+    * has supplied annotation
     * @return annotation from class or its ancestor or null if nothing found
     */
    protected <T extends Annotation> T getMethodAnnotation(Method method, Class<?> resourceClass,
-      Class<T> annotationClass, boolean metaAnnotation)
+                                                          Class<T> annotationClass, boolean metaAnnotation)
    {
 
       T annotation = metaAnnotation ? getMetaAnnotation(method, annotationClass) : method.getAnnotation(annotationClass);
@@ -537,7 +522,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   else
                   {
                      throw new RuntimeException("JAX-RS annotation on method " + inhMethod.getName() + " of resource "
-                        + toString()                        + " is equivocality.");
+                        + toString() + " is equivocality.");
                   }
                }
                catch (NoSuchMethodException ignored)
@@ -549,9 +534,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          if (inhMethod != null)
          {
             if (metaAnnotation)
+            {
                annotation = getMetaAnnotation(inhMethod, annotationClass);
+            }
             else
+            {
                annotation = inhMethod.getAnnotation(annotationClass);
+            }
          }
       }
 
@@ -561,14 +550,14 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    /**
     * Check is collection of {@link ResourceMethodDescriptor} already contains ResourceMethodDescriptor with the same
     * media types.
-    * 
-    * @param rmds {@link Set} of {@link ResourceMethodDescriptor}
+    *
+    * @param rmds {@link java.util.Set} of {@link ResourceMethodDescriptor}
     * @param consumes resource method consumed media type
     * @param produces resource method produced media type
     * @return ResourceMethodDescriptor or null if nothing found
     */
    protected <T extends ResourceMethodDescriptor> ResourceMethodDescriptor findMethodResourceMediaType(List<T> rmds,
-      List<MediaType> consumes, List<MediaType> produces)
+                                                                                                       List<MediaType> consumes, List<MediaType> produces)
    {
 
       ResourceMethodDescriptor matched = null;
@@ -595,7 +584,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     * <code>clazz</class> which contains method.
     * Supper class or implemented interfaces will be also checked. Annotation
     * on method has the advantage on annotation on class or interface.
-    * 
+    *
     * @param method method to be checked for security annotation
     * @param clazz class which contains <code>method</code>
     * @return one of security annotation or <code>null</code> is no such annotation found
@@ -677,9 +666,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       return a;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {

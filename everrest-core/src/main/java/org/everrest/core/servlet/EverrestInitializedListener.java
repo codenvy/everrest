@@ -33,15 +33,13 @@ import javax.ws.rs.core.Application;
 
 /**
  * Initialize required components of JAX-RS framework and deploy single JAX-RS application.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class EverrestInitializedListener implements ServletContextListener
 {
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void contextDestroyed(ServletContextEvent sce)
    {
       makeFileCollectorDestroyer().stopFileCollector();
@@ -58,9 +56,7 @@ public class EverrestInitializedListener implements ServletContextListener
       return new FileCollectorDestroyer();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void contextInitialized(ServletContextEvent sce)
    {
       ServletContext ctx = sce.getServletContext();

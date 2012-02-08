@@ -40,14 +40,10 @@ import javax.ws.rs.core.UriBuilder;
 public final class ServletContainerRequest extends ContainerRequest
 {
 
-   /**
-    * See {@link HttpServletRequest}.
-    */
+   /** See {@link HttpServletRequest}. */
    private HttpServletRequest servletRequest;
 
-   /**
-    * @param servletRequest HttpServletRequest
-    */
+   /** @param servletRequest HttpServletRequest */
    public ServletContainerRequest(HttpServletRequest servletRequest)
    {
       super(getMethod(servletRequest), getRequestUri(servletRequest), getBaseUri(servletRequest),
@@ -55,41 +51,31 @@ public final class ServletContainerRequest extends ContainerRequest
       this.servletRequest = servletRequest;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getAuthenticationScheme()
    {
       return servletRequest.getAuthType();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Principal getUserPrincipal()
    {
       return servletRequest.getUserPrincipal();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isSecure()
    {
       return servletRequest.isSecure();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isUserInRole(String role)
    {
       return servletRequest.isUserInRole(role);
    }
 
-   /**
-    * @return See {@link HttpServletRequest}
-    */
+   /** @return See {@link HttpServletRequest} */
    public HttpServletRequest getServletRequest()
    {
       return servletRequest;
@@ -97,10 +83,10 @@ public final class ServletContainerRequest extends ContainerRequest
 
    /**
     * Extract HTTP method name from servlet request.
-    * 
-    * @see HttpServletRequest#getMethod()
+    *
     * @param servletRequest {@link HttpServletRequest}
     * @return HTTP method name
+    * @see HttpServletRequest#getMethod()
     */
    private static String getMethod(HttpServletRequest servletRequest)
    {
@@ -110,7 +96,7 @@ public final class ServletContainerRequest extends ContainerRequest
    /**
     * Constructs full request URI from {@link HttpServletRequest}, URI includes
     * query string and fragment.
-    * 
+    *
     * @param servletRequest {@link HttpServletRequest}
     * @return newly created URI
     */
@@ -125,7 +111,7 @@ public final class ServletContainerRequest extends ContainerRequest
 
    /**
     * Constructs base request URI from {@link HttpServletRequest} .
-    * 
+    *
     * @param servletRequest {@link HttpServletRequest}
     * @return newly created URI
     */
@@ -135,14 +121,16 @@ public final class ServletContainerRequest extends ContainerRequest
       UriBuilder builder = UriBuilder.fromUri(server);
       int port = servletRequest.getServerPort();
       if (port != 80)
+      {
          builder.port(port);
+      }
       builder.path(servletRequest.getContextPath() + servletRequest.getServletPath());
       return builder.build();
    }
 
    /**
     * Get HTTP headers from {@link HttpServletRequest} .
-    * 
+    *
     * @param servletRequest {@link HttpServletRequest}
     * @return request headers
     */
@@ -156,7 +144,9 @@ public final class ServletContainerRequest extends ContainerRequest
 
          Enumeration<?> e = servletRequest.getHeaders(k);
          while (e.hasMoreElements())
+         {
             h.add(k, (String)e.nextElement());
+         }
 
       }
 
@@ -165,7 +155,7 @@ public final class ServletContainerRequest extends ContainerRequest
 
    /**
     * Get input stream from {@link HttpServletRequest} .
-    * 
+    *
     * @param servletRequest {@link HttpServletRequest}
     * @return request stream or null
     */

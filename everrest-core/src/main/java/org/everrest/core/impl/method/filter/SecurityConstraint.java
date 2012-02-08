@@ -49,60 +49,35 @@ public class SecurityConstraint implements MethodInvokerFilter
     *
     * @see PermitAll
     * @see DenyAll
-    * @see RolesAllowed {@inheritDoc}
+    * @see RolesAllowed
     */
    public void accept(GenericMethodResource method) throws WebApplicationException
    {
       SecurityContext security = ApplicationContextImpl.getCurrent().getSecurityContext();
-      checkSecurityConstraint(getSecurityAnnotation(method), security);
-   }
-
-   private void checkSecurityConstraint(Annotation sa, SecurityContext security)
-   {
-      if (sa != null)
-      {
-         Class<?> aClass = sa.annotationType();
-         boolean allowed = false;
-         if (aClass == PermitAll.class)
-         {
-            // all users allowed to call method
-            allowed = true;
-         }
-         else if (aClass == RolesAllowed.class)
-         {
-            for (String role : ((RolesAllowed)sa).value())
-            {
-               if (security.isUserInRole(role))
-               {
-                  allowed = true;
-                  break;
-               }
-            }
-         }
-         else if (aClass == DenyAll.class)
-         {
-            // nobody allowed to call method
-         }
-         if (!allowed)
-         {
-            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(
-               "User not authorized to call this method.").type(MediaType.TEXT_PLAIN).build());
-         }
-      }
-
-   }
-
-   private Annotation getSecurityAnnotation(GenericMethodResource method)
-   {
       for (Annotation a : method.getAnnotations())
       {
          Class<?> aClass = a.annotationType();
-         if (aClass == PermitAll.class || aClass == DenyAll.class || aClass == RolesAllowed.class)
+         if (aClass == PermitAll.class)
          {
-            return a;
+            return;
+         }
+         else if (aClass == DenyAll.class)
+         {
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN)
+               .entity("User not authorized to call this method.").type(MediaType.TEXT_PLAIN).build());
+         }
+         else if (aClass == RolesAllowed.class)
+         {
+            for (String role : ((RolesAllowed)a).value())
+            {
+               if (security.isUserInRole(role))
+               {
+                  return;
+               }
+            }
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN)
+               .entity("User not authorized to call this method.").type(MediaType.TEXT_PLAIN).build());
          }
       }
-      return null;
    }
-
 }

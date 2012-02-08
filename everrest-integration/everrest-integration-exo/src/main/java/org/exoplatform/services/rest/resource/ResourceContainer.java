@@ -23,6 +23,6 @@ package org.exoplatform.services.rest.resource;
  * @version $Id$
  * @deprecated Do not use it any more. It copies from exo.ws.project for back compatibility.
  */
-public interface ResourceContainer extends org.everrest.core.resource.ResourceContainer
+public interface ResourceContainer
 {
 }

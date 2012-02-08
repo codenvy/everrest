@@ -42,53 +42,47 @@ import javax.xml.namespace.QName;
 /**
  * Base implementation of {@link WadlGenerator}. This implementation does not
  * provide doc and grammar extension of WADL.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class BaseWadlGeneratorImpl implements WadlGenerator
 {
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Application createApplication()
    {
       return new Application();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Resources createResources()
    {
       return new Resources();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public org.everrest.core.wadl.research.Resource createResource(AbstractResourceDescriptor rd)
    {
       if (rd.isRootResource())
+      {
          return createResource(rd.getPathValue().getPath());
+      }
       return createResource((String)null);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public org.everrest.core.wadl.research.Resource createResource(String path)
    {
       org.everrest.core.wadl.research.Resource wadlResource = new org.everrest.core.wadl.research.Resource();
       if (path != null)
+      {
          wadlResource.setPath(path);
+      }
       return wadlResource;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public org.everrest.core.wadl.research.Method createMethod(ResourceMethodDescriptor rmd)
    {
       String httpMethod = rmd.getHttpMethod();
@@ -111,7 +105,9 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
       // But class  org.jvnet.ws.wadl.util.DSDispatcher doesn't have method doHEAD at all.
       //
       if (httpMethod.equals("HEAD"))
+      {
          return null;
+      }
 
       org.everrest.core.wadl.research.Method wadlMethod = new org.everrest.core.wadl.research.Method();
       wadlMethod.setName(httpMethod);
@@ -120,29 +116,25 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
       // processor use null method and fake invoker. See
       // OptionsRequestResourceMethodDescriptorImpl.
       if (m != null)
+      {
          wadlMethod.setId(m.getName());
+      }
       return wadlMethod;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public org.everrest.core.wadl.research.Request createRequest()
    {
       return new org.everrest.core.wadl.research.Request();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public org.everrest.core.wadl.research.Response createResponse()
    {
       return new org.everrest.core.wadl.research.Response();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public RepresentationType createRequestRepresentation(MediaType mediaType)
    {
       RepresentationType wadlRepresentation = new RepresentationType();
@@ -150,9 +142,7 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
       return wadlRepresentation;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public RepresentationType createResponseRepresentation(MediaType mediaType)
    {
       RepresentationType wadlRepresentation = new RepresentationType();
@@ -160,9 +150,7 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
       return wadlRepresentation;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Param createParam(MethodParameter methodParameter)
    {
       Param wadlParemeter = null;
@@ -198,35 +186,57 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
       }
 
       if (wadlParemeter == null)
-         // ignore this method parameter
+      // ignore this method parameter
+      {
          return null;
+      }
 
       // attribute 'repeat'
       Class<?> parameterClass = methodParameter.getParameterClass();
       if (parameterClass == List.class || parameterClass == Set.class || parameterClass == SortedSet.class)
+      {
          wadlParemeter.setRepeating(true);
+      }
 
       // attribute 'default'
       if (methodParameter.getDefaultValue() != null)
+      {
          wadlParemeter.setDefault(methodParameter.getDefaultValue());
+      }
 
       // attribute 'type'
       if (parameterClass.equals(Boolean.class) || parameterClass.equals(boolean.class))
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "boolean", "xs"));
+      }
       else if (parameterClass.equals(Byte.class) || parameterClass.equals(byte.class))
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "byte", "xs"));
+      }
       else if (parameterClass.equals(Short.class) || parameterClass.equals(short.class))
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "short", "xs"));
+      }
       else if (parameterClass.equals(Integer.class) || parameterClass.equals(int.class))
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "integer", "xs"));
+      }
       else if (parameterClass.equals(Long.class) || parameterClass.equals(long.class))
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "long", "xs"));
+      }
       else if (parameterClass.equals(Float.class) || parameterClass.equals(float.class))
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "float", "xs"));
+      }
       else if (parameterClass.equals(Double.class) || parameterClass.equals(double.class))
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "double", "xs"));
+      }
       else
+      {
          wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "string", "xs"));
+      }
 
       return wadlParemeter;
    }

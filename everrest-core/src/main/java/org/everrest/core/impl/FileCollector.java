@@ -24,7 +24,7 @@ import java.security.SecureRandom;
 
 /**
  * Provides store for temporary files.
- * 
+ *
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -66,9 +66,7 @@ public final class FileCollector
       }
    }
 
-   /**
-    * Clean all files in storage.
-    */
+   /** Clean all files in storage. */
    public void clean()
    {
       if (store.exists())
@@ -91,7 +89,7 @@ public final class FileCollector
 
    /**
     * Create file with specified <code>fileName</code> in storage.
-    * 
+    *
     * @param fileName file name
     * @return newly created file
     * @throws IOException if any i/o error occurs
@@ -104,7 +102,7 @@ public final class FileCollector
 
    /**
     * Create new file with generated name in storage.
-    * 
+    *
     * @return newly created file
     * @throws IOException if any i/o error occurs
     */
@@ -123,7 +121,9 @@ public final class FileCollector
    private void checkStore()
    {
       if (!store.exists())
+      {
          store.mkdirs();
+      }
    }
 
    private void delete(File fileOrDirectory)

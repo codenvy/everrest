@@ -31,7 +31,6 @@ import java.util.Map;
  */
 public final class OutputHeadersMap extends CaselessMultivaluedMap<Object>
 {
-
    private static final long serialVersionUID = -8663077335341263345L;
 
    public OutputHeadersMap()

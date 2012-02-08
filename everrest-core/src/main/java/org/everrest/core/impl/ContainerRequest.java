@@ -51,7 +51,6 @@ import javax.ws.rs.core.Variant;
  */
 public class ContainerRequest implements GenericContainerRequest
 {
-
    /** HTTP method. */
    private String method;
 
@@ -448,7 +447,7 @@ public class ContainerRequest implements GenericContainerRequest
 
       EntityTag otherEtag = EntityTag.valueOf(ifMatch);
 
-      if ((etag.isWeak() || otherEtag.isWeak()) // one of tag is weak
+      if (etag.isWeak() || otherEtag.isWeak()
          || (!"*".equals(otherEtag.getValue()) && !etag.getValue().equals(otherEtag.getValue())))
       {
          return Response.status(Response.Status.PRECONDITION_FAILED);
@@ -566,7 +565,7 @@ public class ContainerRequest implements GenericContainerRequest
          }
 
       }
-      catch (IllegalArgumentException e)
+      catch (IllegalArgumentException ignored)
       {
          // If the specified date is invalid, the header is ignored.
       }

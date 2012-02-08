@@ -30,28 +30,22 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * Mock object that can be used for any tests.
- * 
- * @see ContainerResponseWriter
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
+ * @see ContainerResponseWriter
  */
 public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
 {
-   /**
-    * Message body.
-    */
+   /** Message body. */
    private byte[] body;
 
-   /**
-    * HTTP headers.
-    */
+   /** HTTP headers. */
    private MultivaluedMap<String, Object> headers;
 
    private boolean commited;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings({"unchecked", "rawtypes"})
    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
    {
@@ -65,41 +59,34 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeHeaders(GenericContainerResponse response) throws IOException
    {
       if (commited)
+      {
          throw new IllegalStateException("Response has been commited. Unable write headers. ");
+      }
       headers = new OutputHeadersMap(response.getHttpHeaders());
       commited = true;
    }
 
-   /**
-    * @return message body
-    */
+   /** @return message body */
    public byte[] getBody()
    {
       return body;
    }
 
-   /**
-    * @return HTTP headers
-    */
+   /** @return HTTP headers */
    public MultivaluedMap<String, Object> getHeaders()
    {
       return headers;
    }
 
-   /**
-    * Clear message body and HTTP headers map.
-    */
+   /** Clear message body and HTTP headers map. */
    public void reset()
    {
       body = null;
       headers = null;
       commited = false;
    }
-
 }

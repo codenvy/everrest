@@ -53,48 +53,34 @@ import javax.ws.rs.ext.Provider;
  */
 public class ConstructorDescriptorImpl implements ConstructorDescriptor
 {
-
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Logger LOG = Logger.getLogger(ConstructorDescriptorImpl.class);
 
-   /**
-    * ConstructorDescriptor comparator.
-    */
+   /** ConstructorDescriptor comparator. */
    public static final Comparator<ConstructorDescriptor> CONSTRUCTOR_COMPARATOR = new ConstructorComparator();
 
-   /**
-    * Compare two ConstructorDescriptor in number parameters order.
-    */
+   /** Compare two ConstructorDescriptor in number parameters order. */
    private static class ConstructorComparator implements Comparator<ConstructorDescriptor>
    {
-
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public int compare(ConstructorDescriptor o1, ConstructorDescriptor o2)
       {
          int r = o2.getParameters().size() - o1.getParameters().size();
          if (r == 0)
+         {
             LOG.warn("Two constructors with the same number of parameter found " + o1 + " and " + o2);
+         }
          return r;
       }
    }
 
-   /**
-    * Constructor.
-    */
+   /** Constructor. */
    private final Constructor<?> constructor;
 
-   /**
-    * Collection of constructor's parameters.
-    */
+   /** Collection of constructor's parameters. */
    private final List<ConstructorParameter> parameters;
 
-   /**
-    * Resource class.
-    */
+   /** Resource class. */
    private final Class<?> resourceClass;
 
    /**
@@ -110,25 +96,22 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
 
       if (paramTypes.length == 0)
       {
-
          parameters = java.util.Collections.emptyList();
-
       }
       else
       {
-
          Type[] getParamTypes = constructor.getGenericParameterTypes();
          Annotation[][] annotations = constructor.getParameterAnnotations();
          List<ConstructorParameter> params = new ArrayList<ConstructorParameter>(paramTypes.length);
+         boolean encodedClass = resourceClass.getAnnotation(Encoded.class) != null;
 
          for (int i = 0; i < paramTypes.length; i++)
          {
-
             String defaultValue = null;
             Annotation annotation = null;
             boolean encoded = false;
 
-            // is resource provider
+            // resource or provider ?
             final boolean provider = resourceClass.getAnnotation(Provider.class) != null;
             List<String> allowedAnnotation = provider
                ? ParameterHelper.PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS
@@ -139,29 +122,24 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                Class<?> ac = a.annotationType();
                if (allowedAnnotation.contains(ac.getName()))
                {
-
-                  if (annotation == null)
-                  {
-                     annotation = a;
-                  }
-                  else
+                  if (annotation != null)
                   {
                      throw new RuntimeException(
                         "JAX-RS annotations on one of constructor parameters are equivocality. Annotations: "
-                           + annotation + " and " + a  + " can't be applied to one parameter. ");
+                           + annotation + " and " + a + " can't be applied to one parameter. ");
                   }
-
-                  // @Encoded has not sense for Provider. Provider may use only
-                  // @Context annotation for constructor parameters
+                  annotation = a;
                }
-               else if (ac == Encoded.class && !provider)
+               else if (!provider && ac == Encoded.class)
                {
+                  // @Encoded has not sense for Provider. Provider may use only @Context annotation for constructor
+                  // parameters
                   encoded = true;
-                  // @Default has not sense for Provider. Provider may use only
-                  // @Context annotation for constructor parameters
                }
-               else if (ac == DefaultValue.class && !provider)
+               else if (!provider && ac == DefaultValue.class)
                {
+                  // @Default has not sense for Provider. Provider may use only @Context annotation for constructor
+                  // parameters
                   defaultValue = ((DefaultValue)a).value();
                }
                else
@@ -171,47 +149,40 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                }
             }
 
-            encoded = encoded || resourceClass.getAnnotation(Encoded.class) != null;
-
-            ConstructorParameter cp =
-               new ConstructorParameterImpl(annotation, annotations[i], paramTypes[i], getParamTypes[i], defaultValue,
-                  encoded);
+            ConstructorParameter cp = new ConstructorParameterImpl(
+               annotation,
+               annotations[i],
+               paramTypes[i],
+               getParamTypes[i],
+               defaultValue,
+               encoded || encodedClass);
 
             params.add(cp);
          }
 
          parameters = java.util.Collections.unmodifiableList(params);
       }
-
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitConstructorInjector(this);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Constructor<?> getConstructor()
    {
       return constructor;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<ConstructorParameter> getParameters()
    {
       return parameters;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Object createInstance(ApplicationContext context)
    {
       Object[] p = new Object[parameters.size()];
@@ -318,15 +289,13 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
 
          throw new InternalException(cause);
       }
-      catch (Throwable thr)
+      catch (Exception e)
       {
-         throw new InternalException(thr);
+         throw new InternalException(e);
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
@@ -334,10 +303,9 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
       sb.append("constructor: " + getConstructor().getName() + "; ");
       for (ConstructorParameter cp : getParameters())
       {
-         sb.append(cp.toString()).append(" ");
+         sb.append(cp.toString()).append(' ');
       }
       sb.append(" ]");
       return sb.toString();
    }
-
 }

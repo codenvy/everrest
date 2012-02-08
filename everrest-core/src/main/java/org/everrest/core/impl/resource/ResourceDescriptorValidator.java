@@ -25,7 +25,6 @@ import org.everrest.core.ObjectModel;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
-import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.resource.ResourceMethodMap;
@@ -42,7 +41,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Validate ResourceDescriptors. @see
- * {@link ResourceDescriptor#accept(ResourceDescriptorVisitor)}.
+ * {@link org.everrest.core.resource.ResourceDescriptor#accept(ResourceDescriptorVisitor)}.
  * <p/>
  * Validation Goals:
  * <li>check number of method parameters without annotation, should be not more

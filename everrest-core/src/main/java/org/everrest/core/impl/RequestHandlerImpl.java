@@ -102,7 +102,7 @@ public class RequestHandlerImpl implements RequestHandler
     * @param config EverrestConfiguration. May be <code>null</code> then default configuration used
     */
    public RequestHandlerImpl(RequestDispatcher dispatcher, ProviderBinder providers,
-      DependencySupplier dependencySupplier, EverrestConfiguration config)
+                             DependencySupplier dependencySupplier, EverrestConfiguration config)
    {
       this.dispatcher = dispatcher;
       this.dependencySupplier = dependencySupplier;
@@ -123,31 +123,25 @@ public class RequestHandlerImpl implements RequestHandler
    }
 
    public RequestHandlerImpl(RequestDispatcher dispatcher, DependencySupplier dependencySupplier,
-      EverrestConfiguration config)
+                             EverrestConfiguration config)
    {
       this(dispatcher, null, dependencySupplier, config);
    }
 
-   /**
-    * @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future.
-    */
+   /** @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future. */
    public RequestHandlerImpl(ResourceBinder resources, DependencySupplier dependencySupplier)
    {
       this(new RequestDispatcher(resources), null, dependencySupplier, new EverrestConfiguration());
    }
 
-   /**
-    * @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future.
-    */
+   /** @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future. */
    public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier,
-      EverrestConfiguration config)
+                             EverrestConfiguration config)
    {
       this(new RequestDispatcher(resources), providers, dependencySupplier, config);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings({"unchecked", "rawtypes"})
    public void handleRequest(GenericContainerRequest request, GenericContainerResponse response)
       throws UnhandledException, IOException
@@ -235,7 +229,6 @@ public class RequestHandlerImpl implements RequestHandler
                   Tracer.trace("WebApplicationException occurs, cause = (" + cause + ")");
                }
 
-               // -----
                ExceptionMapper exceptionMapper = context.getProviders().getExceptionMapper(WebApplicationException.class);
                if (errorResponse.getEntity() == null)
                {
@@ -334,7 +327,7 @@ public class RequestHandlerImpl implements RequestHandler
 
    /**
     * Create error response with specified status and body message.
-    * 
+    *
     * @param status response status
     * @param message response message
     * @return response

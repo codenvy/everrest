@@ -45,21 +45,17 @@ import javax.xml.namespace.QName;
 /**
  * This class manages process of creation WADL document which describe
  * {@link AbstractResourceDescriptor}.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public final class WadlProcessor
 {
 
-   /**
-    * See {@link WadlGenerator}.
-    */
+   /** See {@link WadlGenerator}. */
    private final WadlGenerator wadlGenerator;
 
-   /**
-    * Constructs new instance of WadlProcessor which use default WadlGenerator.
-    */
+   /** Constructs new instance of WadlProcessor which use default WadlGenerator. */
    public WadlProcessor()
    {
       this.wadlGenerator = new BaseWadlGeneratorImpl();
@@ -67,7 +63,7 @@ public final class WadlProcessor
 
    /**
     * Constructs new instance of WadlProcessor with specified WadlGenerator.
-    * 
+    *
     * @param wadlGenerator {@link WadlGenerator}
     */
    public WadlProcessor(WadlGenerator wadlGenerator)
@@ -78,7 +74,7 @@ public final class WadlProcessor
    /**
     * Process {@link AbstractResourceDescriptor} for build its WADL
     * representation.
-    * 
+    *
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     * @param baseURI base URI of resource, e. g. servlet context
     * @return {@link Application}
@@ -90,7 +86,9 @@ public final class WadlProcessor
       // Container for resources
       Resources wadlResources = wadlGenerator.createResources();
       if (baseURI != null)
+      {
          wadlResources.setBase(baseURI.toString());
+      }
 
       org.everrest.core.wadl.research.Resource wadlResource = processResource(resourceDescriptor);
       wadlResources.getResource().add(wadlResource);
@@ -117,14 +115,18 @@ public final class WadlProcessor
          {
             org.everrest.core.wadl.research.Method wadlMethod = processMethod(rmd, wadlResourceParams);
             if (wadlMethod == null)
+            {
                continue;
+            }
             wadlResource.getMethodOrResource().add(wadlMethod);
          }
       }
 
       // Add parameters to a resource
       for (Param p : wadlResourceParams.values())
+      {
          wadlResource.getParam().add(p);
+      }
 
       processSubResourceMethods(wadlResource, resourceDescriptor);
 
@@ -135,12 +137,12 @@ public final class WadlProcessor
 
    /**
     * Process sub-resource methods.
-    * 
+    *
     * @param wadlResource see {@link org.everrest.core.wadl.research.Resource}
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     */
    private void processSubResourceMethods(org.everrest.core.wadl.research.Resource wadlResource,
-      AbstractResourceDescriptor resourceDescriptor)
+                                          AbstractResourceDescriptor resourceDescriptor)
    {
 
       // Keeps common parameter for sub-resource.
@@ -165,7 +167,9 @@ public final class WadlProcessor
                   Map<String, Param> wadlResourceParams = new HashMap<String, Param>();
                   org.everrest.core.wadl.research.Method wadlMethod = processMethod(srmd, wadlResourceParams);
                   if (wadlMethod == null)
+                  {
                      continue;
+                  }
                   wadlSubResource.getMethodOrResource().add(wadlMethod);
                   // Remember sub-resource and parameters.
                   wadlSubResources.put(path, wadlSubResource);
@@ -179,7 +183,9 @@ public final class WadlProcessor
                   // Add new method.
                   org.everrest.core.wadl.research.Method wadlMethod = processMethod(srmd, wadlResourceParams);
                   if (wadlMethod == null)
+                  {
                      continue;
+                  }
                   wadlSubResource.getMethodOrResource().add(wadlMethod);
                }
             }
@@ -193,7 +199,9 @@ public final class WadlProcessor
          org.everrest.core.wadl.research.Resource wadlSubResource = entry.getValue();
 
          for (Param wadlSubParam : wadlCommonSubResourceParams.get(path).values())
+         {
             wadlSubResource.getParam().add(wadlSubParam);
+         }
 
          wadlResource.getMethodOrResource().add(wadlSubResource);
       }
@@ -201,12 +209,12 @@ public final class WadlProcessor
 
    /**
     * Process sub-resource locators.
-    * 
+    *
     * @param wadlResource see {@link org.everrest.core.wadl.research.Resource}
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     */
    private void processSubResourceLocators(org.everrest.core.wadl.research.Resource wadlResource,
-      AbstractResourceDescriptor resourceDescriptor)
+                                           AbstractResourceDescriptor resourceDescriptor)
    {
       for (SubResourceLocatorDescriptor srld : resourceDescriptor.getSubResourceLocators().values())
       {
@@ -224,21 +232,27 @@ public final class WadlProcessor
     * @return {@link org.everrest.core.wadl.research.Method}
     */
    private org.everrest.core.wadl.research.Method processMethod(ResourceMethodDescriptor rmd,
-      Map<String, Param> wadlResourceParams)
+                                                                Map<String, Param> wadlResourceParams)
    {
       org.everrest.core.wadl.research.Method wadlMethod = wadlGenerator.createMethod(rmd);
       // See description of this in
       // BaseWadlGeneratorImpl.createMethod(ResourceMethodDescriptor)
       if (wadlMethod == null)
+      {
          return null;
+      }
 
       org.everrest.core.wadl.research.Request wadlRequest = processRequest(rmd, wadlResourceParams);
       if (wadlRequest != null)
+      {
          wadlMethod.setRequest(wadlRequest);
+      }
 
       org.everrest.core.wadl.research.Response wadlResponse = processResponse(rmd);
       if (wadlResponse != null)
+      {
          wadlMethod.setResponse(wadlResponse);
+      }
 
       return wadlMethod;
    }
@@ -249,7 +263,7 @@ public final class WadlProcessor
     * @return {@link org.everrest.core.wadl.research.Request}
     */
    private org.everrest.core.wadl.research.Request processRequest(ResourceMethodDescriptor rmd,
-      Map<String, Param> wadlResourceParams)
+                                                                  Map<String, Param> wadlResourceParams)
    {
       org.everrest.core.wadl.research.Request wadlRequest = wadlGenerator.createRequest();
       for (MethodParameter methodParameter : rmd.getMethodParameters())
@@ -266,7 +280,7 @@ public final class WadlProcessor
          if (wadlParam != null)
          {
             if (wadlParam.getStyle() == ParamStyle.QUERY || wadlParam.getStyle() == ParamStyle.HEADER
-            /* || wadlParam.getStyle() == ParamStyle.MATRIX */)
+               /* || wadlParam.getStyle() == ParamStyle.MATRIX */)
             {
                wadlRequest.getParam().add(wadlParam);
             }
@@ -320,7 +334,9 @@ public final class WadlProcessor
       // Context parameter dependent of environment and not used in WADL representation
       if (methodParameter.getAnnotation() != null
          && methodParameter.getAnnotation().annotationType() != javax.ws.rs.core.Context.class)
+      {
          wadlParam = wadlGenerator.createParam(methodParameter);
+      }
 
       return wadlParam;
    }

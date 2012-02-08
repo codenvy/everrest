@@ -49,7 +49,7 @@ public final class EverrestProcessor implements Lifecycle
    private final List<WeakReference<Object>> singletonsReferences = new ArrayList<WeakReference<Object>>();
 
    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencies,
-      EverrestConfiguration config, Application application)
+                            EverrestConfiguration config, Application application)
    {
       this.resources = resources;
       this.providers = providers;
@@ -91,17 +91,13 @@ public final class EverrestProcessor implements Lifecycle
       }
    }
 
-   /**
-    * @see org.everrest.core.Lifecycle#start()
-    */
+   /** @see org.everrest.core.Lifecycle#start() */
    @Override
    public void start()
    {
    }
 
-   /**
-    * @see org.everrest.core.Lifecycle#stop()
-    */
+   /** @see org.everrest.core.Lifecycle#stop() */
    @Override
    public void stop()
    {

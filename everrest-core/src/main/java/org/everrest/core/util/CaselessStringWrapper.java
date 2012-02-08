@@ -18,12 +18,9 @@
  */
 package org.everrest.core.util;
 
-/**
- * Caseless wrapper for strings.
- */
+/** Caseless wrapper for strings. */
 public final class CaselessStringWrapper
 {
-
    private final String string;
 
    private final String caselessString;
@@ -44,36 +41,33 @@ public final class CaselessStringWrapper
       return string;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString()
    {
       return string == null ? "null" : string;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean equals(Object obj)
    {
       if (obj == null)
+      {
          return false;
+      }
       if (obj.getClass() != getClass())
+      {
          return false;
+      }
       CaselessStringWrapper other = (CaselessStringWrapper)obj;
-      return (caselessString == null && other.caselessString == null)
-         || (caselessString != null && caselessString.equals(other.caselessString));
+      return caselessString == null && other.caselessString == null
+         || caselessString != null && caselessString.equals(other.caselessString);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public int hashCode()
    {
       return caselessString == null ? 0 : caselessString.hashCode();
    }
-
 }

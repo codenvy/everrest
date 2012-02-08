@@ -76,7 +76,9 @@ import javax.ws.rs.ext.Providers;
 /**
  * Gives access to common predefined provider. Users of EverRest are not expected to use this class or any of its
  * subclasses.
- * 
+ *
+ * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
+ * @version $Id$
  * @see Providers
  * @see Provider
  * @see MessageBodyReader
@@ -87,9 +89,6 @@ import javax.ws.rs.ext.Providers;
  * @see RequestFilter
  * @see ResponseFilter
  * @see MethodInvokerFilter
- * 
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
  */
 public class ProviderBinder implements Providers
 {
@@ -102,9 +101,7 @@ public class ProviderBinder implements Providers
    /** Providers binder instance. */
    private static final AtomicReference<ProviderBinder> ainst = new AtomicReference<ProviderBinder>();
 
-   /**
-    * @return instance of {@link ProviderBinder}
-    */
+   /** @return instance of {@link ProviderBinder} */
    public static ProviderBinder getInstance()
    {
       ProviderBinder t = ainst.get();
@@ -127,7 +124,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Replace default set of providers by new one. This must not be used by regular users of EverRest framework.
-    * 
+    *
     * @param inst instance of ProviderBinder
     * @throws SecurityException if caller is not permitted to call this method because to current security policy
     */
@@ -181,7 +178,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ContextResolver.
-    * 
+    *
     * @param clazz class of implementation ContextResolver
     */
    public void addContextResolver(@SuppressWarnings("rawtypes") Class<? extends ContextResolver> clazz)
@@ -200,7 +197,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ContextResolver.
-    * 
+    *
     * @param instance ContextResolver instance
     */
    @SuppressWarnings("rawtypes")
@@ -221,7 +218,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ExceptionMapper.
-    * 
+    *
     * @param clazz class of implementation ExceptionMapper
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -240,7 +237,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ExceptionMapper.
-    * 
+    *
     * @param instance ExceptionMapper instance
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -260,7 +257,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyReader.
-    * 
+    *
     * @param clazz class of implementation MessageBodyReader
     */
    public void addMessageBodyReader(@SuppressWarnings("rawtypes") Class<? extends MessageBodyReader> clazz)
@@ -279,7 +276,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyReader.
-    * 
+    *
     * @param instance MessageBodyReader instance
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -300,7 +297,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyWriter.
-    * 
+    *
     * @param clazz class of implementation MessageBodyWriter
     */
    public void addMessageBodyWriter(@SuppressWarnings("rawtypes") Class<? extends MessageBodyWriter> clazz)
@@ -319,7 +316,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyWriter.
-    * 
+    *
     * @param instance MessageBodyWriter instance
     */
    @SuppressWarnings("rawtypes")
@@ -340,7 +337,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MethodInvokerFilter.
-    * 
+    *
     * @param clazz class of implementation MethodInvokerFilter
     */
    public void addMethodInvokerFilter(Class<? extends MethodInvokerFilter> clazz)
@@ -359,7 +356,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MethodInvokerFilter.
-    * 
+    *
     * @param instance MethodInvokerFilter instance
     */
    public void addMethodInvokerFilter(MethodInvokerFilter instance)
@@ -379,7 +376,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request RequestFilter.
-    * 
+    *
     * @param clazz class of implementation RequestFilter
     */
    public void addRequestFilter(Class<? extends RequestFilter> clazz)
@@ -398,7 +395,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton RequestFilter.
-    * 
+    *
     * @param instance RequestFilter instance
     */
    public void addRequestFilter(RequestFilter instance)
@@ -418,7 +415,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ResponseFilter.
-    * 
+    *
     * @param clazz class of implementation ResponseFilter
     */
    public void addResponseFilter(Class<? extends ResponseFilter> clazz)
@@ -437,7 +434,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ResponseFilter.
-    * 
+    *
     * @param instance ResponseFilter instance
     */
    public void addResponseFilter(ResponseFilter instance)
@@ -457,7 +454,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Get list of most acceptable writer's media type for specified type.
-    * 
+    *
     * @param type type
     * @param genericType generic type
     * @param annotations annotations
@@ -469,36 +466,28 @@ public class ProviderBinder implements Providers
       return doGetAcceptableWriterMediaTypes(type, genericType, annotations);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)
    {
       return doGetContextResolver(contextType, mediaType);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       return doGetExceptionMapper(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+                                                        MediaType mediaType)
    {
       return doGetMessageBodyReader(type, genericType, annotations, mediaType);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+                                                        MediaType mediaType)
    {
       return doGetMessageBodyWriter(type, genericType, annotations, mediaType);
    }
@@ -661,7 +650,9 @@ public class ProviderBinder implements Providers
          }
       }
       if (l.size() > 1)
+      {
          Collections.sort(l, MediaTypeHelper.MEDIA_TYPE_COMPARATOR);
+      }
       return l;
    }
 
@@ -690,7 +681,7 @@ public class ProviderBinder implements Providers
     */
    @SuppressWarnings("unchecked")
    private <T> ContextResolver<T> doGetContextResolver(MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm,
-      Class<T> contextType, MediaType mediaType)
+                                                       Class<T> contextType, MediaType mediaType)
    {
       for (Map.Entry<MediaType, ObjectFactory<ProviderDescriptor>> e : pm.entrySet())
       {
@@ -717,7 +708,7 @@ public class ProviderBinder implements Providers
    /**
     * Looking for message body reader according to supplied entity class, entity generic type, annotations and content
     * type.
-    * 
+    *
     * @param <T> message body reader actual type argument
     * @param type entity type
     * @param genericType entity generic type
@@ -727,7 +718,7 @@ public class ProviderBinder implements Providers
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
    protected <T> MessageBodyReader<T> doGetMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+                                                             MediaType mediaType)
    {
       MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
       Map<Class, MessageBodyReader> instanceCache = new HashMap<Class, MessageBodyReader>();
@@ -755,7 +746,7 @@ public class ProviderBinder implements Providers
    /**
     * Looking for message body writer according to supplied entity class, entity generic type, annotations and content
     * type.
-    * 
+    *
     * @param <T> message body writer actual type argument
     * @param type entity type
     * @param genericType entity generic type
@@ -765,7 +756,7 @@ public class ProviderBinder implements Providers
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
    protected <T> MessageBodyWriter<T> doGetMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+                                                             MediaType mediaType)
    {
       MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
       Map<Class, MessageBodyWriter> instanceCache = new HashMap<Class, MessageBodyWriter>();
@@ -799,7 +790,7 @@ public class ProviderBinder implements Providers
     * @see #getResponseFilters(String)
     */
    protected List<ObjectFactory<FilterDescriptor>> doGetMatchedFilters(String path,
-      UriPatternMap<ObjectFactory<FilterDescriptor>> m)
+                                                                       UriPatternMap<ObjectFactory<FilterDescriptor>> m)
    {
       List<ObjectFactory<FilterDescriptor>> l = new ArrayList<ObjectFactory<FilterDescriptor>>();
 
@@ -831,9 +822,7 @@ public class ProviderBinder implements Providers
       return l;
    }
 
-   /**
-    * Add prepared providers.
-    */
+   /** Add prepared providers. */
    protected void init()
    {
       // Add known Providers, Filters, etc with predefined life cycle.

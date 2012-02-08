@@ -19,11 +19,10 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.InitialProperties;
 import org.everrest.core.Property;
 
 /**
- * Obtain value of property (see {@link InitialProperties}) with name supplied
+ * Obtain value of property (see {@link org.everrest.core.InitialProperties}) with name supplied
  * in {@link Property#value()} .
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>

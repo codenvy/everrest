@@ -64,7 +64,7 @@ public class EverrestServletContextInitializer
     * Try get application's FQN from context-param javax.ws.rs.Application and instantiate it. If such parameter is not
     * specified then scan web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS
     * annotations. Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter} .
-    * 
+    *
     * @return instance of javax.ws.rs.core.Application
     */
    public Application getApplication()
@@ -140,9 +140,11 @@ public class EverrestServletContextInitializer
                         if (cl.isInterface() || Modifier.isAbstract(cl.getModifiers()))
                         {
                            LOG.info("Skip abstract class or interface " + fqn);
-                           continue;
                         }
-                        scanned.add(cl);
+                        else
+                        {
+                           scanned.add(cl);
+                        }
                      }
                      catch (ClassNotFoundException e)
                      {
@@ -203,7 +205,7 @@ public class EverrestServletContextInitializer
 
    /**
     * Get parameter with specified name from servlet context initial parameters.
-    * 
+    *
     * @param name parameter name
     * @return value of parameter with specified name
     */

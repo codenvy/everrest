@@ -33,7 +33,6 @@ import javax.ws.rs.Path;
  */
 public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescriptor
 {
-
    /** @see PathValue */
    private final PathValue path;
 
@@ -61,33 +60,25 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitFilterDescriptor(this);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public PathValue getPathValue()
    {
       return path;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriPattern getUriPattern()
    {
       return uriPattern;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
@@ -103,5 +94,4 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
       sb.append(" ]");
       return sb.toString();
    }
-
 }

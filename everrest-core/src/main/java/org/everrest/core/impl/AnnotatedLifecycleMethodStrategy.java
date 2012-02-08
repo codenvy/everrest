@@ -29,7 +29,7 @@ import javax.annotation.PreDestroy;
 /**
  * Implementation of LifecycleComponent.LifecycleMethodStrategy that uses {@link PostConstruct} and {@link PreDestroy}
  * annotation to find "initialize" and "destroy" methods.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -54,7 +54,7 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
        * <li>The return type of the method must be void.</li>
        * <li>Method must not throw checked exception.</li>
        * </ul>
-       * 
+       *
        * @param m the method
        * @return <code>true</code> if method is matched to requirements above and false otherwise
        * @see PostConstruct
@@ -77,15 +77,17 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
             for (int i = 0; i < exceptions.length; i++)
             {
                if (!RuntimeException.class.isAssignableFrom(exceptions[i]))
+               {
                   return false;
+               }
             }
          }
          return true;
       }
    }
 
-   private static final MethodFilter POSTCONSTRUCT_METHOD_FILTER = new MethodFilter(PostConstruct.class);
-   private static final MethodFilter PREDESTROY_METHOD_FILTER = new MethodFilter(PreDestroy.class);
+   private static final MethodFilter POST_CONSTRUCT_METHOD_FILTER = new MethodFilter(PostConstruct.class);
+   private static final MethodFilter PRE_DESTROY_METHOD_FILTER = new MethodFilter(PreDestroy.class);
 
    /**
     * @see org.everrest.core.impl.LifecycleComponent.LifecycleMethodStrategy#invokeInitializeMethods(java.lang.Object)
@@ -93,7 +95,7 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
    @Override
    public void invokeInitializeMethods(Object o)
    {
-      doInvokeLifecycleMethods(o, POSTCONSTRUCT_METHOD_FILTER);
+      doInvokeLifecycleMethods(o, POST_CONSTRUCT_METHOD_FILTER);
    }
 
    /**
@@ -102,7 +104,7 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
    @Override
    public void invokeDestroyMethods(Object o)
    {
-      doInvokeLifecycleMethods(o, PREDESTROY_METHOD_FILTER);
+      doInvokeLifecycleMethods(o, PRE_DESTROY_METHOD_FILTER);
    }
 
    @SuppressWarnings("rawtypes")
@@ -119,7 +121,9 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
                try
                {
                   if (!Modifier.isPublic(method.getModifiers()))
+                  {
                      method.setAccessible(true);
+                  }
                   method.invoke(o);
                }
                catch (IllegalArgumentException e)

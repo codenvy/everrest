@@ -48,7 +48,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
  */
 public class ResourceBinderImpl implements ResourceBinder
 {
-
    /**
     * Name of property which may contains resource expiration date. Date
     * expected as string representation of java.util.Date in long format.
@@ -85,14 +84,12 @@ public class ResourceBinderImpl implements ResourceBinder
    protected class ResourceCleaner implements Runnable
    {
 
-      private final int cleanerDelay;
+      private final long cleanerDelay;
 
-      /**
-       * @param cleanerDelay cleaner process delay in seconds
-       */
+      /** @param cleanerDelay cleaner process delay in seconds */
       public ResourceCleaner(int cleanerDelay)
       {
-         this.cleanerDelay = cleanerDelay;
+         this.cleanerDelay = cleanerDelay * 1000; // to milliseconds
       }
 
       public void run()
@@ -101,9 +98,9 @@ public class ResourceBinderImpl implements ResourceBinder
          {
             try
             {
-               Thread.sleep(cleanerDelay * 1000L);
+               Thread.sleep(cleanerDelay);
             }
-            catch (InterruptedException e)
+            catch (InterruptedException ignored)
             {
             }
             if (!cleanerStop)
@@ -122,7 +119,7 @@ public class ResourceBinderImpl implements ResourceBinder
 
          synchronized (rootResources)
          {
-            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext();)
+            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext(); )
             {
                ObjectFactory<AbstractResourceDescriptor> next = iter.next();
                List<String> str = next.getObjectModel().getProperty(RESOURCE_EXPIRED);
@@ -133,7 +130,7 @@ public class ResourceBinderImpl implements ResourceBinder
                   {
                      expirationDate = Long.parseLong(str.get(0));
                   }
-                  catch (NumberFormatException e)
+                  catch (NumberFormatException ignored)
                   {
                   }
                }
@@ -187,7 +184,9 @@ public class ResourceBinderImpl implements ResourceBinder
          // validate AbstractResourceDescriptor
          descriptor.accept(rdv);
          if (properties != null)
+         {
             descriptor.getProperties().putAll(properties);
+         }
          addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(descriptor));
       }
       catch (Exception e)
@@ -211,7 +210,9 @@ public class ResourceBinderImpl implements ResourceBinder
          // validate AbstractResourceDescriptor
          descriptor.accept(rdv);
          if (properties != null)
+         {
             descriptor.getProperties().putAll(properties);
+         }
          addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, resource));
       }
       catch (Exception e)
@@ -250,7 +251,9 @@ public class ResourceBinderImpl implements ResourceBinder
             listener.resourceAdded(resourceFactory.getObjectModel());
          }
          if (LOG.isDebugEnabled())
+         {
             LOG.debug("Add resource: " + resourceFactory.getObjectModel());
+         }
       }
    }
 
@@ -264,12 +267,12 @@ public class ResourceBinderImpl implements ResourceBinder
    {
       resourceListeners.add(listener);
       if (LOG.isDebugEnabled())
+      {
          LOG.debug("Resource listener added: " + listener);
+      }
    }
 
-   /**
-    * Clear the list of ResourceContainer description.
-    */
+   /** Clear the list of resources. */
    public void clear()
    {
       synchronized (rootResources)
@@ -306,7 +309,9 @@ public class ResourceBinderImpl implements ResourceBinder
                      resource.getObjectModel().getSubResourceMethods().size()
                         + resource.getObjectModel().getSubResourceLocators().size();
                   if (subresnum == 0)
+                  {
                      continue;
+                  }
                }
                resourceFactory = resource;
                break;
@@ -316,17 +321,13 @@ public class ResourceBinderImpl implements ResourceBinder
       return resourceFactory;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<ObjectFactory<AbstractResourceDescriptor>> getResources()
    {
       return rootResources;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public int getSize()
    {
       return rootResources.size();
@@ -338,7 +339,7 @@ public class ResourceBinderImpl implements ResourceBinder
       synchronized (rootResources)
       {
          for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
-            && resource == null;)
+            && resource == null; )
          {
             ObjectFactory<AbstractResourceDescriptor> next = iter.next();
             Class<?> resourceClass = next.getObjectModel().getObjectClass();
@@ -355,7 +356,9 @@ public class ResourceBinderImpl implements ResourceBinder
                listener.resourceRemoved(resource.getObjectModel());
             }
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("Remove resource: " + resource.getObjectModel());
+            }
          }
       }
       return resource;
@@ -368,7 +371,7 @@ public class ResourceBinderImpl implements ResourceBinder
       synchronized (rootResources)
       {
          for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
-            && resource == null;)
+            && resource == null; )
          {
             ObjectFactory<AbstractResourceDescriptor> next = iter.next();
             UriPattern resourcePattern = next.getObjectModel().getUriPattern();
@@ -385,10 +388,11 @@ public class ResourceBinderImpl implements ResourceBinder
                listener.resourceRemoved(resource.getObjectModel());
             }
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("Remove resource: " + resource.getObjectModel());
+            }
          }
       }
       return resource;
    }
-
 }

@@ -26,36 +26,28 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * Keeps sorted values.
- * 
+ *
  * @param <T> actual value type
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
 {
-
-   /**
-    * Serial Version UID.
-    */
+   /** Serial Version UID. */
    private static final long serialVersionUID = -4713556573521776577L;
 
-   /**
-    * Create new instance of MedaTypeMap with {@link Comparator}.
-    */
+   /** Create new instance of MedaTypeMap with {@link Comparator}. */
    public MediaTypeMap()
    {
       super(COMPARATOR);
    }
 
-   /**
-    * See {@link Comparator}.
-    */
+   /** See {@link Comparator}. */
    static final Comparator<MediaType> COMPARATOR = new Comparator<MediaType>()
    {
-
       /**
        * Compare two {@link MediaType}.
-       * 
+       *
        * @param o1 first MediaType to be compared
        * @param o2 second MediaType to be compared
        * @return result of comparison
@@ -63,6 +55,7 @@ public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
        * @see MediaTypeHelper
        * @see MediaType
        */
+      @Override
       public int compare(MediaType o1, MediaType o2)
       {
          int r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(o1, o2);
@@ -71,15 +64,15 @@ public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
          // should e compared lexicographically, otherwise new entry with the
          // same 'weight' will be not added in map.
          if (r == 0)
-            r = _toString(o1).compareToIgnoreCase(_toString(o2));
+         {
+            r = toString(o1).compareToIgnoreCase(toString(o2));
+         }
          return r;
       }
 
-      private String _toString(MediaType mime)
+      private String toString(MediaType mime)
       {
          return mime.getType() + "/" + mime.getSubtype();
       }
-
    };
-
 }

@@ -21,7 +21,6 @@ package org.everrest.core.impl.provider;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -57,7 +56,7 @@ public class XSLTStreamingOutput implements StreamingOutput
    }
 
    /** {@inheritDoc} . */
-   public void write(OutputStream output) throws IOException, WebApplicationException
+   public void write(OutputStream output) throws IOException
    {
       try
       {
@@ -66,11 +65,11 @@ public class XSLTStreamingOutput implements StreamingOutput
       }
       catch (TransformerConfigurationException tce)
       {
-         throw new IOException(tce.getMessage());
+         throw new IOException(tce.getMessage(), tce);
       }
       catch (TransformerException tre)
       {
-         throw new IOException(tre.getMessage());
+         throw new IOException(tre.getMessage(), tre);
       }
    }
 }

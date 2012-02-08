@@ -611,4 +611,7 @@ public class ObjectBuilder
       throw new JsonException("Unknown type " + clazz.getName());
    }
 
+   private ObjectBuilder()
+   {
+   }
 }

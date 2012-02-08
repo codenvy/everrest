@@ -26,14 +26,11 @@ package org.everrest.core;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class ResourcePublicationException extends RuntimeException
 {
-
-   private static final long serialVersionUID = -7293299406099524107L;
-
    public ResourcePublicationException(String message)
    {
       super(message);
    }
-
 }

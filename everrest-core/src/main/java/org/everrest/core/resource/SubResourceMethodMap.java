@@ -28,10 +28,6 @@ import java.util.TreeMap;
  */
 public class SubResourceMethodMap extends TreeMap<UriPattern, ResourceMethodMap<SubResourceMethodDescriptor>>
 {
-
-   /**
-    * Serial version UID.
-    */
    private static final long serialVersionUID = 4083992147354775165L;
 
    public SubResourceMethodMap()
@@ -53,7 +49,8 @@ public class SubResourceMethodMap extends TreeMap<UriPattern, ResourceMethodMap<
    public void sort()
    {
       for (ResourceMethodMap<SubResourceMethodDescriptor> srmd : values())
+      {
          srmd.sort();
+      }
    }
-
 }

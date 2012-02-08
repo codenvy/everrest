@@ -32,30 +32,23 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * See {@link ContainerResponseWriter}.
- * 
+ *
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id: ServletContainerResponseWriter.java 279 2009-10-14 15:58:06Z
  *          aparfonov $
  */
 public class ServletContainerResponseWriter implements ContainerResponseWriter
 {
+   /** See {@link HttpServletResponse}. */
+   private final HttpServletResponse servletResponse;
 
-   /**
-    * See {@link HttpServletResponse}.
-    */
-   private HttpServletResponse servletResponse;
-
-   /**
-    * @param response HttpServletResponse
-    */
+   /** @param response HttpServletResponse */
    public ServletContainerResponseWriter(HttpServletResponse response)
    {
       this.servletResponse = response;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings({"unchecked", "rawtypes"})
    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
    {
@@ -69,13 +62,13 @@ public class ServletContainerResponseWriter implements ContainerResponseWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeHeaders(GenericContainerResponse response) throws IOException
    {
       if (servletResponse.isCommitted())
+      {
          return;
+      }
 
       servletResponse.setStatus(response.getStatus());
 
@@ -87,9 +80,11 @@ public class ServletContainerResponseWriter implements ContainerResponseWriter
             String name = e.getKey();
             for (Object o : e.getValue())
             {
-               String value = null;
+               String value;
                if (o != null && (value = HeaderHelper.getHeaderAsString(o)) != null)
+               {
                   servletResponse.addHeader(name, value);
+               }
             }
          }
       }

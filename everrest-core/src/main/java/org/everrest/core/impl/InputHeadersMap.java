@@ -33,17 +33,14 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public final class InputHeadersMap extends CaselessUnmodifiableMultivaluedMap<String>
 {
-
    private static final long serialVersionUID = -96963220577144285L;
 
    public InputHeadersMap()
    {
-      super();
    }
 
    public InputHeadersMap(Map<String, List<String>> m)
    {
       super(m);
    }
-
 }

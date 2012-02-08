@@ -37,11 +37,9 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class EverrestServlet extends HttpServlet
 {
-
-   private static final long serialVersionUID = -8234561611241680339L;
-
    private static final Logger LOG = Logger.getLogger(EverrestServlet.class.getName());
 
    protected EverrestProcessor processor;

@@ -54,11 +54,16 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
 
    /**
     * Should be used only once for initialize.
-    * 
+    *
     * @see RuntimeDelegate#setInstance(RuntimeDelegate)
     * @see RuntimeDelegate#getInstance()
     */
    public RuntimeDelegateImpl()
+   {
+      init();
+   }
+
+   private void init()
    {
       // JSR-311
       addHeaderDelegate(new MediaTypeHeaderDelegate());
@@ -81,18 +86,14 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
       headerDelegates.put(header.support(), header);
    }
 
-   /**
-    * End Points is not supported. {@inheritDoc}
-    */
+   /** End Points is not supported. {@inheritDoc} */
    @Override
    public <T> T createEndpoint(Application applicationConfig, Class<T> type)
    {
       throw new UnsupportedOperationException("End Points is not supported");
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings("unchecked")
    @Override
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type)
@@ -100,27 +101,21 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
       return headerDelegates.get(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public ResponseBuilder createResponseBuilder()
    {
       return new ResponseImpl.ResponseBuilderImpl();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public UriBuilder createUriBuilder()
    {
       return new UriBuilderImpl();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public VariantListBuilder createVariantListBuilder()
    {

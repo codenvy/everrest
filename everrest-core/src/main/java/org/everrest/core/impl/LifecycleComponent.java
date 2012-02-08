@@ -18,13 +18,12 @@
  */
 package org.everrest.core.impl;
 
-/**
- * Life cycle wrapper for JAX-RS component (resource or provider).
- */
+/** Life cycle wrapper for JAX-RS component (resource or provider). */
 public final class LifecycleComponent
 {
    /** State of component. */
-   private enum State {
+   private enum State
+   {
       INITIALIZED, DESTROYED
    }
 
@@ -48,7 +47,7 @@ public final class LifecycleComponent
 
    /**
     * Get target JAX-RS component.
-    * 
+    *
     * @return target JAX-RS component
     */
    public Object getComponent()
@@ -57,11 +56,11 @@ public final class LifecycleComponent
    }
 
    /**
-    * Call "initialize" method on the JAX-RS component. It is up to the implementation of LifecycleMethodStrategy how to
-    * find "initialize" method. This method must be called once. It is possible to have more than one method of
+    * Call "initialize" method on the JAX-RS component. It is up to the implementation of LifecycleMethodStrategy how
+    * to find "initialize" method. This method must be called once. It is possible to have more than one method of
     * initialization but any particular order of methods invocation is not guaranteed. Any exception was thrown by
     * "initialize" method must be wrapped by {@link InternalException}.
-    * 
+    *
     * @throws InternalException if "initialize" method throws an exception
     * @see #isInitialized()
     */
@@ -74,9 +73,9 @@ public final class LifecycleComponent
    /**
     * Call "destroy" method on the JAX-RS component. It is up to the implementation of LifecycleMethodStrategy how to
     * find "destroy" method. This method must be called once. It is possible to have more than one "destroy" method but
-    * any particular order of methods invocation is not guaranteed. Any exception was thrown by "destroy" method must be
-    * wrapped by {@link InternalException}.
-    * 
+    * any particular order of methods invocation is not guaranteed. Any exception was thrown by "destroy" method must
+    * be wrapped by {@link InternalException}.
+    *
     * @throws InternalException if "destroy" method throws an exception
     * @see #isDestroyed()
     */
@@ -94,7 +93,7 @@ public final class LifecycleComponent
 
    /**
     * Check is component already initialized.
-    * 
+    *
     * @return <code>true</code> if component already initialized but not destroyed yet and <code>false</code> otherwise
     * @see #initialize()
     */
@@ -105,7 +104,7 @@ public final class LifecycleComponent
 
    /**
     * Check is component already destroyed.
-    * 
+    *
     * @return <code>true</code> if component already destroyed and <code>false</code> otherwise
     * @see #destroy()
     */
@@ -114,16 +113,14 @@ public final class LifecycleComponent
       return state == State.DESTROYED;
    }
 
-   /**
-    * Call "initialize" and "destroy" methods of object.
-    */
+   /** Call "initialize" and "destroy" methods of object. */
    public static interface LifecycleMethodStrategy
    {
       /**
        * Call "initialize" method on the specified object. It is up to the implementation how to find "initialize"
        * method. It is possible to have more than one initialize method but any particular order of methods invocation
        * is not guaranteed.
-       * 
+       *
        * @param o the object
        * @throws InternalException if initialize method throws any exception
        */
@@ -133,7 +130,7 @@ public final class LifecycleComponent
        * Call "destroy" method on the specified object. It is up to the implementation how to find "destroy" method. It
        * is possible to have more than one destroy method but any particular order of methods invocation is not
        * guaranteed.
-       * 
+       *
        * @param o the object
        * @throws InternalException if destroy method throws any exception
        */

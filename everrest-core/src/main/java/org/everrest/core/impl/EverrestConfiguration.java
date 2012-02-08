@@ -50,19 +50,19 @@ public class EverrestConfiguration
     */
    public static final String EVERREST_MAX_BUFFER_SIZE = "org.everrest.max.buffer.size";
 
-   public static boolean defaultCheckSecurity = true;
+   public static final boolean defaultCheckSecurity = true;
 
-   public static boolean defaultHttpMethodOverride = true;
+   public static final boolean defaultHttpMethodOverride = true;
 
-   public static boolean defaultNormalizeUri = false;
+   public static final boolean defaultNormalizeUri = false;
 
-   public static boolean defaultAsynchronousSupported = true;
+   public static final boolean defaultAsynchronousSupported = true;
 
-   public static int defaultAsynchronousPoolSize = 10;
+   public static final int defaultAsynchronousPoolSize = 10;
 
-   public static int defaultAsynchronousQueueSize = 100;
+   public static final int defaultAsynchronousQueueSize = 100;
 
-   public static int defaultAsynchronousCacheSize = 512;
+   public static final int defaultAsynchronousCacheSize = 512;
 
    public static final int defaultAsynchronousJobTimeout = 60;
 

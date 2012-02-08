@@ -30,7 +30,6 @@ import javax.ws.rs.core.Application;
  */
 public class ApplicationPublisher
 {
-
    protected RestComponentResolver resolver;
 
    public ApplicationPublisher(ResourceBinder resources, ProviderBinder providers)
@@ -44,14 +43,17 @@ public class ApplicationPublisher
       if (singletons != null)
       {
          for (Object instance : singletons)
+         {
             resolver.addSingleton(instance);
+         }
       }
       Set<Class<?>> perRequests = application.getClasses();
       if (perRequests != null)
       {
          for (Class<?> clazz : perRequests)
+         {
             resolver.addPerRequest(clazz);
+         }
       }
    }
-
 }

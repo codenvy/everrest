@@ -27,17 +27,16 @@ import java.util.List;
 /**
  * Produce sorted by quality value list of 'accept' header. In first it used for
  * parsing 'accept' and 'accept-language' headers.
- * 
+ *
+ * @param <T> type that implements {@link QualityValue}
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
- * @param <T> type that implements {@link QualityValue}
  */
 public abstract class ListHeaderProducer<T extends QualityValue>
 {
-
    /**
     * Create each element of header list.
-    * 
+    *
     * @param part the part of source string, it is part between two commas
     * @return newly created element of list
     */
@@ -47,7 +46,7 @@ public abstract class ListHeaderProducer<T extends QualityValue>
     * Create list of headers which is sorted by quality value. It is useful for
     * parsing 'accept' headers. If source list is null then empty list will be
     * returned.
-    * 
+    *
     * @param header source header string
     * @return List of parsed sorted by quality value
     */
@@ -59,7 +58,6 @@ public abstract class ListHeaderProducer<T extends QualityValue>
       int n = 0;
       while (p < header.length())
       {
-
          n = header.indexOf(',', p);
 
          String token;
@@ -69,7 +67,9 @@ public abstract class ListHeaderProducer<T extends QualityValue>
             n = header.length();
          }
          else
+         {
             token = header.substring(p, n);
+         }
 
          l.add(create(token));
 
@@ -80,5 +80,4 @@ public abstract class ListHeaderProducer<T extends QualityValue>
 
       return l;
    }
-
 }

@@ -29,16 +29,11 @@ import javax.ws.rs.core.PathSegment;
  */
 public final class PathSegmentImpl implements PathSegment
 {
+   /** Path. */
+   private final String path;
 
-   /**
-    * Path.
-    */
-   private String path;
-
-   /**
-    * Matrix parameters.
-    */
-   private MultivaluedMap<String, String> matrixParameters;
+   /** Matrix parameters. */
+   private final MultivaluedMap<String, String> matrixParameters;
 
    /**
     * @param path Path
@@ -52,7 +47,7 @@ public final class PathSegmentImpl implements PathSegment
 
    /**
     * Create instance of PathSegment from given string.
-    * 
+    *
     * @param pathSegment string which represents PathSegment
     * @param decode true if character must be decoded false otherwise
     * @return instance of PathSegment
@@ -62,21 +57,31 @@ public final class PathSegmentImpl implements PathSegment
       String path = "";
       MultivaluedMap<String, String> m = new MultivaluedMapImpl();
       if (pathSegment == null || pathSegment.length() == 0)
+      {
          return new PathSegmentImpl(path, m);
+      }
 
       int n = 0;
       // first ';' the start point for matrix parameter
       int p = pathSegment.indexOf(';', n);
 
       if (p > 0)
+      {
          path = pathSegment.substring(0, p);
+      }
       else
+      {
          path = pathSegment;
+      }
       if (decode)
+      {
          path = UriComponent.decode(path, UriComponent.PATH_SEGMENT);
+      }
 
       if (p < 0) // no matrix parameters
+      {
          return new PathSegmentImpl(path, m);
+      }
 
       p++; // next character after ';'
       int length = pathSegment.length();
@@ -90,13 +95,17 @@ public final class PathSegmentImpl implements PathSegment
             pair = pathSegment.substring(p);
          }
          else
+         {
             pair = pathSegment.substring(p, n);
+         }
 
          String name;
          String value = ""; // default value
          int eq = pair.indexOf('=');
          if (eq == -1) // no value, default is ""
+         {
             name = pair;
+         }
          else
          {
             name = pair.substring(0, eq);
@@ -112,20 +121,15 @@ public final class PathSegmentImpl implements PathSegment
       return new PathSegmentImpl(path, m);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MultivaluedMap<String, String> getMatrixParameters()
    {
       return matrixParameters;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getPath()
    {
       return path;
    }
-
 }

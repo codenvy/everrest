@@ -26,14 +26,9 @@ package org.everrest.core.impl;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class InternalException extends RuntimeException
 {
-
-   /**
-    * Serial Version UID.
-    */
-   private static final long serialVersionUID = -712006975338590407L;
-
    /**
     * @param s message
     * @param throwable cause

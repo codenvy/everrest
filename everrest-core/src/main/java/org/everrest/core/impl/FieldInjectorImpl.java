@@ -66,7 +66,7 @@ public class FieldInjectorImpl implements FieldInjector
    private final boolean encoded;
 
    /** See {@link java.lang.reflect.Field} . */
-   private final java.lang.reflect.Field jfield;
+   private final java.lang.reflect.Field jField;
 
    /**
     * Setter for field. If setter available it will be used for field initialization.
@@ -75,14 +75,14 @@ public class FieldInjectorImpl implements FieldInjector
    private final Method setter;
 
    /**
-    * @param resourceClass class that contains field <tt>jfield</tt>
-    * @param jfield java.lang.reflect.Field
+    * @param resourceClass class that contains field <code>jField</code>
+    * @param jField java.lang.reflect.Field
     */
-   public FieldInjectorImpl(Class<?> resourceClass, java.lang.reflect.Field jfield)
+   public FieldInjectorImpl(Class<?> resourceClass, java.lang.reflect.Field jField)
    {
-      this.jfield = jfield;
-      this.annotations = jfield.getDeclaredAnnotations();
-      this.setter = getSetter(resourceClass, jfield);
+      this.jField = jField;
+      this.annotations = jField.getDeclaredAnnotations();
+      this.setter = getSetter(resourceClass, jField);
 
       Annotation annotation = null;
       String defaultValue = null;
@@ -100,26 +100,22 @@ public class FieldInjectorImpl implements FieldInjector
 
          if (allowedAnnotation.contains(ac.getName()))
          {
-            if (annotation == null)
-            {
-               annotation = a;
-            }
-            else
+            if (annotation != null)
             {
                throw new RuntimeException(
-                  "JAX-RS annotations on one of fields " + jfield.toString() + " are equivocality. Annotations: "
-                  + annotation.toString() + " and " + a.toString() + " can't be applied to one field. ");
+                  "JAX-RS annotations on one of fields " + jField.toString() + " are equivocality. Annotations: "
+                     + annotation.toString() + " and " + a.toString() + " can't be applied to one field. ");
             }
-
-            // @Encoded has not sense for Provider. Provider may use only @Context annotation for fields
+            annotation = a;
          }
          else if (ac == Encoded.class && !provider)
          {
+            // @Encoded has not sense for Provider. Provider may use only @Context annotation for fields
             encoded = true;
-            // @Default has not sense for Provider. Provider may use only @Context annotation for fields
          }
          else if (ac == DefaultValue.class && !provider)
          {
+            // @Default has not sense for Provider. Provider may use only @Context annotation for fields
             defaultValue = ((DefaultValue)a).value();
          }
       }
@@ -139,70 +135,53 @@ public class FieldInjectorImpl implements FieldInjector
       }
       catch (NoSuchMethodException ignored)
       {
-         // Ignore NoSuchMethodException.
       }
       return setter;
    }
 
-   /**
-     * {@inheritDoc}
-     */
+   /** {@inheritDoc} */
    public Annotation getAnnotation()
    {
       return annotation;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation[] getAnnotations()
    {
       return annotations;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getDefaultValue()
    {
       return defaultValue;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Class<?> getParameterClass()
    {
-      return jfield.getType();
+      return jField.getType();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Type getGenericType()
    {
-      return jfield.getGenericType();
+      return jField.getGenericType();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isEncoded()
    {
       return encoded;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getName()
    {
-      return jfield.getName();
+      return jField.getName();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void inject(Object resource, ApplicationContext context)
    {
       try
@@ -229,15 +208,15 @@ public class FieldInjectorImpl implements FieldInjector
             }
             else
             {
-               if (!Modifier.isPublic(jfield.getModifiers()))
+               if (!Modifier.isPublic(jField.getModifiers()))
                {
-                  jfield.setAccessible(true);
+                  jField.setAccessible(true);
                }
-               jfield.set(resource, value);
+               jField.set(resource, value);
             }
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
          if (annotation != null)
          {
@@ -252,17 +231,13 @@ public class FieldInjectorImpl implements FieldInjector
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitFieldInjector(this);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {

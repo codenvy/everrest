@@ -39,19 +39,11 @@ import javax.ws.rs.core.Variant;
  */
 public final class VariantsHandler
 {
-
-   /**
-    * Constructor.
-    */
-   private VariantsHandler()
-   {
-   }
-
    /**
     * For extract discovered parameter from variant and compare it with
     * parameter from one of accept headers, e. g. 'Accept', 'Accept-Language',
     * 'Accept-Charset', 'Accept-Encoding'.
-    * 
+    *
     * @param <T> accept parameter from headers
     * @param <V> parameter from variant
     */
@@ -61,7 +53,7 @@ public final class VariantsHandler
       /**
        * Select discovered parameter from variant, e. g. media type, language,
        * character-set, encoding.
-       * 
+       *
        * @param variant the variant see {@link Variant}
        * @return discovered parameter from variant
        */
@@ -70,9 +62,9 @@ public final class VariantsHandler
       /**
        * Compare two parameters, one of it from variant other one from request
        * header.
-       * 
+       *
        * @param t acceptable parameter
-       * @param v parameter from variant, see {{@link #getValue(Variant)}
+       * @param v parameter from variant, see {@link #getValue(Variant)}
        * @return true if parameters is compatible false otherwise
        */
       boolean isCompatible(T t, V v);
@@ -81,10 +73,10 @@ public final class VariantsHandler
 
    /**
     * Checker for accept media type and media type from variant.
-    * 
+    *
     * @see CompatibleChecker
     */
-   private static final CompatibleChecker<AcceptMediaType, MediaType> MEDIATYPE_CHECKER =
+   private static final CompatibleChecker<AcceptMediaType, MediaType> MEDIA_TYPE_CHECKER =
       new CompatibleChecker<AcceptMediaType, MediaType>()
       {
 
@@ -108,7 +100,7 @@ public final class VariantsHandler
 
    /**
     * Checker for accept language and language from variant.
-    * 
+    *
     * @see CompatibleChecker
     */
    private static final CompatibleChecker<AcceptLanguage, Locale> LANGUAGE_CHECKER =
@@ -135,7 +127,7 @@ public final class VariantsHandler
 
    /**
     * Checker for accept character-set and character-set from variant.
-    * 
+    *
     * @see CompatibleChecker
     */
    private static final CompatibleChecker<AcceptToken, String> CHARSET_CHECKER =
@@ -163,7 +155,7 @@ public final class VariantsHandler
 
    /**
     * Checker for accept encoding and encoding from variant.
-    * 
+    *
     * @see CompatibleChecker
     */
    private static final CompatibleChecker<AcceptToken, String> ENCODING_CHECKER =
@@ -190,7 +182,7 @@ public final class VariantsHandler
 
    /**
     * Looking for most acceptable variant for given request.
-    * 
+    *
     * @param r see {@link ContainerRequest}
     * @param variants see {@link Variant} and {@link VariantListBuilderImpl}
     * @return variant or null
@@ -219,9 +211,11 @@ public final class VariantsHandler
 
       List<Variant> v = new ArrayList<Variant>(variants.size());
       for (Variant a : variants)
+      {
          v.add(a);
+      }
 
-      handleVariants(m, v, MEDIATYPE_CHECKER);
+      handleVariants(m, v, MEDIA_TYPE_CHECKER);
       handleVariants(l, v, LANGUAGE_CHECKER);
       handleVariants(c, v, CHARSET_CHECKER);
       handleVariants(e, v, ENCODING_CHECKER);
@@ -237,7 +231,7 @@ public final class VariantsHandler
     * @param ch see {@link CompatibleChecker}
     */
    private static <T extends QualityValue, V> void handleVariants(List<T> accept, List<Variant> variants,
-      CompatibleChecker<T, V> ch)
+                                                                  CompatibleChecker<T, V> ch)
    {
 
       List<Variant> tmp = new ArrayList<Variant>();
@@ -249,7 +243,9 @@ public final class VariantsHandler
             if (p != null)
             {
                if (ch.isCompatible(a, p))
+               {
                   tmp.add(v);
+               }
             }
          }
 
@@ -258,11 +254,17 @@ public final class VariantsHandler
       for (Variant v : variants)
       {
          if (ch.getValue(v) == null)
+         {
             tmp.add(v);
+         }
       }
       // remove unacceptable
       variants.clear();
       variants.addAll(tmp);
    }
 
+   /** Constructor. */
+   private VariantsHandler()
+   {
+   }
 }
