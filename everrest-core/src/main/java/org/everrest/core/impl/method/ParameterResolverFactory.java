@@ -37,15 +37,9 @@ import javax.ws.rs.core.Context;
  */
 public final class ParameterResolverFactory
 {
-
-   /** Constructor. */
-   private ParameterResolverFactory()
-   {
-   }
-
    /**
     * Create parameter resolver for supplied annotation.
-    * 
+    *
     * @param annotation JAX-RS annotation
     * @return ParameterResolver
     */
@@ -54,24 +48,42 @@ public final class ParameterResolverFactory
    {
       Class clazz = annotation.annotationType();
       if (clazz == CookieParam.class)
+      {
          return new CookieParameterResolver((CookieParam)annotation);
+      }
       if (clazz == Context.class)
+      {
          return new ContextParameterResolver((Context)annotation);
+      }
       if (clazz == FormParam.class)
+      {
          return new FormParameterResolver((FormParam)annotation);
+      }
       if (clazz == HeaderParam.class)
+      {
          return new HeaderParameterResolver((HeaderParam)annotation);
+      }
       if (clazz == MatrixParam.class)
+      {
          return new MatrixParameterResolver((MatrixParam)annotation);
+      }
       if (clazz == PathParam.class)
+      {
          return new PathParameterResolver((PathParam)annotation);
+      }
       if (clazz == QueryParam.class)
+      {
          return new QueryParameterResolver((QueryParam)annotation);
+      }
       if (clazz == Property.class)
+      {
          return new PropertyResolver((Property)annotation);
-      //      if (clazz == Inject.class)
-      //         return new InjectableProvider((Inject)annotation);
+      }
       return null;
    }
 
+   /** Constructor. */
+   private ParameterResolverFactory()
+   {
+   }
 }

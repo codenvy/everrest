@@ -32,45 +32,35 @@ public class ArrayValue extends JsonValue
    /** List of children. */
    private final List<JsonValue> children = new ArrayList<JsonValue>();
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void addElement(JsonValue child)
    {
       children.add(child);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean isArray()
    {
       return true;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Iterator<JsonValue> getElements()
    {
       return children.iterator();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public int size()
    {
       return children.size();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
@@ -90,9 +80,7 @@ public class ArrayValue extends JsonValue
       return sb.toString();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void writeTo(JsonWriter writer) throws JsonException
    {

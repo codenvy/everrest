@@ -29,23 +29,20 @@ import javax.ws.rs.core.MediaType;
  */
 public class AcceptMediaTypeHeaderDelegate extends AbstractHeaderDelegate<AcceptMediaType>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<AcceptMediaType> support()
    {
       return AcceptMediaType.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public AcceptMediaType fromString(String header)
    {
       if (header == null)
+      {
          throw new IllegalArgumentException();
+      }
 
       MediaType mediaType = MediaType.valueOf(header);
 
@@ -53,12 +50,9 @@ public class AcceptMediaTypeHeaderDelegate extends AbstractHeaderDelegate<Accept
 
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString(AcceptMediaType acceptedMediaType)
    {
       throw new UnsupportedOperationException("Accepted media type header used only for request.");
    }
-
 }

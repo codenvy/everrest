@@ -47,11 +47,10 @@ import javax.ws.rs.core.Context;
  */
 public class ParameterHelper
 {
-
    /**
     * Collections of annotation that allowed to be used on fields on any type of
     * Provider.
-    * 
+    *
     * @see javax.ws.rs.ext.Provider
     * @see javax.ws.rs.ext.Providers
     */
@@ -60,7 +59,7 @@ public class ParameterHelper
    /**
     * Collections of annotation than allowed to be used on constructor's
     * parameters of any type of Provider.
-    * 
+    *
     * @see javax.ws.rs.ext.Provider
     * @see javax.ws.rs.ext.Providers
     */
@@ -125,7 +124,9 @@ public class ParameterHelper
 
          Class<?> clazz = null;
          if (parameterType != null)
+         {
             clazz = getGenericType(parameterType);
+         }
          Method methodValueOf = null;
          Constructor<?> constructor = null;
 
@@ -195,9 +196,9 @@ public class ParameterHelper
    /**
     * Get static {@link Method} with single string argument and name 'valueOf'
     * for supplied class.
-    * 
+    *
     * @param clazz class for discovering to have public static method with name
-    *        'valueOf' and single string argument
+    * 'valueOf' and single string argument
     * @return valueOf method or null if class has not it
     */
    static Method getStringValueOfMethod(Class<?> clazz)
@@ -215,9 +216,9 @@ public class ParameterHelper
 
    /**
     * Get constructor with single string argument for supplied class.
-    * 
+    *
     * @param clazz class for discovering to have constructor with single string
-    *        argument
+    * argument
     * @return constructor or null if class has not constructor with single
     *         string argument
     */
@@ -236,7 +237,7 @@ public class ParameterHelper
 
    /**
     * Get generic type for supplied type.
-    * 
+    *
     * @param type See {@link Type}
     * @return generic type if type is {@link ParameterizedType}, null otherwise
     */
@@ -263,5 +264,4 @@ public class ParameterHelper
       // not parameterized type
       return null;
    }
-
 }

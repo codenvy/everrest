@@ -33,37 +33,38 @@ import javax.ws.rs.core.MediaType;
  */
 public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<MediaType> support()
    {
       return MediaType.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MediaType fromString(String header)
    {
       if (header == null)
+      {
          throw new IllegalArgumentException();
+      }
 
       try
       {
          int p = header.indexOf('/');
          int col = header.indexOf(';');
 
-         String type = null;
+         String type;
          String subType = null;
 
          if (p < 0 && col < 0) // no '/' and ';'
+         {
             return new MediaType(header, null);
+         }
          else if (p > 0 && col < 0) // there is no ';' so no parameters
-            return new MediaType(HeaderHelper.removeWhitespaces(header.substring(0, p)), HeaderHelper
-               .removeWhitespaces(header.substring(p + 1)));
+         {
+            return new MediaType(HeaderHelper.removeWhitespaces(header.substring(0, p)),
+               HeaderHelper.removeWhitespaces(header.substring(p + 1)));
+         }
          else if (p < 0 && col > 0)
          { // there is no '/' but present ';'
             type = HeaderHelper.removeWhitespaces(header.substring(0, col));
@@ -85,9 +86,7 @@ public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType>
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString(MediaType mime)
    {
       StringBuilder sb = new StringBuilder();
@@ -101,5 +100,4 @@ public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType>
 
       return sb.toString();
    }
-
 }

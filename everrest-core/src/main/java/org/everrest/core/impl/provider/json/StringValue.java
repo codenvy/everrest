@@ -37,18 +37,14 @@ public class StringValue extends JsonValue
       this.value = value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean isString()
    {
       return true;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String getStringValue()
    {
@@ -110,18 +106,14 @@ public class StringValue extends JsonValue
       return getNumberValue().doubleValue();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
       return JsonUtils.getJsonString(value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void writeTo(JsonWriter writer) throws JsonException
    {

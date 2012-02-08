@@ -25,29 +25,22 @@ import org.everrest.core.Property;
 /**
  * Obtain value of property (see {@link InitialProperties}) with name supplied
  * in {@link Property#value()} .
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class PropertyResolver extends ParameterResolver<Property>
 {
-
-   /**
-    * See {@link Property}
-    */
+   /** See {@link Property} */
    private final Property property;
 
-   /**
-    * @param property Property
-    */
+   /** @param property Property */
    PropertyResolver(Property property)
    {
       this.property = property;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       if (parameter.getParameterClass() != String.class)
@@ -65,5 +58,4 @@ public class PropertyResolver extends ParameterResolver<Property>
 
       return value;
    }
-
 }

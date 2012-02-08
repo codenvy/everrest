@@ -91,6 +91,8 @@ public class RequestHandlerImpl implements RequestHandler
 
    private final boolean httpMethodOverrideFeature;
 
+   private final int maxBufferSize;
+
    private MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
 
    /**
@@ -111,6 +113,7 @@ public class RequestHandlerImpl implements RequestHandler
       }
       httpMethodOverrideFeature = config.isHttpMethodOverride();
       normalizeUriFeature = config.isNormalizeUri();
+      maxBufferSize = config.getMaxBufferSize();
       ServiceLoader<MethodInvokerDecoratorFactory> s = ServiceLoader.load(MethodInvokerDecoratorFactory.class);
       Iterator<MethodInvokerDecoratorFactory> iterator = s.iterator();
       if (iterator.hasNext())
@@ -155,6 +158,7 @@ public class RequestHandlerImpl implements RequestHandler
          context = new ApplicationContextImpl(request, response, providers, methodInvokerDecoratorFactory);
          context.getProperties().putAll(properties);
          context.setDependencySupplier(dependencySupplier);
+         context.getAttributes().put(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE, maxBufferSize);
          ((Lifecycle)context).start();
          ApplicationContextImpl.setCurrent(context);
 

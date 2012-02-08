@@ -36,6 +36,12 @@ import javax.ws.rs.ext.MessageBodyReader;
  */
 public class ReaderEntityProviderTest extends BaseTest
 {
+   @Override
+   public void setUp() throws Exception
+   {
+      super.setUp();
+      setContext();
+   }
 
    private static final String TEST_CYR = "\u041f\u0440\u0438\u0432\u0456\u0442";
 

@@ -41,20 +41,19 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class FileEntityProvider implements EntityProvider<File>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == File.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public File readFrom(Class<File> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public File readFrom(Class<File> type,
+                        Type genericType,
+                        Annotation[] annotations,
+                        MediaType mediaType,
+                        MultivaluedMap<String, String> httpHeaders,
+                        InputStream entityStream) throws IOException
    {
       File f = FileCollector.getInstance().createFile();
       OutputStream out = new FileOutputStream(f);
@@ -69,27 +68,21 @@ public class FileEntityProvider implements EntityProvider<File>
       return f;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return t.length();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return File.class.isAssignableFrom(type); // more flexible then '=='
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeTo(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+                       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       InputStream in = new FileInputStream(t);
       try
@@ -101,5 +94,4 @@ public class FileEntityProvider implements EntityProvider<File>
          in.close();
       }
    }
-
 }

@@ -43,8 +43,6 @@ import javax.ws.rs.core.Response;
  */
 class InMemoryFileItem implements FileItem
 {
-   private static final long serialVersionUID = 5078209175022020528L;
-
    class _ByteArrayOutputStream extends ByteArrayOutputStream
    {
       public _ByteArrayOutputStream(int size)
@@ -55,25 +53,33 @@ class InMemoryFileItem implements FileItem
       public void write(byte b[], int off, int len)
       {
          if (len == 0)
+         {
             return;
+         }
          if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length))
+         {
             throw new IndexOutOfBoundsException();
-         int newcount = count + len;
-         if (newcount > buf.length)
+         }
+         int newCount = count + len;
+         if (newCount > buf.length)
+         {
             throw new WebApplicationException(Response.status(413).entity(
                "Item size is to large. Must not be over " + buf.length).type(MediaType.TEXT_PLAIN).build());
+         }
          System.arraycopy(b, off, buf, count, len);
-         count = newcount;
+         count = newCount;
       }
 
       public void write(int b)
       {
-         int newcount = count + 1;
-         if (newcount > buf.length)
+         int newCount = count + 1;
+         if (newCount > buf.length)
+         {
             throw new WebApplicationException(Response.status(413).entity(
                "Item size is to large. Must not be over " + buf.length).type(MediaType.TEXT_PLAIN).build());
+         }
          buf[count] = (byte)b;
-         count = newcount;
+         count = newCount;
       }
 
       void delete()
@@ -117,9 +123,7 @@ class InMemoryFileItem implements FileItem
       this.maxSize = maxSize;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void delete()
    {
       if (bout != null)
@@ -128,9 +132,7 @@ class InMemoryFileItem implements FileItem
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public byte[] get()
    {
       if (bout == null)
@@ -140,41 +142,31 @@ class InMemoryFileItem implements FileItem
       return bout.getByteArray();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getContentType()
    {
       return contentType;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getFieldName()
    {
       return fieldName;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public InputStream getInputStream() throws IOException
    {
       return new ByteArrayInputStream(get());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getName()
    {
       return fileName;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public OutputStream getOutputStream()
    {
       if (bout == null)
@@ -184,68 +176,51 @@ class InMemoryFileItem implements FileItem
       return bout;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize()
    {
       return get().length;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getString()
    {
       return new String(get());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getString(String encoding) throws UnsupportedEncodingException
    {
       return new String(get(), encoding);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isFormField()
    {
       return isFormField;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isInMemory()
    {
       return true;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setFieldName(String name)
    {
       this.fieldName = name;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setFormField(boolean state)
    {
       isFormField = state;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void write(File file) throws Exception
    {
       throw new UnsupportedOperationException();
    }
-
 }

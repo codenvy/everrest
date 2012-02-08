@@ -44,6 +44,7 @@ import java.util.Set;
 public class ObjectBuilder
 {
    static final Collection<String> SKIP_METHODS = new HashSet<String>();
+
    static
    {
       // Since we need support for Groovy must skip this.
@@ -125,7 +126,7 @@ public class ObjectBuilder
     * @throws JsonException if any errors occurs
     */
    public static <T extends Collection<?>> T createCollection(Class<T> collectionClass, Type genericType,
-      JsonValue jsonArray) throws JsonException
+                                                              JsonValue jsonArray) throws JsonException
    {
       T collection = null;
       if (jsonArray != null && !jsonArray.isNull())
@@ -475,27 +476,27 @@ public class ObjectBuilder
       Types t = JsonUtils.getType(clazz);
       switch (t)
       {
-         case NULL :
+         case NULL:
             return null;
-         case BOOLEAN :
+         case BOOLEAN:
             return jsonValue.getBooleanValue();
-         case BYTE :
+         case BYTE:
             return jsonValue.getByteValue();
-         case SHORT :
+         case SHORT:
             return jsonValue.getShortValue();
-         case INT :
+         case INT:
             return jsonValue.getIntValue();
-         case LONG :
+         case LONG:
             return jsonValue.getLongValue();
-         case FLOAT :
+         case FLOAT:
             return jsonValue.getFloatValue();
-         case DOUBLE :
+         case DOUBLE:
             return jsonValue.getDoubleValue();
-         case CHAR :
+         case CHAR:
             return jsonValue.getStringValue().charAt(0);
-         case STRING :
+         case STRING:
             return jsonValue.getStringValue();
-         case CLASS :
+         case CLASS:
             try
             {
                return Class.forName(jsonValue.getStringValue());
@@ -504,7 +505,8 @@ public class ObjectBuilder
             {
                return null;
             }
-         case ARRAY_BOOLEAN : {
+         case ARRAY_BOOLEAN:
+         {
             boolean[] params = new boolean[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -514,7 +516,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_BYTE : {
+         case ARRAY_BYTE:
+         {
             byte[] params = new byte[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -524,7 +527,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_SHORT : {
+         case ARRAY_SHORT:
+         {
             short[] params = new short[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -534,7 +538,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_INT : {
+         case ARRAY_INT:
+         {
             int[] params = new int[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -544,7 +549,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_LONG : {
+         case ARRAY_LONG:
+         {
             long[] params = new long[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -554,7 +560,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_FLOAT : {
+         case ARRAY_FLOAT:
+         {
             float[] params = new float[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -564,7 +571,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_DOUBLE : {
+         case ARRAY_DOUBLE:
+         {
             double[] params = new double[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -574,7 +582,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_CHAR : {
+         case ARRAY_CHAR:
+         {
             char[] params = new char[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -584,7 +593,8 @@ public class ObjectBuilder
             }
             return params;
          }
-         case ARRAY_STRING : {
+         case ARRAY_STRING:
+         {
             String[] params = new String[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
@@ -594,7 +604,7 @@ public class ObjectBuilder
             }
             return params;
          }
-         default :
+         default:
             // Nothing to do for other type. Exception will be thrown.
             break;
       }

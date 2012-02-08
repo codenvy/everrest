@@ -34,13 +34,12 @@ import javax.xml.transform.stream.StreamResult;
  * This type should be used by resource methods when need to apply XSLT
  * transformation for returned {@link Source}.
  *
- * @see StreamingOutput
  * @author <a href="dkatayev@gmail.com">Dmytro Katayev</a>
  * @version $Id: XLSTStreamingOutPut.java
+ * @see StreamingOutput
  */
 public class XSLTStreamingOutput implements StreamingOutput
 {
-
    private Source source;
 
    private Templates templates;
@@ -57,9 +56,7 @@ public class XSLTStreamingOutput implements StreamingOutput
       this.templates = templates;
    }
 
-   /**
-    * {@inheritDoc} .
-    */
+   /** {@inheritDoc} . */
    public void write(OutputStream output) throws IOException, WebApplicationException
    {
       try
@@ -76,5 +73,4 @@ public class XSLTStreamingOutput implements StreamingOutput
          throw new IOException(tre.getMessage());
       }
    }
-
 }

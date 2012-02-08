@@ -58,14 +58,10 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
 {
    private static final Logger LOG = Logger.getLogger(ApplicationContextImpl.class);
 
-   /**
-    * {@link ThreadLocal} ApplicationContext.
-    */
+   /** {@link ThreadLocal} ApplicationContext. */
    private static ThreadLocal<ApplicationContext> current = new ThreadLocal<ApplicationContext>();
 
-   /**
-    * @return current ApplicationContext.
-    */
+   /** @return current ApplicationContext. */
    public static ApplicationContext getCurrent()
    {
       return current.get();
@@ -73,7 +69,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
 
    /**
     * Set ApplicationContext for current thread.
-    * 
+    *
     * @param context the ApplicationContext.
     */
    public static void setCurrent(ApplicationContext context)
@@ -141,27 +137,27 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
 
    /**
     * Constructs new instance of ApplicationContext.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param providers See {@link ProviderBinder}
     */
    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
-      ProviderBinder providers)
+                                 ProviderBinder providers)
    {
       this(request, response, providers, null);
    }
 
    /**
     * Constructs new instance of ApplicationContext.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param providers See {@link ProviderBinder}
     * @param methodInvokerDecoratorFactory See {@link MethodInvokerDecoratorFactory}
     */
    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
-      ProviderBinder providers, MethodInvokerDecoratorFactory methodInvokerDecoratorFactory)
+                                 ProviderBinder providers, MethodInvokerDecoratorFactory methodInvokerDecoratorFactory)
    {
       this.request = request;
       this.response = response;
@@ -169,133 +165,103 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       this.methodInvokerDecoratorFactory = methodInvokerDecoratorFactory;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void addMatchedResource(Object resource)
    {
       matchedResources.add(0, resource);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void addMatchedURI(String uri)
    {
       encodedMatchedURIs.add(0, uri);
       matchedURIs.add(0, UriComponent.decode(uri, UriComponent.PATH_SEGMENT));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public URI getAbsolutePath()
    {
       if (absolutePath != null)
+      {
          return absolutePath;
+      }
 
       return absolutePath = getRequestUriBuilder().replaceQuery(null).fragment(null).build();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriBuilder getAbsolutePathBuilder()
    {
       return UriBuilder.fromUri(getAbsolutePath());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Map<String, Object> getAttributes()
    {
       return attributes == null ? attributes = new HashMap<String, Object>() : attributes;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public URI getBaseUri()
    {
       return request.getBaseUri();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriBuilder getBaseUriBuilder()
    {
       return UriBuilder.fromUri(getBaseUri());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public GenericContainerRequest getContainerRequest()
    {
       return request;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public GenericContainerResponse getContainerResponse()
    {
       return response;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public DependencySupplier getDependencySupplier()
    {
       return depInjector;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public HttpHeaders getHttpHeaders()
    {
       return request;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public InitialProperties getInitialProperties()
    {
       return this;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<Object> getMatchedResources()
    {
       return matchedResources;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<String> getMatchedURIs()
    {
       return getMatchedURIs(true);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<String> getMatchedURIs(boolean decode)
    {
       return decode ? matchedURIs : encodedMatchedURIs;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor)
    {
       String method = request.getMethod();
@@ -315,7 +281,9 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
          ContextResolver<AsynchronousJobPool> asynchJobsResolver =
             getProviders().getContextResolver(AsynchronousJobPool.class, null);
          if (asynchJobsResolver == null)
+         {
             throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");
+         }
          invoker = new AsynchronousMethodInvoker(asynchJobsResolver.getContext(null));
       }
       if (invoker == null)
@@ -329,34 +297,32 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       return invoker;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<String> getParameterValues()
    {
       return parameterValues;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getPath()
    {
       return getPath(true);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getPath(boolean decode)
    {
       if (encodedPath == null)
+      {
          encodedPath = getAbsolutePath().getRawPath().substring(getBaseUri().getRawPath().length());
+      }
 
       if (decode)
       {
          if (path != null)
+         {
             return path;
+         }
 
          return path = UriComponent.decode(encodedPath, UriComponent.PATH);
 
@@ -365,21 +331,19 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       return encodedPath;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MultivaluedMap<String, String> getPathParameters()
    {
       return getPathParameters(true);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MultivaluedMap<String, String> getPathParameters(boolean decode)
    {
       if (encodedPathParameters == null)
+      {
          throw new IllegalStateException("Path template variables not initialized yet.");
+      }
 
       if (decode)
       {
@@ -405,17 +369,13 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       return encodedPathParameters;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<PathSegment> getPathSegments()
    {
       return getPathSegments(true);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<PathSegment> getPathSegments(boolean decode)
    {
       if (decode)
@@ -426,131 +386,107 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
          UriComponent.parsePathSegments(getPath(), false));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Map<String, String> getProperties()
    {
       return properties == null ? properties = new HashMap<String, String>() : properties;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getProperty(String name)
    {
       return getProperties().get(name);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public ProviderBinder getProviders()
    {
       return providers;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MultivaluedMap<String, String> getQueryParameters()
    {
       return getQueryParameters(true);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MultivaluedMap<String, String> getQueryParameters(boolean decode)
    {
       if (decode)
+      {
          return queryParameters != null ? queryParameters : (queryParameters =
             UriComponent.parseQueryString(getRequestUri().getRawQuery(), true));
+      }
       return encodedQueryParameters != null ? encodedQueryParameters : (encodedQueryParameters =
          UriComponent.parseQueryString(getRequestUri().getRawQuery(), false));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Request getRequest()
    {
       return request;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public URI getRequestUri()
    {
       return request.getRequestUri();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriBuilder getRequestUriBuilder()
    {
       return UriBuilder.fromUri(getRequestUri());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public SecurityContext getSecurityContext()
    {
       return request;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriInfo getUriInfo()
    {
       return this;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setDependencySupplier(DependencySupplier depInjector)
    {
       this.depInjector = depInjector;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setParameterNames(List<String> parameterNames)
    {
       if (encodedPathParameters == null)
+      {
          encodedPathParameters = new MultivaluedMapImpl();
+      }
 
       for (int i = 0; i < parameterNames.size(); i++)
+      {
          encodedPathParameters.add(parameterNames.get(i), parameterValues.get(i));
+      }
 
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setProperty(String name, String value)
    {
       getProperties().put(name, value);
    }
 
-   /**
-    * @see org.everrest.core.Lifecycle#start()
-    */
+   /** @see org.everrest.core.Lifecycle#start() */
    @Override
    public final void start()
    {
       // Nothing to do for start.
    }
 
-   /**
-    * @see org.everrest.core.Lifecycle#stop()
-    */
+   /** @see org.everrest.core.Lifecycle#stop() */
    @Override
    public final void stop()
    {
@@ -574,9 +510,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       }
    }
 
-   /**
-    * @param providers ProviderBinder
-    */
+   /** @param providers ProviderBinder */
    public void setProviders(ProviderBinder providers)
    {
       this.providers = providers;

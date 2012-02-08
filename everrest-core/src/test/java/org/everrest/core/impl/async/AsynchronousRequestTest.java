@@ -20,6 +20,7 @@ package org.everrest.core.impl.async;
 
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
+import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
@@ -29,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -58,7 +60,7 @@ public class AsynchronousRequestTest extends BaseTest
    public static class Resource2
    {
       @GET
-      @Produces("application/json")
+//      @Produces("application/json")
       @Path("sub")
       public Msg m()
       {
@@ -146,7 +148,9 @@ public class AsynchronousRequestTest extends BaseTest
    public void testMimeTypeResolving() throws Exception
    {
       registry(Resource2.class);
-      ContainerResponse response = launcher.service("GET", "/b/sub?async=true", "", null, null, null);
+      MultivaluedMap<String,String>h=new MultivaluedMapImpl();
+      h.putSingle("accept", "application/json");
+      ContainerResponse response = launcher.service("GET", "/b/sub?async=true", "", /*null*/h, null, null);
       assertEquals(202, response.getStatus());
       String jobUrl = (String)response.getEntity();
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();

@@ -30,35 +30,31 @@ import javax.ws.rs.core.Cookie;
  */
 public class CookieParameterResolver extends ParameterResolver<CookieParam>
 {
-
-   /**
-    * See {@link CookieParam}.
-    */
+   /** See {@link CookieParam}. */
    private final CookieParam cookieParam;
 
-   /**
-    * @param cookieParam CookieParam
-    */
+   /** @param cookieParam CookieParam */
    CookieParameterResolver(CookieParam cookieParam)
    {
       this.cookieParam = cookieParam;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
       String param = this.cookieParam.value();
       Object c = context.getHttpHeaders().getCookies().get(param);
       if (c != null)
+      {
          return c;
+      }
 
       if (parameter.getDefaultValue() != null)
+      {
          return Cookie.valueOf(parameter.getDefaultValue());
+      }
 
       return null;
    }
-
 }

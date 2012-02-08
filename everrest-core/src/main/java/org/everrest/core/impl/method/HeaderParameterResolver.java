@@ -30,23 +30,16 @@ import javax.ws.rs.HeaderParam;
  */
 public class HeaderParameterResolver extends ParameterResolver<HeaderParam>
 {
-
-   /**
-    * See {@link HeaderParam}.
-    */
+   /** See {@link HeaderParam}. */
    private final HeaderParam headerParam;
 
-   /**
-    * @param headerParam HeaderParam
-    */
+   /** @param headerParam HeaderParam */
    HeaderParameterResolver(HeaderParam headerParam)
    {
       this.headerParam = headerParam;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
@@ -55,5 +48,4 @@ public class HeaderParameterResolver extends ParameterResolver<HeaderParam>
          ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
       return typeProducer.createValue(param, context.getHttpHeaders().getRequestHeaders(), parameter.getDefaultValue());
    }
-
 }

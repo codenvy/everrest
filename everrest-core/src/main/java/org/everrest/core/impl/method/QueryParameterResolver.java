@@ -30,23 +30,16 @@ import javax.ws.rs.QueryParam;
  */
 public class QueryParameterResolver extends ParameterResolver<QueryParam>
 {
-
-   /**
-    * See {@link QueryParam}.
-    */
+   /** See {@link QueryParam}. */
    private final QueryParam queryParam;
 
-   /**
-    * @param queryParam QueryParam
-    */
+   /** @param queryParam QueryParam */
    QueryParameterResolver(QueryParam queryParam)
    {
       this.queryParam = queryParam;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
@@ -56,5 +49,4 @@ public class QueryParameterResolver extends ParameterResolver<QueryParam>
       return typeProducer.createValue(param, context.getQueryParameters(!parameter.isEncoded()), parameter
          .getDefaultValue());
    }
-
 }

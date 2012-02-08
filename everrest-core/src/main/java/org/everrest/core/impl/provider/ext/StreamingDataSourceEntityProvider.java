@@ -29,19 +29,23 @@ import java.lang.reflect.Type;
 import javax.activation.DataSource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
+@Provider
 public class StreamingDataSourceEntityProvider extends DataSourceEntityProvider
 {
-
    @Override
-   public DataSource readFrom(Class<DataSource> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public DataSource readFrom(Class<DataSource> type,
+                              Type genericType,
+                              Annotation[] annotations,
+                              MediaType mediaType,
+                              MultivaluedMap<String, String> httpHeaders,
+                              InputStream entityStream) throws IOException
    {
       return new StreamingDataSource(entityStream, mediaType != null ? mediaType.toString() : null);
    }
-
 }

@@ -52,39 +52,25 @@ import javax.ws.rs.core.Variant;
 public class ContainerRequest implements GenericContainerRequest
 {
 
-   /**
-    * HTTP method.
-    */
+   /** HTTP method. */
    private String method;
 
-   /**
-    * HTTP request message body as stream.
-    */
+   /** HTTP request message body as stream. */
    private InputStream entityStream;
 
-   /**
-    * HTTP headers.
-    */
+   /** HTTP headers. */
    private MultivaluedMap<String, String> httpHeaders;
 
-   /**
-    * Parsed HTTP cookies.
-    */
+   /** Parsed HTTP cookies. */
    private Map<String, Cookie> cookies;
 
-   /**
-    * Source strings of HTTP cookies.
-    */
+   /** Source strings of HTTP cookies. */
    private List<String> cookieHeaders;
 
-   /**
-    * HTTP header Content-Type.
-    */
+   /** HTTP header Content-Type. */
    private MediaType contentType;
 
-   /**
-    * HTTP header Content-Language.
-    */
+   /** HTTP header Content-Language. */
    private Locale contentLanguage;
 
    /**
@@ -99,19 +85,15 @@ public class ContainerRequest implements GenericContainerRequest
     */
    private List<Locale> acceptLanguage;
 
-   /**
-    * Full request URI, includes query string and fragment.
-    */
+   /** Full request URI, includes query string and fragment. */
    private URI requestUri;
 
-   /**
-    * Base URI, e.g. servlet path.
-    */
+   /** Base URI, e.g. servlet path. */
    private URI baseUri;
 
    /**
     * Constructs new instance of ContainerRequest.
-    * 
+    *
     * @param method HTTP method
     * @param requestUri full request URI
     * @param baseUri base request URI
@@ -119,7 +101,7 @@ public class ContainerRequest implements GenericContainerRequest
     * @param httpHeaders HTTP headers
     */
    public ContainerRequest(String method, URI requestUri, URI baseUri, InputStream entityStream,
-      MultivaluedMap<String, String> httpHeaders)
+                           MultivaluedMap<String, String> httpHeaders)
    {
       this.method = method;
       this.requestUri = requestUri;
@@ -130,9 +112,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    // GenericContainerRequest
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MediaType getAcceptableMediaType(List<MediaType> mediaTypes)
    {
       if (mediaTypes.isEmpty())
@@ -144,25 +124,6 @@ public class ContainerRequest implements GenericContainerRequest
 
       List<MediaType> l = getAcceptableMediaTypes();
 
-      //      for (MediaType at : l)
-      //      {
-      //         if (at.isWildcardType())
-      //         {
-      //            // any media type from given list is acceptable the take first
-      //            return mediaTypes.get(0);
-      //         }
-      //         for (MediaType rt : mediaTypes)
-      //         {
-      //            if (!rt.isWildcardType() && !rt.isWildcardSubtype())
-      //            {
-      //               // skip all media types if it has wildcard at type or sub-type
-      //               if (rt.isCompatible(at))
-      //               {
-      //                  return rt;
-      //               }
-      //            }
-      //         }
-      //      }
       for (MediaType at : l)
       {
          for (MediaType rt : mediaTypes)
@@ -177,57 +138,49 @@ public class ContainerRequest implements GenericContainerRequest
       return null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<String> getCookieHeaders()
    {
       if (cookieHeaders == null)
       {
          List<String> c = getRequestHeader(COOKIE);
          if (c != null && c.size() > 0)
+         {
             cookieHeaders = Collections.unmodifiableList(getRequestHeader(COOKIE));
+         }
          else
+         {
             cookieHeaders = Collections.emptyList();
+         }
       }
       return cookieHeaders;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public InputStream getEntityStream()
    {
       return entityStream;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public URI getRequestUri()
    {
       return requestUri;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public URI getBaseUri()
    {
       return baseUri;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setMethod(String method)
    {
       this.method = method;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setEntityStream(InputStream entityStream)
    {
       this.entityStream = entityStream;
@@ -236,18 +189,14 @@ public class ContainerRequest implements GenericContainerRequest
       ApplicationContextImpl.getCurrent().getAttributes().remove("org.everrest.provider.entity.form");
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setUris(URI requestUri, URI baseUri)
    {
       this.requestUri = requestUri;
       this.baseUri = baseUri;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setCookieHeaders(List<String> cookieHeaders)
    {
       this.cookieHeaders = cookieHeaders;
@@ -256,9 +205,7 @@ public class ContainerRequest implements GenericContainerRequest
       this.cookies = null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setRequestHeaders(MultivaluedMap<String, String> httpHeaders)
    {
       this.httpHeaders = httpHeaders;
@@ -278,33 +225,26 @@ public class ContainerRequest implements GenericContainerRequest
    // different container. Currently thinking about servlet container only but
    // for flexible don't implement it here, it must be implemented in super
    // classes.
-   /**
-    * {@inheritDoc}
-    */
+
+   /** {@inheritDoc} */
    public String getAuthenticationScheme()
    {
       throw new UnsupportedOperationException();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Principal getUserPrincipal()
    {
       throw new UnsupportedOperationException();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isSecure()
    {
       throw new UnsupportedOperationException();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isUserInRole(String role)
    {
       throw new UnsupportedOperationException();
@@ -312,69 +252,71 @@ public class ContainerRequest implements GenericContainerRequest
 
    // javax.ws.rs.core.Request
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public ResponseBuilder evaluatePreconditions(EntityTag etag)
    {
       ResponseBuilder rb = evaluateIfMatch(etag);
       if (rb != null)
+      {
          return rb;
+      }
 
       return evaluateIfNoneMatch(etag);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public ResponseBuilder evaluatePreconditions(Date lastModified)
    {
       long lastModifiedTime = lastModified.getTime();
       ResponseBuilder rb = evaluateIfModified(lastModifiedTime);
       if (rb != null)
+      {
          return rb;
+      }
 
       return evaluateIfUnmodified(lastModifiedTime);
 
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag etag)
    {
       ResponseBuilder rb = evaluateIfMatch(etag);
       if (rb != null)
+      {
          return rb;
+      }
 
       long lastModifiedTime = lastModified.getTime();
       rb = evaluateIfModified(lastModifiedTime);
       if (rb != null)
+      {
          return rb;
+      }
 
       rb = evaluateIfNoneMatch(etag);
       if (rb != null)
+      {
          return rb;
+      }
 
       return evaluateIfUnmodified(lastModifiedTime);
 
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getMethod()
    {
       return method;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Variant selectVariant(List<Variant> variants)
    {
       if (variants == null || variants.isEmpty())
+      {
          throw new IllegalArgumentException("The list of variants is null or empty");
+      }
       // TODO constructs and set 'Vary' header in response
       // Response will be set in RequestDispatcher if set Response
       // now then it will be any way rewrite in RequestDispatcher.
@@ -398,7 +340,9 @@ public class ContainerRequest implements GenericContainerRequest
          List<Locale> t = new ArrayList<Locale>(l.size());
          // extract Locales from AcceptLanguage
          for (AcceptLanguage al : l)
+         {
             t.add(al.getLocale());
+         }
 
          acceptLanguage = Collections.unmodifiableList(t);
       }
@@ -425,9 +369,7 @@ public class ContainerRequest implements GenericContainerRequest
       return acceptMediaType;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Map<String, Cookie> getCookies()
    {
       if (cookies == null)
@@ -438,7 +380,9 @@ public class ContainerRequest implements GenericContainerRequest
          {
             List<Cookie> l = HeaderHelper.parseCookies(ch);
             for (Cookie c : l)
+            {
                t.put(c.getName(), c);
+            }
          }
 
          cookies = Collections.unmodifiableMap(t);
@@ -447,39 +391,35 @@ public class ContainerRequest implements GenericContainerRequest
       return cookies;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Locale getLanguage()
    {
       if (contentLanguage == null && httpHeaders.getFirst(CONTENT_LANGUAGE) != null)
+      {
          contentLanguage = Language.getLocale(httpHeaders.getFirst(CONTENT_LANGUAGE));
+      }
 
       return contentLanguage;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MediaType getMediaType()
    {
       if (contentType == null && httpHeaders.getFirst(CONTENT_TYPE) != null)
+      {
          contentType = MediaType.valueOf(httpHeaders.getFirst(CONTENT_TYPE));
+      }
 
       return contentType;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<String> getRequestHeader(String name)
    {
       return httpHeaders.get(name);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MultivaluedMap<String, String> getRequestHeaders()
    {
       return httpHeaders;
@@ -487,7 +427,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for If-Match header and ETag.
-    * 
+    *
     * @param etag the ETag
     * @return ResponseBuilder with status 412 (precondition failed) if If-Match
     *         header is NOT MATCH to ETag or null otherwise
@@ -502,13 +442,17 @@ public class ContainerRequest implements GenericContainerRequest
       // NOT be weak.
 
       if (ifMatch == null)
+      {
          return null;
+      }
 
       EntityTag otherEtag = EntityTag.valueOf(ifMatch);
 
       if ((etag.isWeak() || otherEtag.isWeak()) // one of tag is weak
          || (!"*".equals(otherEtag.getValue()) && !etag.getValue().equals(otherEtag.getValue())))
+      {
          return Response.status(Response.Status.PRECONDITION_FAILED);
+      }
 
       // if tags are not matched then do as tag 'if-match' is absent
       return null;
@@ -517,7 +461,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for If-None-Match header and ETag.
-    * 
+    *
     * @param etag the ETag
     * @return ResponseBuilder with status 412 (precondition failed) if
     *         If-None-Match header is MATCH to ETag and HTTP method is not GET
@@ -530,7 +474,9 @@ public class ContainerRequest implements GenericContainerRequest
       String ifNoneMatch = getRequestHeaders().getFirst(IF_NONE_MATCH);
 
       if (ifNoneMatch == null)
+      {
          return null;
+      }
 
       EntityTag otherEtag = EntityTag.valueOf(ifNoneMatch);
       String httpMethod = getMethod();
@@ -539,7 +485,9 @@ public class ContainerRequest implements GenericContainerRequest
       {
 
          if ("*".equals(otherEtag.getValue()) || etag.getValue().equals(otherEtag.getValue()))
+         {
             return Response.notModified(etag);
+         }
 
       }
       else
@@ -548,7 +496,9 @@ public class ContainerRequest implements GenericContainerRequest
          // or HEAD. If one of tag is weak then tags are not identical.
          if (!etag.isWeak() && !otherEtag.isWeak()
             && ("*".equals(otherEtag.getValue()) || etag.getValue().equals(otherEtag.getValue())))
+         {
             return Response.status(Response.Status.PRECONDITION_FAILED);
+         }
 
       }
 
@@ -559,7 +509,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for lastModified and unmodifiedSince times.
-    * 
+    *
     * @param lastModified the last modified time
     * @return ResponseBuilder with status 412 (precondition failed) if
     *         lastModified time is greater then unmodifiedSince otherwise return
@@ -571,12 +521,16 @@ public class ContainerRequest implements GenericContainerRequest
       String ifUnmodified = getRequestHeaders().getFirst(IF_UNMODIFIED_SINCE);
 
       if (ifUnmodified == null)
+      {
          return null;
+      }
       try
       {
          long unmodifiedSince = HeaderHelper.parseDateHeader(ifUnmodified).getTime();
          if (lastModified > unmodifiedSince)
+         {
             return Response.status(Response.Status.PRECONDITION_FAILED);
+         }
 
       }
       catch (IllegalArgumentException e)
@@ -589,7 +543,7 @@ public class ContainerRequest implements GenericContainerRequest
 
    /**
     * Comparison for lastModified and modifiedSince times.
-    * 
+    *
     * @param lastModified the last modified time
     * @return ResponseBuilder with status 304 (not modified) if lastModified
     *         time is greater then modifiedSince otherwise return null. If date
@@ -600,12 +554,16 @@ public class ContainerRequest implements GenericContainerRequest
       String ifModified = getRequestHeaders().getFirst(IF_MODIFIED_SINCE);
 
       if (ifModified == null)
+      {
          return null;
+      }
       try
       {
          long modifiedSince = HeaderHelper.parseDateHeader(ifModified).getTime();
          if (lastModified < modifiedSince)
+         {
             return Response.notModified();
+         }
 
       }
       catch (IllegalArgumentException e)

@@ -33,23 +33,16 @@ import javax.ws.rs.core.PathSegment;
  */
 public class MatrixParameterResolver extends ParameterResolver<MatrixParam>
 {
-
-   /**
-    * See {@link MatrixParam}.
-    */
+   /** See {@link MatrixParam}. */
    private final MatrixParam matrixParam;
 
-   /**
-    * @param matrixParam MatrixParam
-    */
+   /** @param matrixParam MatrixParam */
    MatrixParameterResolver(MatrixParam matrixParam)
    {
       this.matrixParam = matrixParam;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
@@ -62,5 +55,4 @@ public class MatrixParameterResolver extends ParameterResolver<MatrixParam>
 
       return typeProducer.createValue(param, pathSegment.getMatrixParameters(), parameter.getDefaultValue());
    }
-
 }

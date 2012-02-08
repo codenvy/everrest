@@ -28,30 +28,22 @@ import java.net.URI;
  */
 public class URIHeaderDelegate extends AbstractHeaderDelegate<URI>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<URI> support()
    {
       return URI.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public URI fromString(String header)
    {
       return URI.create(header);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString(URI uri)
    {
       return uri.toASCIIString();
    }
-
 }

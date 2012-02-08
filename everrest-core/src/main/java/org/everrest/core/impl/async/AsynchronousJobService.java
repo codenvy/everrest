@@ -18,11 +18,7 @@
  */
 package org.everrest.core.impl.async;
 
-import org.everrest.core.GenericContainerRequest;
-import org.everrest.core.impl.InternalException;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.ExecutionException;
+import org.everrest.core.impl.ApplicationContextImpl;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,7 +28,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
@@ -53,10 +48,10 @@ public class AsynchronousJobService
    private Providers providers;
 
    @GET
-   public Object get(@PathParam("job") String jobId, @Context UriInfo uriInfo, @Context Request request)
+   public Object get(@PathParam("job") String jobId, @Context UriInfo uriInfo)
    {
       AsynchronousJobPool pool = getJobPool();
-      AsynchronousJob async = pool.getJob(jobId);
+      final AsynchronousJob async = pool.getJob(jobId);
       if (async == null)
       {
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
@@ -67,59 +62,46 @@ public class AsynchronousJobService
          Object result;
          try
          {
-            result = async.get();
-         }
-         catch (InterruptedException e)
-         {
-            throw new InternalException(e);
-         }
-         catch (ExecutionException e)
-         {
-            Throwable theCause = e.getCause();
-            if (theCause instanceof InvocationTargetException)
-            {
-               theCause = ((InvocationTargetException)theCause).getTargetException();
-               if (theCause instanceof WebApplicationException)
-               {
-                  throw (WebApplicationException)theCause;
-               }
-               throw new InternalException(theCause);
-            }
-            throw new InternalException(e);
+            result = async.getResult();
          }
          finally
          {
-            pool.removeJob(jobId, false);
+            pool.removeJob(jobId);
          }
 
+         Response response;
          if (result == null || result.getClass() == void.class || result.getClass() == Void.class)
          {
-            return Response.noContent().build();
+            response = Response.noContent().build();
+         }
+         else if (Response.class.isAssignableFrom(result.getClass()))
+         {
+            response = (Response)result;
+
+            if (response.getEntity() != null && response.getMetadata().getFirst(HttpHeaders.CONTENT_TYPE) == null)
+            {
+               MediaType contentType = async.getRequest().getAcceptableMediaType(async.getResourceMethod().produces());
+               response.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
+            }
          }
          else
          {
-            if (Response.class.isAssignableFrom(result.getClass()))
-            {
-               Response response = (Response)result;
-               if (response.getMetadata().getFirst(HttpHeaders.CONTENT_TYPE) == null && response.getEntity() != null)
-               {
-                  response.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE,
-                     ((GenericContainerRequest)request).getAcceptableMediaType(async.getResourceMethod().produces()));
-               }
-               return response;
-            }
-            else
-            {
-               return Response.ok(result,
-                  ((GenericContainerRequest)request).getAcceptableMediaType(async.getResourceMethod().produces()))
-                  .build();
-            }
+            MediaType contentType = async.getRequest().getAcceptableMediaType(async.getResourceMethod().produces());
+            response = Response.ok(result, contentType).build();
          }
+
+         // Result of job.
+         ApplicationContextImpl.getCurrent().getContainerResponse().setResponse(response);
+
+         // This response (204) never sent to client.
+         return null;
       }
       else
       {
          final String jobUri = uriInfo.getRequestUri().toString();
-         return Response.status(Response.Status.ACCEPTED).header(HttpHeaders.LOCATION, jobUri).entity(jobUri)
+         return Response.status(Response.Status.ACCEPTED)
+            .header(HttpHeaders.LOCATION, jobUri)
+            .entity(jobUri)
             .type(MediaType.TEXT_PLAIN).build();
       }
    }
@@ -128,10 +110,14 @@ public class AsynchronousJobService
    public void remove(@PathParam("job") String jobId)
    {
       AsynchronousJobPool jobPool = getJobPool();
-      if (!jobPool.removeJob(jobId, true))
+      if (null == jobPool.removeJob(jobId))
       {
-         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-            .entity("Job " + jobId + " not found. ").type(MediaType.TEXT_PLAIN).build());
+         throw new WebApplicationException(Response
+            .status(Response.Status.NOT_FOUND)
+            .entity("Job " + jobId + " not found. ")
+            .type(MediaType.TEXT_PLAIN)
+            .build()
+         );
       }
    }
 
@@ -139,11 +125,11 @@ public class AsynchronousJobService
    {
       if (providers != null)
       {
-         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+         ContextResolver<AsynchronousJobPool> asyncJobsResolver =
             providers.getContextResolver(AsynchronousJobPool.class, null);
-         if (asynchJobsResolver != null)
+         if (asyncJobsResolver != null)
          {
-            return asynchJobsResolver.getContext(null);
+            return asyncJobsResolver.getContext(null);
          }
       }
       throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");

@@ -39,14 +39,11 @@ import javax.xml.bind.JAXBException;
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
 {
-
    /** JAXBContext cache. */
    @SuppressWarnings("rawtypes")
    private final ConcurrentHashMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<Class, JAXBContext>();
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public JAXBContextResolver getContext(Class<?> type)
    {
       return this;
@@ -62,13 +59,13 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     */
    public JAXBContext getJAXBContext(Class<?> clazz) throws JAXBException
    {
-      JAXBContext jaxbctx = jaxbContexts.get(clazz);
-      if (jaxbctx == null)
+      JAXBContext jaxbContext = jaxbContexts.get(clazz);
+      if (jaxbContext == null)
       {
-         jaxbctx = JAXBContext.newInstance(clazz);
-         jaxbContexts.put(clazz, jaxbctx);
+         jaxbContext = JAXBContext.newInstance(clazz);
+         jaxbContexts.put(clazz, jaxbContext);
       }
-      return jaxbctx;
+      return jaxbContext;
    }
 
    /**
@@ -77,13 +74,13 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     * @param clazz java class to be bound
     * @return JAXBContext
     * @throws JAXBException if JAXBContext for supplied classes can't be created
-    *         in any reasons
+    * in any reasons
     */
    public JAXBContext createJAXBContext(Class<?> clazz) throws JAXBException
    {
-      JAXBContext jaxbctx = JAXBContext.newInstance(clazz);
-      addJAXBContext(jaxbctx, clazz);
-      return jaxbctx;
+      JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+      addJAXBContext(jaxbContext, clazz);
+      return jaxbContext;
    }
 
    /**
@@ -97,5 +94,4 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
    {
       jaxbContexts.put(clazz, jaxbctx);
    }
-
 }

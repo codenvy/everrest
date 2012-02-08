@@ -36,19 +36,13 @@ import java.util.List;
 public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescriptor
 {
 
-   /**
-    * See {@link PathValue}.
-    */
+   /** See {@link PathValue}. */
    private final PathValue path;
 
-   /**
-    * See {@link UriPattern}.
-    */
+   /** See {@link UriPattern}. */
    private final UriPattern uriPattern;
 
-   /**
-    * See {@link Method}.
-    */
+   /** See {@link Method}. */
    private final Method method;
 
    /**
@@ -57,9 +51,7 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
     */
    private final AbstractResourceDescriptor parentResource;
 
-   /**
-    * List of method's parameters. See {@link MethodParameter} .
-    */
+   /** List of method's parameters. See {@link MethodParameter} . */
    private final List<MethodParameter> parameters;
 
    private final Annotation[] additional;
@@ -73,8 +65,11 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
     * @param parentResource parent resource for this method
     * @param additional set of additional (not JAX-RS annotations)
     */
-   SubResourceLocatorDescriptorImpl(PathValue path, Method method, List<MethodParameter> parameters,
-      AbstractResourceDescriptor parentResource, Annotation[] additional)
+   SubResourceLocatorDescriptorImpl(PathValue path,
+                                    Method method,
+                                    List<MethodParameter> parameters,
+                                    AbstractResourceDescriptor parentResource,
+                                    Annotation[] additional)
    {
       this.path = path;
       this.uriPattern = new UriPattern(path.getPath());
@@ -84,73 +79,55 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
       this.additional = additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public PathValue getPathValue()
    {
       return path;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriPattern getUriPattern()
    {
       return uriPattern;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitSubResourceLocatorDescriptor(this);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Method getMethod()
    {
       return method;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<MethodParameter> getMethodParameters()
    {
       return parameters;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public AbstractResourceDescriptor getParentResource()
    {
       return parentResource;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation[] getAnnotations()
    {
       return additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {

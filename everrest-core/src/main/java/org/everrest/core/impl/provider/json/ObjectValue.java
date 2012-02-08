@@ -32,45 +32,35 @@ public class ObjectValue extends JsonValue
    /** Children. */
    private final Map<String, JsonValue> children = new LinkedHashMap<String, JsonValue>();
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void addElement(String key, JsonValue child)
    {
       children.put(key, child);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean isObject()
    {
       return true;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Iterator<String> getKeys()
    {
       return children.keySet().iterator();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public JsonValue getElement(String key)
    {
       return children.get(key);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
@@ -92,9 +82,7 @@ public class ObjectValue extends JsonValue
       return sb.toString();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void writeTo(JsonWriter writer) throws JsonException
    {

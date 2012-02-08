@@ -56,17 +56,20 @@ public final class HeaderHelper
    }
 
    /** Pattern for search whitespace and quote in string. */
-   private static final Pattern WHITESPACE_QOUTE_PATTERN = Pattern.compile("[\\s\"]");
+   private static final Pattern WHITESPACE_QUOTE_PATTERN = Pattern.compile("[\\s\"]");
 
    /** Pattern for whitespace in string. */
    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
    /** Header separators. Header token MUST NOT contains any of it. */
    private static final char[] SEPARATORS = new char[128];
+
    static
    {
       for (char c : "()<>@,;:\"\\/[]?={}".toCharArray())
+      {
          SEPARATORS[c] = c;
+      }
    }
 
    /** Accept all media type list. */
@@ -83,14 +86,14 @@ public final class HeaderHelper
 
    /**
     * Comparator for tokens which have quality value.
-    * 
+    *
     * @see QualityValue
     */
    public static final Comparator<QualityValue> QUALITY_VALUE_COMPARATOR = new Comparator<QualityValue>()
    {
       /**
        * Compare two QualityValue for order.
-       * 
+       *
        * @param o1 first QualityValue to be compared
        * @param o2 second QualityValue to be compared
        * @return result of comparison
@@ -102,9 +105,13 @@ public final class HeaderHelper
          float q1 = o1.getQvalue();
          float q2 = o2.getQvalue();
          if (q1 < q2)
+         {
             return 1;
+         }
          if (q1 > q2)
+         {
             return -1;
+         }
          return 0;
       }
    };
@@ -113,7 +120,7 @@ public final class HeaderHelper
 
    /**
     * Accept media type producer.
-    * 
+    *
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptMediaType> LIST_MEDIA_TYPE_PRODUCER =
@@ -131,20 +138,22 @@ public final class HeaderHelper
 
    /**
     * Create sorted by quality value accepted media type list.
-    * 
+    *
     * @param header source header string
     * @return List of AcceptMediaType
     */
    public static List<AcceptMediaType> createAcceptedMediaTypeList(String header)
    {
       if (header == null || header.length() == 0 || MediaType.WILDCARD.equals(header.trim()))
+      {
          return ACCEPT_ALL_MEDIA_TYPE;
+      }
       return LIST_MEDIA_TYPE_PRODUCER.createQualitySortedList(header);
    }
 
    /**
     * Accept language producer.
-    * 
+    *
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptLanguage> LIST_LANGUAGE_PRODUCER =
@@ -162,20 +171,22 @@ public final class HeaderHelper
 
    /**
     * Create sorted by quality value accepted language list.
-    * 
+    *
     * @param header source header string
     * @return List of AcceptLanguage
     */
    public static List<AcceptLanguage> createAcceptedLanguageList(String header)
    {
       if (header == null || header.length() == 0 || "*".equals(header))
+      {
          return ACCEPT_ALL_LANGUAGE;
+      }
       return LIST_LANGUAGE_PRODUCER.createQualitySortedList(header);
    }
 
    /**
     * Accept token producer. Useful for processing 'accept-charset' and 'accept-encoding' request headers.
-    * 
+    *
     * @see ListHeaderProducer
     */
    private static final ListHeaderProducer<AcceptToken> LIST_TOKEN_PRODUCER = new ListHeaderProducer<AcceptToken>()
@@ -189,16 +200,22 @@ public final class HeaderHelper
             int col = part.indexOf(';');
             String token = col > 0 ? part.substring(0, col).trim() : part.trim();
 
-            int i = -1;
+            int i;
             if ((i = isToken(token)) != -1) // check is valid token
+            {
                throw new IllegalArgumentException("Not valid character at index " + i + " in " + token);
+            }
 
             if (col < 0)
+            {
                return new AcceptToken(token);
+            }
 
             Map<String, String> param = new HeaderParameterParser().parse(part);
             if (param.containsKey(QualityValue.QVALUE))
+            {
                return new AcceptToken(token, parseQualityValue(param.get(QualityValue.QVALUE)));
+            }
 
             return new AcceptToken(token);
          }
@@ -211,35 +228,37 @@ public final class HeaderHelper
 
    /**
     * Create sorted by quality value 'accept-character' list.
-    * 
+    *
     * @param header source header string
     * @return List of accept charset tokens
     */
    public static List<AcceptToken> createAcceptedCharsetList(String header)
    {
       if (header == null || header.length() == 0 || "*".equals(header))
+      {
          return ACCEPT_ALL_TOKENS;
+      }
       return LIST_TOKEN_PRODUCER.createQualitySortedList(header);
    }
 
    /**
     * Create sorted by quality value 'accept-encoding' list.
-    * 
+    *
     * @param header source header string
     * @return List of accept encoding tokens
     */
    public static List<AcceptToken> createAcceptedEncodingList(String header)
    {
       if (header == null || header.length() == 0 || "*".equals(header))
+      {
          return ACCEPT_ALL_TOKENS;
+      }
       return LIST_TOKEN_PRODUCER.createQualitySortedList(header);
    }
 
    // cookie
 
-   /**
-    * Temporary cookie image.
-    */
+   /** Temporary cookie image. */
    @SuppressWarnings("unused")
    private static class TempCookie
    {
@@ -253,7 +272,9 @@ public final class HeaderHelper
       String path;
       /** Cookie domain. */
       String domain;
-      // For NewCokie.
+
+      // For NewCookie.
+
       /** Comments about cookie. */
       String comment;
       /** Cookie max age. */
@@ -280,14 +301,14 @@ public final class HeaderHelper
 
    /**
     * Parse cookie header string and create collection of cookie from it.
-    * 
+    *
     * @param cookie the cookie string.
     * @return collection of Cookie.
     */
    public static List<Cookie> parseCookies(String cookie)
    {
-      int n = 0;
       int p = 0;
+      int n;
       TempCookie temp = null;
       int version = 0;
       List<Cookie> l = new ArrayList<Cookie>();
@@ -299,7 +320,7 @@ public final class HeaderHelper
          // cut pair of key/value
          String pair = cookie.substring(p, n);
 
-         String name = "";
+         String name;
          String value = "";
 
          // '=' separator
@@ -309,7 +330,9 @@ public final class HeaderHelper
             name = pair.substring(0, eq).trim();
             value = pair.substring(eq + 1).trim();
             if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1)
+            {
                value = value.substring(1, value.length() - 1);
+            }
          }
          else
          {
@@ -326,7 +349,9 @@ public final class HeaderHelper
 
             // first save previous cookie
             if (temp != null)
+            {
                l.add(new Cookie(temp.name, temp.value, temp.path, temp.domain, temp.version));
+            }
 
             temp = new TempCookie(name, value);
             // version was kept before
@@ -353,7 +378,9 @@ public final class HeaderHelper
       }
 
       if (temp != null)
+      {
          l.add(new Cookie(temp.name, temp.value, temp.path, temp.domain, temp.version));
+      }
 
       return l;
    }
@@ -411,14 +438,16 @@ public final class HeaderHelper
       SimpleDateFormat[] original = DateFormats.formats;
       SimpleDateFormat[] copy = new SimpleDateFormat[original.length];
       for (int i = 0; i < copy.length; i++)
+      {
          copy[i] = (SimpleDateFormat)original[i].clone();
+      }
       return Arrays.asList(copy);
    }
 
    /**
     * Parse date header. Will try to found appropriated format for given date header. Format can be one of see
     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>} .
-    * 
+    *
     * @param header source date header
     * @return parsed Date
     */
@@ -441,7 +470,7 @@ public final class HeaderHelper
 
    /**
     * Format <code>date</code> in RFC 1123 format.
-    * 
+    *
     * @param date date
     * @return string in RFC 1123 format
     */
@@ -465,7 +494,7 @@ public final class HeaderHelper
 
    /**
     * Create string representation of Java Object for adding to response. Method use {@link HeaderDelegate#toString()}.
-    * 
+    *
     * @param o HTTP header as Java type.
     * @return string representation of supplied type
     */
@@ -474,29 +503,38 @@ public final class HeaderHelper
    {
       HeaderDelegate hd = RuntimeDelegate.getInstance().createHeaderDelegate(o.getClass());
       if (hd != null)
+      {
          return hd.toString(o);
+      }
       return o.toString();
    }
 
    /**
-    * Convert Collection&lt;String&gt; to single String, where values separated by ','. Useful for getting source string
+    * Convert Collection&lt;String&gt; to single String, where values separated by ','. Useful for getting source
+    * string
     * of HTTP header for next processing quality value of header tokens.
-    * 
+    *
     * @param collection the source list
     * @return String result
     */
    public static String convertToString(Collection<String> collection)
    {
       if (collection == null)
+      {
          return null;
+      }
       if (collection.size() == 0)
+      {
          return "";
+      }
 
       StringBuilder sb = new StringBuilder();
       for (String t : collection)
       {
          if (sb.length() > 0)
+         {
             sb.append(',');
+         }
          sb.append(t);
       }
 
@@ -505,15 +543,17 @@ public final class HeaderHelper
 
    /**
     * Append string in given string buffer, if string contains quotes or whitespace, then it be escaped.
-    * 
+    *
     * @param sb string buffer
     * @param s string
     */
    static void appendWithQuote(StringBuilder sb, String s)
    {
       if (s == null)
+      {
          return;
-      Matcher m = WHITESPACE_QOUTE_PATTERN.matcher(s);
+      }
+      Matcher m = WHITESPACE_QUOTE_PATTERN.matcher(s);
 
       if (m.find())
       {
@@ -529,7 +569,7 @@ public final class HeaderHelper
 
    /**
     * Append string in given string buffer, quotes will be escaped.
-    * 
+    *
     * @param sb string buffer
     * @param s string
     */
@@ -539,14 +579,16 @@ public final class HeaderHelper
       {
          char c = s.charAt(i);
          if (c == '"')
+         {
             sb.append('\\');
+         }
          sb.append(c);
       }
    }
 
    /**
     * Remove all whitespace from given string.
-    * 
+    *
     * @param s the source string
     * @return the result string
     */
@@ -554,7 +596,9 @@ public final class HeaderHelper
    {
       Matcher m = WHITESPACE_PATTERN.matcher(s);
       if (m.find())
+      {
          return m.replaceAll("");
+      }
 
       return s;
    }
@@ -562,16 +606,18 @@ public final class HeaderHelper
    /**
     * Add quotes to <code>String</code> if it consists whitespaces, otherwise <code>String</code> will be returned
     * without changes.
-    * 
+    *
     * @param s the source string.
     * @return new string.
     */
    static String addQuotesIfHasWhitespace(String s)
    {
-      Matcher macther = WHITESPACE_PATTERN.matcher(s);
+      Matcher matcher = WHITESPACE_PATTERN.matcher(s);
 
-      if (macther.find())
+      if (matcher.find())
+      {
          return '"' + s + '"';
+      }
 
       return s;
    }
@@ -579,26 +625,31 @@ public final class HeaderHelper
    /**
     * Check syntax of quality value and parse it. Quality value must have not more then 5 characters and be not more
     * then 1 .
-    * 
-    * @param qstring string representation of quality value
+    *
+    * @param qString string representation of quality value
     * @return quality value
     */
-   static float parseQualityValue(String qstring)
+   static float parseQualityValue(String qString)
    {
-      if (qstring.length() > 5)
+      if (qString.length() > 5)
+      {
          throw new IllegalArgumentException("Quality value string has more then 5 characters");
+      }
 
-      float q = Float.valueOf(qstring);
+      float q = Float.valueOf(qString);
       if (q > 1.0F)
+      {
          throw new IllegalArgumentException("Quality value can't be greater then 1.0");
+      }
 
       return q;
    }
 
    /**
-    * Check is given string token. Token may contains only US-ASCII characters except separators, {@link #SEPARATORS} and
+    * Check is given string token. Token may contains only US-ASCII characters except separators, {@link #SEPARATORS}
+    * and
     * controls.
-    * 
+    *
     * @param token the token
     * @return -1 if string has only valid character otherwise index of first wrong character
     */
@@ -608,7 +659,9 @@ public final class HeaderHelper
       {
          char c = token.charAt(i);
          if (c > 127 || SEPARATORS[c] != 0)
+         {
             return i;
+         }
       }
       return -1;
    }
@@ -616,7 +669,7 @@ public final class HeaderHelper
    /**
     * The cookies parameters can be separated by ';' or ',', try to find first available separator in cookie string. If
     * both not found the string length will be returned.
-    * 
+    *
     * @param cookie the cookie string.
     * @param start index for start searching.
     * @return the index of ',' or ';'.
@@ -628,13 +681,21 @@ public final class HeaderHelper
       int comma = cookie.indexOf(',', start);
       int semicolon = cookie.indexOf(';', start);
       if (comma > 0 && semicolon > 0)
+      {
          p = comma < semicolon ? comma : semicolon;
+      }
       else if (comma < 0 && semicolon > 0)
+      {
          p = semicolon;
+      }
       else if (comma > 0 && semicolon < 0)
+      {
          p = comma;
+      }
       else
+      {
          p = cookie.length(); // end of string? not comma nor semicolon found
+      }
 
       return p;
 
@@ -645,24 +706,22 @@ public final class HeaderHelper
     * <p>
     * String \"hello \\\"someone\\\"\" will be changed to hello \"someone\"
     * </p>
-    * 
+    *
     * @param token token for processing
     * @return result
     */
    static String filterEscape(String token)
    {
       StringBuilder sb = new StringBuilder();
-      //    boolean escape = false;
-      int strlen = token.length();
+      int length = token.length();
 
-      for (int i = 0; i < strlen; i++)
+      for (int i = 0; i < length; i++)
       {
          char c = token.charAt(i);
-         //      escape = !escape && c == '\\';
-
-         if (c == '\\' && i < strlen - 1 && token.charAt(i + 1) == '"')
-            continue;
-         sb.append(c);
+         if (c != '\\' || i >= length - 1 || token.charAt(i + 1) != '"')
+         {
+            sb.append(c);
+         }
       }
 
       return sb.toString();

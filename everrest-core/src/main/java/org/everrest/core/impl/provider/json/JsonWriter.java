@@ -44,7 +44,7 @@ public class JsonWriter
 
    /**
     * Constructs JsonWriter.
-    * 
+    *
     * @param writer Writer.
     */
    public JsonWriter(Writer writer)
@@ -56,7 +56,7 @@ public class JsonWriter
 
    /**
     * Constructs JsonWriter.
-    * 
+    *
     * @param out OutputStream.
     */
    public JsonWriter(OutputStream out)
@@ -64,9 +64,7 @@ public class JsonWriter
       this(new OutputStreamWriter(out, JsonUtils.DEFAULT_CHARSET));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeStartObject() throws JsonException
    {
       JsonToken token = stack.peek();
@@ -98,9 +96,7 @@ public class JsonWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeEndObject() throws JsonException
    {
       try
@@ -121,9 +117,7 @@ public class JsonWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeStartArray() throws JsonException
    {
       JsonToken token = stack.peek();
@@ -155,9 +149,7 @@ public class JsonWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeEndArray() throws JsonException
    {
       JsonToken token = stack.pop();
@@ -177,9 +169,7 @@ public class JsonWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeKey(String key) throws JsonException
    {
       if (key == null)
@@ -210,41 +200,31 @@ public class JsonWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeString(String value) throws JsonException
    {
       write(JsonUtils.getJsonString(value));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeValue(long value) throws JsonException
    {
       write(Long.toString(value));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeValue(double value) throws JsonException
    {
       write(Double.toString(value));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeValue(boolean value) throws JsonException
    {
       write(Boolean.toString(value));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void writeNull() throws JsonException
    {
       write("null");
@@ -252,7 +232,7 @@ public class JsonWriter
 
    /**
     * Write single String.
-    * 
+    *
     * @param value String.
     * @throws JsonException if any errors occurs.
     */
@@ -263,7 +243,7 @@ public class JsonWriter
       {
          if (token != JsonToken.key && token != JsonToken.array)
          {
-            throw new JsonException("Sysntax error. Unexpected characters '" + value + "'.");
+            throw new JsonException("Syntax error. Unexpected characters '" + value + "'.");
          }
          if (commaFirst)
          {
@@ -283,9 +263,7 @@ public class JsonWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void flush() throws JsonException
    {
       try
@@ -298,9 +276,7 @@ public class JsonWriter
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void close() throws JsonException
    {
       try

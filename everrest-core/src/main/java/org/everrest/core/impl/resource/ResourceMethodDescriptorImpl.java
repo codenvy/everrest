@@ -36,20 +36,13 @@ import javax.ws.rs.core.MediaType;
  */
 public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
 {
-
-   /**
-    * This method will be invoked.
-    */
+   /** This method will be invoked. */
    private final Method method;
 
-   /**
-    * HTTP request method designator.
-    */
+   /** HTTP request method designator. */
    private final String httpMethod;
 
-   /**
-    * List of method's parameters. See {@link MethodParameter} .
-    */
+   /** List of method's parameters. See {@link MethodParameter} . */
    private final List<MethodParameter> parameters;
 
    /**
@@ -83,9 +76,13 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
     * @param produces list of media types which this method can produce
     * @param additional set of additional (not JAX-RS annotations)
     */
-   ResourceMethodDescriptorImpl(Method method, String httpMethod, List<MethodParameter> parameters,
-      AbstractResourceDescriptor parentResource, List<MediaType> consumes, List<MediaType> produces,
-      Annotation[] additional)
+   ResourceMethodDescriptorImpl(Method method,
+                                String httpMethod,
+                                List<MethodParameter> parameters,
+                                AbstractResourceDescriptor parentResource,
+                                List<MediaType> consumes,
+                                List<MediaType> produces,
+                                Annotation[] additional)
    {
       this.method = method;
       this.httpMethod = httpMethod;
@@ -96,81 +93,61 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
       this.additional = additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Method getMethod()
    {
       return method;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<MethodParameter> getMethodParameters()
    {
       return parameters;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public AbstractResourceDescriptor getParentResource()
    {
       return parentResource;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitResourceMethodDescriptor(this);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<MediaType> consumes()
    {
       return consumes;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getHttpMethod()
    {
       return httpMethod;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<MediaType> produces()
    {
       return produces;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation[] getAnnotations()
    {
       return additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
@@ -188,5 +165,4 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor
       sb.append("] ]");
       return sb.toString();
    }
-
 }

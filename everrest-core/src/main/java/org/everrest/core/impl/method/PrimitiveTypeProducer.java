@@ -27,7 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Construct a primitive type from string value.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -74,19 +74,15 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer
       PRIMITIVE_TYPE_DEFAULTS = Collections.unmodifiableMap(m);
    }
 
-   /**
-    * Class of object which will be created.
-    */
+   /** Class of object which will be created. */
    private Class<?> clazz;
 
-   /**
-    * This will be used if defaultValue is null.
-    */
+   /** This will be used if defaultValue is null. */
    private Object defaultDefaultValue;
 
    /**
     * Construct PrimitiveTypeProducer.
-    * 
+    *
     * @param clazz class of object
     */
    PrimitiveTypeProducer(Class<?> clazz)
@@ -101,9 +97,7 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer
       this.defaultDefaultValue = PRIMITIVE_TYPE_DEFAULTS.get(clazz.getName());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    protected Object createValue(String value) throws Exception
    {
@@ -120,20 +114,21 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer
       return method.invoke(null, value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception
    {
       String value = values.getFirst(param);
 
       if (value != null)
+      {
          return createValue(value);
+      }
       else if (defaultValue != null)
+      {
          return createValue(defaultValue);
+      }
 
       return this.defaultDefaultValue;
    }
-
 }

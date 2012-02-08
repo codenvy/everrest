@@ -23,8 +23,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.RequestHandler;
 import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.provider.EntityProvider;
 
@@ -45,7 +45,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * Processing multipart data based on apache fileupload.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: MultipartFormDataEntityProvider.java 497 2009-11-08 13:19:25Z
  *          aparfonov $
@@ -55,15 +55,11 @@ import javax.ws.rs.ext.Provider;
 public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<FileItem>>
 {
 
-   /**
-    * @see HttpServletRequest
-    */
+   /** @see HttpServletRequest */
    @Context
    private HttpServletRequest httpRequest;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (type == Iterator.class)
@@ -83,21 +79,19 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
       return false;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings("unchecked")
-   public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type,
+                                      Type genericType,
+                                      Annotation[] annotations,
+                                      MediaType mediaType,
+                                      MultivaluedMap<String, String> httpHeaders,
+                                      InputStream entityStream) throws IOException
    {
       try
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
-         int bufferSize =
-            context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
-               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt(context.getProperties().get(
-                  RequestHandler.WS_RS_BUFFER_SIZE));
-
+         Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
          DefaultFileItemFactory factory =
             new DefaultFileItemFactory(bufferSize, FileCollector.getInstance().getStore());
          FileUpload upload = new FileUpload(factory);
@@ -109,31 +103,28 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public long getSize(Iterator<FileItem> t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+   /** {@inheritDoc} */
+   public long getSize(Iterator<FileItem> t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       // output is not supported
       return false;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(Iterator<FileItem> t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(Iterator<FileItem> t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       throw new UnsupportedOperationException();
    }
-
 }

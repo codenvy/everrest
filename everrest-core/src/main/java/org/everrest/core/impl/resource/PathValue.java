@@ -20,40 +20,30 @@ package org.everrest.core.impl.resource;
 
 /**
  * Describe the Path annotation, see {@link javax.ws.rs.Path}.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class PathValue
 {
-
-   /**
-    * URI template, see {@link javax.ws.rs.Path#value()} .
-    */
+   /** URI template, see {@link javax.ws.rs.Path#value()} . */
    private final String path;
 
-   /**
-    * @param path URI template
-    */
+   /** @param path URI template */
    public PathValue(String path)
    {
       this.path = path;
    }
 
-   /**
-    * @return URI template string
-    */
+   /** @return URI template string */
    public String getPath()
    {
       return path;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString()
    {
       return "( " + path + " )";
    }
-
 }

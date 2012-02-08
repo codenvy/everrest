@@ -57,19 +57,19 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(DOMSourceEntityProvider.class);
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == DOMSource.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public DOMSource readFrom(Class<DOMSource> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public DOMSource readFrom(Class<DOMSource> type,
+                             Type genericType,
+                             Annotation[] annotations,
+                             MediaType mediaType,
+                             MultivaluedMap<String, String> httpHeaders,
+                             InputStream entityStream) throws IOException
    {
       try
       {
@@ -82,7 +82,9 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
       {
          // if can't read from stream (e.g. steam is empty)
          if (LOG.isDebugEnabled())
+         {
             LOG.error(saxpe.getMessage(), saxpe);
+         }
          return null;
       }
       catch (SAXException saxe)
@@ -95,27 +97,26 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(DOMSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return DOMSource.class.isAssignableFrom(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(DOMSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(DOMSource t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       StreamResult out = new StreamResult(entityStream);
       try

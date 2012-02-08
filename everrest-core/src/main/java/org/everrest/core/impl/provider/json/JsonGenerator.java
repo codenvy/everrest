@@ -57,7 +57,7 @@ public class JsonGenerator
     * @param collection source collection
     * @return JSON representation of collection
     * @throws JsonException if collection can't be transformed in JSON
-    *            representation
+    * representation
     */
    public static JsonValue createJsonArray(Collection<?> collection) throws JsonException
    {
@@ -202,31 +202,32 @@ public class JsonGenerator
       Types type = JsonUtils.getType(object);
       switch (type)
       {
-         case NULL :
+         case NULL:
             return new NullValue();
-         case BOOLEAN :
+         case BOOLEAN:
             return new BooleanValue((Boolean)object);
-         case BYTE :
+         case BYTE:
             return new LongValue((Byte)object);
-         case SHORT :
+         case SHORT:
             return new LongValue((Short)object);
-         case INT :
+         case INT:
             return new LongValue((Integer)object);
-         case LONG :
+         case LONG:
             return new LongValue((Long)object);
-         case FLOAT :
+         case FLOAT:
             return new DoubleValue((Float)object);
-         case DOUBLE :
+         case DOUBLE:
             return new DoubleValue((Double)object);
-         case CHAR :
+         case CHAR:
             return new StringValue(Character.toString((Character)object));
-         case STRING :
+         case STRING:
             return new StringValue((String)object);
-         case ENUM :
+         case ENUM:
             return new StringValue(((Enum)object).name());
-         case CLASS :
+         case CLASS:
             return new StringValue(((Class)object).getName());
-         case ARRAY_BOOLEAN : {
+         case ARRAY_BOOLEAN:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -235,7 +236,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_BYTE : {
+         case ARRAY_BYTE:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -244,7 +246,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_SHORT : {
+         case ARRAY_SHORT:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -253,7 +256,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_INT : {
+         case ARRAY_INT:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -262,7 +266,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_LONG : {
+         case ARRAY_LONG:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -271,7 +276,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_FLOAT : {
+         case ARRAY_FLOAT:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -280,7 +286,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_DOUBLE : {
+         case ARRAY_DOUBLE:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -289,7 +296,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_CHAR : {
+         case ARRAY_CHAR:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -298,7 +306,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_STRING : {
+         case ARRAY_STRING:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -307,7 +316,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case ARRAY_OBJECT : {
+         case ARRAY_OBJECT:
+         {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
@@ -324,7 +334,8 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case COLLECTION : {
+         case COLLECTION:
+         {
             JsonValue jsonArray = new ArrayValue();
             List<Object> list = new ArrayList<Object>((Collection<?>)object);
             for (Object o : list)
@@ -340,7 +351,7 @@ public class JsonGenerator
             }
             return jsonArray;
          }
-         case MAP :
+         case MAP:
             JsonValue jsonObject = new ObjectValue();
             Map<String, Object> map = (Map<String, Object>)object;
             Set<String> keys = map.keySet();
@@ -357,7 +368,7 @@ public class JsonGenerator
                }
             }
             return jsonObject;
-         default :
+         default:
             // Must not be here!
             return null;
       }

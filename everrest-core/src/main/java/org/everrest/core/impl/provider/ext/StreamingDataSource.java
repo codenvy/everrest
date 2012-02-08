@@ -36,7 +36,6 @@ import javax.activation.DataSource;
  */
 public class StreamingDataSource implements DataSource
 {
-
    private final InputStream stream;
 
    private final String contentType;
@@ -78,5 +77,4 @@ public class StreamingDataSource implements DataSource
    {
       throw new UnsupportedOperationException();
    }
-
 }

@@ -43,7 +43,6 @@ import javax.ws.rs.core.SecurityContext;
 @Filter
 public class SecurityConstraint implements MethodInvokerFilter
 {
-
    /**
     * Check does <tt>method</tt> contains one on of security annotations
     * PermitAll, DenyAll, RolesAllowed.
@@ -62,14 +61,14 @@ public class SecurityConstraint implements MethodInvokerFilter
    {
       if (sa != null)
       {
-         Class<?> saclass = sa.annotationType();
+         Class<?> aClass = sa.annotationType();
          boolean allowed = false;
-         if (saclass == PermitAll.class)
+         if (aClass == PermitAll.class)
          {
             // all users allowed to call method
             allowed = true;
          }
-         else if (saclass == RolesAllowed.class)
+         else if (aClass == RolesAllowed.class)
          {
             for (String role : ((RolesAllowed)sa).value())
             {
@@ -80,7 +79,7 @@ public class SecurityConstraint implements MethodInvokerFilter
                }
             }
          }
-         else if (saclass == DenyAll.class)
+         else if (aClass == DenyAll.class)
          {
             // nobody allowed to call method
          }
@@ -97,8 +96,8 @@ public class SecurityConstraint implements MethodInvokerFilter
    {
       for (Annotation a : method.getAnnotations())
       {
-         Class<?> aclass = a.annotationType();
-         if (aclass == PermitAll.class || aclass == DenyAll.class || aclass == RolesAllowed.class)
+         Class<?> aClass = a.annotationType();
+         if (aClass == PermitAll.class || aClass == DenyAll.class || aClass == RolesAllowed.class)
          {
             return a;
          }

@@ -28,10 +28,7 @@ import java.util.Date;
  */
 public class DateHeaderDelegate extends AbstractHeaderDelegate<Date>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<Date> support()
    {
@@ -48,12 +45,9 @@ public class DateHeaderDelegate extends AbstractHeaderDelegate<Date>
       return HeaderHelper.parseDateHeader(header);
    }
 
-   /**
-    * Represents {@link Date} as String in format of RFC 1123 {@inheritDoc} .
-    */
+   /** Represents {@link Date} as String in format of RFC 1123 {@inheritDoc} . */
    public String toString(Date date)
    {
       return HeaderHelper.formatDate(date);
    }
-
 }

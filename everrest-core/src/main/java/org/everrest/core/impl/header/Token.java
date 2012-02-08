@@ -28,7 +28,7 @@ package org.everrest.core.impl.header;
 public class Token
 {
    /** Token. */
-   private String token;
+   private final String token;
 
    /**
     * @param token a token

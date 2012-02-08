@@ -20,17 +20,16 @@ package org.everrest.core.impl.method;
 
 /**
  * Produce collections each element of it is String.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: CollectionStringProducer.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
 public final class CollectionStringProducer extends BaseCollectionProducer
 {
-
    /**
     * Constructs new instance of CollectionStringProducer.
-    * 
+    *
     * @param collectionClass class of collection which must be created
     */
    CollectionStringProducer(Class<?> collectionClass)
@@ -47,5 +46,4 @@ public final class CollectionStringProducer extends BaseCollectionProducer
    {
       return value;
    }
-
 }

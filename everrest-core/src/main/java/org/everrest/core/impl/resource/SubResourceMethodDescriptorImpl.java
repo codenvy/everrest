@@ -38,29 +38,19 @@ import javax.ws.rs.core.MediaType;
 public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescriptor
 {
 
-   /**
-    * See {@link PathValue}.
-    */
+   /** See {@link PathValue}. */
    private final PathValue path;
 
-   /**
-    * See {@link UriPattern}.
-    */
+   /** See {@link UriPattern}. */
    private final UriPattern uriPattern;
 
-   /**
-    * This method will be invoked.
-    */
+   /** This method will be invoked. */
    private final Method method;
 
-   /**
-    * HTTP request method designator.
-    */
+   /** HTTP request method designator. */
    private final String httpMethod;
 
-   /**
-    * List of method's parameters. See {@link MethodParameter} .
-    */
+   /** List of method's parameters. See {@link MethodParameter} . */
    private final List<MethodParameter> parameters;
 
    /**
@@ -95,9 +85,14 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
     * @param produces list of media types which this method can produce
     * @param additional set of additional (not JAX-RS annotations)
     */
-   SubResourceMethodDescriptorImpl(PathValue path, Method method, String httpMethod, List<MethodParameter> parameters,
-      AbstractResourceDescriptor parentResource, List<MediaType> consumes, List<MediaType> produces,
-      Annotation[] additional)
+   SubResourceMethodDescriptorImpl(PathValue path,
+                                   Method method,
+                                   String httpMethod,
+                                   List<MethodParameter> parameters,
+                                   AbstractResourceDescriptor parentResource,
+                                   List<MediaType> consumes,
+                                   List<MediaType> produces,
+                                   Annotation[] additional)
    {
       this.path = path;
       this.uriPattern = new UriPattern(path.getPath());
@@ -110,97 +105,73 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
       this.additional = additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<MediaType> consumes()
    {
       return consumes;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getHttpMethod()
    {
       return httpMethod;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<MediaType> produces()
    {
       return produces;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void accept(ResourceDescriptorVisitor visitor)
    {
       visitor.visitSubResourceMethodDescriptor(this);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public PathValue getPathValue()
    {
       return path;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public UriPattern getUriPattern()
    {
       return uriPattern;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Method getMethod()
    {
       return method;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<MethodParameter> getMethodParameters()
    {
       return parameters;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public AbstractResourceDescriptor getParentResource()
    {
       return parentResource;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Class<?> getResponseType()
    {
       return getMethod().getReturnType();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation[] getAnnotations()
    {
       return additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {

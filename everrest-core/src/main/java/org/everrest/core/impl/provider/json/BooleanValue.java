@@ -38,44 +38,34 @@ public class BooleanValue extends JsonValue
       this.value = value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean isBoolean()
    {
       return true;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
       return getStringValue();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean getBooleanValue()
    {
       return value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getStringValue()
    {
       return value ? "true" : "false";
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void writeTo(JsonWriter writer) throws JsonException
    {

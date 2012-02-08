@@ -22,7 +22,7 @@ import org.everrest.core.method.MethodInvoker;
 
 /**
  * This factory is intended for produce instance of {@link MethodInvokerDecorator}.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */

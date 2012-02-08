@@ -19,22 +19,27 @@
 package org.everrest.core.impl.async;
 
 import org.everrest.core.ApplicationContext;
+import org.everrest.core.GenericContainerRequest;
+import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
+
+import java.io.ByteArrayInputStream;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Invoker for Resource and Sub-Resource methods. This invoker does not process methods by oneself but post asynchronous
+ * Invoker for Resource and Sub-Resource methods. This invoker does not process methods by oneself but post
+ * asynchronous
  * job in AsynchronousJobPool. As result method
  * {@link #invokeMethod(Object, GenericMethodResource, Object[], ApplicationContext)} return status 202 if job
  * successfully added in AsynchronousJobPool or response with error status (500) if job can't be accepted by
  * AsynchronousJobPool (e.g. if pool is overloaded). If job is accepted for execution then response includes a pointer
  * to a result in Location header and in entity.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -49,13 +54,21 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
 
    @Override
    public Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p,
-      ApplicationContext context)
+                              ApplicationContext context)
    {
       try
       {
          // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
-         // Resource locators can't be processed in asynchronous mode since it is not end point of request. 
-         String jobId = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, p);
+         // Resource locators can't be processed in asynchronous mode since it is not end point of request.
+         GenericContainerRequest request = context.getContainerRequest();
+         ContainerRequest copy = new ContainerRequest(
+            request.getMethod(),
+            request.getRequestUri(),
+            request.getBaseUri(),
+            new ByteArrayInputStream(new byte[0]),
+            request.getRequestHeaders()
+         );
+         String jobId = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, p, copy);
          final String jobUri =
             context.getBaseUriBuilder().path(AsynchronousJobService.class, "get").build(jobId).toString();
          return Response.status(Response.Status.ACCEPTED).header(HttpHeaders.LOCATION, jobUri).entity(jobUri)

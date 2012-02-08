@@ -53,11 +53,11 @@ public class EverrestServletContextInitializer
 
    private static final Logger LOG = Logger.getLogger(EverrestServletContextInitializer.class);
 
-   protected final ServletContext sctx;
+   protected final ServletContext ctx;
 
-   public EverrestServletContextInitializer(ServletContext sctx)
+   public EverrestServletContextInitializer(ServletContext ctx)
    {
-      this.sctx = sctx;
+      this.ctx = ctx;
    }
 
    /**
@@ -101,11 +101,11 @@ public class EverrestServletContextInitializer
       {
          try
          {
-            URL classes = WarUrlFinder.findWebInfClassesPath(sctx);
-            URL[] libs = WarUrlFinder.findWebInfLibClasspaths(sctx);
+            URL classes = WarUrlFinder.findWebInfClassesPath(ctx);
+            URL[] libs = WarUrlFinder.findWebInfLibClasspaths(ctx);
             AnnotationDB annotationDB = new AnnotationDB();
             List<String> skip = new ArrayList<String>();
-            String sskip = sctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
+            String sskip = ctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
             if (sskip != null)
             {
                for (String s : sskip.split(","))
@@ -189,11 +189,14 @@ public class EverrestServletContextInitializer
       config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
          EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
 
-      config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE,
+      config.setAsynchronousCacheSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE,
          EverrestConfiguration.defaultAsynchronousCacheSize).intValue());
 
       config.setAsynchronousJobTimeout(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT,
          EverrestConfiguration.defaultAsynchronousJobTimeout).intValue());
+
+      config.setMaxBufferSize(getNumber(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE,
+         EverrestConfiguration.defaultMaxBufferSize).intValue());
 
       return config;
    }
@@ -206,7 +209,7 @@ public class EverrestServletContextInitializer
     */
    public String getParameter(String name)
    {
-      String str = sctx.getInitParameter(name);
+      String str = ctx.getInitParameter(name);
       if (str != null)
       {
          return str.trim();

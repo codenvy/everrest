@@ -34,7 +34,6 @@ import javax.ws.rs.ext.ExceptionMapper;
  */
 public class DefaultExceptionMapper implements ExceptionMapper<Exception>
 {
-
    /**
     * {@inheritDoc}
     */
@@ -52,5 +51,4 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception>
          .header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message") //
          .build();
    }
-
 }

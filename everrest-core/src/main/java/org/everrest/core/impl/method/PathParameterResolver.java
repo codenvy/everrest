@@ -29,23 +29,16 @@ import javax.ws.rs.PathParam;
  */
 public class PathParameterResolver extends ParameterResolver<PathParam>
 {
-
-   /**
-    * See {@link PathParam}.
-    */
+   /** See {@link PathParam}. */
    private final PathParam pathParam;
 
-   /**
-    * @param pathParam PathParam
-    */
+   /** @param pathParam PathParam */
    PathParameterResolver(PathParam pathParam)
    {
       this.pathParam = pathParam;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
    {
@@ -55,5 +48,4 @@ public class PathParameterResolver extends ParameterResolver<PathParam>
       return typeProducer.createValue(param, context.getPathParameters(!parameter.isEncoded()), parameter
          .getDefaultValue());
    }
-
 }

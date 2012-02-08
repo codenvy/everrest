@@ -35,7 +35,6 @@ import javax.ws.rs.core.Response;
  */
 public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMethodDescriptorImpl
 {
-
    /**
     * @param method See {@link Method}
     * @param httpMethod HTTP request method designator
@@ -45,20 +44,21 @@ public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMe
     * @param produces list of media types which this method can produce
     * @param additional additional annotations
     */
-   public OptionsRequestResourceMethodDescriptorImpl(Method method, String httpMethod,
-      List<MethodParameter> parameters, AbstractResourceDescriptor parentResource, List<MediaType> consumes,
-      List<MediaType> produces, Annotation[] additional)
+   public OptionsRequestResourceMethodDescriptorImpl(Method method,
+                                                     String httpMethod,
+                                                     List<MethodParameter> parameters,
+                                                     AbstractResourceDescriptor parentResource,
+                                                     List<MediaType> consumes,
+                                                     List<MediaType> produces,
+                                                     Annotation[] additional)
    {
       super(method, httpMethod, parameters, parentResource, consumes, produces, additional);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<?> getResponseType()
    {
       return Response.class;
    }
-
 }

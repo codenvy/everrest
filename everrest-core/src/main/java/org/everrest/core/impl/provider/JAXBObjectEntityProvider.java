@@ -54,36 +54,36 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(JAXBObjectEntityProvider.class);
 
-   /**
-    * @see Providers
-    */
+   /** @see Providers */
    @Context
    private Providers providers;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.getAnnotation(XmlRootElement.class) != null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public Object readFrom(Class<Object> type,
+                          Type genericType,
+                          Annotation[] annotations,
+                          MediaType mediaType,
+                          MultivaluedMap<String, String> httpHeaders,
+                          InputStream entityStream) throws IOException
    {
       try
       {
-         JAXBContext jaxbctx = getJAXBContext(type, mediaType);
-         return jaxbctx.createUnmarshaller().unmarshal(entityStream);
+         JAXBContext jaxbContext = getJAXBContext(type, mediaType);
+         return jaxbContext.createUnmarshaller().unmarshal(entityStream);
       }
       catch (UnmarshalException e)
       {
          // if can't read from stream (e.g. steam is empty)
          if (LOG.isDebugEnabled())
+         {
             LOG.error(e.getMessage(), e);
+         }
          return null;
       }
       catch (JAXBException e)
@@ -92,36 +92,37 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.getAnnotation(XmlRootElement.class) != null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(Object t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       try
       {
-         JAXBContext jaxbctx = getJAXBContext(type, mediaType);
-         Marshaller m = jaxbctx.createMarshaller();
+         JAXBContext jaxbContext = getJAXBContext(type, mediaType);
+         Marshaller m = jaxbContext.createMarshaller();
          // Must respect application specified character set.
          String charset = mediaType.getParameters().get("charset");
          if (charset != null)
+         {
             m.setProperty(Marshaller.JAXB_ENCODING, charset);
+         }
 
          m.marshal(t, entityStream);
       }
@@ -142,7 +143,9 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
       ContextResolver<JAXBContextResolver> resolver =
          providers.getContextResolver(JAXBContextResolver.class, mediaType);
       if (resolver == null)
+      {
          throw new RuntimeException("Not found any JAXBContextResolver for media type " + mediaType);
+      }
       JAXBContextResolver jaxbres = resolver.getContext(null);
       return jaxbres.getJAXBContext(type);
    }

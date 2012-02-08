@@ -37,7 +37,6 @@ import javax.ws.rs.core.MediaType;
  */
 public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderDescriptor
 {
-
    /**
     * List of media types which this method can consume. See
     * {@link javax.ws.rs.Consumes} .
@@ -104,5 +103,4 @@ public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderD
       sb.append(" ]");
       return sb.toString();
    }
-
 }

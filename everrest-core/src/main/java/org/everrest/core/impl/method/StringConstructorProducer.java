@@ -22,38 +22,34 @@ import java.lang.reflect.Constructor;
 
 /**
  * Create object which has constructor with single String parameter.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: StringConstructorProducer.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
 public final class StringConstructorProducer extends BaseTypeProducer
 {
-
-   /**
-    * Constructor which must be used for creation object.
-    */
+   /** Constructor which must be used for creation object. */
    private Constructor<?> constructor;
 
    /**
     * @param constructor this constructor will be used for creation instance of
-    *        object
+    * object
     */
    StringConstructorProducer(Constructor<?> constructor)
    {
       this.constructor = constructor;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    protected Object createValue(String value) throws Exception
    {
       if (value == null)
+      {
          return null;
+      }
 
       return constructor.newInstance(value);
    }
-
 }

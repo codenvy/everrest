@@ -40,9 +40,7 @@ public class JsonHandler
       this.values = new JsonStack<JsonValue>();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void characters(char[] characters)
    {
       if (current.isObject())
@@ -55,33 +53,25 @@ public class JsonHandler
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void endArray()
    {
       current = values.pop();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void endObject()
    {
       current = values.pop();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void key(String key)
    {
       this.key = key;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void startArray()
    {
       ArrayValue o = new ArrayValue();
@@ -101,9 +91,7 @@ public class JsonHandler
       current = o;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void startObject()
    {
       if (current == null)
@@ -125,9 +113,7 @@ public class JsonHandler
       current = o;
    }
 
-   /**
-    * Reset JSON events handler and prepare it for next usage.
-    */
+   /** Reset JSON events handler and prepare it for next usage. */
    public void reset()
    {
       current = null;
@@ -135,9 +121,7 @@ public class JsonHandler
       values.clear();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public JsonValue getJsonObject()
    {
       return current;

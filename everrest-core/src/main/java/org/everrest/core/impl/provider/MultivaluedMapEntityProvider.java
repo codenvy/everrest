@@ -51,10 +51,7 @@ import javax.ws.rs.ext.Provider;
 @Produces({MediaType.APPLICATION_FORM_URLENCODED})
 public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedMap<String, String>>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (type == MultivaluedMap.class)
@@ -73,18 +70,21 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
       return false;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings("unchecked")
-   public MultivaluedMap<String, String> readFrom(Class<MultivaluedMap<String, String>> type, Type genericType,
-      Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
-      InputStream entityStream) throws IOException
+   public MultivaluedMap<String, String> readFrom(Class<MultivaluedMap<String, String>> type,
+                                                  Type genericType,
+                                                  Annotation[] annotations,
+                                                  MediaType mediaType,
+                                                  MultivaluedMap<String, String> httpHeaders,
+                                                  InputStream entityStream) throws IOException
    {
       ApplicationContext context = ApplicationContextImpl.getCurrent();
       Object o = context.getAttributes().get("org.everrest.provider.entity.form");
       if (o != null)
+      {
          return (MultivaluedMap<String, String>)o;
+      }
 
       MultivaluedMap<String, String> form = new MultivaluedMapImpl();
       int r = -1;
@@ -126,7 +126,9 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
    private static void addPair(String s, MultivaluedMap<String, String> f) throws UnsupportedEncodingException
    {
       if (s.length() == 0)
+      {
          return;
+      }
       int eq = s.indexOf('=');
       String name;
       String value;
@@ -143,28 +145,27 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
       f.add(name, value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(MultivaluedMap<String, String> t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+                       MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MultivaluedMap.class.isAssignableFrom(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(MultivaluedMap<String, String> t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(MultivaluedMap<String, String> t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       int i = 0;
       for (Map.Entry<String, List<String>> e : t.entrySet())
@@ -172,7 +173,9 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
          for (String value : e.getValue())
          {
             if (i > 0)
+            {
                entityStream.write('&');
+            }
             String name = URLEncoder.encode(e.getKey(), "UTF-8");
             entityStream.write(name.getBytes());
             i++;
@@ -185,5 +188,4 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
          }
       }
    }
-
 }

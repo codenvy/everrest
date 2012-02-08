@@ -18,32 +18,39 @@
  */
 package org.everrest.core.impl.async;
 
+import org.everrest.core.GenericContainerRequest;
+import org.everrest.core.impl.InternalException;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import javax.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class AsynchronousJob extends FutureTask<Object>
+public class AsynchronousJob
 {
    private final String jobId;
    private final long expirationDate;
    private final ResourceMethodDescriptor method;
+   private final Future<Object> future;
+   private final GenericContainerRequest request;
 
-   protected AsynchronousJob(Callable<Object> callable,
-                             String jobId,
-                             long timeout,
-                             TimeUnit unit,
-                             ResourceMethodDescriptor method)
+   protected AsynchronousJob(String jobId,
+                             Future<Object> future,
+                             long expirationDate,
+                             ResourceMethodDescriptor method,
+                             GenericContainerRequest request)
    {
-      super(callable);
+      this.future = future;
       this.jobId = jobId;
-      this.expirationDate = System.currentTimeMillis() + unit.toMillis(timeout);
+      this.expirationDate = expirationDate;
       this.method = method;
+      this.request = request;
    }
 
    public String getJobId()
@@ -59,5 +66,61 @@ public class AsynchronousJob extends FutureTask<Object>
    public ResourceMethodDescriptor getResourceMethod()
    {
       return method;
+   }
+
+   public boolean isDone()
+   {
+      return future.isDone();
+   }
+
+   public boolean cancel()
+   {
+      return future.cancel(true);
+   }
+
+   /**
+    * Get result of job. If job is not done yet this method throws IllegalStateException.
+    * Before call this method caller must check is job done or not with method {@link #isDone()} .
+    *
+    * @return result
+    * @throws IllegalStateException if job is not done yet
+    */
+   public Object getResult() throws IllegalStateException
+   {
+      if (!isDone())
+      {
+         throw new IllegalStateException("Job is not done yet. ");
+      }
+
+      Object result;
+      try
+      {
+         result = future.get();
+      }
+      catch (InterruptedException e)
+      {
+         throw new InternalException(e);
+      }
+      catch (ExecutionException e)
+      {
+         Throwable theCause = e.getCause();
+         if (theCause instanceof InvocationTargetException)
+         {
+            theCause = ((InvocationTargetException)theCause).getTargetException();
+            if (theCause instanceof WebApplicationException)
+            {
+               throw (WebApplicationException)theCause;
+            }
+            throw new InternalException(theCause);
+         }
+         throw new InternalException(e);
+      }
+
+      return result;
+   }
+
+   public GenericContainerRequest getRequest()
+   {
+      return request;
    }
 }

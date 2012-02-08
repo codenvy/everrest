@@ -36,28 +36,19 @@ import javax.ws.rs.ext.MessageBodyReader;
  */
 public class FormParameterResolver extends ParameterResolver<FormParam>
 {
-
-   /**
-    * Form generic type.
-    */
+   /** Form generic type. */
    private static final Type FORM_TYPE = (ParameterizedType)MultivaluedMapImpl.class.getGenericInterfaces()[0];
 
-   /**
-    * See {@link FormParam}.
-    */
+   /** See {@link FormParam}. */
    private final FormParam formParam;
 
-   /**
-    * @param formParam FormParam
-    */
+   /** @param formParam FormParam */
    FormParameterResolver(FormParam formParam)
    {
       this.formParam = formParam;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings({"unchecked", "rawtypes"})
    @Override
    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
@@ -70,13 +61,14 @@ public class FormParameterResolver extends ParameterResolver<FormParam>
       MessageBodyReader reader =
          context.getProviders().getMessageBodyReader(MultivaluedMap.class, FORM_TYPE, null, contentType);
       if (reader == null)
+      {
          throw new IllegalStateException("Can't find appropriate entity reader for entity type "
             + MultivaluedMap.class.getName() + " and content-type " + contentType);
+      }
 
       MultivaluedMap<String, String> form =
          (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, contentType, context
             .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
       return typeProducer.createValue(param, form, parameter.getDefaultValue());
    }
-
 }

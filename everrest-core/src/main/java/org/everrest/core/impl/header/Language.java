@@ -25,27 +25,22 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * Reflection for HTTP language tag.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class Language
 {
-
-   /**
-    * See {@link RuntimeDelegate#createHeaderDelegate(Class)}.
-    */
+   /** See {@link RuntimeDelegate#createHeaderDelegate(Class)}. */
    private static final HeaderDelegate<Locale> DELEGATE =
       RuntimeDelegate.getInstance().createHeaderDelegate(Locale.class);
 
-   /**
-    * @see {@link Locale}
-    */
+   /** @see {@link Locale} */
    private final Locale locale;
 
    /**
     * Constructs new instance of Language.
-    * 
+    *
     * @param locale @see {@link Locale}
     */
    public Language(Locale locale)
@@ -55,10 +50,10 @@ public class Language
 
    /**
     * Create {@link Locale} from Language Tag string.
-    * 
+    *
     * @param language string representation of Language Tag, See
-    *        {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}
-    *        .
+    * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}
+    * .
     * @return {@link Locale}
     */
    public static Locale getLocale(String language)
@@ -71,7 +66,7 @@ public class Language
     * is primary-tag. See
     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}
     * .
-    * 
+    *
     * @return the primary-tag of Language tag
     */
    public String getPrimaryTag()
@@ -84,7 +79,7 @@ public class Language
     * sub-tag. See
     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}
     * .
-    * 
+    *
     * @return the sub-tag of Language tag
     */
    public String getSubTag()
@@ -92,9 +87,7 @@ public class Language
       return locale.getCountry().toLowerCase();
    }
 
-   /**
-    * @return @see {@link Locale}
-    */
+   /** @return @see {@link Locale} */
    public Locale getLocale()
    {
       return locale;
@@ -102,7 +95,7 @@ public class Language
 
    /**
     * Check is two Language instance is compatible.
-    * 
+    *
     * @param other checked language
     * @return true if given Language is compatible with current false otherwise
     */
@@ -122,9 +115,7 @@ public class Language
          || this.toString().equalsIgnoreCase(other.toString());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString()
    {
       StringBuilder sb = new StringBuilder();

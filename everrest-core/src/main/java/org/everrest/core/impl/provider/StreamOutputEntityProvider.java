@@ -39,49 +39,46 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class StreamOutputEntityProvider implements EntityProvider<StreamingOutput>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       // input is not supported
       return false;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public StreamingOutput readFrom(Class<StreamingOutput> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public StreamingOutput readFrom(Class<StreamingOutput> type,
+                                   Type genericType,
+                                   Annotation[] annotations,
+                                   MediaType mediaType,
+                                   MultivaluedMap<String, String> httpHeaders,
+                                   InputStream entityStream) throws IOException
    {
       // input is not supported
       throw new UnsupportedOperationException();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(StreamingOutput t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return StreamingOutput.class.isAssignableFrom(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(StreamingOutput t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(StreamingOutput t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       t.write(entityStream);
    }
-
 }

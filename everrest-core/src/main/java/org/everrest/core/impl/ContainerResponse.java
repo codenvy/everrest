@@ -78,17 +78,22 @@ public class ContainerResponse implements GenericContainerResponse
       }
 
       @Override
-      public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-         WebApplicationException
+      public void writeTo(Object t,
+                          Class<?> type,
+                          Type genericType,
+                          Annotation[] annotations,
+                          MediaType mediaType,
+                          MultivaluedMap<String, Object> httpHeaders,
+                          OutputStream entityStream) throws IOException, WebApplicationException
       {
-         delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, new NotifiesOutputStream(
-            entityStream, writeListener));
+         delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders,
+            new NotifiesOutputStream(entityStream, writeListener));
       }
    }
 
    /**
-    * Use underlying output stream as data stream. Pass all invocations to the back-end stream and notify OutputListener
+    * Use underlying output stream as data stream. Pass all invocations to the back-end stream and notify
+    * OutputListener
     * about changes in back-end stream.
     */
    private static class NotifiesOutputStream extends OutputStream
@@ -138,9 +143,7 @@ public class ContainerResponse implements GenericContainerResponse
       }
    }
 
-   /**
-    * Listen any changes in response output stream, e.g. write, flush, close,
-    */
+   /** Listen any changes in response output stream, e.g. write, flush, close, */
    private static interface OutputListener
    {
       void onChange(java.util.EventObject event) throws IOException;
@@ -148,19 +151,13 @@ public class ContainerResponse implements GenericContainerResponse
 
    /* --------------------------------------------------------- */
 
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Logger LOG = Logger.getLogger(ContainerResponse.class);
 
-   /**
-    * See {@link ContainerResponseWriter}.
-    */
+   /** See {@link ContainerResponseWriter}. */
    private ContainerResponseWriter responseWriter;
 
-   /**
-    * @param responseWriter See {@link ContainerResponseWriter}
-    */
+   /** @param responseWriter See {@link ContainerResponseWriter} */
    public ContainerResponse(ContainerResponseWriter responseWriter)
    {
       this.responseWriter = responseWriter;
@@ -168,97 +165,80 @@ public class ContainerResponse implements GenericContainerResponse
 
    // GenericContainerResponse
 
-   /**
-    * HTTP status.
-    */
+   /** HTTP status. */
    private int status;
 
-   /**
-    * Entity type.
-    */
+   /** Entity type. */
    private Type entityType;
 
-   /**
-    * Entity.
-    */
+   /** Entity. */
    private Object entity;
 
-   /**
-    * HTTP response headers.
-    */
+   /** HTTP response headers. */
    private MultivaluedMap<String, Object> headers;
 
-   /**
-    * Response entity content-type.
-    */
+   /** Response entity content-type. */
    private MediaType contentType;
 
-   /**
-    * See {@link Response}, {@link ResponseBuilder}.
-    */
+   /** See {@link Response}, {@link ResponseBuilder}. */
    private Response response;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void setResponse(Response response)
    {
-      if (response == null)
-      {
-         throw new NullPointerException("Response may no be null. ");
-      }
       this.response = response;
 
-      status = response.getStatus();
-      headers = response.getMetadata();
-      entity = response.getEntity();
-      if (entity instanceof GenericEntity)
+      if (response == null)
       {
-         @SuppressWarnings("rawtypes")
-         GenericEntity ge = (GenericEntity)entity;
-         entity = ge.getEntity();
-         entityType = ge.getType();
-      }
-      else
-      {
-         if (entity != null)
-            entityType = entity.getClass();
-      }
-
-      Object contentTypeHeader = getHttpHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
-      if (contentTypeHeader instanceof MediaType)
-         contentType = (MediaType)contentTypeHeader;
-      else if (contentTypeHeader != null)
-         contentType = MediaType.valueOf(contentTypeHeader.toString());
-      else
+         status = 0;
+         entity = null;
+         entityType = null;
+         headers = null;
          contentType = null;
+      }
+      else
+      {
+         status = response.getStatus();
+         headers = response.getMetadata();
+         entity = response.getEntity();
+
+         if (entity instanceof GenericEntity)
+         {
+            @SuppressWarnings("rawtypes")
+            GenericEntity ge = (GenericEntity)entity;
+            entity = ge.getEntity();
+            entityType = ge.getType();
+         }
+         else if (entity != null)
+         {
+            entityType = entity.getClass();
+         }
+
+         Object contentTypeHeader = getHttpHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
+         if (contentTypeHeader instanceof MediaType)
+         {
+            contentType = (MediaType)contentTypeHeader;
+         }
+         else if (contentTypeHeader != null)
+         {
+            contentType = MediaType.valueOf(contentTypeHeader.toString());
+         }
+         else
+         {
+            contentType = null;
+         }
+      }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Response getResponse()
    {
       return response;
    }
 
-//   /**
-//    * Reset to default status.
-//    */
-//   private void reset()
-//   {
-//      this.status = Response.Status.NO_CONTENT.getStatusCode();
-//      this.entity = null;
-//      this.entityType = null;
-//      this.contentType = null;
-//      this.headers = null;
-//   }
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings("unchecked")
    @Override
    public void writeResponse() throws IOException
@@ -280,8 +260,10 @@ public class ContainerResponse implements GenericContainerResponse
       // if content-type is still not preset try determine it
       if (contentType == null)
       {
-         List<MediaType> l = context.getProviders().getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
-         contentType = context.getContainerRequest().getAcceptableMediaType(l);
+         List<MediaType> availableWriters = context.getProviders()
+            .getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
+         contentType = context.getContainerRequest().getAcceptableMediaType(availableWriters);
+
          if (contentType == null || contentType.isWildcardType() || contentType.isWildcardSubtype())
          {
             contentType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
@@ -308,17 +290,14 @@ public class ContainerResponse implements GenericContainerResponse
          {
             LOG.error(message);
 
-            Response notAcceptableResponse =
-               Response.status(Response.Status.NOT_ACCEPTABLE).entity(message).type(MediaType.TEXT_PLAIN).build();
+            Response notAcceptableResponse = Response
+               .status(Response.Status.NOT_ACCEPTABLE)
+               .entity(message)
+               .type(MediaType.TEXT_PLAIN)
+               .build();
             setResponse(notAcceptableResponse);
-            entityWriter =
-               context.getProviders().getMessageBodyWriter(String.class, null, null, contentType);
-
-            if (entityWriter == null)
-            {
-               // Must not happen since MessageBodyWriter for String is embedded.
-               throw new WebApplicationException(notAcceptableResponse);
-            }
+            // MessageBodyWriter for String is embedded.
+            entityWriter = context.getProviders().getMessageBodyWriter(String.class, null, null, contentType);
          }
       }
       else
@@ -368,45 +347,35 @@ public class ContainerResponse implements GenericContainerResponse
       headersWriter.onChange(null); // Be sure headers were written.
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public MediaType getContentType()
    {
       return contentType;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Type getEntityType()
    {
       return entityType;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Object getEntity()
    {
       return entity;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public MultivaluedMap<String, Object> getHttpHeaders()
    {
       return headers;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public int getStatus()
    {

@@ -42,7 +42,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
  */
 public final class MediaTypeHelper
 {
-
    /** Constructor. */
    private MediaTypeHelper()
    {
@@ -99,7 +98,9 @@ public final class MediaTypeHelper
       public MediaType next()
       {
          if (next == null)
+         {
             throw new NoSuchElementException();
+         }
          MediaType type = next;
          fetchNext();
          return type;
@@ -130,7 +131,7 @@ public final class MediaTypeHelper
                {
                   // Media type such as 'application/*+xml' (first part is wildcard).
                   // Next to be checked will be 'application/*'. NOTE do not use 'application/xml'
-                  // since there is no guaranty sure xml reader/writer/resolver supports xml extentions.
+                  // since there is no guaranty sure xml reader/writer/resolver supports xml extensions.
                   next = new MediaType(type, MediaType.MEDIA_TYPE_WILDCARD);
                }
                else
@@ -159,11 +160,11 @@ public final class MediaTypeHelper
 
    /**
     * Compare two mimetypes. The main rule for sorting media types is :
-    * <p>
+    * <p/>
     * <li>n / m</li>
     * <li>n / *</li>
     * <li>* / *</li>
-    * <p>
+    * <p/>
     * Method that explicitly list of media types is sorted before a method that list * / *.
     */
    public static final Comparator<MediaType> MEDIA_TYPE_COMPARATOR = new Comparator<MediaType>()
@@ -176,34 +177,54 @@ public final class MediaTypeHelper
          String subType2 = mediaType2.getSubtype();
 
          if (type1.equals(MediaType.MEDIA_TYPE_WILDCARD) && !type2.equals(MediaType.MEDIA_TYPE_WILDCARD))
+         {
             return 1;
+         }
          if (!type1.equals(MediaType.MEDIA_TYPE_WILDCARD) && type2.equals(MediaType.MEDIA_TYPE_WILDCARD))
+         {
             return -1;
+         }
          if (subType1.equals(MediaType.MEDIA_TYPE_WILDCARD) && !subType2.equals(MediaType.MEDIA_TYPE_WILDCARD))
+         {
             return 1;
+         }
          if (!subType1.equals(MediaType.MEDIA_TYPE_WILDCARD) && subType2.equals(MediaType.MEDIA_TYPE_WILDCARD))
+         {
             return -1;
+         }
 
          Matcher extmatcher1 = EXT_SUBTYPE_PATTERN.matcher(subType1);
          Matcher extmatcher2 = EXT_SUBTYPE_PATTERN.matcher(subType2);
          if (extmatcher1.matches() && !extmatcher2.matches())
+         {
             return 1;
+         }
          if (!extmatcher1.matches() && extmatcher2.matches())
+         {
             return -1;
+         }
 
          extmatcher1 = EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType1);
          extmatcher2 = EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType2);
          if (extmatcher1.matches() && !extmatcher2.matches())
+         {
             return 1;
+         }
          if (!extmatcher1.matches() && extmatcher2.matches())
+         {
             return -1;
+         }
 
          extmatcher1 = EXT_SUFFIX_SUBTYPE_PATTERN.matcher(subType1);
          extmatcher2 = EXT_SUFFIX_SUBTYPE_PATTERN.matcher(subType2);
          if (extmatcher1.matches() && !extmatcher2.matches())
+         {
             return 1;
+         }
          if (!extmatcher1.matches() && extmatcher2.matches())
+         {
             return -1;
+         }
 
          return 0;
       }
@@ -211,9 +232,10 @@ public final class MediaTypeHelper
    };
 
    /**
-    * Create a list of media type for given Consumes annotation. If parameter mime is null then list with single element
+    * Create a list of media type for given Consumes annotation. If parameter mime is null then list with single
+    * element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
-    * 
+    *
     * @param mime the Consumes annotation.
     * @return ordered list of media types.
     */
@@ -228,9 +250,10 @@ public final class MediaTypeHelper
    }
 
    /**
-    * Create a list of media type for given Produces annotation. If parameter mime is null then list with single element
+    * Create a list of media type for given Produces annotation. If parameter mime is null then list with single
+    * element
     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
-    * 
+    *
     * @param mime the Produces annotation.
     * @return ordered list of media types.
     */
@@ -246,7 +269,7 @@ public final class MediaTypeHelper
 
    /**
     * Useful for checking does method able to consume certain media type.
-    * 
+    *
     * @param consumes list of consumed media types
     * @param contentType should be checked
     * @return true contentType is compatible to one of consumes, false otherwise
@@ -266,7 +289,7 @@ public final class MediaTypeHelper
 
    /**
     * Create a list of media type from string array.
-    * 
+    *
     * @param mimes source string array
     * @return ordered list of media types
     */
@@ -274,7 +297,9 @@ public final class MediaTypeHelper
    {
       List<MediaType> l = new ArrayList<MediaType>(mimes.length);
       for (String m : mimes)
+      {
          l.add(MediaType.valueOf(m));
+      }
 
       Collections.sort(l, MEDIA_TYPE_COMPARATOR);
       return l;
@@ -282,7 +307,7 @@ public final class MediaTypeHelper
 
    /**
     * Looking for accept media type with the best quality. Accept list of media type must be sorted by quality value.
-    * 
+    *
     * @param accept See {@link AcceptMediaType}, {@link QualityValue}
     * @param produces list of produces media type, See {@link Produces}
     * @return quality value of best found compatible accept media type or 0.0 if media types are not compatible
@@ -291,17 +316,19 @@ public final class MediaTypeHelper
    {
       // NOTE accept contains list of AcceptMediaType instead
       // MediaType, see ContainerRequest#getAcceptableMediaTypes
-      @SuppressWarnings("rawtypes")
-      Iterator i = accept.iterator();
-      while (i.hasNext())
+      for (MediaType type : accept)
       {
-         AcceptMediaType a = (AcceptMediaType)i.next();
+         AcceptMediaType a = (AcceptMediaType)type;
          if ("*".equals(a.getType())) // accept everything, not need continue
+         {
             return a.getQvalue();
+         }
          for (MediaType p : produces)
          {
             if (p.isCompatible(a))
+            {
                return a.getQvalue();
+            }
          }
       }
 
@@ -317,7 +344,7 @@ public final class MediaTypeHelper
     * <li><i>application/atom+xml</i> and <i>application/atom+*</i> are compatible</li>
     * </ul>
     * </p>
-    * 
+    *
     * @param one media type
     * @param two media type
     * @return <code>true</code> if types compatible and <code>false</code> otherwise
@@ -398,7 +425,7 @@ public final class MediaTypeHelper
     * matched to <i>application/atom+xml</i></li>
     * </ul>
     * </p>
-    * 
+    *
     * @param pattern pattern type
     * @param checkMe type to be checked
     * @return <code>true</code> if type <code>checkMe</code> is matched to <code>pattern</code> and <code>false</code>

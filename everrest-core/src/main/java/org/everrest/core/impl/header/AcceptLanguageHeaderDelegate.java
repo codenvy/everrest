@@ -32,23 +32,20 @@ import java.util.Map;
  */
 public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptLanguage>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<AcceptLanguage> support()
    {
       return AcceptLanguage.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public AcceptLanguage fromString(String header)
    {
       if (header == null)
+      {
          throw new IllegalArgumentException();
+      }
 
       try
       {
@@ -82,10 +79,14 @@ public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptL
          }
 
          if (m == null) // no quality value
+         {
             return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""));
+         }
          else
+         {
             return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""), HeaderHelper
                .parseQualityValue(m.get(QualityValue.QVALUE)));
+         }
 
       }
       catch (ParseException e)
@@ -94,12 +95,9 @@ public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptL
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString(AcceptLanguage language)
    {
       throw new UnsupportedOperationException("Accepted language header used only for request.");
    }
-
 }

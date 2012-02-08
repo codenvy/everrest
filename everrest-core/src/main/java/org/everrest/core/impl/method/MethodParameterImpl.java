@@ -23,13 +23,12 @@ import java.lang.reflect.Type;
 
 /**
  * Describes the method's parameter.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class MethodParameterImpl implements org.everrest.core.method.MethodParameter
 {
-
    /**
     * External annotations for parameter, external it mind some other then
     * contains in {@link ParameterHelper#RESOURCE_METHOD_PARAMETER_ANNOTATIONS}.
@@ -48,9 +47,7 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
     */
    private final Type type;
 
-   /**
-    * Parameter class. See {@link java.lang.reflect.Method#getParameterTypes()}
-    */
+   /** Parameter class. See {@link java.lang.reflect.Method#getParameterTypes()} */
    private final Class<?> clazz;
 
    /**
@@ -60,24 +57,22 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
     */
    private final String defaultValue;
 
-   /**
-    * See {@link javax.ws.rs.Encoded}.
-    */
+   /** See {@link javax.ws.rs.Encoded}. */
    private final boolean encoded;
 
    /**
     * Constructs new instance of MethodParameter.
-    * 
+    *
     * @param annotation see {@link #annotation}
     * @param additional see {@link #additional}
     * @param clazz parameter class
     * @param type generic parameter type
     * @param defaultValue default value for parameter. See
-    *        {@link javax.ws.rs.DefaultValue}.
+    * {@link javax.ws.rs.DefaultValue}.
     * @param encoded true if parameter must not be decoded false otherwise
     */
    public MethodParameterImpl(Annotation annotation, Annotation[] additional, Class<?> clazz, Type type,
-      String defaultValue, boolean encoded)
+                              String defaultValue, boolean encoded)
    {
       this.annotation = annotation;
       this.additional = additional;
@@ -87,57 +82,43 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
       this.encoded = encoded;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation[] getAnnotations()
    {
       return additional;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Annotation getAnnotation()
    {
       return annotation;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isEncoded()
    {
       return encoded;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getDefaultValue()
    {
       return defaultValue;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Type getGenericType()
    {
       return type;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Class<?> getParameterClass()
    {
       return clazz;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
@@ -155,5 +136,4 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
       sb.append(" ]");
       return sb.toString();
    }
-
 }

@@ -50,44 +50,43 @@ import javax.xml.transform.stream.StreamResult;
 public class SAXSourceEntityProvider implements EntityProvider<SAXSource>
 {
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == SAXSource.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public SAXSource readFrom(Class<SAXSource> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public SAXSource readFrom(Class<SAXSource> type,
+                             Type genericType,
+                             Annotation[] annotations,
+                             MediaType mediaType,
+                             MultivaluedMap<String, String> httpHeaders,
+                             InputStream entityStream) throws IOException
    {
       return new SAXSource(new InputSource(entityStream));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(SAXSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return SAXSource.class.isAssignableFrom(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(SAXSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(SAXSource t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       StreamResult out = new StreamResult(entityStream);
       try

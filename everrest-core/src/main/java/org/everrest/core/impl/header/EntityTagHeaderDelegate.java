@@ -29,32 +29,33 @@ import javax.ws.rs.core.EntityTag;
  */
 public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<EntityTag> support()
    {
       return EntityTag.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public EntityTag fromString(String header)
    {
       if (header == null)
+      {
          throw new IllegalArgumentException();
+      }
 
       boolean isWeak = header.startsWith("W/");
 
       String value;
       // cut 'W/' prefix if exists
       if (isWeak)
+      {
          value = header.substring(2);
+      }
       else
+      {
          value = header;
+      }
       // remove quotes
       value = value.substring(1, value.length() - 1);
       value = HeaderHelper.filterEscape(value);
@@ -62,14 +63,14 @@ public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag>
       return new EntityTag(value, isWeak);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString(EntityTag entityTag)
    {
       StringBuilder sb = new StringBuilder();
       if (entityTag.isWeak())
+      {
          sb.append('W').append('/');
+      }
 
       sb.append('"');
       HeaderHelper.appendEscapeQuote(sb, entityTag.getValue());
@@ -77,5 +78,4 @@ public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag>
 
       return sb.toString();
    }
-
 }

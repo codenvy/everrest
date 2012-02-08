@@ -54,15 +54,13 @@ public class JsonParser
       stack = new JsonStack<JsonToken>();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void parse(Reader reader) throws JsonException
    {
       pushbackReader = new PushbackReader(reader);
       eventHandler.reset();
       stack.clear();
-      char c = 0;
+      char c;
       while ((c = next()) != 0)
       {
          if (c == '{')
@@ -84,17 +82,15 @@ public class JsonParser
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void parse(InputStream sream) throws JsonException
+   /** {@inheritDoc} */
+   public void parse(InputStream stream) throws JsonException
    {
-      parse(new InputStreamReader(sream, JsonUtils.DEFAULT_CHARSET));
+      parse(new InputStreamReader(stream, JsonUtils.DEFAULT_CHARSET));
    }
 
    /**
     * Get result of parsing.
-    * 
+    *
     * @return parsed JSON value
     */
    public JsonValue getJsonObject()
@@ -104,26 +100,26 @@ public class JsonParser
 
    /**
     * Read JSON object token, it minds all characters from '{' to '}'.
-    * 
+    *
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private void readObject() throws JsonException
    {
-      char c = 0;
+      char c;
       // inform handler about start of object
       eventHandler.startObject();
       stack.push(JsonToken.object);
-      for (;;)
+      for (; ; )
       {
          switch (c = next())
          {
-            case 0 :
+            case 0:
                throw new JsonException("Syntax error. Unexpected end of object. Object must end by '}'.");
-            case '{' :
+            case '{':
                readObject();
                break;
-            case '}' :
+            case '}':
                // inform handler about end of object
                eventHandler.endObject();
                // check is allowed end of object now
@@ -135,27 +131,27 @@ public class JsonParser
                switch (c = next())
                {
                   // end of stream
-                  case 0 :
+                  case 0:
                      break;
-                  case ',' :
-                  case ']' :
-                  case '}' :
+                  case ',':
+                  case ']':
+                  case '}':
                      back(c);
                      break;
-                  default :
+                  default:
                      // must not happen
-                     throw new JsonException("Syntax error. Excpected " + "for ',' or ']' or '}' but found '" + c
+                     throw new JsonException("Syntax error. Expected " + "for ',' or ']' or '}' but found '" + c
                         + "'.");
                }
                // end for(;;)
                return;
-            case '[' :
+            case '[':
                readArray();
                break;
-            case ',' :
+            case ',':
                // nothing to do just must not be default is switch
                break;
-            default :
+            default:
                back(c);
                // all characters from start object to ':' - key.
                readKey();
@@ -174,23 +170,23 @@ public class JsonParser
 
    /**
     * Read JSON array token, it minds all characters from '[' to ']'.
-    * 
+    *
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private void readArray() throws JsonException
    {
-      char c = 0;
+      char c;
       // inform handler about start of array
       eventHandler.startArray();
       stack.push(JsonToken.array);
-      for (;;)
+      for (; ; )
       {
          switch (c = next())
          {
-            case 0 :
+            case 0:
                throw new JsonException("Syntax error. Unexpected end of array. Array must end by ']'.");
-            case ']' :
+            case ']':
                // inform handler about end of array
                eventHandler.endArray();
                // check is allowed end of array now
@@ -202,29 +198,29 @@ public class JsonParser
                switch (c = next())
                {
                   // end of stream
-                  case 0 :
+                  case 0:
                      break;
-                  case ',' :
-                  case ']' :
-                  case '}' :
+                  case ',':
+                  case ']':
+                  case '}':
                      back(c);
                      break;
-                  default :
+                  default:
                      // must not happen
-                     throw new JsonException("Syntax error. Excpected for ',' or ']' or '}' but found '" + c + "'.");
+                     throw new JsonException("Syntax error. Expected for ',' or ']' or '}' but found '" + c + "'.");
                }
                // end for(;;)
                return;
-            case '[' :
+            case '[':
                readArray();
                break;
-            case '{' :
+            case '{':
                readObject();
                break;
-            case ',' :
+            case ',':
                // nothing to do just must not be default
                break;
-            default :
+            default:
                back(c);
                readValue();
                break;
@@ -234,9 +230,9 @@ public class JsonParser
 
    /**
     * Read key from stream.
-    * 
+    *
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private void readKey() throws JsonException
    {
@@ -257,9 +253,9 @@ public class JsonParser
 
    /**
     * Read value from stream.
-    * 
+    *
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private void readValue() throws JsonException
    {
@@ -294,16 +290,16 @@ public class JsonParser
     * Get next char from stream, skipping whitespace and comments. Comments: One
     * line comment from // to end of line; Multi-line comments from / and * to *
     * and /
-    * 
+    *
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private char next() throws JsonException
    {
       try
       {
-         int c = 0;
+         int c;
          while ((c = pushbackReader.read()) != -1)
          {
             if (c == '/')
@@ -319,7 +315,7 @@ public class JsonParser
                }
                else if (c == '*')
                {
-                  for (;;)
+                  for (; ; )
                   {
                      c = pushbackReader.read();
                      if (c == '*')
@@ -357,10 +353,10 @@ public class JsonParser
 
    /**
     * Get next char from stream.
-    * 
+    *
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private char nextAny() throws JsonException
    {
@@ -377,11 +373,11 @@ public class JsonParser
 
    /**
     * Get next char from stream. And check is this char equals expected.
-    * 
+    *
     * @param c the expected char.
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private char next(char c) throws JsonException
    {
@@ -396,11 +392,11 @@ public class JsonParser
    /**
     * Get next char from stream. And check is this char presents in given
     * string.
-    * 
+    *
     * @param s the string.
     * @return the next char.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private char next(String s) throws JsonException
    {
@@ -428,11 +424,11 @@ public class JsonParser
 
    /**
     * Get next n characters from stream.
-    * 
+    *
     * @param n the number of characters.
     * @return the array of characters.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private char[] next(int n) throws JsonException
    {
@@ -454,56 +450,56 @@ public class JsonParser
 
    /**
     * Get array chars up to given and include it.
-    * 
+    *
     * @return the char array.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private char[] nextString() throws JsonException
    {
       CharArrayWriter cw = new CharArrayWriter();
       char c = nextAny(); // read '"'
       cw.append(c);
-      for (;;)
+      for (; ; )
       {
          switch (c = nextAny())
          {
-            case 0 :
-            case '\n' :
-            case '\r' :
+            case 0:
+            case '\n':
+            case '\r':
                throw new JsonException("Syntax error. Unterminated string.");
-            case '\\' :
+            case '\\':
                switch (c = nextAny())
                {
-                  case 0 :
-                  case '\n' :
-                  case '\r' :
+                  case 0:
+                  case '\n':
+                  case '\r':
                      throw new JsonException("Syntax error. Unterminated string");
-                  case 'n' :
+                  case 'n':
                      cw.append('\n');
                      break;
-                  case 'r' :
+                  case 'r':
                      cw.append('\r');
                      break;
-                  case 'b' :
+                  case 'b':
                      cw.append('\b');
                      break;
-                  case 't' :
+                  case 't':
                      cw.append('\t');
                      break;
-                  case 'f' :
+                  case 'f':
                      cw.append('\f');
                      break;
-                  case 'u' : // unicode
+                  case 'u': // unicode
                      String s = new String(next(4));
                      cw.append((char)Integer.parseInt(s, 16));
                      break;
-                  default :
+                  default:
                      cw.append(c);
                      break;
                }
                break;
-            default :
+            default:
                cw.append(c);
                if (c == '"')
                {
@@ -516,10 +512,10 @@ public class JsonParser
 
    /**
     * Push back given char to stream.
-    * 
+    *
     * @param c the char for pushing back.
     * @throws JsonException if JSON document has wrong format or i/o error
-    *            occurs.
+    * occurs.
     */
    private void back(char c) throws JsonException
    {

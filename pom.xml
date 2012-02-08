@@ -80,7 +80,7 @@
       <exo.product.name>everrest</exo.product.name>
       <exo.product.specification>1.0</exo.product.specification>
 
-      <org.everrest.version>1.0.2</org.everrest.version>
+      <org.everrest.version>1.0.3-SNAPSHOT</org.everrest.version>
 
       <javax.ws.rs.version>1.0</javax.ws.rs.version>
       <javax.servlet.version>2.4</javax.servlet.version>

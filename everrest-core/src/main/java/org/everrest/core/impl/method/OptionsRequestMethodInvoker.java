@@ -34,15 +34,11 @@ import javax.ws.rs.core.Response;
  */
 public class OptionsRequestMethodInvoker implements MethodInvoker
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context)
    {
       Application wadlApplication =
          new WadlProcessor().process(genericMethodResource.getParentResource(), context.getBaseUri());
       return Response.ok(wadlApplication, MediaTypeHelper.WADL_TYPE).build();
    }
-
 }

@@ -56,39 +56,39 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(JAXBElementEntityProvider.class);
 
-   /**
-    * @see Providers
-    */
+   /** @see Providers */
    @Context
    private Providers providers;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == JAXBElement.class && genericType instanceof ParameterizedType;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public JAXBElement<?> readFrom(Class<JAXBElement<?>> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
+                                  Type genericType,
+                                  Annotation[] annotations,
+                                  MediaType mediaType,
+                                  MultivaluedMap<String, String> httpHeaders,
+                                  InputStream entityStream) throws IOException
    {
       ParameterizedType pt = (ParameterizedType)genericType;
       Class<?> c = (Class<?>)pt.getActualTypeArguments()[0];
       try
       {
-         JAXBContext jaxbctx = getJAXBContext(c, mediaType);
-         return jaxbctx.createUnmarshaller().unmarshal(new StreamSource(entityStream), c);
+         JAXBContext jaxbContext = getJAXBContext(c, mediaType);
+         return jaxbContext.createUnmarshaller().unmarshal(new StreamSource(entityStream), c);
       }
       catch (UnmarshalException e)
       {
          // if can't read from stream (e.g. steam is empty)
          if (LOG.isDebugEnabled())
+         {
             LOG.error(e.getMessage(), e);
-         
+         }
+
          return null;
       }
       catch (JAXBException e)
@@ -97,37 +97,38 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(JAXBElement<?> t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return JAXBElement.class.isAssignableFrom(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(JAXBElement<?> t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(JAXBElement<?> t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       Class<?> c = t.getDeclaredType();
       try
       {
-         JAXBContext jaxbctx = getJAXBContext(c, mediaType);
-         Marshaller m = jaxbctx.createMarshaller();
+         JAXBContext jaxbContext = getJAXBContext(c, mediaType);
+         Marshaller m = jaxbContext.createMarshaller();
          // Must respect application specified character set.
          String charset = mediaType.getParameters().get("charset");
          if (charset != null)
+         {
             m.setProperty(Marshaller.JAXB_ENCODING, charset);
+         }
 
          m.marshal(t, entityStream);
       }
@@ -148,9 +149,10 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
       ContextResolver<JAXBContextResolver> resolver =
          providers.getContextResolver(JAXBContextResolver.class, mediaType);
       if (resolver == null)
+      {
          throw new RuntimeException("Not found any JAXBContextResolver for media type " + mediaType);
+      }
       JAXBContextResolver jaxbres = resolver.getContext(null);
       return jaxbres.getJAXBContext(type);
    }
-
 }

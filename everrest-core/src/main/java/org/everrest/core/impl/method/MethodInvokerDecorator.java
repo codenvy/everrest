@@ -24,7 +24,7 @@ import org.everrest.core.resource.GenericMethodResource;
 
 /**
  * MethodInvokerDecorator can be used to extend the functionality of {@link MethodInvoker}.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -32,9 +32,7 @@ public abstract class MethodInvokerDecorator implements MethodInvoker
 {
    protected final MethodInvoker decoratedInvoker;
 
-   /**
-    * @param decoratedInvoker decorated MethodInvoker
-    */
+   /** @param decoratedInvoker decorated MethodInvoker */
    public MethodInvokerDecorator(MethodInvoker decoratedInvoker)
    {
       this.decoratedInvoker = decoratedInvoker;

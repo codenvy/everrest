@@ -21,17 +21,16 @@ package org.everrest.core.impl.method;
 import org.everrest.core.ApplicationContext;
 
 /**
+ * @param <T> on of JAX-RS annotation that used for method parameters
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
- * @param <T> on of JAX-RS annotation that used for method parameters
  */
 public abstract class ParameterResolver<T>
 {
-
    /**
     * Create object which will be passed in resource method or locator. Object
     * is instance of {@link MethodParameterImpl#getParameterClass()}.
-    * 
+    *
     * @param parameter See {@link org.everrest.core.Parameter}
     * @param context See {@link ApplicationContext}
     * @return newly created instance of class
@@ -39,5 +38,4 @@ public abstract class ParameterResolver<T>
     * @throws Exception if any errors occurs
     */
    public abstract Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception;
-
 }

@@ -208,7 +208,7 @@ public final class UriComponent
             if (inputBuffer.equals("/."))
             {
                inputBuffer = "";
-               outputBuffer.append("/");
+               outputBuffer.append('/');
                continue;
             }
             inputBuffer = inputBuffer.substring(inputBuffer.indexOf('/', 1), inputBuffer.length());

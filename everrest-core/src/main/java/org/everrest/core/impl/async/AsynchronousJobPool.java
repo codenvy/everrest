@@ -18,6 +18,8 @@
  */
 package org.everrest.core.impl.async;
 
+import org.everrest.core.GenericContainerRequest;
+import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.util.Logger;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -70,9 +73,16 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       }
    }
 
+   /** Logger. */
    private static final Logger LOG = Logger.getLogger(AsynchronousJobPool.class);
 
-   private static final AtomicLong jobNumber = new AtomicLong(1);
+   /** Unique job ID generator. */
+   private static final AtomicLong jobIdGenerator = new AtomicLong(1);
+
+   private static String nextJobId()
+   {
+      return Long.toString(jobIdGenerator.getAndIncrement());
+   }
 
    /** When timeout (in minutes) reached then an asynchronous operation may be removed from the pool. */
    private final int jobTimeout;
@@ -82,6 +92,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
    private final ExecutorService pool;
 
+   /** Asynchronous jobs cache. */
    private final Map<String, AsynchronousJob> jobs;
 
    @SuppressWarnings("serial")
@@ -92,16 +103,22 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          config = new EverrestConfiguration();
       }
 
+      this.maxCacheSize = config.getAsynchronousCacheSize();
+      this.jobTimeout = config.getAsynchronousJobTimeout();
+
       /* Number of threads to serve asynchronous jobs. */
       int poolSize = config.getAsynchronousPoolSize();
       /* Maximum number of task in queue. */
       int queueSize = config.getAsynchronousQueueSize();
-      this.maxCacheSize = config.getAsynchronousCacheSize();
-      this.jobTimeout = config.getAsynchronousJobTimeout();
 
-      this.pool =
-         new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(
-            queueSize), new ManyJobsPolicy(new ThreadPoolExecutor.AbortPolicy()));
+      this.pool = new ThreadPoolExecutor(
+         poolSize,
+         poolSize,
+         0L,
+         TimeUnit.MILLISECONDS,
+         new LinkedBlockingQueue<Runnable>(queueSize),
+         new ManyJobsPolicy(new ThreadPoolExecutor.AbortPolicy())
+      );
 
       // TODO Use something more flexible (cache strategy) for setup cache behavior. 
       this.jobs = Collections.synchronizedMap(new LinkedHashMap<String, AsynchronousJob>()
@@ -112,7 +129,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
             AsynchronousJob job = eldest.getValue();
             if (size() > maxCacheSize || job.getExpirationDate() < System.currentTimeMillis())
             {
-               job.cancel(true);
+               job.cancel();
                return true;
             }
             return false;
@@ -131,28 +148,33 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     * @param resource object that contains resource method
     * @param resourceMethod resource or sub-resource method to invoke
     * @param params method parameters
+    * @param request request
     * @return id assigned to add asynchronous job
     * @throws AsynchronousJobRejectedException if this task cannot be added to pool
     */
-   public String addJob(final Object resource, final ResourceMethodDescriptor resourceMethod, final Object[] params)
+   public String addJob(Object resource,
+                        ResourceMethodDescriptor resourceMethod,
+                        Object[] params,
+                        GenericContainerRequest request)
       throws AsynchronousJobRejectedException
    {
-      AsynchronousJob job = new AsynchronousJob(
-         newCallable(resource, resourceMethod.getMethod(), params),
-         Long.toString(jobNumber.getAndIncrement()),
-         jobTimeout,
-         TimeUnit.MINUTES,
-         resourceMethod
-      );
-
+      Future<Object> future;
       try
       {
-         pool.execute(job);
+         future = pool.submit(newCallable(resource, resourceMethod.getMethod(), params));
       }
       catch (RejectedExecutionException e)
       {
          throw new AsynchronousJobRejectedException(e.getMessage());
       }
+
+      AsynchronousJob job = new AsynchronousJob(
+         nextJobId(),
+         future,
+         System.currentTimeMillis() + (jobTimeout * 60 * 1000),
+         resourceMethod,
+         request
+      );
 
       String jobId = job.getJobId();
       jobs.put(jobId, job);
@@ -182,18 +204,14 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       return jobs.get(jobId);
    }
 
-   public boolean removeJob(String jobId, boolean stopJob)
+   public AsynchronousJob removeJob(String jobId)
    {
       AsynchronousJob job = jobs.remove(jobId);
       if (job != null)
       {
-         if (stopJob)
-         {
-            job.cancel(true);
-         }
-         return true;
+         job.cancel();
       }
-      return false;
+      return job;
    }
 
    @PreDestroy

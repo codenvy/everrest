@@ -43,7 +43,7 @@ import javax.ws.rs.core.MultivaluedMap;
 /**
  * Validate ResourceDescriptors. @see
  * {@link ResourceDescriptor#accept(ResourceDescriptorVisitor)}.
- * <p>
+ * <p/>
  * Validation Goals:
  * <li>check number of method parameters without annotation, should be not more
  * then one at resource method or sub-resource method and no one at sub-resource
@@ -56,7 +56,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * annotation &#64;Path("")</li>
  * <li>Resource class must contains at least one resource method, sub-resource
  * method or sub-resource locator</li>
- * <p>
+ * <p/>
  * Non-Goals:
  * <li>Check does any two resource methods has the same consume and produce
  * media type. This will be done later in binding cycle</li>
@@ -64,8 +64,8 @@ import javax.ws.rs.core.MultivaluedMap;
  * media type and HTTP request method designation. This will be done later in
  * binding cycle</li>
  * <li>Check does two sub-resource locators has the same UriPattern</li>
- * <p>
- * 
+ * <p/>
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ResourceDescriptorValidator.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
@@ -73,15 +73,11 @@ import javax.ws.rs.core.MultivaluedMap;
 public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 {
 
-   /**
-    * Visitor instance.
-    */
+   /** Visitor instance. */
    private static AtomicReference<ResourceDescriptorValidator> instance =
       new AtomicReference<ResourceDescriptorValidator>();
 
-   /**
-    * @return singleton instance of ResourceDescriptorVisitor
-    */
+   /** @return singleton instance of ResourceDescriptorVisitor */
    public static ResourceDescriptorValidator getInstance()
    {
       ResourceDescriptorValidator t = instance.get();
@@ -117,7 +113,9 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
       for (List<ResourceMethodDescriptor> l : ard.getResourceMethods().values())
       {
          for (ResourceMethodDescriptor rmd : l)
+         {
             rmd.accept(this);
+         }
       }
 
       // check all sub-resource methods
@@ -126,7 +124,9 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
          for (List<SubResourceMethodDescriptor> l : rmm.values())
          {
             for (SubResourceMethodDescriptor rmd : l)
+            {
                rmd.accept(this);
+            }
          }
       }
 
@@ -187,7 +187,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
     * Check method parameter for valid annotations. NOTE If a any method
     * parameter is annotated with {@link FormParam} then type of entity
     * parameter must be MultivalueMap&lt;String, String&gt;.
-    * 
+    *
     * @param rmd See {@link ResourceMethodDescriptor}
     */
    private static void checkMethodParameters(ResourceMethodDescriptor rmd)
@@ -206,7 +206,9 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
             {
                entity = true;
                if (form) // form already met then check type of entity
+               {
                   checkFormParam(mp.getParameterClass(), mp.getGenericType());
+               }
             }
             else
             {
@@ -223,7 +225,9 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
             {
                form = true;
                if (entity) // entity already met then check type of entity
+               {
                   checkFormParam(mp.getParameterClass(), mp.getGenericType());
+               }
             }
          }
       }
@@ -233,7 +237,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
     * Check does sub-resource locator has required annotation at method
     * parameters. Sub-resource locator can't has not annotated parameter (entity
     * parameter).
-    * 
+    *
     * @param srld SubResourceLocatorDescriptor
     */
    private static void checkMethodParameters(SubResourceLocatorDescriptor srld)
@@ -257,7 +261,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
    /**
     * Check is supplied class MultivaluedMap&lt;String, String&gt;.
-    * 
+    *
     * @param clazz class to be checked
     * @param type generic type
     * @see #checkGenericType(Type)
@@ -276,7 +280,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
    /**
     * Check is supplied class parameterized as &lt;String, String&gt;.
-    * 
+    *
     * @param type generic type
     * @return true if type is {@link ParameterizedType} and parameterized
     *         &lt;String, String&gt;, false otherwise
@@ -303,33 +307,25 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
       return false;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void visitConstructorInjector(ConstructorDescriptor ci)
    {
       // currently nothing to do, should be already valid
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void visitFieldInjector(FieldInjector fi)
    {
       // currently nothing to do, should be already valid
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void visitFilterDescriptor(FilterDescriptor fd)
    {
       checkObjectModel(fd);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void visitProviderDescriptor(ProviderDescriptor pd)
    {
       checkObjectModel(pd);
@@ -338,9 +334,13 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
    protected void checkObjectModel(ObjectModel model)
    {
       for (ConstructorDescriptor c : model.getConstructorDescriptors())
+      {
          c.accept(this);
+      }
       for (FieldInjector f : model.getFieldInjectors())
+      {
          f.accept(this);
+      }
    }
 
 }

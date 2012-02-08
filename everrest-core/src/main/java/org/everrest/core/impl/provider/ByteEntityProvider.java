@@ -40,20 +40,19 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ByteEntityProvider implements EntityProvider<byte[]>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == byte[].class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public byte[] readFrom(Class<byte[]> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public byte[] readFrom(Class<byte[]> type,
+                          Type genericType,
+                          Annotation[] annotations,
+                          MediaType mediaType,
+                          MultivaluedMap<String, String> httpHeaders,
+                          InputStream entityStream) throws IOException
    {
       String contentLength = httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
       int length = 0;
@@ -63,41 +62,37 @@ public class ByteEntityProvider implements EntityProvider<byte[]>
          {
             length = Integer.parseInt(contentLength);
          }
-         catch (NumberFormatException e)
+         catch (NumberFormatException ignored)
          {
          }
       }
-      // Content length header may be not set. If it is set allocate more space
-      // from start to avoid expand of buffer in future.
       ByteArrayOutputStream out =
          length > 0 ? new NoSyncByteArrayOutputStream(length) : new NoSyncByteArrayOutputStream();
       IOHelper.write(entityStream, out);
       return out.toByteArray();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(byte[] t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return t.length;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == byte[].class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(byte[] t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(byte[] t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       entityStream.write(t);
    }
-
 }

@@ -26,15 +26,12 @@ import org.everrest.core.header.QualityValue;
  */
 public class AcceptToken extends Token implements QualityValue
 {
-
-   /**
-    * Quality value factor.
-    */
+   /** Quality value factor. */
    private final float qValue;
 
    /**
     * Create AcceptToken with default quality value 1.0 .
-    * 
+    *
     * @param token a token
     */
    public AcceptToken(String token)
@@ -45,7 +42,7 @@ public class AcceptToken extends Token implements QualityValue
 
    /**
     * Create AcceptToken with specified quality value.
-    * 
+    *
     * @param token a token
     * @param qValue a quality value
     */
@@ -57,12 +54,9 @@ public class AcceptToken extends Token implements QualityValue
 
    // QualityValue
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public float getQvalue()
    {
       return qValue;
    }
-
 }

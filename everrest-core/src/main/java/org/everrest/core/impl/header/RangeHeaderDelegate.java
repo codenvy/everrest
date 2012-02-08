@@ -30,19 +30,14 @@ import java.util.List;
  */
 public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Class<Ranges> support()
    {
       return Ranges.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Ranges fromString(String value) throws IllegalArgumentException
    {
       if (value == null)
@@ -85,12 +80,9 @@ public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges>
       return new Ranges(r);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString(Ranges value)
    {
       throw new UnsupportedOperationException();
    }
-
 }

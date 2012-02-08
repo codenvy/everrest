@@ -26,7 +26,6 @@ import org.everrest.core.header.AbstractHeaderDelegate;
  */
 public class StringHeaderDelegate extends AbstractHeaderDelegate<String>
 {
-
    /**
     * {@inheritDoc}
     */
@@ -51,5 +50,4 @@ public class StringHeaderDelegate extends AbstractHeaderDelegate<String>
    {
       return value;
    }
-
 }

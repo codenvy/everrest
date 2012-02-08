@@ -30,19 +30,6 @@ import java.io.IOException;
  */
 public interface RequestHandler
 {
-
-   /**
-    * Max buffer size attribute name. Entities that has size greater then
-    * specified will be stored in temporary directory on file system during
-    * entity processing.
-    */
-   public static final String WS_RS_BUFFER_SIZE = "ws.rs.buffersize";
-
-   /**
-    * Max buffer size attribute value. See {@link #WS_RS_BUFFER_SIZE}.
-    */
-   public static final int WS_RS_BUFFER_SIZE_VALUE = 204800;
-
    /**
     * Handle the HTTP request by dispatching request to appropriate resource. If
     * no one appropriate resource found then error response will be produced.
@@ -53,5 +40,4 @@ public interface RequestHandler
     * @throws UnhandledException if any other errors occurs
     */
    void handleRequest(GenericContainerRequest request, GenericContainerResponse response) throws UnhandledException, IOException;
-
 }

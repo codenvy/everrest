@@ -28,7 +28,6 @@ import org.apache.commons.fileupload.FileItemFactory;
  */
 class InMemoryItemFactory implements FileItemFactory
 {
-
    private final int maxSize;
 
    public InMemoryItemFactory(int maxSize)
@@ -36,12 +35,9 @@ class InMemoryItemFactory implements FileItemFactory
       this.maxSize = maxSize;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public FileItem createItem(String fieldName, String contentType, boolean isFormField, String fileName)
    {
       return new InMemoryFileItem(contentType, fieldName, isFormField, fileName, maxSize);
    }
-
 }

@@ -37,17 +37,14 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public abstract class BaseCollectionProducer implements TypeProducer
 {
-
-   /**
-    * Class of collection.
-    */
+   /** Class of collection. */
    private Class<?> collectionClass;
 
    /**
     * Constructs BaseCollectionProducer.
-    * 
+    *
     * @param collectionClass class of Collections, should be one of {@link List}
-    *        , {@link Set}, {@link SortedSet} .
+    * , {@link Set}, {@link SortedSet} .
     */
    protected BaseCollectionProducer(Class<?> collectionClass)
    {
@@ -56,10 +53,10 @@ public abstract class BaseCollectionProducer implements TypeProducer
 
    /**
     * Create collection's element.
-    * 
+    *
     * @param value this String will be used for creation object, usually String
-    *        will be used as parameter for constructor or static method
-    *        <code>valueOf</code>
+    * will be used as parameter for constructor or static method
+    * <code>valueOf</code>
     * @return newly created collection's element
     * @throws Exception if any error occurs
     */
@@ -82,7 +79,9 @@ public abstract class BaseCollectionProducer implements TypeProducer
          Collection<Object> coll = getCollection();
 
          for (String v : list)
+         {
             coll.add(createValue(v));
+         }
 
          return coll;
       }
@@ -99,19 +98,27 @@ public abstract class BaseCollectionProducer implements TypeProducer
    /**
     * Create instance of collection corresponding to collection class, see
     * {@link #collectionClass} .
-    * 
+    *
     * @return newly created collection
     */
    private Collection<Object> getCollection()
    {
       if (collectionClass == List.class)
+      {
          return new ArrayList<Object>();
+      }
       else if (collectionClass == Set.class)
+      {
          return new HashSet<Object>();
+      }
       else if (collectionClass == SortedSet.class)
+      {
          return new TreeSet<Object>();
+      }
       else
+      {
          throw new IllegalArgumentException();
+      }
    }
 
 }

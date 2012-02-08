@@ -24,8 +24,8 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.RequestHandler;
 import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.provider.MultipartFormDataEntityProvider;
 
 import java.io.IOException;
@@ -49,25 +49,20 @@ import javax.ws.rs.ext.Provider;
 @Consumes({"multipart/*"})
 public class InMemoryMultipartFormDataEntityProvider extends MultipartFormDataEntityProvider
 {
-
    @Context
    private HttpServletRequest httpRequest;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings("unchecked")
    @Override
    public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+                                      MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
+                                      InputStream entityStream) throws IOException
    {
       try
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
-         int bufferSize =
-            context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
-               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt(context.getProperties().get(
-                  RequestHandler.WS_RS_BUFFER_SIZE));
+         Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
          FileItemFactory factory = new InMemoryItemFactory(bufferSize);
          FileUpload upload = new FileUpload(factory);
          return upload.parseRequest(httpRequest).iterator();

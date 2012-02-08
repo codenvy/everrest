@@ -47,7 +47,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 
 /**
  * Invoker for Resource Method, Sub-Resource Method and SubResource Locator.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -106,7 +106,7 @@ public class DefaultMethodInvoker implements MethodInvoker
                      {
                         length = Integer.parseInt(contentLength.get(0));
                      }
-                     catch (NumberFormatException e)
+                     catch (NumberFormatException ignored)
                      {
                      }
                   }
@@ -171,9 +171,7 @@ public class DefaultMethodInvoker implements MethodInvoker
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(DefaultMethodInvoker.class);
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public final Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context)
    {
       beforeInvokeMethod(methodResource, methodResource, context);
@@ -197,7 +195,7 @@ public class DefaultMethodInvoker implements MethodInvoker
    }
 
    public Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] params,
-      ApplicationContext context)
+                              ApplicationContext context)
    {
       try
       {

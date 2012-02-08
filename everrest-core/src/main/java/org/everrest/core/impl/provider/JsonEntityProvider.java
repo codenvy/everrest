@@ -63,7 +63,7 @@ import javax.xml.transform.stream.StreamSource;
 public class JsonEntityProvider<T> implements EntityProvider<T>
 {
    private static final Logger LOG = Logger.getLogger(JsonEntityProvider.class);
-   
+
    // It is common task for #isReadable() and #isWriteable
    // Not sure it is required but ...
    // Investigation about checking can type be write as JSON (useful JSON).
@@ -92,9 +92,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       return false;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       // say as support all objects
@@ -102,12 +100,14 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       return !isIgnored(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings({"unchecked", "rawtypes"})
-   public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public T readFrom(Class<T> type,
+                     Type genericType,
+                     Annotation[] annotations,
+                     MediaType mediaType,
+                     MultivaluedMap<String, String> httpHeaders,
+                     InputStream entityStream) throws IOException
    {
       try
       {
@@ -117,7 +117,9 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
 
          // If requested object is JsonValue then stop processing here.
          if (JsonValue.class.isAssignableFrom(type))
+         {
             return (T)jsonValue;
+         }
 
          Types jtype = JsonUtils.getType(type);
          if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
@@ -146,17 +148,13 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       // say as support all objects
@@ -164,12 +162,15 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       return !isIgnored(type);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings("unchecked")
-   public void writeTo(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(T t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       try
       {
@@ -212,5 +213,4 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
          throw new IOException("Can't write to output stream. " + e.getMessage());
       }
    }
-
 }

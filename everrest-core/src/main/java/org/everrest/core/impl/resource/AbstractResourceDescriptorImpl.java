@@ -481,7 +481,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    {
       for (Annotation a : m.getAnnotations())
       {
-         T endPoint = null;
+         T endPoint;
          if ((endPoint = a.annotationType().getAnnotation(annotation)) != null)
          {
             return endPoint;
@@ -519,7 +519,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
             }
          }
-         catch (NoSuchMethodException e)
+         catch (NoSuchMethodException ignored)
          {
          }
          if (inhMethod == null)
@@ -540,7 +540,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                         + toString()                        + " is equivocality.");
                   }
                }
-               catch (NoSuchMethodException exc)
+               catch (NoSuchMethodException ignored)
                {
                }
             }
@@ -606,31 +606,31 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    @SuppressWarnings("unchecked")
    private <T extends Annotation> T getSecurityAnnotation(java.lang.reflect.Method method, Class<?> clazz)
    {
-      Class<T>[] aclasses = new Class[]{DenyAll.class, RolesAllowed.class, PermitAll.class};
-      T a = getAnnotation(method, aclasses);
+      Class<T>[] aClasses = new Class[]{DenyAll.class, RolesAllowed.class, PermitAll.class};
+      T a = getAnnotation(method, aClasses);
       if (a == null)
       {
-         a = getAnnotation(clazz, aclasses);
+         a = getAnnotation(clazz, aClasses);
          if (a == null)
          {
-            java.lang.reflect.Method inhMethod = null;
+            java.lang.reflect.Method inhMethod;
             Class<?> superclass = clazz.getSuperclass();
             try
             {
                if (superclass != null && superclass != Object.class)
                {
                   inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
-                  a = getAnnotation(inhMethod, aclasses);
+                  a = getAnnotation(inhMethod, aClasses);
                }
             }
-            catch (NoSuchMethodException e)
+            catch (NoSuchMethodException ignored)
             {
             }
             if (a == null)
             {
                if (superclass != null && superclass != Object.class)
                {
-                  a = getAnnotation(superclass, aclasses);
+                  a = getAnnotation(superclass, aClasses);
                }
                if (a == null)
                {
@@ -640,14 +640,14 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                      try
                      {
                         inhMethod = interfaces[k].getMethod(method.getName(), method.getParameterTypes());
-                        a = getAnnotation(inhMethod, aclasses);
+                        a = getAnnotation(inhMethod, aClasses);
                      }
-                     catch (NoSuchMethodException exc)
+                     catch (NoSuchMethodException ignored)
                      {
                      }
                      if (a == null)
                      {
-                        a = getAnnotation(interfaces[k], aclasses);
+                        a = getAnnotation(interfaces[k], aClasses);
                      }
                   }
                }
@@ -657,22 +657,22 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       return a;
    }
 
-   private <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T>[] aclass)
+   private <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T>[] aClasses)
    {
       T a = null;
-      for (int i = 0; a == null && i < aclass.length; i++)
+      for (int i = 0; a == null && i < aClasses.length; i++)
       {
-         a = clazz.getAnnotation(aclass[i]);
+         a = clazz.getAnnotation(aClasses[i]);
       }
       return a;
    }
 
-   private <T extends Annotation> T getAnnotation(java.lang.reflect.Method method, Class<T>[] aclass)
+   private <T extends Annotation> T getAnnotation(java.lang.reflect.Method method, Class<T>[] aClasses)
    {
       T a = null;
-      for (int i = 0; a == null && i < aclass.length; i++)
+      for (int i = 0; a == null && i < aClasses.length; i++)
       {
-         a = method.getAnnotation(aclass[i]);
+         a = method.getAnnotation(aClasses[i]);
       }
       return a;
    }

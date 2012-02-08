@@ -44,6 +44,12 @@ public class EverrestConfiguration
 
    public static final String EVERREST_ASYNCHRONOUS_JOB_TIMEOUT = "org.everrest.asynchronous.job.timeout";
 
+   /**
+    * Max buffer size attribute name. Entities that has size greater then specified will be stored in temporary
+    * directory on file system during entity processing.
+    */
+   public static final String EVERREST_MAX_BUFFER_SIZE = "org.everrest.max.buffer.size";
+
    public static boolean defaultCheckSecurity = true;
 
    public static boolean defaultHttpMethodOverride = true;
@@ -59,6 +65,9 @@ public class EverrestConfiguration
    public static int defaultAsynchronousCacheSize = 512;
 
    public static final int defaultAsynchronousJobTimeout = 60;
+
+   /** Max buffer size attribute value. See {@link #EVERREST_MAX_BUFFER_SIZE}. */
+   public static final int defaultMaxBufferSize = 204800;
 
    //
 
@@ -77,6 +86,8 @@ public class EverrestConfiguration
    protected int asynchronousCacheSize = defaultAsynchronousCacheSize;
 
    protected int asynchronousJobTimeout = defaultAsynchronousJobTimeout;
+
+   protected int maxBufferSize = defaultMaxBufferSize;
 
    protected final Map<String, Object> properties = new HashMap<String, Object>();
 
@@ -158,6 +169,16 @@ public class EverrestConfiguration
    public void setAsynchronousJobTimeout(int asynchronousJobTimeout)
    {
       this.asynchronousJobTimeout = asynchronousJobTimeout;
+   }
+
+   public int getMaxBufferSize()
+   {
+      return maxBufferSize;
+   }
+
+   public void setMaxBufferSize(int maxBufferSize)
+   {
+      this.maxBufferSize = maxBufferSize;
    }
 
    public Object getProperty(String name)

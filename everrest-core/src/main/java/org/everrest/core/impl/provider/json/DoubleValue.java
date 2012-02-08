@@ -30,7 +30,7 @@ public class DoubleValue extends NumericValue
 
    /**
     * Constructs new DoubleValue.
-    * 
+    *
     * @param value the value.
     */
    public DoubleValue(double value)
@@ -38,90 +38,70 @@ public class DoubleValue extends NumericValue
       this.value = value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean isDouble()
    {
       return true;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String getStringValue()
    {
       return Double.toString(value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public byte getByteValue()
    {
       return (byte)value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public short getShortValue()
    {
       return (short)value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public int getIntValue()
    {
       return (int)value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public long getLongValue()
    {
       return (long)value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public float getFloatValue()
    {
       return (float)value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public double getDoubleValue()
    {
       return value;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String toString()
    {
       return getStringValue();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void writeTo(JsonWriter writer) throws JsonException
    {

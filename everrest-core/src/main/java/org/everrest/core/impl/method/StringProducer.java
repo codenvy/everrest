@@ -24,7 +24,6 @@ package org.everrest.core.impl.method;
  */
 public final class StringProducer extends BaseTypeProducer
 {
-
    /**
     * Don't need to do anything just return passed in method String as is.
     * {@inheritDoc}
@@ -34,5 +33,4 @@ public final class StringProducer extends BaseTypeProducer
    {
       return value;
    }
-
 }

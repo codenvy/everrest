@@ -57,7 +57,7 @@ import javax.ws.rs.core.Response.Status;
 
 /**
  * Lookup resource which can serve request.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -70,7 +70,7 @@ public class RequestDispatcher
 
    /**
     * Constructs new instance of RequestDispatcher.
-    * 
+    *
     * @param resourceBinder See {@link ResourceBinder}
     */
    public RequestDispatcher(ResourceBinder resourceBinder)
@@ -80,7 +80,7 @@ public class RequestDispatcher
 
    /**
     * Dispatch {@link ContainerRequest} to resource which can serve request.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     */
@@ -105,7 +105,7 @@ public class RequestDispatcher
 
    /**
     * Get last element from path parameters. This element will be used as request path for child resources.
-    * 
+    *
     * @param parameterValues See {@link ApplicationContextImpl#getParameterValues()}
     * @return last element from given list or empty string if last element is null
     */
@@ -117,45 +117,36 @@ public class RequestDispatcher
 
    /**
     * Process resource methods, sub-resource methods and sub-resource locators to find the best one for serve request.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param context See {@link ApplicationContextImpl}
     * @param resourceFactory the root resource factory or resource factory which was created by previous sub-resource
-    *           locator
+    * locator
     * @param resource instance of resource class
     * @param requestPath request path, it is relative path to the base URI or other resource which was called before
-    *           (one of sub-resource locators)
+    * (one of sub-resource locators)
     */
-   protected void dispatch(GenericContainerRequest request, GenericContainerResponse response,
-      ApplicationContext context, ObjectFactory<AbstractResourceDescriptor> resourceFactory, Object resource,
-      String requestPath)
+   protected void dispatch(GenericContainerRequest request,
+                           GenericContainerResponse response,
+                           ApplicationContext context,
+                           ObjectFactory<AbstractResourceDescriptor> resourceFactory,
+                           Object resource,
+                           String requestPath)
    {
       List<String> parameterValues = context.getParameterValues();
       int len = parameterValues.size();
 
-      // resource method or sub-resource method or sub-resource locator
+      // Resource method or sub-resource method or sub-resource locator ?
 
       ResourceMethodMap<ResourceMethodDescriptor> rmm = resourceFactory.getObjectModel().getResourceMethods();
-      SubResourceMethodMap srmm = resourceFactory.getObjectModel().getSubResourceMethods();
-      SubResourceLocatorMap srlm = resourceFactory.getObjectModel().getSubResourceLocators();
       if ((parameterValues.get(len - 1) == null || "/".equals(parameterValues.get(len - 1))) && rmm.size() > 0)
       {
-         // resource method, then process HTTP method and consume/produce media
-         // types
+         // Resource method, then process HTTP method and consume/produce media types.
 
          List<ResourceMethodDescriptor> methods = new ArrayList<ResourceMethodDescriptor>();
          boolean match = processResourceMethod(rmm, request, response, methods);
-         if (!match)
-         {
-            if (LOG.isDebugEnabled())
-            {
-               LOG.debug("Not found resource method for method " + request.getMethod());
-            }
-
-            return; // Error Response is preset
-         }
-         else
+         if (match)
          {
             if (Tracer.isTracingEnabled())
             {
@@ -163,15 +154,27 @@ public class RequestDispatcher
                   + "\", media type \"" + request.getMediaType()
                   + "\" = (" + methods.get(0).getMethod() + ")");
             }
+
+            invokeResourceMethod(methods.get(0), resource, context, request, response);
          }
+         else
+         {
+            if (LOG.isDebugEnabled())
+            {
+               LOG.debug("Not found resource method for method " + request.getMethod());
+            }
 
-         invokeResourceMethod(methods.get(0), resource, context, request, response);
-
+            // Error Response is preset.
+         }
       }
       else
-      { // sub-resource method/locator
+      {
+         // Sub-resource method or locator ?
+         SubResourceMethodMap srmm = resourceFactory.getObjectModel().getSubResourceMethods();
+         SubResourceLocatorMap srlm = resourceFactory.getObjectModel().getSubResourceLocators();
+
+         // Check sub-resource methods.
          List<SubResourceMethodDescriptor> methods = new ArrayList<SubResourceMethodDescriptor>();
-         // check sub-resource methods
          boolean match = processSubResourceMethod(srmm, requestPath, request, response, parameterValues, methods);
 
          if (match && Tracer.isTracingEnabled())
@@ -182,11 +185,11 @@ public class RequestDispatcher
                + "\" = (" + methods.get(0).getMethod() + ")");
          }
 
-         // check sub-resource locators
+         // Check sub-resource locators.
          List<SubResourceLocatorDescriptor> locators = new ArrayList<SubResourceLocatorDescriptor>();
-         boolean hasAcceptableLocator = processSubResourceLocator(srlm, requestPath, parameterValues, locators);
+         boolean acceptableLocators = processSubResourceLocator(srlm, requestPath, parameterValues, locators);
 
-         if (hasAcceptableLocator && Tracer.isTracingEnabled())
+         if (acceptableLocators && Tracer.isTracingEnabled())
          {
             Tracer.trace("Matched sub-resource locator for path \"" + requestPath
                + "\", media type \"" + request.getMediaType()
@@ -194,13 +197,42 @@ public class RequestDispatcher
          }
 
          // Sub-resource method or sub-resource locator should be found,
-         // otherwise error response with corresponding status set.
-         // If sub-resource locator not found status must be Not Found (404).
-         // If sub-resource method not found then can be few statuses to
-         // return, in this case don't care about locators, just return status
-         // for sub-resource method. If no one method found then status will
-         // Not Found (404) anyway.
-         if (!match && !hasAcceptableLocator)
+         // otherwise error response with corresponding status already set.
+         if (match || acceptableLocators)
+         {
+            // Reset any previous responses.
+            response.setResponse(null);
+
+            // Sub-resource method, sub-resource locator or both acceptable.
+            // If both, sub-resource method and sub-resource then do next:
+            // Check number of characters and number of variables in URI pattern, if
+            // the same then sub-resource method has higher priority, otherwise
+            // sub-resource with 'higher' URI pattern selected.
+
+            if (match && (!acceptableLocators || compareSubResources(methods.get(0), locators.get(0)) < 0))
+            {
+               // Sub-resource method
+
+               if (Tracer.isTracingEnabled())
+               {
+                  Tracer.trace("Sub-resource method (" + methods.get(0).getMethod() + ") selected. ");
+               }
+
+               invokeSubResourceMethod(requestPath, methods.get(0), resource, context, request, response);
+            }
+            else
+            {
+               // Sub-resource locator.
+
+               if (Tracer.isTracingEnabled())
+               {
+                  Tracer.trace("Sub-resource locator (" + locators.get(0).getMethod() + ") selected. ");
+               }
+
+               invokeSubResourceLocator(requestPath, locators.get(0), resource, context, request, response);
+            }
+         }
+         else
          {
             if (LOG.isDebugEnabled())
             {
@@ -208,43 +240,14 @@ public class RequestDispatcher
                   + " and method " + request.getMethod());
             }
 
-            return; // Error Response is preset
-         }
-
-         // Sub-resource method, sub-resource locator or both acceptable.
-         // If both, sub-resource method and sub-resource then do next:
-         // Check number of characters and number of variables in URI pattern, if
-         // the same then sub-resource method has higher priority, otherwise
-         // sub-resource with 'higher' URI pattern selected.
-         if ((!hasAcceptableLocator && match)
-            || (match && (compareSubResources(methods.get(0), locators.get(0)) < 0)))
-         {
-            // sub-resource method
-
-            if (Tracer.isTracingEnabled())
-            {
-               Tracer.trace("Sub-resource method (" + methods.get(0).getMethod() + ") selected. ");
-            }
-
-            invokeSubResourceMethod(requestPath, methods.get(0), resource, context, request, response);
-         }
-         else if ((!match) || (compareSubResources(methods.get(0), locators.get(0)) > 0))
-         {
-            // sub-resource locator
-
-            if (Tracer.isTracingEnabled())
-            {
-               Tracer.trace("Sub-resource locator (" + locators.get(0).getMethod() + ") selected. ");
-            }
-
-            invokeSubResourceLocator(requestPath, locators.get(0), resource, context, request, response);
+            // Error Response is preset.
          }
       }
    }
 
    /**
     * Invoke resource methods.
-    * 
+    *
     * @param rmd See {@link ResourceMethodDescriptor}
     * @param resource instance of resource class
     * @param context See {@link ApplicationContextImpl}
@@ -252,17 +255,20 @@ public class RequestDispatcher
     * @param response See {@link GenericContainerResponse}
     * @see ResourceMethodDescriptor
     */
-   private void invokeResourceMethod(ResourceMethodDescriptor rmd, Object resource, ApplicationContext context,
-      GenericContainerRequest request, GenericContainerResponse response)
+   private void invokeResourceMethod(ResourceMethodDescriptor rmd,
+                                     Object resource,
+                                     ApplicationContext context,
+                                     GenericContainerRequest request,
+                                     GenericContainerResponse response)
    {
-      // save resource in hierarchy
+      // Save resource in hierarchy.
       context.addMatchedResource(resource);
       doInvokeResource(rmd, resource, context, request, response);
    }
 
    /**
     * Invoke sub-resource methods.
-    * 
+    *
     * @param requestPath request path
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param resource instance of resource class
@@ -271,8 +277,12 @@ public class RequestDispatcher
     * @param response See {@link GenericContainerResponse}
     * @see SubResourceMethodDescriptor
     */
-   private void invokeSubResourceMethod(String requestPath, SubResourceMethodDescriptor srmd, Object resource,
-      ApplicationContext context, GenericContainerRequest request, GenericContainerResponse response)
+   private void invokeSubResourceMethod(String requestPath,
+                                        SubResourceMethodDescriptor srmd,
+                                        Object resource,
+                                        ApplicationContext context,
+                                        GenericContainerRequest request,
+                                        GenericContainerResponse response)
    {
       // save resource in hierarchy
       context.addMatchedResource(resource);
@@ -283,18 +293,20 @@ public class RequestDispatcher
       doInvokeResource(srmd, resource, context, request, response);
    }
 
-   private void doInvokeResource(ResourceMethodDescriptor method, Object resource, ApplicationContext context,
-      GenericContainerRequest request, GenericContainerResponse response)
+   private void doInvokeResource(ResourceMethodDescriptor method,
+                                 Object resource,
+                                 ApplicationContext context,
+                                 GenericContainerRequest request,
+                                 GenericContainerResponse response)
    {
       MethodInvoker invoker = context.getMethodInvoker(method);
-      Class<?> returnType = method.getResponseType();
       Object o = invoker.invokeMethod(resource, method, context);
-      processResponse(o, returnType, request, response, method.produces());
+      processResponse(o, request, response, method.produces());
    }
 
    /**
     * Invoke sub-resource locators.
-    * 
+    *
     * @param requestPath request path
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @param resource instance of resource class
@@ -303,8 +315,12 @@ public class RequestDispatcher
     * @param response See {@link GenericContainerResponse}
     * @see SubResourceLocatorDescriptor
     */
-   private void invokeSubResourceLocator(String requestPath, SubResourceLocatorDescriptor srld, Object resource,
-      ApplicationContext context, GenericContainerRequest request, GenericContainerResponse response)
+   private void invokeSubResourceLocator(String requestPath,
+                                         SubResourceLocatorDescriptor srld,
+                                         Object resource,
+                                         ApplicationContext context,
+                                         GenericContainerRequest request,
+                                         GenericContainerResponse response)
    {
       context.addMatchedResource(resource);
       // take the tail of the request path, the tail will be new request path
@@ -352,12 +368,13 @@ public class RequestDispatcher
 
    /**
     * Compare two sub-resources. One of it is {@link SubResourceMethodDescriptor} and other one id
-    * {@link SubResourceLocatorDescriptor}. First compare UriPattern, see {@link UriPattern#URIPATTERN_COMPARATOR}. NOTE
-    * URI comparator compare UriPattrens for descending sorting. So it it return negative integer then it minds
+    * {@link SubResourceLocatorDescriptor}. First compare UriPattern, see {@link UriPattern#URIPATTERN_COMPARATOR}.
+    * NOTE
+    * URI comparator compare UriPatterns for descending sorting. So it it return negative integer then it minds
     * SubResourceMethodDescriptor has higher priority by UriPattern comparison. If comparator return positive integer
-    * then SubResourceLocatorDescriptor has higher priority. And finally if zero was returned then UriPattern is equals,
-    * in this case SubResourceMethodDescriptor must be selected.
-    * 
+    * then SubResourceLocatorDescriptor has higher priority. And finally if zero was returned then UriPattern is
+    * equals, in this case SubResourceMethodDescriptor must be selected.
+    *
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @return result of comparison sub-resources
@@ -371,9 +388,8 @@ public class RequestDispatcher
 
    /**
     * Process result of invoked method, and set {@link Response} parameters dependent of returned object.
-    * 
+    *
     * @param o result of invoked method
-    * @param returnType type of returned object
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param produces list of method produces media types
@@ -381,9 +397,16 @@ public class RequestDispatcher
     * @see SubResourceMethodDescriptor
     * @see SubResourceLocatorDescriptor
     */
-   private void processResponse(Object o, Class<?> returnType, GenericContainerRequest request,
-      GenericContainerResponse response, List<MediaType> produces)
+   private void processResponse(Object o,
+                                GenericContainerRequest request,
+                                GenericContainerResponse response,
+                                List<MediaType> produces)
    {
+      if (response.getResponse() != null)
+      {
+         // Response may be set for asynchronous jobs.
+         return;
+      }
       if (o == null || o.getClass() == void.class || o.getClass() == Void.class)
       {
          response.setResponse(Response.noContent().build());
@@ -415,7 +438,7 @@ public class RequestDispatcher
 
    /**
     * Process resource methods.
-    * 
+    *
     * @param <T> ResourceMethodDescriptor extension
     * @param rmm See {@link ResourceMethodMap}
     * @param request See {@link GenericContainerRequest}
@@ -424,7 +447,9 @@ public class RequestDispatcher
     * @return true if at least one resource method found false otherwise
     */
    private <T extends ResourceMethodDescriptor> boolean processResourceMethod(ResourceMethodMap<T> rmm,
-      GenericContainerRequest request, GenericContainerResponse response, List<T> methods)
+                                                                              GenericContainerRequest request,
+                                                                              GenericContainerResponse response,
+                                                                              List<T> methods)
    {
       String method = request.getMethod();
       List<T> rmds = rmm.getList(method);
@@ -461,7 +486,7 @@ public class RequestDispatcher
       List<MediaType> acceptable = request.getAcceptableMediaTypes();
       float previousQValue = 0.0F;
       int n, p = 0;
-      for (ListIterator<T> i = methods.listIterator(); i.hasNext();)
+      for (ListIterator<T> i = methods.listIterator(); i.hasNext(); )
       {
          n = i.nextIndex();
          ResourceMethodDescriptor rmd = i.next();
@@ -503,19 +528,22 @@ public class RequestDispatcher
 
    /**
     * Process sub-resource methods.
-    * 
+    *
     * @param srmm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param capturingValues the list for keeping template values. See
-    *           {@link javax.ws.rs.core.UriInfo#getPathParameters()}
+    * {@link javax.ws.rs.core.UriInfo#getPathParameters()}
     * @param methods list for method resources
     * @return true if at least one sub-resource method found false otherwise
     */
-   private boolean processSubResourceMethod(SubResourceMethodMap srmm, String requestedPath,
-      GenericContainerRequest request, GenericContainerResponse response, List<String> capturingValues,
-      List<SubResourceMethodDescriptor> methods)
+   private boolean processSubResourceMethod(SubResourceMethodMap srmm,
+                                            String requestedPath,
+                                            GenericContainerRequest request,
+                                            GenericContainerResponse response,
+                                            List<String> capturingValues,
+                                            List<SubResourceMethodDescriptor> methods)
    {
       ResourceMethodMap<SubResourceMethodDescriptor> rmm = null;
       for (Entry<UriPattern, ResourceMethodMap<SubResourceMethodDescriptor>> e : srmm.entrySet())
@@ -535,8 +563,10 @@ public class RequestDispatcher
 
       if (rmm == null)
       {
-         response.setResponse(Response.status(Status.NOT_FOUND)
-            .entity("There is no any resources matched to request path " + requestedPath).type(MediaType.TEXT_PLAIN)
+         response.setResponse(Response
+            .status(Status.NOT_FOUND)
+            .entity("There is no any resources matched to request path " + requestedPath)
+            .type(MediaType.TEXT_PLAIN)
             .build());
          return false;
       }
@@ -546,12 +576,9 @@ public class RequestDispatcher
 
       if (match)
       {
-         // for cast, Iterator contains SubResourceMethodDescriptor
-         @SuppressWarnings("rawtypes")
-         Iterator i = l.iterator();
-         while (i.hasNext())
+         for (SubResourceMethodDescriptor aL : l)
          {
-            methods.add((SubResourceMethodDescriptor)i.next());
+            methods.add(aL);
          }
       }
 
@@ -560,20 +587,24 @@ public class RequestDispatcher
 
    /**
     * Process sub-resource locators.
-    * 
+    *
     * @param srlm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param capturingValues the list for keeping template values
     * @param locators list for sub-resource locators
     * @return true if at least one SubResourceLocatorDescriptor found false otherwise
     */
-   private boolean processSubResourceLocator(SubResourceLocatorMap srlm, String requestedPath,
-      List<String> capturingValues, List<SubResourceLocatorDescriptor> locators)
+   private boolean processSubResourceLocator(SubResourceLocatorMap srlm,
+                                             String requestedPath,
+                                             List<String> capturingValues,
+                                             List<SubResourceLocatorDescriptor> locators)
    {
       for (Map.Entry<UriPattern, SubResourceLocatorDescriptor> e : srlm.entrySet())
       {
          if (e.getKey().match(requestedPath, capturingValues))
+         {
             locators.add(e.getValue());
+         }
       }
 
       return !locators.isEmpty();
@@ -591,8 +622,9 @@ public class RequestDispatcher
     * @param parameterValues is taken from context
     * @param requestPath is taken from context
     * @return root resource
-    * @throws WebApplicationException if there is no matched root resources. Exception with prepared error response with
-    *            'Not Found' status
+    * @throws WebApplicationException if there is no matched root resources. Exception with prepared error response
+    * with
+    * 'Not Found' status
     */
    protected ObjectFactory<AbstractResourceDescriptor> getRootResource(List<String> parameterValues, String requestPath)
    {

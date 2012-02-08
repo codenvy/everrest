@@ -37,48 +37,45 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class StringEntityProvider implements EntityProvider<String>
 {
-
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == String.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String readFrom(Class<String> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public String readFrom(Class<String> type,
+                          Type genericType,
+                          Annotation[] annotations,
+                          MediaType mediaType,
+                          MultivaluedMap<String, String> httpHeaders,
+                          InputStream entityStream) throws IOException
    {
       return IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get("charset") : null);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getSize(String t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       //    return t.length();
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == String.class;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(String t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   /** {@inheritDoc} */
+   public void writeTo(String t,
+                       Class<?> type,
+                       Type genericType,
+                       Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       OutputStream entityStream) throws IOException
    {
       IOHelper.writeString(t, entityStream, mediaType.getParameters().get("charset"));
    }
-
 }

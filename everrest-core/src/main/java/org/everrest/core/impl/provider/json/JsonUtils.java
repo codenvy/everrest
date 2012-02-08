@@ -116,9 +116,7 @@ public final class JsonUtils
       CLASS
    }
 
-   /**
-    * Types of Json tokens.
-    */
+   /** Types of Json tokens. */
    public enum JsonToken
    {
       /** JSON object, "key":{value1, ... } . */
@@ -134,9 +132,7 @@ public final class JsonUtils
       value
    }
 
-   /**
-    * Map of known types.
-    */
+   /** Map of known types. */
    private static final Map<String, Types> KNOWN_TYPES = new HashMap<String, Types>();
 
    static
