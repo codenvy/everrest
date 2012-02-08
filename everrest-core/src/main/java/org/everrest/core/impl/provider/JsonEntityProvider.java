@@ -174,7 +174,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
    {
       try
       {
-         JsonValue jsonValue = null;
+         JsonValue jsonValue;
          if (t instanceof JsonValue)
          {
             // Don't do any transformation if object is prepared JsonValue.

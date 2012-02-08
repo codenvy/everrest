@@ -244,7 +244,7 @@ public class HeaderParameterParser
       if (token != null)
       {
          // check is it valid token
-         int err = -1;
+         int err;
          if ((err = HeaderHelper.isToken(token)) != -1)
          {
             throw new ParseException("Token '" + token + "' contains not legal characters at " + err, err);

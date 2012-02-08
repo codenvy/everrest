@@ -87,10 +87,10 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
       }
 
       MultivaluedMap<String, String> form = new MultivaluedMapImpl();
-      int r = -1;
       StringBuilder sb = new StringBuilder();
       try
       {
+         int r;
          while ((r = entityStream.read()) != -1)
          {
             if (r != '&')

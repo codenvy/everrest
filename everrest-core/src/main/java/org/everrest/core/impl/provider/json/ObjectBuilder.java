@@ -131,7 +131,7 @@ public class ObjectBuilder
       T collection = null;
       if (jsonArray != null && !jsonArray.isNull())
       {
-         Class<?> actualType = null;
+         Class<?> actualType;
          if (genericType instanceof ParameterizedType)
          {
             // Collection can't be parameterized by other Collection, Array, etc.
@@ -239,7 +239,7 @@ public class ObjectBuilder
       T map = null;
       if (jsonObject != null && !jsonObject.isNull())
       {
-         Class<?> valueActualType = null;
+         Class<?> valueActualType;
          if (genericType instanceof ParameterizedType)
          {
             ParameterizedType parameterizedType = (ParameterizedType)genericType;
@@ -362,7 +362,7 @@ public class ObjectBuilder
          throw new JsonException("Unsupported type of jsonValue. ");
       }
 
-      T object = null;
+      T object;
       if (clazz.isInterface())
       {
          object = JsonUtils.createProxy(clazz);

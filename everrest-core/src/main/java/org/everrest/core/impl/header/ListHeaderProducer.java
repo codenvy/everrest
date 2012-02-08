@@ -54,8 +54,8 @@ public abstract class ListHeaderProducer<T extends QualityValue>
    {
       List<T> l = new ArrayList<T>();
 
+      int n;
       int p = 0;
-      int n = 0;
       while (p < header.length())
       {
          n = header.indexOf(',', p);

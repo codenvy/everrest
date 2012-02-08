@@ -53,7 +53,7 @@ public class Logger
       Logger logger = loggers.get(name);
       if (logger == null)
       {
-         logger = loggers.putIfAbsent(name, new Logger(name));
+         loggers.putIfAbsent(name, new Logger(name));
          logger = loggers.get(name);
       }
       return logger;

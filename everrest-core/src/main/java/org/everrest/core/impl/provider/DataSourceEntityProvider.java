@@ -119,7 +119,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource>
       Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
       ByteArrayOutputStream bout = new ByteArrayOutputStream(bufferSize);
 
-      int bytes = -1;
+      int bytes;
       while (!overflow && ((bytes = entityStream.read(buffer)) != -1))
       {
          bout.write(buffer, 0, bytes);

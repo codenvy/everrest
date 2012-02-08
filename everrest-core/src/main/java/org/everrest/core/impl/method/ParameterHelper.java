@@ -127,66 +127,51 @@ public class ParameterHelper
          {
             clazz = getGenericType(parameterType);
          }
-         Method methodValueOf = null;
-         Constructor<?> constructor = null;
+         Method methodValueOf;
+         Constructor<?> constructor;
 
          // if not parameterized then by default collection of Strings.
          if (clazz == String.class || clazz == null)
          {
             // String
-
             return new CollectionStringProducer(parameterClass);
-
          }
          else if ((methodValueOf = getStringValueOfMethod(clazz)) != null)
          {
             // static method valueOf
-
             return new CollectionStringValueOfProducer(parameterClass, methodValueOf);
-
          }
          else if ((constructor = getStringConstructor(clazz)) != null)
          {
             // constructor with String
-
             return new CollectionStringConstructorProducer(parameterClass, constructor);
-
          }
-
       }
       else
       {
          // parameters is not collection
-         Method methodValueOf = null;
-         Constructor<?> constructor = null;
+         Method methodValueOf;
+         Constructor<?> constructor;
 
          if (parameterClass.isPrimitive())
          {
             // primitive type
-
             return new PrimitiveTypeProducer(parameterClass);
-
          }
          else if (parameterClass == String.class)
          {
             // String
-
             return new StringProducer();
-
          }
          else if ((methodValueOf = getStringValueOfMethod(parameterClass)) != null)
          {
             // static valueOf method
-
             return new StringValueOfProducer(methodValueOf);
-
          }
          else if ((constructor = getStringConstructor(parameterClass)) != null)
          {
             // constructor with String
-
             return new StringConstructorProducer(constructor);
-
          }
       }
 

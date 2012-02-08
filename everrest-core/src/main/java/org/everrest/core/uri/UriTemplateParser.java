@@ -178,7 +178,7 @@ public class UriTemplateParser
    {
       int length = str.length();
       int p = parseName(str, 0, length);
-      String reg = "";
+      String reg;
       if (p == length)
       {
          reg = URI_PARAMETER_TEMPLATE;
