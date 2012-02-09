@@ -35,13 +35,14 @@ public interface ResourceBinder
 {
 
    /**
+    * Get list of all registered root resources. Returned list is the copy of original list. Any changes in this list
+    * does not impact to original list.
+    *
     * @return all registered root resources
     */
    List<ObjectFactory<AbstractResourceDescriptor>> getResources();
 
-   /**
-    * @return number of bound resources
-    */
+   /** @return number of bound resources */
    int getSize();
 
    /**
@@ -51,19 +52,19 @@ public interface ResourceBinder
     *
     * @param resourceClass class of candidate to be root resource
     * @param properties optional resource properties. It may contains additional
-    *           info about resource, e.g. description of resource, its
-    *           responsibility, etc. This info can be retrieved
-    *           {@link ObjectModel#getProperties()}. This parameter may be
-    *           <code>null</code>
+    * info about resource, e.g. description of resource, its
+    * responsibility, etc. This info can be retrieved
+    * {@link ObjectModel#getProperties()}. This parameter may be
+    * <code>null</code>
     * @throws ResourcePublicationException if resource can't be published
-    *            because to:
-    *            <ul>
-    *            <li>&#64javax.ws.rs.Path annotation is missing</li>
-    *            <li>resource has not any method with JAX-RS annotations</li>
-    *            <li>JAX-RS annotations are ambiguous or invalid</li>
-    *            <li>resource with the sane {@link UriPattern} already
-    *            registered</li>
-    *            </ul>
+    * because to:
+    * <ul>
+    * <li>&#64javax.ws.rs.Path annotation is missing</li>
+    * <li>resource has not any method with JAX-RS annotations</li>
+    * <li>JAX-RS annotations are ambiguous or invalid</li>
+    * <li>resource with the sane {@link UriPattern} already
+    * registered</li>
+    * </ul>
     * @see ObjectModel#getProperties()
     * @see ObjectModel#getProperty(String)
     */
@@ -76,19 +77,19 @@ public interface ResourceBinder
     *
     * @param resource candidate to be root resource
     * @param properties optional resource properties. It may contains additional
-    *           info about resource, e.g. description of resource, its
-    *           responsibility, etc. This info can be retrieved
-    *           {@link ObjectModel#getProperties()}. This parameter may be
-    *           <code>null</code>
+    * info about resource, e.g. description of resource, its
+    * responsibility, etc. This info can be retrieved
+    * {@link ObjectModel#getProperties()}. This parameter may be
+    * <code>null</code>
     * @throws ResourcePublicationException if resource can't be published
-    *            because to:
-    *            <ul>
-    *            <li>&#64javax.ws.rs.Path annotation is missing</li>
-    *            <li>resource has not any method with JAX-RS annotations</li>
-    *            <li>JAX-RS annotations are ambiguous or invalid</li>
-    *            <li>resource with the sane {@link UriPattern} already
-    *            registered</li>
-    *            </ul>
+    * because to:
+    * <ul>
+    * <li>&#64javax.ws.rs.Path annotation is missing</li>
+    * <li>resource has not any method with JAX-RS annotations</li>
+    * <li>JAX-RS annotations are ambiguous or invalid</li>
+    * <li>resource with the sane {@link UriPattern} already
+    * registered</li>
+    * </ul>
     * @see ObjectModel#getProperties()
     * @see ObjectModel#getProperty(String)
     */
@@ -100,8 +101,8 @@ public interface ResourceBinder
     *
     * @param resourceFactory root resource
     * @throws ResourcePublicationException if resource can't be published
-    *            because resource with the sane {@link UriPattern} already
-    *            registered
+    * because resource with the sane {@link UriPattern} already
+    * registered
     */
    void addResource(final ObjectFactory<AbstractResourceDescriptor> resourceFactory);
 

@@ -32,7 +32,6 @@ import javax.ws.rs.core.MultivaluedMap;
 
 public abstract class BaseObjectModel implements ObjectModel
 {
-
    protected final Class<?> clazz;
 
    /** Optional data. */
@@ -66,32 +65,32 @@ public abstract class BaseObjectModel implements ObjectModel
             Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
          }
          // process field
-         for (java.lang.reflect.Field jfield : clazz.getDeclaredFields())
+         for (java.lang.reflect.Field jField : clazz.getDeclaredFields())
          {
-            fields.add(new FieldInjectorImpl(clazz, jfield));
+            fields.add(new FieldInjectorImpl(clazz, jField));
          }
-         Package _package = clazz.getPackage();
-         String resourcePackageName = _package != null ? _package.getName() : null;
+         Package clazzPackage = clazz.getPackage();
+         String resourcePackageName = clazzPackage != null ? clazzPackage.getName() : null;
          Class<?> sc = clazz.getSuperclass();
          while (sc != null && sc != Object.class)
          {
-            for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
+            for (java.lang.reflect.Field jField : sc.getDeclaredFields())
             {
-               int modif = jfield.getModifiers();
+               int modifiers = jField.getModifiers();
                Package package1 = clazz.getPackage();
                String scPackageName = package1 != null ? package1.getName() : null;
-               if (!Modifier.isPrivate(modif))
+               if (!Modifier.isPrivate(modifiers))
                {
-                  if (Modifier.isPublic(modif)
-                     || Modifier.isProtected(modif)
-                     || (!Modifier.isPrivate(modif) && ((resourcePackageName == null && scPackageName == null)
+                  if (Modifier.isPublic(modifiers)
+                     || Modifier.isProtected(modifiers)
+                     || (!Modifier.isPrivate(modifiers) && ((resourcePackageName == null && scPackageName == null)
                      || (resourcePackageName != null && resourcePackageName.equals(scPackageName)))))
                   {
-                     FieldInjector inj = new FieldInjectorImpl(clazz, jfield);
+                     FieldInjector inj = new FieldInjectorImpl(clazz, jField);
                      // Skip not annotated field. They will be not injected from container.
                      if (inj.getAnnotation() != null)
                      {
-                        fields.add(new FieldInjectorImpl(clazz, jfield));
+                        fields.add(new FieldInjectorImpl(clazz, jField));
                      }
                   }
                }
@@ -101,33 +100,25 @@ public abstract class BaseObjectModel implements ObjectModel
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Class<?> getObjectClass()
    {
       return clazz;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<ConstructorDescriptor> getConstructorDescriptors()
    {
       return constructors;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<FieldInjector> getFieldInjectors()
    {
       return fields;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public MultivaluedMap<String, String> getProperties()
    {
       if (properties == null)
@@ -137,9 +128,7 @@ public abstract class BaseObjectModel implements ObjectModel
       return properties;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<String> getProperty(String key)
    {
       if (properties != null)
@@ -148,5 +137,4 @@ public abstract class BaseObjectModel implements ObjectModel
       }
       return null;
    }
-
 }

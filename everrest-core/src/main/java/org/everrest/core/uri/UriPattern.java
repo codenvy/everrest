@@ -45,14 +45,10 @@ public class UriPattern
     */
    public static final Comparator<UriPattern> URIPATTERN_COMPARATOR = new UriPatternComparator();
 
-   /**
-    * URI pattern comparator.
-    */
+   /** URI pattern comparator. */
    private static final class UriPatternComparator implements Comparator<UriPattern>
    {
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public int compare(UriPattern o1, UriPattern o2)
       {
          if (o1 == null && o2 == null)
@@ -104,41 +100,27 @@ public class UriPattern
       }
    }
 
-   /**
-    * Should be added in URI pattern regular expression.
-    */
+   /** Should be added in URI pattern regular expression. */
    private static final String URI_PATTERN_TAIL = "(/.*)?";
 
    //
 
-   /**
-    * List of names for URI template variables.
-    */
+   /** List of names for URI template variables. */
    private final List<String> parameterNames;
 
-   /**
-    * URI template.
-    */
+   /** URI template. */
    private final String template;
 
-   /**
-    * Number of characters in URI template NOT resulting from template variable substitution.
-    */
+   /** Number of characters in URI template NOT resulting from template variable substitution. */
    private final int numberOfCharacters;
 
-   /**
-    * Compiled URI pattern.
-    */
+   /** Compiled URI pattern. */
    private final Pattern pattern;
 
-   /**
-    * Regular expressions for URI pattern.
-    */
+   /** Regular expressions for URI pattern. */
    private final String regex;
 
-   /**
-    * Regex capturing group indexes.
-    */
+   /** Regex capturing group indexes. */
    private final int[] groupIndexes;
 
    //
@@ -161,13 +143,13 @@ public class UriPattern
       this.parameterNames = Collections.unmodifiableList(parser.getParameterNames());
       this.numberOfCharacters = parser.getNumberOfLiteralCharacters();
 
-      int[] indxs = parser.getGroupIndexes();
-      if (indxs != null)
+      int[] indexes = parser.getGroupIndexes();
+      if (indexes != null)
       {
-         this.groupIndexes = new int[indxs.length + 1];
-         System.arraycopy(indxs, 0, this.groupIndexes, 0, indxs.length);
+         this.groupIndexes = new int[indexes.length + 1];
+         System.arraycopy(indexes, 0, this.groupIndexes, 0, indexes.length);
          // Add one more index for URI_PATTERN_TAIL
-         this.groupIndexes[groupIndexes.length - 1] = indxs[indxs.length - 1] + 1;
+         this.groupIndexes[groupIndexes.length - 1] = indexes[indexes.length - 1] + 1;
       }
       else
       {
@@ -183,17 +165,13 @@ public class UriPattern
       this.pattern = Pattern.compile(this.regex);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean equals(Object obj)
    {
       return obj != null && obj.getClass() == getClass() && getRegex().equals(((UriPattern)obj).getRegex());
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public int hashCode()
    {
       int hash = 7;
@@ -241,9 +219,7 @@ public class UriPattern
       return numberOfCharacters;
    }
 
-   /**
-    * @return list of names
-    */
+   /** @return list of names */
    public List<String> getParameterNames()
    {
       return parameterNames;
@@ -260,7 +236,6 @@ public class UriPattern
     */
    public boolean match(String uri, List<String> parameters)
    {
-
       if (parameters == null)
       {
          throw new IllegalArgumentException("list is null");
@@ -270,7 +245,7 @@ public class UriPattern
       {
          return pattern == null;
       }
-      else if (pattern == null)
+      if (pattern == null)
       {
          return false;
       }
@@ -299,9 +274,7 @@ public class UriPattern
       return true;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String toString()
    {
       return regex;
@@ -318,11 +291,19 @@ public class UriPattern
     * @param query the query string URI part
     * @param fragment the fragment URI part
     * @param values the values which must be used instead templates parameters
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
+    * characters
     * @return the URI string
     */
-   public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
-                                            String query, String fragment, Map<String, ?> values, boolean encode)
+   public static String createUriWithValues(String schema,
+                                            String userInfo,
+                                            String host,
+                                            int port,
+                                            String path,
+                                            String query,
+                                            String fragment,
+                                            Map<String, ?> values,
+                                            boolean encode)
    {
       StringBuilder sb = new StringBuilder();
       if (schema != null)
@@ -332,7 +313,8 @@ public class UriPattern
       }
       if (userInfo != null || host != null || port != -1)
       {
-         sb.append('/').append('/');
+         sb.append('/');
+         sb.append('/');
 
          if (!(userInfo == null || userInfo.isEmpty()))
          {
@@ -387,11 +369,19 @@ public class UriPattern
     * @param query the query string URI part
     * @param fragment the fragment URI part
     * @param values the values which must be used instead templates parameters
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
+    * characters
     * @return the URI string
     */
-   public static String createUriWithValues(String schema, String userInfo, String host, int port, String path,
-                                            String query, String fragment, Object[] values, boolean encode)
+   public static String createUriWithValues(String schema,
+                                            String userInfo,
+                                            String host,
+                                            int port,
+                                            String path,
+                                            String query,
+                                            String fragment,
+                                            Object[] values,
+                                            boolean encode)
    {
       Map<String, String> m = new HashMap<String, String>();
       StringBuilder sb = new StringBuilder();
@@ -404,7 +394,8 @@ public class UriPattern
       }
       if (userInfo != null || host != null || port != -1)
       {
-         sb.append('/').append('/');
+         sb.append('/');
+         sb.append('/');
 
          if (!(userInfo == null || userInfo.isEmpty()))
          {
@@ -453,12 +444,15 @@ public class UriPattern
     * @param uriPart URI part
     * @param component the URI component
     * @param values values map
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
+    * characters
     */
-   private static void appendUriPart(StringBuilder sb, String uriPart, int component,
-                                     Map<String, ?> values, boolean encode)
+   private static void appendUriPart(StringBuilder sb,
+                                     String uriPart,
+                                     int component,
+                                     Map<String, ?> values,
+                                     boolean encode)
    {
-
       if (!hasUriTemplates(uriPart))
       {
          sb.append(uriPart);
@@ -496,16 +490,22 @@ public class UriPattern
     * @param sourceValues the source array of values
     * @param offset the offset in array
     * @param values values map, keep parameter/value pair which have been already found. From java docs:
-    *           <p>
-    *           All instances of the same template parameter will be replaced by the same value that corresponds to the
-    *           position of the first instance of the template parameter. e.g. the template "{a}/{b}/{a}" with values
-    *           {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i> "x/y/z".
-    *           </p>
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal characters
+    * <p>
+    * All instances of the same template parameter will be replaced by the same value that corresponds to the
+    * position of the first instance of the template parameter. e.g. the template "{a}/{b}/{a}" with values
+    * {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i> "x/y/z".
+    * </p>
+    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
+    * characters
     * @return offset
     */
-   private static int appendUriPart(StringBuilder sb, String uriPart, int component, Object[] sourceValues, int offset,
-                                    Map<String, String> values, boolean encode)
+   private static int appendUriPart(StringBuilder sb,
+                                    String uriPart,
+                                    int component,
+                                    Object[] sourceValues,
+                                    int offset,
+                                    Map<String, String> values,
+                                    boolean encode)
    {
       if (!hasUriTemplates(uriPart))
       {

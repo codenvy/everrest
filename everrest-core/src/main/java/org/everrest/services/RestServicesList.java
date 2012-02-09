@@ -184,8 +184,9 @@ public class RestServicesList
 
    protected RootResourcesList rootResources()
    {
-      List<RootResource> resources = new ArrayList<RootResource>();
-      for (ObjectFactory<AbstractResourceDescriptor> om : binder.getResources())
+      List<ObjectFactory<AbstractResourceDescriptor>> l = binder.getResources();
+      List<RootResource> resources = new ArrayList<RootResource>(l.size());
+      for (ObjectFactory<AbstractResourceDescriptor> om : l)
       {
          AbstractResourceDescriptor descriptor = om.getObjectModel();
          resources.add(new RootResource(descriptor.getObjectClass().getName(), //

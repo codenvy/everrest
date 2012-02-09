@@ -39,12 +39,9 @@ import java.util.Set;
  */
 public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, Serializable
 {
-
    private static final long serialVersionUID = -4159372000926269780L;
 
-   /**
-    * Case insensitive {@link Entry}.
-    */
+   /** Case insensitive {@link Entry}. */
    class CaselessEntry implements Entry<CaselessStringWrapper, List<T>>
    {
       private CaselessStringWrapper key;
@@ -57,25 +54,19 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          this.value = value;
       }
 
-      /**
-       * Case insensitive key. {@inheritDoc}.
-       */
+      /** Case insensitive key. {@inheritDoc}. */
       public CaselessStringWrapper getKey()
       {
          return key;
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public List<T> getValue()
       {
          return value;
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public List<T> setValue(List<T> value)
       {
          List<T> old = this.value;
@@ -84,9 +75,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       }
    }
 
-   /**
-    * Case insensitive {@link Entry} adapter.
-    */
+   /** Case insensitive {@link Entry} adapter. */
    class EntryAdapter implements Entry<String, List<T>>
    {
       private Entry<CaselessStringWrapper, List<T>> entry;
@@ -96,33 +85,25 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          this.entry = entry;
       }
 
-      /**
-       * Restore original String key of this entry. {@inheritDoc}.
-       */
+      /** Restore original String key of this entry. {@inheritDoc}. */
       public String getKey()
       {
          return entry.getKey().getString();
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public List<T> getValue()
       {
          return entry.getValue();
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public List<T> setValue(List<T> value)
       {
          return entry.setValue(value);
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public String toString()
       {
@@ -132,27 +113,21 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
 
    class EntrySet extends AbstractSet<Entry<String, List<T>>>
    {
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean addAll(Collection<? extends Entry<String, List<T>>> c)
       {
          throw new UnsupportedOperationException("addAll");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public void clear()
       {
          m.clear();
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @SuppressWarnings({"unchecked", "rawtypes"})
       @Override
       public boolean contains(Object o)
@@ -169,9 +144,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
             && m.entrySet().contains(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public Iterator<Entry<String, List<T>>> iterator()
       {
@@ -196,9 +169,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          };
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @SuppressWarnings({"unchecked", "rawtypes"})
       @Override
       public boolean remove(Object o)
@@ -215,9 +186,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
             && m.entrySet().remove(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public int size()
       {
          return m.size();
@@ -228,27 +197,21 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
    class KeySet extends AbstractSet<String>
    {
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean addAll(Collection<? extends String> c)
       {
          throw new UnsupportedOperationException("addAll");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public void clear()
       {
          m.clear();
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean contains(Object o)
       {
@@ -259,9 +222,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          return o instanceof String && m.keySet().contains(new CaselessStringWrapper((String)o));
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public Iterator<String> iterator()
       {
          return new Iterator<String>()
@@ -285,9 +246,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          };
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean remove(Object o)
       {
@@ -298,9 +257,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          return o instanceof String && m.keySet().remove(new CaselessStringWrapper((String)o));
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public int size()
       {
          return m.size();
@@ -311,7 +268,6 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
    class ExtMultivaluedMapImpl extends LinkedHashMap<CaselessStringWrapper, List<T>> implements
       ExtMultivaluedMap<CaselessStringWrapper, T>
    {
-
       private static final long serialVersionUID = -1357174424906146761L;
 
       ExtMultivaluedMapImpl()
@@ -329,29 +285,25 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          super(m);
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public void add(CaselessStringWrapper key, T value)
       {
          if (value == null)
+         {
             return;
+         }
          List<T> list = getList(key);
          list.add(value);
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public T getFirst(CaselessStringWrapper key)
       {
          List<T> list = get(key);
          return list != null && list.size() > 0 ? list.get(0) : null;
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public List<T> getList(CaselessStringWrapper key)
       {
          List<T> list = get(key);
@@ -363,9 +315,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
          return list;
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public void putSingle(CaselessStringWrapper key, T value)
       {
          if (value == null)
@@ -393,40 +343,34 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       this.m = new ExtMultivaluedMapImpl();
    }
 
-   public CaselessMultivaluedMap(int capasity)
+   public CaselessMultivaluedMap(int capacity)
    {
-      this.m = new ExtMultivaluedMapImpl(capasity);
+      this.m = new ExtMultivaluedMapImpl(capacity);
    }
 
    public CaselessMultivaluedMap(Map<String, List<T>> m)
    {
       this.m = new ExtMultivaluedMapImpl(m.size());
-      for (Iterator<Entry<String, List<T>>> iterator = m.entrySet().iterator(); iterator.hasNext();)
+      for (Iterator<Entry<String, List<T>>> iterator = m.entrySet().iterator(); iterator.hasNext(); )
       {
          Entry<String, List<T>> e = iterator.next();
          this.m.put(new CaselessStringWrapper(e.getKey()), e.getValue());
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void add(String key, T value)
    {
       m.add(new CaselessStringWrapper(key), value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void clear()
    {
       m.clear();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean containsKey(Object key)
    {
       if (key == null)
@@ -436,17 +380,13 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       return key instanceof String && m.containsKey(new CaselessStringWrapper((String)key));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean containsValue(Object value)
    {
       return m.containsValue(value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Set<Entry<String, List<T>>> entrySet()
    {
       if (entries == null)
@@ -456,9 +396,7 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       return entries;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<T> get(Object key)
    {
       if (key == null)
@@ -472,17 +410,13 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       return m.get(new CaselessStringWrapper((String)key));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public T getFirst(String key)
    {
       return m.getFirst(new CaselessStringWrapper(key));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<T> getList(String key)
    {
       CaselessStringWrapper caselessKey = new CaselessStringWrapper(key);
@@ -495,17 +429,13 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       return list;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isEmpty()
    {
       return m.isEmpty();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Set<String> keySet()
    {
       if (keys == null)
@@ -515,17 +445,13 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       return keys;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<T> put(String key, List<T> value)
    {
       return m.put(new CaselessStringWrapper(key), value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void putAll(Map<? extends String, ? extends List<T>> m)
    {
       for (String key : m.keySet())
@@ -538,17 +464,13 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void putSingle(String key, T value)
    {
       m.putSingle(new CaselessStringWrapper(key), value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public List<T> remove(Object key)
    {
       if (key == null)
@@ -562,20 +484,15 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
       return m.remove(new CaselessStringWrapper((String)key));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public int size()
    {
       return m.size();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Collection<List<T>> values()
    {
       return m.values();
    }
-
 }

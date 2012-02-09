@@ -34,15 +34,11 @@ import java.util.Set;
  */
 public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMap<T>
 {
-
    private static final long serialVersionUID = -7195370974690531404L;
 
-   /**
-    * Read only implementation of java.util.Map.Entry.
-    */
+   /** Read only implementation of java.util.Map.Entry. */
    class ReadOnlyEntryAdapter extends EntryAdapter
    {
-
       public ReadOnlyEntryAdapter(Entry<CaselessStringWrapper, List<T>> entry)
       {
          super(entry);
@@ -57,27 +53,19 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
       {
          throw new UnsupportedOperationException("setValue");
       }
-
    }
 
-   /**
-    * Read only set of map's entries.
-    */
+   /** Read only set of map's entries. */
    class ReadOnlyEntrySet extends EntrySet
    {
-
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public void clear()
       {
          throw new UnsupportedOperationException("clear");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public Iterator<java.util.Map.Entry<String, List<T>>> iterator()
       {
@@ -102,53 +90,39 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
          };
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean remove(Object o)
       {
          throw new UnsupportedOperationException("remove");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean removeAll(Collection<?> c)
       {
          throw new UnsupportedOperationException("remove");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean retainAll(Collection<?> c)
       {
          throw new UnsupportedOperationException("retainAll");
       }
-
    }
 
-   /**
-    * Read only set of map's keys.
-    */
+   /** Read only set of map's keys. */
    class ReadOnlyKeySet extends KeySet
    {
-
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public void clear()
       {
          throw new UnsupportedOperationException("clear");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public Iterator<String> iterator()
       {
@@ -173,33 +147,26 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
          };
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean remove(Object o)
       {
          throw new UnsupportedOperationException("remove");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean removeAll(Collection<?> c)
       {
          throw new UnsupportedOperationException("removeAll");
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       @Override
       public boolean retainAll(Collection<?> c)
       {
          throw new UnsupportedOperationException("retainAll");
       }
-
    }
 
    // ------------------------------------------------
@@ -217,34 +184,28 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
    public CaselessUnmodifiableMultivaluedMap(Map<String, List<T>> m)
    {
       this(m.size());
-      for (Iterator<Entry<String, List<T>>> iterator = m.entrySet().iterator(); iterator.hasNext();)
+      for (Iterator<Entry<String, List<T>>> iterator = m.entrySet().iterator(); iterator.hasNext(); )
       {
          Entry<String, List<T>> e = iterator.next();
          this.m.put(new CaselessStringWrapper(e.getKey()), Collections.unmodifiableList(e.getValue()));
       }
    }
 
-   /**
-    * Adding new value is not supported.
-    */
+   /** Adding new value is not supported. */
    @Override
    public void add(String key, T value)
    {
       throw new UnsupportedOperationException("add");
    }
 
-   /**
-    * Clear map operation is not supported.
-    */
+   /** Clear map operation is not supported. */
    @Override
    public void clear()
    {
       throw new UnsupportedOperationException("clear");
    }
 
-   /**
-    * Unmodifiable set of map's entries.
-    */
+   /** Unmodifiable set of map's entries. */
    @Override
    public Set<Entry<String, List<T>>> entrySet()
    {
@@ -255,9 +216,7 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
       return entries;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public List<T> get(Object key)
    {
@@ -269,18 +228,14 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
       return null;
    }
 
-   /**
-    * Unmodifiable list corresponded to specified key.
-    */
+   /** Unmodifiable list corresponded to specified key. */
    @Override
    public List<T> getList(String key)
    {
       return Collections.unmodifiableList(super.getList(key));
    }
 
-   /**
-    * Unmodifiable set of map's keys.
-    */
+   /** Unmodifiable set of map's keys. */
    @Override
    public Set<String> keySet()
    {
@@ -291,49 +246,38 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
       return keys;
    }
 
-   /**
-    * Adding of new mapping is not supported.
-    */
+   /** Adding of new mapping is not supported. */
    @Override
    public List<T> put(String key, List<T> value)
    {
       throw new UnsupportedOperationException("put");
    }
 
-   /**
-    * Adding of new mapping is not supported.
-    */
+   /** Adding of new mapping is not supported. */
    @Override
    public void putAll(Map<? extends String, ? extends List<T>> m)
    {
       throw new UnsupportedOperationException("putAll");
    }
 
-   /**
-    * Adding of new mapping is not supported.
-    */
+   /** Adding of new mapping is not supported. */
    @Override
    public void putSingle(String key, T value)
    {
       throw new UnsupportedOperationException("putSingle");
    }
 
-   /**
-    * Removing of mapping is not supported.
-    */
+   /** Removing of mapping is not supported. */
    @Override
    public List<T> remove(Object key)
    {
       throw new UnsupportedOperationException("remove");
    }
 
-   /**
-    * Unmodifiable collection of map's values.
-    */
+   /** Unmodifiable collection of map's values. */
    @Override
    public Collection<List<T>> values()
    {
       return Collections.unmodifiableCollection(super.values());
    }
-
 }

@@ -36,7 +36,7 @@ public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
    /** Serial Version UID. */
    private static final long serialVersionUID = -4713556573521776577L;
 
-   /** Create new instance of MedaTypeMap with {@link Comparator}. */
+   /** Create new instance of MediaTypeMap with {@link Comparator}. */
    public MediaTypeMap()
    {
       super(COMPARATOR);

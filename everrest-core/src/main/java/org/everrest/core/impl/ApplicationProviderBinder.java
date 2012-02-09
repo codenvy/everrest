@@ -33,8 +33,14 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
+ * Provider binder for concrete JAX-RS application. Set of providers from this binder always take preference over
+ * providers embedded to EverRest framework. For example if ApplicationProviderBinder is able to provide
+ * MessageBodyWriter or MessageBodyReader for media type 'application/xml' then such reader/writer will be in use for
+ * all resources from the same Application.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
+ * @see javax.ws.rs.core.Application
  */
 public class ApplicationProviderBinder extends ProviderBinder
 {
@@ -44,17 +50,13 @@ public class ApplicationProviderBinder extends ProviderBinder
       super();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    protected void init()
    {
       // Do not add default providers.
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public List<MediaType> getAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations)
    {
@@ -63,9 +65,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       return l;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)
    {
@@ -77,9 +77,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       return resolver;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
@@ -91,12 +89,10 @@ public class ApplicationProviderBinder extends ProviderBinder
       return excMapper;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+                                                        MediaType mediaType)
    {
       MessageBodyReader<T> reader = doGetMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader == null)
@@ -106,12 +102,10 @@ public class ApplicationProviderBinder extends ProviderBinder
       return reader;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
+                                                        MediaType mediaType)
    {
       MessageBodyWriter<T> writer = doGetMessageBodyWriter(type, genericType, annotations, mediaType);
       if (writer == null)
@@ -121,9 +115,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       return writer;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public List<ObjectFactory<FilterDescriptor>> getMethodInvokerFilters(String path)
    {
@@ -132,9 +124,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       return l;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public List<ObjectFactory<FilterDescriptor>> getRequestFilters(String path)
    {
@@ -143,9 +133,7 @@ public class ApplicationProviderBinder extends ProviderBinder
       return l;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public List<ObjectFactory<FilterDescriptor>> getResponseFilters(String path)
    {

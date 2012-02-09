@@ -31,56 +31,34 @@ import java.util.regex.Pattern;
  */
 public class UriTemplateParser
 {
-   /**
-    * Pattern for process URI parameters, for example /a/b/{x}/c .
-    */
+   /** Pattern for process URI parameters, for example /a/b/{x}/c . */
    public static final Pattern URI_PARAMETERS_PATTERN = Pattern.compile("\\{[^\\}^\\{]+\\}");
 
-   /**
-    * Regex character, this characters in URI template will be escaped by
-    * addition '\'.
-    */
+   /** Regex character, this characters in URI template will be escaped by addition '\'. */
    private static final String REGEX_CHARACTERS = ".?()";
 
-   /**
-    * Should be added in regular expression instead URI parameter.
-    */
+   /** Should be added in regular expression instead URI parameter. */
    private static final String URI_PARAMETER_TEMPLATE = "[^/]+?";
 
-   /**
-    * URI parameter names.
-    */
+   /** URI parameter names. */
    private List<String> names = new ArrayList<String>();
 
-   /**
-    * Regular expression buffer.
-    */
+   /** Regular expression buffer. */
    private StringBuilder regex = new StringBuilder();
 
-   /**
-    * Normalized template, whitespace must be removed.
-    */
+   /** Normalized template, whitespace must be removed. */
    private StringBuilder normalizedTemplate = new StringBuilder();
 
-   /**
-    * Number of explicit characters in URI template, all characters except
-    * parameters.
-    */
+   /** Number of explicit characters in URI template, all characters except parameters. */
    private int numberOfCharacters = 0;
 
-   /**
-    * Actual processed parameter name.
-    */
+   /** Actual processed parameter name. */
    private String name;
 
-   /**
-    * Indexes regular expression capturing group.
-    */
+   /** Indexes regular expression capturing group. */
    private List<Integer> groupIndexes = new ArrayList<Integer>();
 
-   /**
-    * @param template source URI template
-    */
+   /** @param template source URI template */
    public UriTemplateParser(String template)
    {
       Matcher m = URI_PARAMETERS_PATTERN.matcher(template);
@@ -97,7 +75,7 @@ public class UriTemplateParser
 
    /**
     * Get the number of literal characters in the template.
-    * 
+    *
     * @return number of literal characters in the template
     */
    public final int getNumberOfLiteralCharacters()
@@ -105,9 +83,7 @@ public class UriTemplateParser
       return numberOfCharacters;
    }
 
-   /**
-    * @return list of names
-    */
+   /** @return list of names */
    public final List<String> getParameterNames()
    {
       return names;
@@ -115,7 +91,7 @@ public class UriTemplateParser
 
    /**
     * Get the regular expression.
-    * 
+    *
     * @return the regular expression
     */
    public final String getRegex()
@@ -125,7 +101,7 @@ public class UriTemplateParser
 
    /**
     * Get the URI template.
-    * 
+    *
     * @return the URI template
     */
    public final String getTemplate()
@@ -133,28 +109,26 @@ public class UriTemplateParser
       return normalizedTemplate.toString();
    }
 
-   /**
-    * @return indexes of regular expression capturing group
-    */
+   /** @return indexes of regular expression capturing group */
    public final int[] getGroupIndexes()
    {
       if (names.isEmpty())
       {
          return null;
       }
-      int[] indxs = new int[names.size() + 1];
-      indxs[0] = 1;
-      for (int i = 1; i < indxs.length; i++)
+      int[] indexes = new int[names.size() + 1];
+      indexes[0] = 1;
+      for (int i = 1; i < indexes.length; i++)
       {
-         indxs[i] = indxs[i - 1] + groupIndexes.get(i - 1);
+         indexes[i] = indexes[i - 1] + groupIndexes.get(i - 1);
       }
 
       // Check are groups indexes goes one by one.
-      for (int i = 0; i < indxs.length; i++)
+      for (int i = 0; i < indexes.length; i++)
       {
-         if (indxs[i] != i + 1)
+         if (indexes[i] != i + 1)
          {
-            return indxs;
+            return indexes;
          }
       }
       return null;
@@ -162,7 +136,7 @@ public class UriTemplateParser
 
    /**
     * Encode set of literal characters. Characters must not e double encoded.
-    * 
+    *
     * @param literalCharacters source string
     * @return encoded string
     */
@@ -171,9 +145,7 @@ public class UriTemplateParser
       return UriComponent.recognizeEncode(literalCharacters, UriComponent.PATH, false);
    }
 
-   /**
-    * @param str part of source template between '{' and '}'
-    */
+   /** @param str part of source template between '{' and '}' */
    private void parseRegex(String str)
    {
       int length = str.length();
@@ -208,7 +180,7 @@ public class UriTemplateParser
 
    /**
     * Add name of parameter to normalized template.
-    * 
+    *
     * @param name parameter name
     */
    private void addToTemplate(String name)
@@ -219,7 +191,7 @@ public class UriTemplateParser
    /**
     * Add name of parameter and regular expression corresponded to name to
     * normalized template.
-    * 
+    *
     * @param name parameter name
     * @param reg regular expression
     */
@@ -268,7 +240,7 @@ public class UriTemplateParser
 
    /**
     * Add explicit characters to normalized URI template.
-    * 
+    *
     * @param template source URI template
     * @param start start position for reading characters
     * @param end end position for reading characters
@@ -292,5 +264,4 @@ public class UriTemplateParser
 
       return end - start;
    }
-
 }

@@ -27,6 +27,7 @@ import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -63,9 +64,13 @@ public class ResourceLauncher
     * @return response
     * @throws Exception if any error occurs
     */
-   public ContainerResponse service(String method, String requestURI, String baseURI,
-      Map<String, List<String>> headers, byte[] data, ContainerResponseWriter writer, EnvironmentContext env)
-      throws Exception
+   public ContainerResponse service(String method,
+                                    String requestURI,
+                                    String baseURI,
+                                    Map<String, List<String>> headers,
+                                    byte[] data,
+                                    ContainerResponseWriter writer,
+                                    EnvironmentContext env) throws Exception
    {
 
       if (baseURI == null)
@@ -88,11 +93,16 @@ public class ResourceLauncher
          headers = new MultivaluedMapImpl();
       }
 
-      ByteArrayInputStream in = null;
+      InputStream in;
       if (data != null)
       {
          in = new ByteArrayInputStream(data);
          headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList(Integer.toString(data.length)));
+      }
+      else
+      {
+         in = new EmptyInputStream();
+         headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList("0"));
       }
 
       if (env == null)
@@ -106,11 +116,10 @@ public class ResourceLauncher
          writer = new DummyContainerResponseWriter();
       }
 
-      SecurityContext sctx = (SecurityContext)env.get(SecurityContext.class);
+      SecurityContext securityContext = (SecurityContext)env.get(SecurityContext.class);
 
-      ContainerRequest request =
-         new SecurityContextRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers),
-            sctx);
+      ContainerRequest request = new SecurityContextRequest(method, new URI(requestURI), new URI(baseURI), in,
+         new InputHeadersMap(headers), securityContext);
       ContainerResponse response = new ContainerResponse(writer);
       requestHandler.handleRequest(request, response);
       return response;
@@ -126,10 +135,13 @@ public class ResourceLauncher
     * @return response
     * @throws Exception if any error occurs
     */
-   public ContainerResponse service(String method, String requestURI, String baseURI,
-      Map<String, List<String>> headers, byte[] data, EnvironmentContext env) throws Exception
+   public ContainerResponse service(String method,
+                                    String requestURI,
+                                    String baseURI,
+                                    Map<String, List<String>> headers,
+                                    byte[] data,
+                                    EnvironmentContext env) throws Exception
    {
       return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter(), env);
    }
-
 }

@@ -37,7 +37,6 @@ public class DependencySupplierImpl extends BaseDependencySupplier
 
    public DependencySupplierImpl()
    {
-      super();
    }
 
    public DependencySupplierImpl(Class<? extends Annotation> injectAnnotation)
@@ -50,9 +49,7 @@ public class DependencySupplierImpl extends BaseDependencySupplier
       dependencies.put(key, instance);
    }
 
-   /**
-    * @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class)
-    */
+   /** @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class) */
    @Override
    public Object getComponent(Class<?> type)
    {

@@ -69,6 +69,7 @@ public class AsynchronousJobService
             pool.removeJob(jobId);
          }
 
+         // This response will be sent to client side.
          Response response;
          if (result == null || result.getClass() == void.class || result.getClass() == Void.class)
          {
@@ -93,13 +94,14 @@ public class AsynchronousJobService
          // Result of job.
          ApplicationContextImpl.getCurrent().getContainerResponse().setResponse(response);
 
-         // This response (204) never sent to client.
+         // This response (204) never sent to client side.
          return null;
       }
       else
       {
          final String jobUri = uriInfo.getRequestUri().toString();
-         return Response.status(Response.Status.ACCEPTED)
+         return Response
+            .status(Response.Status.ACCEPTED)
             .header(HttpHeaders.LOCATION, jobUri)
             .entity(jobUri)
             .type(MediaType.TEXT_PLAIN).build();

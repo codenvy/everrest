@@ -20,22 +20,17 @@ package org.everrest.core;
 
 /**
  * Provide object instance of components that support singleton lifecycle.
- * 
+ *
+ * @param <T>
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
- * @param <T>
  */
 public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFactory<T>
 {
-
-   /**
-    * @see ObjectModel
-    */
+   /** @see ObjectModel */
    protected final T model;
 
-   /**
-    * Component instance.
-    */
+   /** Component instance. */
    protected final Object object;
 
    /**
@@ -48,21 +43,16 @@ public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFact
       this.object = object;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Object getInstance(ApplicationContext context)
    {
       // prepared object instance
       return object;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public T getObjectModel()
    {
       return model;
    }
-
 }

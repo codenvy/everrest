@@ -163,8 +163,7 @@ public class ResourceBinderImpl implements ResourceBinder
 
    public ResourceBinderImpl()
    {
-      // Initialize RuntimeDelegate instance
-      // This is first component in life cycle what needs.
+      // Initialize RuntimeDelegate instance. This is first component in life cycle what needs.
       RuntimeDelegate rd = new RuntimeDelegateImpl();
       RuntimeDelegate.setInstance(rd);
    }
@@ -191,7 +190,11 @@ public class ResourceBinderImpl implements ResourceBinder
       }
       catch (Exception e)
       {
-         throw new ResourcePublicationException(e.getMessage());
+         if (e instanceof ResourcePublicationException)
+         {
+            throw (ResourcePublicationException)e;
+         }
+         throw new ResourcePublicationException(e.getMessage(), e);
       }
    }
 
@@ -217,7 +220,11 @@ public class ResourceBinderImpl implements ResourceBinder
       }
       catch (Exception e)
       {
-         throw new ResourcePublicationException(e.getMessage());
+         if (e instanceof ResourcePublicationException)
+         {
+            throw (ResourcePublicationException)e;
+         }
+         throw new ResourcePublicationException(e.getMessage(), e);
       }
    }
 
@@ -305,10 +312,8 @@ public class ResourceBinderImpl implements ResourceBinder
                // sub-resource method or sub-resource locator.
                if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
                {
-                  int subresnum =
-                     resource.getObjectModel().getSubResourceMethods().size()
-                        + resource.getObjectModel().getSubResourceLocators().size();
-                  if (subresnum == 0)
+                  if (0 == resource.getObjectModel().getSubResourceMethods().size()
+                     + resource.getObjectModel().getSubResourceLocators().size())
                   {
                      continue;
                   }
@@ -324,13 +329,22 @@ public class ResourceBinderImpl implements ResourceBinder
    /** {@inheritDoc} */
    public List<ObjectFactory<AbstractResourceDescriptor>> getResources()
    {
-      return rootResources;
+      synchronized (rootResources)
+      {
+         List<ObjectFactory<AbstractResourceDescriptor>> copy
+            = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(rootResources.size());
+         copy.addAll(rootResources);
+         return copy;
+      }
    }
 
    /** {@inheritDoc} */
    public int getSize()
    {
-      return rootResources.size();
+      synchronized (rootResources)
+      {
+         return rootResources.size();
+      }
    }
 
    public ObjectFactory<AbstractResourceDescriptor> removeResource(Class<?> clazz)

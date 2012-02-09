@@ -27,11 +27,10 @@ import java.util.List;
 
 /**
  * @param <V> {@link org.everrest.core.RequestFilter} or
- *        {@link org.everrest.core.ResponseFilter}
+ * {@link org.everrest.core.ResponseFilter}
  */
 public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements ExtMultivaluedMap<UriPattern, V>
 {
-
    private static final long serialVersionUID = 8248982446381545144L;
 
    /**
@@ -50,29 +49,25 @@ public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements Ex
       return l;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void add(UriPattern uriPattern, V value)
    {
       if (value == null)
+      {
          return;
+      }
       List<V> list = getList(uriPattern);
       list.add(value);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public V getFirst(UriPattern uriPattern)
    {
       List<V> list = getList(uriPattern);
       return list != null && list.size() > 0 ? list.get(0) : null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void putSingle(UriPattern uriPattern, V value)
    {
       if (value == null)
@@ -84,5 +79,4 @@ public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements Ex
       list.clear();
       list.add(value);
    }
-
 }

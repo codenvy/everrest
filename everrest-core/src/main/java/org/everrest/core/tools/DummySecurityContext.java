@@ -20,6 +20,7 @@
 package org.everrest.core.tools;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,45 +32,35 @@ import javax.ws.rs.core.SecurityContext;
  */
 public class DummySecurityContext implements SecurityContext
 {
-
    private final Principal principal;
-
    private final Set<String> userRoles;
 
    public DummySecurityContext(Principal principal, Set<String> userRoles)
    {
       this.principal = principal;
-      this.userRoles= new HashSet<String>(userRoles);
+      this.userRoles = Collections.unmodifiableSet(new HashSet<String>(userRoles));
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public String getAuthenticationScheme()
    {
       // Consider as Basic Authentication
       return BASIC_AUTH;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Principal getUserPrincipal()
    {
       return principal;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isSecure()
    {
       return false;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean isUserInRole(String role)
    {
       return userRoles.contains(role);

@@ -155,8 +155,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    public String addJob(Object resource,
                         ResourceMethodDescriptor resourceMethod,
                         Object[] params,
-                        GenericContainerRequest request)
-      throws AsynchronousJobRejectedException
+                        GenericContainerRequest request) throws AsynchronousJobRejectedException
    {
       Future<Object> future;
       try

@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Logger
 {
-
    private static final ConcurrentHashMap<String, Logger> loggers = new ConcurrentHashMap<String, Logger>();
 
    private final org.slf4j.Logger logger;
@@ -218,5 +217,4 @@ public class Logger
    {
       logger.error(s, throwable);
    }
-
 }

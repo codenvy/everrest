@@ -43,8 +43,7 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream
    }
 
    /**
-    * Get original byte buffer instead create copy of it as
-    * {@link #toByteArray()} does.
+    * Get original byte buffer instead create copy of it as {@link #toByteArray()} does.
     *
     * @return original byte buffer
     */
@@ -149,13 +148,13 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream
    }
 
    /**
-    * Expand buffer size to <code>newsize</code>.
+    * Expand buffer size to <code>newSize</code>.
     *
-    * @param newsize new buffer size
+    * @param newSize new buffer size
     */
-   private void expand(int newsize)
+   private void expand(int newSize)
    {
-      byte[] newBuf = new byte[newsize];
+      byte[] newBuf = new byte[newSize];
       System.arraycopy(buf, 0, newBuf, 0, count);
       buf = newBuf;
    }

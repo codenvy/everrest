@@ -36,49 +36,44 @@ import javax.ws.rs.core.SecurityContext;
  */
 class SecurityContextRequest extends ContainerRequest
 {
-   private final SecurityContext sctx;
+   private final SecurityContext securityContext;
 
-   public SecurityContextRequest(String method, URI requestUri, URI baseUri, InputStream entityStream,
-      MultivaluedMap<String, String> httpHeaders, SecurityContext sctx)
+   public SecurityContextRequest(String method,
+                                 URI requestUri,
+                                 URI baseUri,
+                                 InputStream entityStream,
+                                 MultivaluedMap<String, String> httpHeaders,
+                                 SecurityContext securityContext)
    {
       super(method, requestUri, baseUri, entityStream, httpHeaders);
-      this.sctx = sctx;
+      this.securityContext = securityContext;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public String getAuthenticationScheme()
    {
-      return sctx != null ? sctx.getAuthenticationScheme() : null;
+      return securityContext != null ? securityContext.getAuthenticationScheme() : null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Principal getUserPrincipal()
    {
-      return sctx != null ? sctx.getUserPrincipal() : null;
+      return securityContext != null ? securityContext.getUserPrincipal() : null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean isSecure()
    {
-      return sctx != null && sctx.isSecure();
+      return securityContext != null && securityContext.isSecure();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public boolean isUserInRole(String role)
    {
-      return sctx != null && sctx.isUserInRole(role);
+      return securityContext != null && securityContext.isUserInRole(role);
    }
-
 }

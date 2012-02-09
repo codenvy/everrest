@@ -24,6 +24,7 @@ import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
+import org.everrest.core.tools.EmptyInputStream;
 
 import java.io.ByteArrayInputStream;
 
@@ -61,13 +62,17 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
          // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
          // Resource locators can't be processed in asynchronous mode since it is not end point of request.
          GenericContainerRequest request = context.getContainerRequest();
+
+         // Create copy of request. Need to keep 'Accept' headers to be able determine MessageBodyWriter which can be
+         // used to serialize result of method invocation. Do not copy entity stream. This stream is empty any way.
          ContainerRequest copy = new ContainerRequest(
             request.getMethod(),
             request.getRequestUri(),
             request.getBaseUri(),
-            new ByteArrayInputStream(new byte[0]),
+            new EmptyInputStream(),
             request.getRequestHeaders()
          );
+
          String jobId = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, p, copy);
          final String jobUri =
             context.getBaseUriBuilder().path(AsynchronousJobService.class, "get").build(jobId).toString();

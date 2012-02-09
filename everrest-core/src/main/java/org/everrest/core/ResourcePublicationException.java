@@ -33,4 +33,9 @@ public class ResourcePublicationException extends RuntimeException
    {
       super(message);
    }
+
+   public ResourcePublicationException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 eXo Platform SAS.
+ * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,22 +16,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.core.resource;
+package org.everrest.core.tools;
 
-import org.everrest.core.uri.UriPattern;
-
-import java.util.TreeMap;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public class SubResourceLocatorMap extends TreeMap<UriPattern, SubResourceLocatorDescriptor>
+public final class EmptyInputStream extends InputStream
 {
-   private static final long serialVersionUID = 89058515637607594L;
-
-   public SubResourceLocatorMap()
+   public int read() throws IOException
    {
-      super(UriPattern.URIPATTERN_COMPARATOR);
+      return -1;
    }
 }

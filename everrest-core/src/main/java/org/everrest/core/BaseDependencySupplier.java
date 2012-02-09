@@ -154,7 +154,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier
          throw new RuntimeException("Cannot inject provider without type parameter. ");
       }
       final Type actualType = ((ParameterizedType)providerType).getActualTypeArguments()[0];
-      Class<?> componentType;
+      final Class<?> componentType;
       if (actualType instanceof Class)
       {
          componentType = (Class<?>)actualType;
@@ -167,7 +167,6 @@ public abstract class BaseDependencySupplier implements DependencySupplier
       {
          throw new RuntimeException("Unsupported type " + actualType + ". ");
       }
-      final Class<?> fcomponentType = componentType;
 
       // javax.inject.Provider#get() may return null. Such behavior may be unexpected by caller.
       // May be overridden if back-end (e.g. IoC container) provides better solution. 
@@ -176,7 +175,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier
          @Override
          public Object get()
          {
-            return getComponent(fcomponentType);
+            return getComponent(componentType);
          }
       };
    }
