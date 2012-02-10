@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2010 eXo Platform SAS.
+/*
+ * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,51 +16,56 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.everrest.core.tools;
 
-package org.everrest.groovy;
+import java.security.Principal;
 
 /**
- * Base implementation of ResourceId.
- *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public class BaseResourceId implements ResourceId
+public class SimplePrincipal implements Principal
 {
-   private final String id;
+   private final String identity;
 
-   public BaseResourceId(String id)
+   public SimplePrincipal(String identity)
    {
-      if (id == null)
-      {
-         throw new IllegalArgumentException("Id may not be null. ");
-      }
-      this.id = id;
+      this.identity = identity;
    }
 
-   /** {@inheritDoc} */
-   public String getId()
+   @Override
+   public String getName()
    {
-      return id;
+      return identity;
    }
 
-   /** {@inheritDoc} */
    @Override
    public boolean equals(Object obj)
    {
-      return obj != null && getClass() == obj.getClass() && id.equals(((BaseResourceId)obj).id);
+      if (this == obj)
+      {
+         return true;
+      }
+      if (obj == null || getClass() != obj.getClass())
+      {
+         return false;
+      }
+
+      SimplePrincipal other = (SimplePrincipal)obj;
+      return identity == null ? other.identity == null : identity.equals(other.identity);
    }
 
-   /** {@inheritDoc} */
    @Override
    public int hashCode()
    {
-      return id.hashCode();
+      int hash = 7;
+      hash = hash * 31 + (identity == null ? 0 : identity.hashCode());
+      return hash;
    }
 
-   /** {@inheritDoc} */
+   @Override
    public String toString()
    {
-      return getClass().getSimpleName() + '(' + id + ')';
+      return "SimplePrincipal{identity='" + identity + '\'' + '}';
    }
 }

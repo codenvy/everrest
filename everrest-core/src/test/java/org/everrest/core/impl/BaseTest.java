@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
@@ -64,6 +65,7 @@ public abstract class BaseTest extends TestCase
       providers = new ApplicationProviderBinder();
       asynchronousPool = new AsynchronousJobPool(new EverrestConfiguration());
       providers.addContextResolver(asynchronousPool);
+      providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
       resources.addResource(AsynchronousJobService.class, null);
       requestHandler =
          new RequestHandlerImpl(new RequestDispatcher(resources), providers, new DependencySupplierImpl(),

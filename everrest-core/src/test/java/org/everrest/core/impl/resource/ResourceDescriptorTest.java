@@ -678,19 +678,19 @@ public class ResourceDescriptorTest extends BaseTest
 
       i = uris.iterator();
       ResourceMethodMap<SubResourceMethodDescriptor> rmm = srmm.getMethodMap(i.next());
-      assertEquals(1, rmm.size());
+      assertEquals(2, rmm.size()); // Method GET + HEAD (auto-generated)
       assertEquals(1, rmm.get("GET").size());
       assertEquals("m4", rmm.get("GET").get(0).getMethod().getName());
       rmm = srmm.getMethodMap(i.next());
-      assertEquals(1, rmm.size());
+      assertEquals(2, rmm.size());
       assertEquals(1, rmm.get("GET").size());
       assertEquals("m1", rmm.get("GET").get(0).getMethod().getName());
       rmm = srmm.getMethodMap(i.next());
-      assertEquals(1, rmm.size());
+      assertEquals(2, rmm.size());
       assertEquals(1, rmm.get("GET").size());
       assertEquals("m3", rmm.get("GET").get(0).getMethod().getName());
       rmm = srmm.getMethodMap(i.next());
-      assertEquals(1, rmm.size());
+      assertEquals(2, rmm.size());
       assertEquals(3, rmm.get("GET").size());
       assertEquals("m2", rmm.get("GET").get(0).getMethod().getName());
       assertEquals("m5", rmm.get("GET").get(1).getMethod().getName());

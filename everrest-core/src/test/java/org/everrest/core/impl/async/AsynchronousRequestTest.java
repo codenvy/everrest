@@ -60,7 +60,6 @@ public class AsynchronousRequestTest extends BaseTest
    public static class Resource2
    {
       @GET
-//      @Produces("application/json")
       @Path("sub")
       public Msg m()
       {
@@ -131,6 +130,35 @@ public class AsynchronousRequestTest extends BaseTest
       unregistry(Resource1.class);
    }
 
+   public void testListJobsJson() throws Exception
+   {
+      registry(Resource1.class);
+      ContainerResponse response = launcher.service("GET", "/a?async=true", "", null, null, null);
+      assertEquals(202, response.getStatus());
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("accept", "application/json");
+      ByteArrayContainerResponseWriter w = new ByteArrayContainerResponseWriter();
+      response = launcher.service("GET", "/async", "", h, null, w, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("application/json", response.getContentType().toString());
+      unregistry(Resource1.class);
+   }
+
+   public void testListJobsPlainText() throws Exception
+   {
+      registry(Resource1.class);
+      ContainerResponse response = launcher.service("GET", "/a?async=true", "", null, null, null);
+      assertEquals(202, response.getStatus());
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+      h.putSingle("accept", "text/plain");
+      ByteArrayContainerResponseWriter w = new ByteArrayContainerResponseWriter();
+      response = launcher.service("GET", "/async", "", h, null, w, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("text/plain", response.getContentType().toString());
+      System.out.print(new String(w.getBody()));
+      unregistry(Resource1.class);
+   }
+
    public void testRemoveJob() throws Exception
    {
       registry(Resource1.class);
@@ -148,9 +176,9 @@ public class AsynchronousRequestTest extends BaseTest
    public void testMimeTypeResolving() throws Exception
    {
       registry(Resource2.class);
-      MultivaluedMap<String,String>h=new MultivaluedMapImpl();
+      MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.putSingle("accept", "application/json");
-      ContainerResponse response = launcher.service("GET", "/b/sub?async=true", "", /*null*/h, null, null);
+      ContainerResponse response = launcher.service("GET", "/b/sub?async=true", "", h, null, null);
       assertEquals(202, response.getStatus());
       String jobUrl = (String)response.getEntity();
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();

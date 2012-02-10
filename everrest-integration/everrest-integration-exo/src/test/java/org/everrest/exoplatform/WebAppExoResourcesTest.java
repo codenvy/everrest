@@ -96,16 +96,16 @@ public class WebAppExoResourcesTest extends WebAppBaseTest
       @GET
       public void m(Message m)
       {
-         assertEquals(mesageBody, m.getMessage());
+         assertEquals(messageBody, m.getMessage());
       }
    }
 
-   private static final String mesageBody = "EXO RESOURCE TEST";
+   private static final String messageBody = "EXO RESOURCE TEST";
 
    public void testResource() throws Exception
    {
       assertEquals(204,
-         launcher.service("GET", "/WebAppExoResourcesTest.Resource1", "", null, mesageBody.getBytes(), null)
+         launcher.service("GET", "/WebAppExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null)
             .getStatus());
    }
 }

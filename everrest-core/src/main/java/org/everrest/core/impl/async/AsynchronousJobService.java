@@ -20,15 +20,22 @@ package org.everrest.core.impl.async;
 
 import org.everrest.core.impl.ApplicationContextImpl;
 
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
@@ -41,85 +48,157 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-@Path("async/{job}")
+@Path("async")
 public class AsynchronousJobService
 {
    @Context
    private Providers providers;
 
    @GET
-   public Object get(@PathParam("job") String jobId, @Context UriInfo uriInfo)
+   @Path("{job}")
+   public Object get(@PathParam("job") String jobId, @Context UriInfo uriInfo, @Context SecurityContext securityContext)
    {
       AsynchronousJobPool pool = getJobPool();
-      final AsynchronousJob async = pool.getJob(jobId);
-      if (async == null)
-      {
-         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-            .entity("Job " + jobId + " not found. ").type(MediaType.TEXT_PLAIN).build());
-      }
-      if (async.isDone())
-      {
-         Object result;
-         try
-         {
-            result = async.getResult();
-         }
-         finally
-         {
-            pool.removeJob(jobId);
-         }
-
-         // This response will be sent to client side.
-         Response response;
-         if (result == null || result.getClass() == void.class || result.getClass() == Void.class)
-         {
-            response = Response.noContent().build();
-         }
-         else if (Response.class.isAssignableFrom(result.getClass()))
-         {
-            response = (Response)result;
-
-            if (response.getEntity() != null && response.getMetadata().getFirst(HttpHeaders.CONTENT_TYPE) == null)
-            {
-               MediaType contentType = async.getRequest().getAcceptableMediaType(async.getResourceMethod().produces());
-               response.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
-            }
-         }
-         else
-         {
-            MediaType contentType = async.getRequest().getAcceptableMediaType(async.getResourceMethod().produces());
-            response = Response.ok(result, contentType).build();
-         }
-
-         // Result of job.
-         ApplicationContextImpl.getCurrent().getContainerResponse().setResponse(response);
-
-         // This response (204) never sent to client side.
-         return null;
-      }
-      else
-      {
-         final String jobUri = uriInfo.getRequestUri().toString();
-         return Response
-            .status(Response.Status.ACCEPTED)
-            .header(HttpHeaders.LOCATION, jobUri)
-            .entity(jobUri)
-            .type(MediaType.TEXT_PLAIN).build();
-      }
-   }
-
-   @DELETE
-   public void remove(@PathParam("job") String jobId)
-   {
-      AsynchronousJobPool jobPool = getJobPool();
-      if (null == jobPool.removeJob(jobId))
+      final AsynchronousJob job = pool.getJob(jobId);
+      if (job == null)
       {
          throw new WebApplicationException(Response
             .status(Response.Status.NOT_FOUND)
             .entity("Job " + jobId + " not found. ")
-            .type(MediaType.TEXT_PLAIN)
-            .build()
-         );
+            .type(MediaType.TEXT_PLAIN).build());
+      }
+
+      if (securityContext.isUserInRole("administrators")
+         || principalMatched(job.getRequest().getUserPrincipal(), securityContext.getUserPrincipal()))
+      {
+         if (job.isDone())
+         {
+            Object result;
+            try
+            {
+               result = job.getResult();
+            }
+            finally
+            {
+               pool.removeJob(jobId);
+            }
+
+            // This response will be sent to client side.
+            Response response;
+            if (result == null || result.getClass() == void.class || result.getClass() == Void.class)
+            {
+               response = Response.noContent().build();
+            }
+            else if (Response.class.isAssignableFrom(result.getClass()))
+            {
+               response = (Response)result;
+
+               if (response.getEntity() != null && response.getMetadata().getFirst(HttpHeaders.CONTENT_TYPE) == null)
+               {
+                  MediaType contentType = job.getRequest().getAcceptableMediaType(job.getResourceMethod().produces());
+                  response.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
+               }
+            }
+            else
+            {
+               MediaType contentType = job.getRequest().getAcceptableMediaType(job.getResourceMethod().produces());
+               response = Response.ok(result, contentType).build();
+            }
+
+            // Result of job.
+            ApplicationContextImpl.getCurrent().getContainerResponse().setResponse(response);
+
+            // This response (204) never sent to client side.
+            return null;
+         }
+         else
+         {
+            final String jobUri = uriInfo.getRequestUri().toString();
+            return Response
+               .status(Response.Status.ACCEPTED)
+               .header(HttpHeaders.LOCATION, jobUri)
+               .entity(jobUri)
+               .type(MediaType.TEXT_PLAIN).build();
+         }
+      }
+      else
+      {
+         throw new WebApplicationException(Response
+            .status(Response.Status.FORBIDDEN)
+            .entity("GET: (" + jobId + ") - Operation not permitted. ")
+            .type(MediaType.TEXT_PLAIN).build());
+      }
+   }
+
+   @GET
+   @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+   public GenericEntity<List<AsynchronousProcess>> list()
+   {
+      AsynchronousJobPool pool = getJobPool();
+      List<AsynchronousJob> jobs = pool.getAll();
+      List<AsynchronousProcess> processes = new ArrayList<AsynchronousProcess>(jobs.size());
+      for (AsynchronousJob job : jobs)
+      {
+         Principal principal = job.getRequest().getUserPrincipal();
+         processes.add(new AsynchronousProcess(
+            principal != null ? principal.getName() : null,
+            job.getJobId(),
+            job.getRequest().getRequestUri().getPath(),
+            job.isDone() ? "done" : "running"));
+      }
+      // Wrap list with GenericEntity to have chance to determine suitable MessageBodyWriter.
+      // Without such wrapper generic type information is not available.
+      return new GenericEntity<List<AsynchronousProcess>>(processes)
+      {
+      };
+   }
+
+   @DELETE
+   @Path("{job}")
+   public void remove(@PathParam("job") String jobId, @Context SecurityContext securityContext)
+   {
+      AsynchronousJobPool pool = getJobPool();
+      AsynchronousJob job = pool.getJob(jobId);
+      if (job == null)
+      {
+         throw new WebApplicationException(Response
+            .status(Response.Status.NOT_FOUND)
+            .entity("Job " + jobId + " not found. ")
+            .type(MediaType.TEXT_PLAIN).build());
+      }
+
+      if (securityContext.isUserInRole("administrators")
+         || principalMatched(job.getRequest().getUserPrincipal(), securityContext.getUserPrincipal()))
+      {
+         pool.removeJob(jobId);
+      }
+      else
+      {
+         throw new WebApplicationException(Response
+            .status(Response.Status.FORBIDDEN)
+            .entity("DELETE: (" + jobId + ") - Operation not permitted. ")
+            .type(MediaType.TEXT_PLAIN).build());
+      }
+   }
+
+   private boolean principalMatched(Principal principal1, Principal principal2)
+   {
+      if (principal1 == null)
+      {
+         return true;
+      }
+      else
+      {
+         if (principal2 != null)
+         {
+            String name1 = principal1.getName();
+            String name2 = principal2.getName();
+            if (name1 == null && name2 == null || name1 != null && name1.equals(name2))
+            {
+               return true;
+            }
+         }
+         return false;
       }
    }
 

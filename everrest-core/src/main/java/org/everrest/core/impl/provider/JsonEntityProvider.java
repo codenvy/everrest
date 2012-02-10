@@ -76,20 +76,20 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
       DOMSource.class, File.class, InputStream.class, OutputStream.class, JAXBElement.class, MultivaluedMap.class,
       Reader.class, Writer.class, SAXSource.class, StreamingOutput.class, StreamSource.class, String.class};
 
-   private static boolean isIgnored(Class<?> type)
+   private static boolean isSupported(Class<?> type)
    {
       if (type.getAnnotation(JsonTransient.class) != null)
       {
-         return true;
+         return false;
       }
       for (Class<?> c : IGNORED)
       {
          if (c.isAssignableFrom(type))
          {
-            return true;
+            return false;
          }
       }
-      return false;
+      return true;
    }
 
    /** {@inheritDoc} */
@@ -97,7 +97,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
    {
       // say as support all objects
       //return Object.class.isAssignableFrom(type);
-      return !isIgnored(type);
+      return isSupported(type);
    }
 
    /** {@inheritDoc} */
@@ -159,7 +159,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
    {
       // say as support all objects
       //return Object.class.isAssignableFrom(type);
-      return !isIgnored(type);
+      return isSupported(type);
    }
 
    /** {@inheritDoc} */

@@ -24,9 +24,13 @@ import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
+import org.everrest.core.tools.DummySecurityContext;
 import org.everrest.core.tools.EmptyInputStream;
+import org.everrest.core.tools.SecurityContextRequest;
+import org.everrest.core.tools.SimplePrincipal;
 
 import java.io.ByteArrayInputStream;
+import java.security.Principal;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -54,29 +58,41 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
    }
 
    @Override
-   public Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p,
+   public Object invokeMethod(Object resource,
+                              GenericMethodResource methodResource,
+                              Object[] p,
                               ApplicationContext context)
    {
       try
       {
-         // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
-         // Resource locators can't be processed in asynchronous mode since it is not end point of request.
          GenericContainerRequest request = context.getContainerRequest();
+         Principal principal = request.getUserPrincipal();
 
          // Create copy of request. Need to keep 'Accept' headers to be able determine MessageBodyWriter which can be
          // used to serialize result of method invocation. Do not copy entity stream. This stream is empty any way.
-         ContainerRequest copy = new ContainerRequest(
+         Principal copyPrincipal = null;
+         if (principal != null)
+         {
+            copyPrincipal = new SimplePrincipal(principal.getName());
+         }
+
+         ContainerRequest copyRequest = new SecurityContextRequest(
             request.getMethod(),
             request.getRequestUri(),
             request.getBaseUri(),
             new EmptyInputStream(),
-            request.getRequestHeaders()
-         );
+            request.getRequestHeaders(),
+            new DummySecurityContext(copyPrincipal));
 
-         String jobId = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, p, copy);
-         final String jobUri =
-            context.getBaseUriBuilder().path(AsynchronousJobService.class, "get").build(jobId).toString();
-         return Response.status(Response.Status.ACCEPTED).header(HttpHeaders.LOCATION, jobUri).entity(jobUri)
+         // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
+         // Resource locators can't be processed in asynchronous mode since it is not end point of request.
+         final String jobId = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, p, copyRequest);
+         final String jobUri = context.getBaseUriBuilder().path(AsynchronousJobService.class, "get").build(jobId)
+            .toString();
+
+         return Response.status(Response.Status.ACCEPTED)
+            .header(HttpHeaders.LOCATION, jobUri)
+            .entity(jobUri)
             .type(MediaType.TEXT_PLAIN).build();
       }
       catch (AsynchronousJobRejectedException e)

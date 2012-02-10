@@ -453,34 +453,35 @@ public class UriPattern
                                      Map<String, ?> values,
                                      boolean encode)
    {
-      if (!hasUriTemplates(uriPart))
+      if (hasUriTemplates(uriPart))
       {
-         sb.append(uriPart);
-         return;
-      }
+         Matcher m = UriTemplateParser.URI_PARAMETERS_PATTERN.matcher(uriPart);
 
-      Matcher m = UriTemplateParser.URI_PARAMETERS_PATTERN.matcher(uriPart);
-
-      int start = 0;
-      while (m.find())
-      {
-         sb.append(uriPart, start, m.start()); // 'static' part
-         String param = uriPart.substring(m.start() + 1, m.end() - 1);
-
-         Object o = values.get(param);
-         if (o == null)
+         int start = 0;
+         while (m.find())
          {
-            throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
+            sb.append(uriPart, start, m.start()); // 'static' part
+            String param = uriPart.substring(m.start() + 1, m.end() - 1);
+
+            Object o = values.get(param);
+            if (o == null)
+            {
+               throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
+            }
+
+            String value = o.toString();
+            sb.append(encode ? UriComponent.encode(value, component, true) : UriComponent.recognizeEncode(value,
+               component, true));
+            start = m.end();
          }
 
-         String value = o.toString();
-         sb.append(encode ? UriComponent.encode(value, component, true) : UriComponent.recognizeEncode(value,
-            component, true));
-         start = m.end();
+         // copy the last part or uriPart
+         sb.append(uriPart, start, uriPart.length());
       }
-
-      // copy the last part or uriPart
-      sb.append(uriPart, start, uriPart.length());
+      else
+      {
+         sb.append(uriPart);
+      }
    }
 
    /**
@@ -507,55 +508,55 @@ public class UriPattern
                                     Map<String, String> values,
                                     boolean encode)
    {
-      if (!hasUriTemplates(uriPart))
+      if (hasUriTemplates(uriPart))
       {
-         sb.append(uriPart);
-         return offset;
-      }
+         Matcher m = UriTemplateParser.URI_PARAMETERS_PATTERN.matcher(uriPart);
 
-      Matcher m = UriTemplateParser.URI_PARAMETERS_PATTERN.matcher(uriPart);
-
-      int start = 0;
-      while (m.find())
-      {
-         sb.append(uriPart, start, m.start()); // 'static' part
-         String param = uriPart.substring(m.start() + 1, m.end() - 1);
-
-         String value = values.get(param);
-         if (value != null)
+         int start = 0;
+         while (m.find())
          {
-            // Value already known, then don't take new one from array. Value from
-            // map is already validate or encoded, so do nothing about it
-            sb.append(value);
-         }
-         else
-         {
-            // Value is unknown, we met it first time, then process it and keep in
-            // map. Value will be encoded (or validate)before putting in map.
-            if (offset < sourceValues.length)
-            {
-               value = sourceValues[offset++].toString();
-            }
+            sb.append(uriPart, start, m.start()); // 'static' part
+            String param = uriPart.substring(m.start() + 1, m.end() - 1);
 
+            String value = values.get(param);
             if (value != null)
             {
-               value =
-                  encode ? UriComponent.encode(value, component, true) : UriComponent.recognizeEncode(value, component,
-                     true);
-               values.put(param, value);
+               // Value already known, then don't take new one from array. Value from
+               // map is already validate or encoded, so do nothing about it
                sb.append(value);
             }
             else
             {
-               throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
+               // Value is unknown, we met it first time, then process it and keep in
+               // map. Value will be encoded (or validate)before putting in map.
+               if (offset < sourceValues.length)
+               {
+                  value = sourceValues[offset++].toString();
+               }
+
+               if (value != null)
+               {
+                  value =
+                     encode ? UriComponent.encode(value, component, true) : UriComponent.recognizeEncode(value, component,
+                        true);
+                  values.put(param, value);
+                  sb.append(value);
+               }
+               else
+               {
+                  throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
+               }
             }
+            start = m.end();
          }
-         start = m.end();
+
+         // copy the last part or uriPart
+         sb.append(uriPart, start, uriPart.length());
       }
-
-      // copy the last part or uriPart
-      sb.append(uriPart, start, uriPart.length());
-
+      else
+      {
+         sb.append(uriPart);
+      }
       return offset;
    }
 

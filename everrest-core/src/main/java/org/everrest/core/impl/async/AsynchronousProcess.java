@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2010 eXo Platform SAS.
+/*
+ * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,51 +16,47 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
-package org.everrest.groovy;
+package org.everrest.core.impl.async;
 
 /**
- * Base implementation of ResourceId.
+ * Description of AsynchronousJob. It may be serialized to JSON or plain text format to make possible for client to see
+ * what asynchronous jobs in progress.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: $
  */
-public class BaseResourceId implements ResourceId
+public final class AsynchronousProcess
 {
+   private final String owner;
    private final String id;
+   private final String path;
+   private final String status;
 
-   public BaseResourceId(String id)
+   public AsynchronousProcess(String owner, String id, String path, String status)
    {
-      if (id == null)
-      {
-         throw new IllegalArgumentException("Id may not be null. ");
-      }
+      this.owner = owner;
       this.id = id;
+      this.path = path;
+      this.status = status;
    }
 
-   /** {@inheritDoc} */
+   public String getOwner()
+   {
+      return owner;
+   }
+
    public String getId()
    {
       return id;
    }
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean equals(Object obj)
+   public String getPath()
    {
-      return obj != null && getClass() == obj.getClass() && id.equals(((BaseResourceId)obj).id);
+      return path;
    }
 
-   /** {@inheritDoc} */
-   @Override
-   public int hashCode()
+   public String getStatus()
    {
-      return id.hashCode();
-   }
-
-   /** {@inheritDoc} */
-   public String toString()
-   {
-      return getClass().getSimpleName() + '(' + id + ')';
+      return status;
    }
 }

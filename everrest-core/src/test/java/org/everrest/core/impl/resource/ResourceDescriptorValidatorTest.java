@@ -51,7 +51,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest
          new AbstractResourceDescriptorImpl(Resource2.class, ComponentLifecycleScope.PER_REQUEST);
       try
       {
-         resource.accept(new ResourceDescriptorValidator());
+         resource.accept(ResourceDescriptorValidator.getInstance());
          fail("Exception should be here");
       }
       catch (RuntimeException e)
@@ -65,7 +65,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest
          new AbstractResourceDescriptorImpl(Resource3.class, ComponentLifecycleScope.PER_REQUEST);
       for (List<ResourceMethodDescriptor> l : resource.getResourceMethods().values())
       {
-         ResourceDescriptorValidator validator = new ResourceDescriptorValidator();
+         ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
          for (ResourceMethodDescriptor rmd : l)
          {
             Method m = rmd.getMethod();
@@ -93,7 +93,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest
    {
       AbstractResourceDescriptor resource =
          new AbstractResourceDescriptorImpl(Resource4.class, ComponentLifecycleScope.PER_REQUEST);
-      ResourceDescriptorValidator validator = new ResourceDescriptorValidator();
+      ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
       for (ResourceMethodMap<SubResourceMethodDescriptor> srmm : resource.getSubResourceMethods().values())
       {
          for (List<SubResourceMethodDescriptor> l : srmm.values())
@@ -123,7 +123,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest
    {
       AbstractResourceDescriptor resource =
          new AbstractResourceDescriptorImpl(Resource5.class, ComponentLifecycleScope.PER_REQUEST);
-      ResourceDescriptorValidator validator = new ResourceDescriptorValidator();
+      ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
       for (SubResourceLocatorDescriptor rmd : resource.getSubResourceLocators().values())
       {
          String mn = rmd.getMethod().getName();

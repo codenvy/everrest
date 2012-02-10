@@ -41,6 +41,12 @@ public class DummySecurityContext implements SecurityContext
       this.userRoles = Collections.unmodifiableSet(new HashSet<String>(userRoles));
    }
 
+   public DummySecurityContext(Principal principal)
+   {
+      this.principal = principal;
+      this.userRoles = Collections.emptySet();
+   }
+
    /** {@inheritDoc} */
    public String getAuthenticationScheme()
    {

@@ -34,7 +34,6 @@ import org.everrest.core.resource.SubResourceMethodDescriptor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MultivaluedMap;
@@ -71,21 +70,17 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 {
-
    /** Visitor instance. */
-   private static AtomicReference<ResourceDescriptorValidator> instance =
-      new AtomicReference<ResourceDescriptorValidator>();
+   private static final ResourceDescriptorValidator INSTANCE = new ResourceDescriptorValidator();
 
    /** @return singleton instance of ResourceDescriptorVisitor */
    public static ResourceDescriptorValidator getInstance()
    {
-      ResourceDescriptorValidator t = instance.get();
-      if (t == null)
-      {
-         instance.compareAndSet(null, new ResourceDescriptorValidator());
-         t = instance.get();
-      }
-      return t;
+      return INSTANCE;
+   }
+
+   private ResourceDescriptorValidator()
+   {
    }
 
    /**
@@ -100,9 +95,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
       if (ard.isRootResource() && ard.getPathValue().getPath().length() == 0)
       {
-         String msg =
-            "Resource class " + ard.getObjectClass()
-               + " is root resource but path value empty, see javax.ws.rs.Path#value()";
+         String msg = "Resource class " + ard.getObjectClass()
+            + " is root resource but path value empty, see javax.ws.rs.Path#value()";
          throw new RuntimeException(msg);
       }
 
@@ -134,7 +128,6 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
       {
          loc.accept(this);
       }
-
    }
 
    /**
@@ -157,9 +150,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
    {
       if (srld.getPathValue().getPath().length() == 0)
       {
-         String msg =
-            "Path value is empty for method " + srld.getMethod().getName() + " in resource class "
-               + srld.getParentResource().getObjectClass() + ", see javax.ws.rs.Path#value()";
+         String msg = "Path value is empty for method " + srld.getMethod().getName() + " in resource class "
+            + srld.getParentResource().getObjectClass() + ", see javax.ws.rs.Path#value()";
          throw new RuntimeException(msg);
       }
       checkMethodParameters(srld);
@@ -174,9 +166,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
    {
       if (srmd.getPathValue().getPath().length() == 0)
       {
-         String msg =
-            "Path value is null or empty for method " + srmd.getMethod().getName() + " in resource class "
-               + srmd.getParentResource().getObjectClass() + ", see javax.ws.rs.Path#value()";
+         String msg = "Path value is null or empty for method " + srmd.getMethod().getName() + " in resource class "
+            + srmd.getParentResource().getObjectClass() + ", see javax.ws.rs.Path#value()";
          throw new RuntimeException(msg);
       }
       checkMethodParameters(srmd);
@@ -189,7 +180,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
     *
     * @param rmd See {@link ResourceMethodDescriptor}
     */
-   private static void checkMethodParameters(ResourceMethodDescriptor rmd)
+   private void checkMethodParameters(ResourceMethodDescriptor rmd)
    {
       List<MethodParameter> l = rmd.getMethodParameters();
       boolean entity = false;
@@ -211,22 +202,17 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
             }
             else
             {
-               String msg =
-                  "Wrong or absent annotation at parameter with index " + i + " at "
-                     + rmd.getParentResource().getObjectClass() + "#" + rmd.getMethod().getName();
+               String msg = "Wrong or absent annotation at parameter with index " + i + " at "
+                  + rmd.getParentResource().getObjectClass() + "#" + rmd.getMethod().getName();
                throw new RuntimeException(msg);
             }
-
          }
-         else
+         else if (mp.getAnnotation().annotationType() == FormParam.class)
          {
-            if (mp.getAnnotation().annotationType() == FormParam.class)
+            form = true;
+            if (entity) // entity already met then check type of entity
             {
-               form = true;
-               if (entity) // entity already met then check type of entity
-               {
-                  checkFormParam(mp.getParameterClass(), mp.getGenericType());
-               }
+               checkFormParam(mp.getParameterClass(), mp.getGenericType());
             }
          }
       }
@@ -239,7 +225,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
     *
     * @param srld SubResourceLocatorDescriptor
     */
-   private static void checkMethodParameters(SubResourceLocatorDescriptor srld)
+   private void checkMethodParameters(SubResourceLocatorDescriptor srld)
    {
       List<MethodParameter> l = srld.getMethodParameters();
       for (int i = 0; i < l.size(); i++)
@@ -250,9 +236,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
          if (mp.getAnnotation() == null)
          {
             // not allowed to have not annotated parameters in resource locator
-            String msg =
-               "Wrong or absent annotation at parameter with index " + i + " at "
-                  + srld.getParentResource().getObjectClass() + "#" + srld.getMethod().getName();
+            String msg = "Wrong or absent annotation at parameter with index " + i + " at "
+               + srld.getParentResource().getObjectClass() + "#" + srld.getMethod().getName();
             throw new RuntimeException(msg);
          }
       }
@@ -263,47 +248,24 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
     *
     * @param clazz class to be checked
     * @param type generic type
-    * @see #checkGenericType(Type)
     */
    @SuppressWarnings("rawtypes")
-   private static void checkFormParam(Class clazz, Type type)
+   private void checkFormParam(Class clazz, Type type)
    {
-      if (MultivaluedMap.class != clazz || !checkGenericType(type))
+      if ((MultivaluedMap.class == clazz) && (type instanceof ParameterizedType))
       {
-         String msg =
-            "If a any method parameter is annotated with FormParam then type"
-               + " of entity parameter MUST be MultivalueMap<String, String> or FormEntity";
-         throw new RuntimeException(msg);
-      }
-   }
-
-   /**
-    * Check is supplied class parameterized as &lt;String, String&gt;.
-    *
-    * @param type generic type
-    * @return true if type is {@link ParameterizedType} and parameterized
-    *         &lt;String, String&gt;, false otherwise
-    */
-   private static boolean checkGenericType(Type type)
-   {
-      if (type instanceof ParameterizedType)
-      {
-         ParameterizedType pt = (ParameterizedType)type;
-         Type[] genericTypes = pt.getActualTypeArguments();
-         if (genericTypes.length == 2)
+         Type[] actualTypes = ((ParameterizedType)type).getActualTypeArguments();
+         if (actualTypes.length == 2)
          {
-            try
+            if ((String.class == actualTypes[0]) && (String.class == actualTypes[1]))
             {
-               return (String.class == genericTypes[0]) && (String.class == genericTypes[1]);
-            }
-            catch (ClassCastException e)
-            {
-               return false;
+               return;
             }
          }
       }
-      // not parameterized type
-      return false;
+      String msg = "If a any method parameter is annotated with FormParam then type"
+         + " of entity parameter MUST be MultivalueMap<String, String> or FormEntity";
+      throw new RuntimeException(msg);
    }
 
    /** {@inheritDoc} */
@@ -341,5 +303,4 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
          f.accept(this);
       }
    }
-
 }

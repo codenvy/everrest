@@ -34,7 +34,7 @@ import javax.ws.rs.core.SecurityContext;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-class SecurityContextRequest extends ContainerRequest
+public class SecurityContextRequest extends ContainerRequest
 {
    private final SecurityContext securityContext;
 

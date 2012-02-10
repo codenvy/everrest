@@ -21,6 +21,7 @@ package org.everrest.core.servlet;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 
 import java.util.LinkedHashSet;
@@ -54,11 +55,12 @@ public final class EverrestApplication extends Application
    public EverrestApplication(EverrestConfiguration config)
    {
       classes = new LinkedHashSet<Class<?>>(1);
-      singletons = new LinkedHashSet<Object>(2);
+      singletons = new LinkedHashSet<Object>(3);
       if (config.isAsynchronousSupported())
       {
-         singletons.add(new AsynchronousJobPool(config));
          classes.add(AsynchronousJobService.class);
+         singletons.add(new AsynchronousJobPool(config));
+         singletons.add(new AsynchronousProcessListWriter());
       }
       if (config.isCheckSecurity())
       {

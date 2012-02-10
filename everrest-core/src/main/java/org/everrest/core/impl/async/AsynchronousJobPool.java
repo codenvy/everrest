@@ -19,14 +19,16 @@
 package org.everrest.core.impl.async;
 
 import org.everrest.core.GenericContainerRequest;
-import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.util.Logger;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -76,7 +78,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(AsynchronousJobPool.class);
 
-   /** Unique job ID generator. */
+   /** Generator for unique job ID . */
    private static final AtomicLong jobIdGenerator = new AtomicLong(1);
 
    private static String nextJobId()
@@ -84,7 +86,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       return Long.toString(jobIdGenerator.getAndIncrement());
    }
 
-   /** When timeout (in minutes) reached then an asynchronous operation may be removed from the pool. */
+   /** When timeout (in minutes) reached then an asynchronous job may be removed from the pool. */
    private final int jobTimeout;
 
    /** Max cache size. */
@@ -170,7 +172,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       AsynchronousJob job = new AsynchronousJob(
          nextJobId(),
          future,
-         System.currentTimeMillis() + (jobTimeout * 60 * 1000),
+         System.currentTimeMillis() + jobTimeout * 60 * 1000,
          resourceMethod,
          request
       );
@@ -206,11 +208,19 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    public AsynchronousJob removeJob(String jobId)
    {
       AsynchronousJob job = jobs.remove(jobId);
-      if (job != null)
+      if (!(job == null || job.isDone()))
       {
          job.cancel();
       }
       return job;
+   }
+
+   public List<AsynchronousJob> getAll()
+   {
+      Collection<AsynchronousJob> all = jobs.values();
+      List<AsynchronousJob> copy = new ArrayList<AsynchronousJob>(all.size());
+      copy.addAll(all);
+      return copy;
    }
 
    @PreDestroy

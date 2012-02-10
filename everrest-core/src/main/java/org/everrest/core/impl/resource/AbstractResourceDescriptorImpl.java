@@ -68,7 +68,6 @@ import javax.ws.rs.core.MediaType;
  */
 public class AbstractResourceDescriptorImpl extends BaseObjectModel implements AbstractResourceDescriptor
 {
-
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(AbstractResourceDescriptorImpl.class);
 
@@ -107,15 +106,15 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    private AbstractResourceDescriptorImpl(Path path, Class<?> resourceClass, ComponentLifecycleScope scope)
    {
       super(resourceClass, scope);
-      if (path != null)
+      if (path == null)
       {
-         this.path = new PathValue(path.value());
-         uriPattern = new UriPattern(path.value());
+         this.path = null;
+         this.uriPattern = null;
       }
       else
       {
-         this.path = null;
-         uriPattern = null;
+         this.path = new PathValue(path.value());
+         this.uriPattern = new UriPattern(path.value());
       }
       this.resourceMethods = new ResourceMethodMap<ResourceMethodDescriptor>();
       this.subResourceMethods = new SubResourceMethodMap();
@@ -177,12 +176,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       {
          for (Annotation a : method.getAnnotations())
          {
-            Class<?> ac = a.annotationType();
+            Class<?> aClass = a.annotationType();
             if (!Modifier.isPublic(method.getModifiers())
-               && (ac == CookieParam.class || ac == Consumes.class || ac == Context.class || ac == DefaultValue.class
-               || ac == Encoded.class || ac == FormParam.class || ac == HeaderParam.class || ac == MatrixParam.class
-               || ac == Path.class || ac == PathParam.class || ac == Produces.class || ac == QueryParam.class || ac
-               .getAnnotation(HttpMethod.class) != null))
+               && (aClass == CookieParam.class || aClass == Consumes.class || aClass == Context.class
+               || aClass == DefaultValue.class || aClass == Encoded.class || aClass == FormParam.class
+               || aClass == HeaderParam.class || aClass == MatrixParam.class || aClass == Path.class
+               || aClass == PathParam.class || aClass == Produces.class || aClass == QueryParam.class
+               || aClass.getAnnotation(HttpMethod.class) != null))
             {
                LOG.warn("Non-public method at resource " + toString() + " annotated with JAX-RS annotation: " + a);
             }
@@ -221,12 +221,10 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                if (subPath == null)
                {
                   // resource method
-                  ResourceMethodDescriptor res =
-                     new ResourceMethodDescriptorImpl(method, httpMethod.value(), params, this, consumes, produces,
-                        additional);
-                  ResourceMethodDescriptor exist =
-                     findMethodResourceMediaType(resourceMethods.getList(httpMethod.value()), res.consumes(),
-                        res.produces());
+                  ResourceMethodDescriptor res = new ResourceMethodDescriptorImpl(method, httpMethod.value(), params,
+                     this, consumes, produces, additional);
+                  ResourceMethodDescriptor exist = findMethodResourceMediaType(
+                     resourceMethods.getList(httpMethod.value()), res.consumes(), res.produces());
                   if (exist == null)
                   {
                      resourceMethods.add(httpMethod.value(), res);
@@ -283,26 +281,22 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             }
          }
       }
-      int resMethodCount = resourceMethods.size() + subResourceMethods.size() + subResourceLocators.size();
-      if (resMethodCount == 0)
+      if (resourceMethods.size() + subResourceMethods.size() + subResourceLocators.size() == 0)
       {
          // Warn instead throw exception. Lets user resolve such situation. 
          String msg =
             "Not found any resource methods, sub-resource methods or sub-resource locators in "
                + resourceClass.getName();
          LOG.warn(msg);
-         //throw new RuntimeException(msg);
       }
 
       // End method processing.
-      // Start HEAD and OPTIONS resolving, see JAX-RS (JSR-311) specification
-      // section 3.3.5
+      // Start HEAD and OPTIONS resolving, see JAX-RS (JSR-311) specification section 3.3.5
       resolveHeadRequest();
       resolveOptionsRequest();
 
       resourceMethods.sort();
       subResourceMethods.sort();
-
       // sub-resource locators already sorted
    }
 
@@ -316,67 +310,65 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    protected List<MethodParameter> createMethodParametersList(Class<?> resourceClass, Method method)
    {
       Class<?>[] parameterClasses = method.getParameterTypes();
-      if (parameterClasses.length == 0)
+      if (parameterClasses.length > 0)
       {
-         return java.util.Collections.emptyList();
-      }
+         Type[] parameterGenTypes = method.getGenericParameterTypes();
+         Annotation[][] annotations = method.getParameterAnnotations();
 
-      Type[] parameterGenTypes = method.getGenericParameterTypes();
-      Annotation[][] annotations = method.getParameterAnnotations();
-
-      List<MethodParameter> params = new ArrayList<MethodParameter>(parameterClasses.length);
-      for (int i = 0; i < parameterClasses.length; i++)
-      {
-         String defaultValue = null;
-         Annotation annotation = null;
-         boolean encoded = false;
-
-         List<String> allowedAnnotation = ParameterHelper.RESOURCE_METHOD_PARAMETER_ANNOTATIONS;
-
-         for (Annotation a : annotations[i])
+         List<MethodParameter> params = new ArrayList<MethodParameter>(parameterClasses.length);
+         boolean classEncoded = resourceClass.getAnnotation(Encoded.class) != null;
+         boolean methodEncoded = method.getAnnotation(Encoded.class) != null;
+         for (int i = 0; i < parameterClasses.length; i++)
          {
-            Class<?> ac = a.annotationType();
-            if (allowedAnnotation.contains(ac.getName()))
-            {
+            String defaultValue = null;
+            Annotation annotation = null;
+            boolean encoded = false;
 
-               if (annotation == null)
+            for (int j = 0; j < annotations[i].length; j++)
+            {
+               Annotation a = annotations[i][j];
+               Class<?> aClass = a.annotationType();
+               if (ParameterHelper.RESOURCE_METHOD_PARAMETER_ANNOTATIONS.contains(aClass.getName()))
                {
+                  if (annotation != null)
+                  {
+                     String msg =
+                        "JAX-RS annotations on one of method parameters of resource " + toString() + ", method "
+                           + method.getName() + " are equivocality. " + "Annotations: " + annotation + " and " + a
+                           + " can't be applied to one parameter.";
+                     throw new RuntimeException(msg);
+                  }
                   annotation = a;
+               }
+               else if (aClass == Encoded.class)
+               {
+                  encoded = true;
+               }
+               else if (aClass == DefaultValue.class)
+               {
+                  defaultValue = ((DefaultValue)a).value();
                }
                else
                {
-                  String msg =
-                     "JAX-RS annotations on one of method parameters of resource " + toString() + ", method "
-                        + method.getName() + " are equivocality. " + "Annotations: " + annotation + " and " + a
-                        + " can't be applied to one parameter.";
-                  throw new RuntimeException(msg);
+                  LOG.warn("Method parameter of resource " + toString() + ", method " + method.getName()
+                     + " contains unknown or not valid JAX-RS annotation " + a.toString() + ". It will be ignored.");
                }
+            }
 
-            }
-            else if (ac == Encoded.class)
-            {
-               encoded = true;
-            }
-            else if (ac == DefaultValue.class)
-            {
-               defaultValue = ((DefaultValue)a).value();
-            }
-            else
-            {
-               LOG.warn("Method parameter of resource " + toString() + ", method " + method.getName()
-                  + " contains unknown or not valid JAX-RS annotation " + a.toString() + ". It will be ignored.");
-            }
+            MethodParameter mp = new MethodParameterImpl(
+               annotation,
+               annotations[i],
+               parameterClasses[i],
+               parameterGenTypes[i],
+               defaultValue,
+               encoded || methodEncoded || classEncoded);
+            params.add(mp);
          }
 
-         encoded = encoded || resourceClass.getAnnotation(Encoded.class) != null;
-
-         MethodParameter mp =
-            new MethodParameterImpl(annotation, annotations[i], parameterClasses[i], parameterGenTypes[i],
-               defaultValue, encoded);
-         params.add(mp);
+         return params;
       }
 
-      return params;
+      return Collections.emptyList();
    }
 
    /**
@@ -389,43 +381,34 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     */
    protected void resolveHeadRequest()
    {
-
-      List<ResourceMethodDescriptor> getRes = resourceMethods.get(HttpMethod.GET);
-      if (getRes == null || getRes.size() == 0)
+      List<ResourceMethodDescriptor> getResources = resourceMethods.get(HttpMethod.GET);
+      if (getResources != null && getResources.size() > 0)
       {
-         return; // nothing to do, there is not 'GET' methods
-      }
-
-      // If there is no methods for 'HEAD' anyway never return null.
-      // Instead null empty List will be returned.
-      List<ResourceMethodDescriptor> headRes = resourceMethods.getList(HttpMethod.HEAD);
-
-      for (ResourceMethodDescriptor rmd : getRes)
-      {
-         if (findMethodResourceMediaType(headRes, rmd.consumes(), rmd.produces()) == null)
+         List<ResourceMethodDescriptor> headResources = resourceMethods.getList(HttpMethod.HEAD);
+         for (ResourceMethodDescriptor rmd : getResources)
          {
-            headRes.add(new ResourceMethodDescriptorImpl(rmd.getMethod(), HttpMethod.HEAD, rmd.getMethodParameters(),
-               this, rmd.consumes(), rmd.produces(), rmd.getAnnotations()));
+            if (findMethodResourceMediaType(headResources, rmd.consumes(), rmd.produces()) == null)
+            {
+               headResources.add(new ResourceMethodDescriptorImpl(rmd.getMethod(), HttpMethod.HEAD, rmd.getMethodParameters(),
+                  this, rmd.consumes(), rmd.produces(), rmd.getAnnotations()));
+            }
          }
       }
+
       for (ResourceMethodMap<SubResourceMethodDescriptor> rmm : subResourceMethods.values())
       {
-         List<SubResourceMethodDescriptor> getSubres = rmm.get(HttpMethod.GET);
-         if (getSubres == null || getSubres.size() == 0)
+         List<SubResourceMethodDescriptor> getSubResources = rmm.get(HttpMethod.GET);
+         if (getSubResources != null && getSubResources.size() > 0)
          {
-            continue; // nothing to do, there is not 'GET' methods
-         }
-
-         // If there is no methods for 'HEAD' anyway never return null.
-         // Instead null empty List will be returned.
-         List<SubResourceMethodDescriptor> headSubres = rmm.getList(HttpMethod.HEAD);
-         for (SubResourceMethodDescriptor srmd : getSubres)
-         {
-            if (findMethodResourceMediaType(headSubres, srmd.consumes(), srmd.produces()) == null)
+            List<SubResourceMethodDescriptor> headSubResources = rmm.getList(HttpMethod.HEAD);
+            for (SubResourceMethodDescriptor srmd : getSubResources)
             {
-               headSubres.add(new SubResourceMethodDescriptorImpl(srmd.getPathValue(), srmd.getMethod(),
-                  HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(),
-                  srmd.getAnnotations()));
+               if (findMethodResourceMediaType(headSubResources, srmd.consumes(), srmd.produces()) == null)
+               {
+                  headSubResources.add(new SubResourceMethodDescriptorImpl(srmd.getPathValue(), srmd.getMethod(),
+                     HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(),
+                     srmd.getAnnotations()));
+               }
             }
          }
       }
@@ -446,8 +429,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       {
          List<MethodParameter> mps = Collections.emptyList();
          List<MediaType> consumes = MediaTypeHelper.DEFAULT_TYPE_LIST;
-         List<MediaType> produces = new ArrayList<MediaType>(1);
-         produces.add(MediaTypeHelper.WADL_TYPE);
+         List<MediaType> produces = Collections.singletonList(MediaTypeHelper.WADL_TYPE);
          o.add(new OptionsRequestResourceMethodDescriptorImpl(null, "OPTIONS", mps, this, consumes, produces,
             new Annotation[0]));
       }
@@ -486,10 +468,11 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     * has supplied annotation
     * @return annotation from class or its ancestor or null if nothing found
     */
-   protected <T extends Annotation> T getMethodAnnotation(Method method, Class<?> resourceClass,
-                                                          Class<T> annotationClass, boolean metaAnnotation)
+   protected <T extends Annotation> T getMethodAnnotation(Method method,
+                                                          Class<?> resourceClass,
+                                                          Class<T> annotationClass,
+                                                          boolean metaAnnotation)
    {
-
       T annotation = metaAnnotation ? getMetaAnnotation(method, annotationClass) : method.getAnnotation(annotationClass);
 
       if (annotation == null)
@@ -509,12 +492,12 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          }
          if (inhMethod == null)
          {
-            for (Class<?> intf : resourceClass.getInterfaces())
+            for (Class<?> interf : resourceClass.getInterfaces())
             {
                try
                {
 
-                  Method tmp = intf.getMethod(method.getName(), method.getParameterTypes());
+                  Method tmp = interf.getMethod(method.getName(), method.getParameterTypes());
                   if (inhMethod == null)
                   {
                      inhMethod = tmp;
@@ -533,14 +516,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
          if (inhMethod != null)
          {
-            if (metaAnnotation)
-            {
-               annotation = getMetaAnnotation(inhMethod, annotationClass);
-            }
-            else
-            {
-               annotation = inhMethod.getAnnotation(annotationClass);
-            }
+            annotation = metaAnnotation
+               ? getMetaAnnotation(inhMethod, annotationClass)
+               : inhMethod.getAnnotation(annotationClass);
          }
       }
 
@@ -557,9 +535,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     * @return ResourceMethodDescriptor or null if nothing found
     */
    protected <T extends ResourceMethodDescriptor> ResourceMethodDescriptor findMethodResourceMediaType(List<T> rmds,
-                                                                                                       List<MediaType> consumes, List<MediaType> produces)
+                                                                                                       List<MediaType> consumes,
+                                                                                                       List<MediaType> produces)
    {
-
       ResourceMethodDescriptor matched = null;
       for (Iterator<T> iterator = rmds.iterator(); matched == null && iterator.hasNext(); )
       {
@@ -575,7 +553,6 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             matched = rmd; // matched resource method
          }
       }
-
       return matched;
    }
 
