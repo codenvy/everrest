@@ -153,39 +153,39 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
    /** {@inheritDoc} */
    public Param createParam(MethodParameter methodParameter)
    {
-      Param wadlParemeter = null;
+      Param wadlParameter = null;
       Annotation annotation = methodParameter.getAnnotation();
       Class<?> annotationClass = methodParameter.getAnnotation().annotationType();
       // In fact annotation may be one of from
       // MethodParameterHelper#PARAMETER_ANNOTATIONS_MAP
       if (annotationClass == PathParam.class)
       {
-         wadlParemeter = new Param();
+         wadlParameter = new Param();
          // attribute 'name'
-         wadlParemeter.setName(((PathParam)annotation).value());
+         wadlParameter.setName(((PathParam)annotation).value());
          // attribute 'style'
-         wadlParemeter.setStyle(ParamStyle.TEMPLATE);
+         wadlParameter.setStyle(ParamStyle.TEMPLATE);
       }
       else if (annotationClass == MatrixParam.class)
       {
-         wadlParemeter = new Param();
-         wadlParemeter.setName(((MatrixParam)annotation).value());
-         wadlParemeter.setStyle(ParamStyle.MATRIX);
+         wadlParameter = new Param();
+         wadlParameter.setName(((MatrixParam)annotation).value());
+         wadlParameter.setStyle(ParamStyle.MATRIX);
       }
       else if (annotationClass == QueryParam.class)
       {
-         wadlParemeter = new Param();
-         wadlParemeter.setName(((QueryParam)annotation).value());
-         wadlParemeter.setStyle(ParamStyle.QUERY);
+         wadlParameter = new Param();
+         wadlParameter.setName(((QueryParam)annotation).value());
+         wadlParameter.setStyle(ParamStyle.QUERY);
       }
       else if (annotationClass == HeaderParam.class)
       {
-         wadlParemeter = new Param();
-         wadlParemeter.setName(((HeaderParam)annotation).value());
-         wadlParemeter.setStyle(ParamStyle.HEADER);
+         wadlParameter = new Param();
+         wadlParameter.setName(((HeaderParam)annotation).value());
+         wadlParameter.setStyle(ParamStyle.HEADER);
       }
 
-      if (wadlParemeter == null)
+      if (wadlParameter == null)
       // ignore this method parameter
       {
          return null;
@@ -195,50 +195,50 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
       Class<?> parameterClass = methodParameter.getParameterClass();
       if (parameterClass == List.class || parameterClass == Set.class || parameterClass == SortedSet.class)
       {
-         wadlParemeter.setRepeating(true);
+         wadlParameter.setRepeating(true);
       }
 
       // attribute 'default'
       if (methodParameter.getDefaultValue() != null)
       {
-         wadlParemeter.setDefault(methodParameter.getDefaultValue());
+         wadlParameter.setDefault(methodParameter.getDefaultValue());
       }
 
       // attribute 'type'
       if (parameterClass.equals(Boolean.class) || parameterClass.equals(boolean.class))
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "boolean", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "boolean", "xs"));
       }
       else if (parameterClass.equals(Byte.class) || parameterClass.equals(byte.class))
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "byte", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "byte", "xs"));
       }
       else if (parameterClass.equals(Short.class) || parameterClass.equals(short.class))
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "short", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "short", "xs"));
       }
       else if (parameterClass.equals(Integer.class) || parameterClass.equals(int.class))
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "integer", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "integer", "xs"));
       }
       else if (parameterClass.equals(Long.class) || parameterClass.equals(long.class))
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "long", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "long", "xs"));
       }
       else if (parameterClass.equals(Float.class) || parameterClass.equals(float.class))
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "float", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "float", "xs"));
       }
       else if (parameterClass.equals(Double.class) || parameterClass.equals(double.class))
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "double", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "double", "xs"));
       }
       else
       {
-         wadlParemeter.setType(new QName("http://www.w3.org/2001/XMLSchema", "string", "xs"));
+         wadlParameter.setType(new QName("http://www.w3.org/2001/XMLSchema", "string", "xs"));
       }
 
-      return wadlParemeter;
+      return wadlParameter;
    }
 
 }

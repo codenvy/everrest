@@ -29,7 +29,6 @@ import org.everrest.core.tools.EmptyInputStream;
 import org.everrest.core.tools.SecurityContextRequest;
 import org.everrest.core.tools.SimplePrincipal;
 
-import java.io.ByteArrayInputStream;
 import java.security.Principal;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -60,7 +59,7 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
    @Override
    public Object invokeMethod(Object resource,
                               GenericMethodResource methodResource,
-                              Object[] p,
+                              Object[] params,
                               ApplicationContext context)
    {
       try
@@ -86,9 +85,11 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
 
          // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
          // Resource locators can't be processed in asynchronous mode since it is not end point of request.
-         final String jobId = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, p, copyRequest);
-         final String jobUri = context.getBaseUriBuilder().path(AsynchronousJobService.class, "get").build(jobId)
-            .toString();
+         AsynchronousJob job = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
+         job.getContext().put("org.everrest.async.request", copyRequest);
+         job.getContext().put("org.everrest.async.providers", context.getProviders());
+         final String jobUri = context.getBaseUriBuilder().path(AsynchronousJobService.class, "get")
+            .build(job.getJobId()).toString();
 
          return Response.status(Response.Status.ACCEPTED)
             .header(HttpHeaders.LOCATION, jobUri)

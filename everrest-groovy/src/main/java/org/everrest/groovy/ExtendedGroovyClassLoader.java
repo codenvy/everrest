@@ -66,13 +66,6 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
       protected Class createClass(byte[] code, ClassNode classNode)
       {
          ExtendedInnerLoader cl = (ExtendedInnerLoader)getDefiningClassLoader();
-         /*String classname = classNode.getName();
-         int i = classname.lastIndexOf('.');
-         if (i != -1)
-         {
-            String pkgname = classname.substring(0, i);
-            cl.definePackage(pkgname);
-         }*/
          Class clazz = cl.defineClass(classNode.getName(), code, cunit.getAST().getCodeSource());
          getLoadedClasses().add(clazz);
          if (target == null)
@@ -86,7 +79,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
                targetSunit = module.getContext();
             }
             if (targetSunit == sunit && targetClassNode == classNode)
+            {
                target = clazz;
+            }
          }
          return clazz;
       }
@@ -117,13 +112,6 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
       protected Class createClass(byte[] code, ClassNode classNode)
       {
          ExtendedInnerLoader cl = (ExtendedInnerLoader)getDefiningClassLoader();
-         /*String classname = classNode.getName();
-         int i = classname.lastIndexOf('.');
-         if (i != -1)
-         {
-            String pkgname = classname.substring(0, i);
-            cl.definePackage(pkgname);
-         }*/
          Class clazz = cl.defineClass(classNode.getName(), code, cunit.getAST().getCodeSource());
          getLoadedClasses().add(clazz);
          ModuleNode module = classNode.getModule();
@@ -131,7 +119,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
          {
             SourceUnit currentSunit = module.getContext();
             if (sunitSet.contains(currentSunit))
+            {
                compiledClasses.add(clazz);
+            }
          }
          return clazz;
       }
@@ -158,7 +148,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
       {
          Package pkg = getPackage(name);
          if (pkg == null)
+         {
             super.definePackage(name, null, null, null, null, null, null, null);
+         }
       }
    }
 
@@ -178,7 +170,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
    }
 
    protected Class doParseClass(InputStream in, String fileName, SourceFile[] files, int phase,
-      CompilerConfiguration config, boolean shouldCacheSource) throws CompilationFailedException
+                                CompilerConfiguration config, boolean shouldCacheSource) throws CompilationFailedException
    {
       synchronized (sourceCache)
       {
@@ -191,13 +183,15 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
             if (files != null)
             {
                for (int i = 0; i < files.length; i++)
+               {
                   cunit.addSource(files[i].getPath());
+               }
             }
             SingleClassCollector collector = createSingleCollector(cunit, targetSunit);
             cunit.setClassgenCallback(collector);
             cunit.compile(phase);
 
-            for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext();)
+            for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext(); )
             {
                Class clazz = (Class)iter.next();
                String classname = clazz.getName();
@@ -207,7 +201,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
                   String pkgname = classname.substring(0, i);
                   Package pkg = getPackage(pkgname);
                   if (pkg == null)
+                  {
                      definePackage(pkgname, null, null, null, null, null, null, null);
+                  }
                }
                setClassCacheEntry(clazz);
             }
@@ -215,7 +211,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
             target = collector.getTarget();
 
             if (shouldCacheSource)
+            {
                sourceCache.put(fileName, target);
+            }
          }
 
          return target;
@@ -235,12 +233,14 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
          CompilationUnit cunit = createCompilationUnit(config, cs);
          Set<SourceUnit> setSunit = new HashSet<SourceUnit>();
          for (int i = 0; i < sources.length; i++)
+         {
             setSunit.add(cunit.addSource(sources[i].getPath()));
+         }
          MultipleClassCollector collector = createMultipleCollector(cunit, setSunit);
          cunit.setClassgenCallback(collector);
          cunit.compile(phase);
 
-         for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext();)
+         for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext(); )
          {
             Class clazz = (Class)iter.next();
             String classname = clazz.getName();
@@ -250,7 +250,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
                String pkgname = classname.substring(0, i);
                Package pkg = getPackage(pkgname);
                if (pkg == null)
+               {
                   definePackage(pkgname, null, null, null, null, null, null, null);
+               }
             }
             setClassCacheEntry(clazz);
          }
@@ -261,7 +263,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
 
    /**
     * @see groovy.lang.GroovyClassLoader#createCompilationUnit(org.codehaus.groovy.control.CompilerConfiguration,
-    * java.security.CodeSource)
+    *      java.security.CodeSource)
     */
    @Override
    protected CompilationUnit createCompilationUnit(CompilerConfiguration config, CodeSource cs)
@@ -297,5 +299,4 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
          throw new IllegalArgumentException("Unable create code source URL from: " + codeBase + ". " + e.getMessage());
       }
    }
-
 }

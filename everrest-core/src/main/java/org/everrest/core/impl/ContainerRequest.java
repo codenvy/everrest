@@ -72,16 +72,10 @@ public class ContainerRequest implements GenericContainerRequest
    /** HTTP header Content-Language. */
    private Locale contentLanguage;
 
-   /**
-    * List of accepted media type, HTTP header Accept. List is sorted by quality
-    * value factor.
-    */
+   /** List of accepted media type, HTTP header Accept. List is sorted by quality value factor. */
    private List<MediaType> acceptMediaType;
 
-   /**
-    * List of accepted language, HTTP header Accept-Language. List is sorted by
-    * quality value factor.
-    */
+   /** List of accepted language, HTTP header Accept-Language. List is sorted by quality value factor. */
    private List<Locale> acceptLanguage;
 
    /** Full request URI, includes query string and fragment. */
@@ -112,6 +106,7 @@ public class ContainerRequest implements GenericContainerRequest
    // GenericContainerRequest
 
    /** {@inheritDoc} */
+   @Override
    public MediaType getAcceptableMediaType(List<MediaType> mediaTypes)
    {
       if (mediaTypes.isEmpty())
@@ -138,6 +133,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<String> getCookieHeaders()
    {
       if (cookieHeaders == null)
@@ -156,30 +152,35 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public InputStream getEntityStream()
    {
       return entityStream;
    }
 
    /** {@inheritDoc} */
+   @Override
    public URI getRequestUri()
    {
       return requestUri;
    }
 
    /** {@inheritDoc} */
+   @Override
    public URI getBaseUri()
    {
       return baseUri;
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setMethod(String method)
    {
       this.method = method;
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setEntityStream(InputStream entityStream)
    {
       this.entityStream = entityStream;
@@ -189,6 +190,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setUris(URI requestUri, URI baseUri)
    {
       this.requestUri = requestUri;
@@ -196,6 +198,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setCookieHeaders(List<String> cookieHeaders)
    {
       this.cookieHeaders = cookieHeaders;
@@ -205,6 +208,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setRequestHeaders(MultivaluedMap<String, String> httpHeaders)
    {
       this.httpHeaders = httpHeaders;
@@ -226,24 +230,28 @@ public class ContainerRequest implements GenericContainerRequest
    // classes.
 
    /** {@inheritDoc} */
+   @Override
    public String getAuthenticationScheme()
    {
       throw new UnsupportedOperationException();
    }
 
    /** {@inheritDoc} */
+   @Override
    public Principal getUserPrincipal()
    {
       throw new UnsupportedOperationException();
    }
 
    /** {@inheritDoc} */
+   @Override
    public boolean isSecure()
    {
       throw new UnsupportedOperationException();
    }
 
    /** {@inheritDoc} */
+   @Override
    public boolean isUserInRole(String role)
    {
       throw new UnsupportedOperationException();
@@ -252,6 +260,7 @@ public class ContainerRequest implements GenericContainerRequest
    // javax.ws.rs.core.Request
 
    /** {@inheritDoc} */
+   @Override
    public ResponseBuilder evaluatePreconditions(EntityTag etag)
    {
       ResponseBuilder rb = evaluateIfMatch(etag);
@@ -264,6 +273,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public ResponseBuilder evaluatePreconditions(Date lastModified)
    {
       long lastModifiedTime = lastModified.getTime();
@@ -278,6 +288,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag etag)
    {
       ResponseBuilder rb = evaluateIfMatch(etag);
@@ -304,12 +315,14 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public String getMethod()
    {
       return method;
    }
 
    /** {@inheritDoc} */
+   @Override
    public Variant selectVariant(List<Variant> variants)
    {
       if (variants == null || variants.isEmpty())
@@ -330,6 +343,7 @@ public class ContainerRequest implements GenericContainerRequest
     * element Locale with language '*', and it minds any language accepted.
     * {@inheritDoc}
     */
+   @Override
    public List<Locale> getAcceptableLanguages()
    {
       if (acceptLanguage == null)
@@ -354,6 +368,7 @@ public class ContainerRequest implements GenericContainerRequest
     * one element will be returned. That one element is default media type, see
     * {@link AcceptMediaType#DEFAULT} . {@inheritDoc}
     */
+   @Override
    public List<MediaType> getAcceptableMediaTypes()
    {
       if (acceptMediaType == null)
@@ -369,6 +384,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public Map<String, Cookie> getCookies()
    {
       if (cookies == null)
@@ -391,6 +407,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public Locale getLanguage()
    {
       if (contentLanguage == null && httpHeaders.getFirst(CONTENT_LANGUAGE) != null)
@@ -402,6 +419,7 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public MediaType getMediaType()
    {
       if (contentType == null && httpHeaders.getFirst(CONTENT_TYPE) != null)
@@ -413,12 +431,14 @@ public class ContainerRequest implements GenericContainerRequest
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<String> getRequestHeader(String name)
    {
       return httpHeaders.get(name);
    }
 
    /** {@inheritDoc} */
+   @Override
    public MultivaluedMap<String, String> getRequestHeaders()
    {
       return httpHeaders;
@@ -572,5 +592,4 @@ public class ContainerRequest implements GenericContainerRequest
 
       return null;
    }
-
 }

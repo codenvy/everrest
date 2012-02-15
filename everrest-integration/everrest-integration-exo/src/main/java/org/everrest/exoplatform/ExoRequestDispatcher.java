@@ -31,9 +31,7 @@ import org.everrest.core.impl.RequestDispatcher;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.exoplatform.container.RestfulComponentAdapter;
 import org.everrest.exoplatform.container.RestfulContainer;
-import org.everrest.exoplatform.container.RestfulContainerProvider;
 import org.exoplatform.container.ExoContainerContext;
-import org.picocontainer.ComponentAdapter;
 
 import java.util.List;
 
@@ -48,7 +46,10 @@ public final class ExoRequestDispatcher extends RequestDispatcher
 {
    private final ProvidersRegistry providersRegistry;
 
-   /** @param resourceBinder */
+   /**
+    * @param resourceBinder ResourceBinder
+    * @param providersRegistry ProvidersRegistry
+    */
    public ExoRequestDispatcher(ResourceBinder resourceBinder, ProvidersRegistry providersRegistry)
    {
       super(resourceBinder);
@@ -73,7 +74,7 @@ public final class ExoRequestDispatcher extends RequestDispatcher
          ProviderBinder appProviders = providersRegistry.getProviders(appName);
          if (appProviders != null)
          {
-            ((ApplicationContextImpl)context).setProviders(appProviders);
+            context.setProviders(appProviders);
             // Apply application specific request filters if any.
             for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getRequestFilters(context.getPath()))
             {

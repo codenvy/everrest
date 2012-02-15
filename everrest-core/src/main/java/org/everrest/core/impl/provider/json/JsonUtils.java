@@ -91,7 +91,7 @@ public final class JsonUtils
       /** Array of Doubles. */
       ARRAY_DOUBLE,
 
-      /** Array of Booleans. */
+      /** Array of Boolean. */
       ARRAY_BOOLEAN,
 
       /** Array of Chars. */
@@ -338,7 +338,7 @@ public final class JsonUtils
     * in JSON representation.
     *
     * @param clazz the class.
-    * @return set of fields which must be skiped.
+    * @return set of fields which must be skipped.
     */
    public static Set<String> getTransientFields(Class<?> clazz)
    {

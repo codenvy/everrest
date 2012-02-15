@@ -42,10 +42,10 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Purpose of this component is deliver all JAX-RS components lookups in ExoContainer (instances of classes annotated
+ * Purpose of this component is deliver all JAX-RS components in ExoContainer (instances of classes annotated
  * with {@link Path}, {@link Provider} and {@link Filter}). All components considered as singleton Resources and
  * Providers, see {@link #getSingletons()}.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -62,27 +62,21 @@ public final class StartableApplication extends Application implements Startable
       container = containerContext.getContainer();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Set<Class<?>> getClasses()
    {
       return cls;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public Set<Object> getSingletons()
    {
       return singletons;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @SuppressWarnings({"rawtypes", "unchecked"})
    @Override
    public void start()
@@ -92,41 +86,53 @@ public final class StartableApplication extends Application implements Startable
       {
          // Assume all components loaded from ExoContainer are singleton (it is common behavior for ExoContainer).
          // If need more per-request component then use javax.ws.rs.core.Application for deploy.
-         for (Iterator iter = adapters.iterator(); iter.hasNext();)
+         for (Object o : adapters)
          {
-            ComponentAdapter cadapter = (ComponentAdapter)iter.next();
-            Class clazz = cadapter.getComponentImplementation();
+            ComponentAdapter componentAdapter = (ComponentAdapter)o;
+            Class clazz = componentAdapter.getComponentImplementation();
             if (clazz.getAnnotation(Provider.class) != null)
             {
                if (ContextResolver.class.isAssignableFrom(clazz))
-                  singletons.add(cadapter.getComponentInstance(container));
+               {
+                  singletons.add(componentAdapter.getComponentInstance(container));
+               }
                if (ExceptionMapper.class.isAssignableFrom(clazz))
-                  singletons.add(cadapter.getComponentInstance(container));
+               {
+                  singletons.add(componentAdapter.getComponentInstance(container));
+               }
                if (MessageBodyReader.class.isAssignableFrom(clazz))
-                  singletons.add(cadapter.getComponentInstance(container));
+               {
+                  singletons.add(componentAdapter.getComponentInstance(container));
+               }
                if (MessageBodyWriter.class.isAssignableFrom(clazz))
-                  singletons.add(cadapter.getComponentInstance(container));
+               {
+                  singletons.add(componentAdapter.getComponentInstance(container));
+               }
             }
             else if (clazz.getAnnotation(Filter.class) != null)
             {
                if (MethodInvokerFilter.class.isAssignableFrom(clazz))
-                  singletons.add(cadapter.getComponentInstance(container));
+               {
+                  singletons.add(componentAdapter.getComponentInstance(container));
+               }
                if (RequestFilter.class.isAssignableFrom(clazz))
-                  singletons.add(cadapter.getComponentInstance(container));
+               {
+                  singletons.add(componentAdapter.getComponentInstance(container));
+               }
                if (ResponseFilter.class.isAssignableFrom(clazz))
-                  singletons.add(cadapter.getComponentInstance(container));
+               {
+                  singletons.add(componentAdapter.getComponentInstance(container));
+               }
             }
             else if (clazz.getAnnotation(Path.class) != null)
             {
-               singletons.add(cadapter.getComponentInstance(container));
+               singletons.add(componentAdapter.getComponentInstance(container));
             }
          }
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void stop()
    {

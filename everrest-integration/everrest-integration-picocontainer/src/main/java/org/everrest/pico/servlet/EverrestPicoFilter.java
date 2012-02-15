@@ -61,7 +61,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getHttpHeaders();
       }
 
@@ -86,7 +88,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getInitialProperties();
       }
 
@@ -111,7 +115,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getProviders();
       }
 
@@ -136,7 +142,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getRequest();
       }
 
@@ -161,7 +169,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getSecurityContext();
       }
 
@@ -187,7 +197,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
 
          EnvironmentContext context = EnvironmentContext.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest EnvironmentContext is not initialized.");
+         }
          return (ServletConfig)context.get(ServletConfig.class);
       }
 
@@ -213,7 +225,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
 
          EnvironmentContext context = EnvironmentContext.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest EnvironmentContext is not initialized.");
+         }
          return (ServletContext)context.get(ServletContext.class);
       }
 
@@ -238,7 +252,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getUriInfo();
       }
 
@@ -263,11 +279,17 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       T object = null;
       object = getAppContainer().getComponent(type);
       if (object == null)
+      {
          object = getSessionContainer().getComponent(type);
+      }
       if (object == null)
+      {
          object = getRequestContainer().getComponent(type);
+      }
       if (object == null && log.isDebugEnabled())
+      {
          log.debug("Component with type " + type.getName() + " not found in any containers.");
+      }
       return object;
    }
 
@@ -278,11 +300,17 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
       Object object = null;
       object = getAppContainer().getComponent(key);
       if (object == null)
+      {
          object = getSessionContainer().getComponent(key);
+      }
       if (object == null)
+      {
          object = getRequestContainer().getComponent(key);
+      }
       if (object == null && log.isDebugEnabled())
+      {
          log.debug("Component " + key + " not found in any containers.");
+      }
       return object;
    }
 
@@ -290,7 +318,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
    {
       MutablePicoContainer container = currentAppContainer.get();
       if (container == null)
+      {
          throw new IllegalStateException("No container was found in application scope. ");
+      }
       return container;
    }
 
@@ -298,7 +328,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
    {
       MutablePicoContainer container = currentRequestContainer.get();
       if (container == null)
+      {
          throw new IllegalStateException("No container was found in request scope. ");
+      }
       return container;
    }
 
@@ -306,7 +338,9 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
    {
       MutablePicoContainer container = currentSessionContainer.get();
       if (container == null)
+      {
          throw new IllegalStateException("No container was found in session scope. ");
+      }
       return container;
    }
 
@@ -328,7 +362,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter
 
    @Override
    protected void initAdditionalScopedComponents(MutablePicoContainer sessionContainer,
-      MutablePicoContainer reqContainer)
+                                                 MutablePicoContainer reqContainer)
    {
       // Add injectors for some components required by JAX-RS resources and providers.
 

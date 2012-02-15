@@ -105,10 +105,10 @@ public class EverrestServletContextInitializer
             URL[] libs = WarUrlFinder.findWebInfLibClasspaths(ctx);
             AnnotationDB annotationDB = new AnnotationDB();
             List<String> skip = new ArrayList<String>();
-            String sskip = ctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
-            if (sskip != null)
+            String skipParameter = ctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
+            if (skipParameter != null)
             {
-               for (String s : sskip.split(","))
+               for (String s : skipParameter.split(","))
                {
                   skip.add(s.trim());
                }

@@ -121,20 +121,20 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
             return (T)jsonValue;
          }
 
-         Types jtype = JsonUtils.getType(type);
-         if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
-            || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
-            || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
-            || jtype == Types.ARRAY_OBJECT)
+         Types jType = JsonUtils.getType(type);
+         if (jType == Types.ARRAY_BOOLEAN || jType == Types.ARRAY_BYTE || jType == Types.ARRAY_SHORT
+            || jType == Types.ARRAY_INT || jType == Types.ARRAY_LONG || jType == Types.ARRAY_FLOAT
+            || jType == Types.ARRAY_DOUBLE || jType == Types.ARRAY_CHAR || jType == Types.ARRAY_STRING
+            || jType == Types.ARRAY_OBJECT)
          {
             return (T)ObjectBuilder.createArray(type, jsonValue);
          }
-         if (jtype == Types.COLLECTION)
+         if (jType == Types.COLLECTION)
          {
             Class c = type;
             return (T)ObjectBuilder.createCollection(c, genericType, jsonValue);
          }
-         if (jtype == Types.MAP)
+         if (jType == Types.MAP)
          {
             Class c = type;
             return (T)ObjectBuilder.createObject(c, genericType, jsonValue);
@@ -182,19 +182,19 @@ public class JsonEntityProvider<T> implements EntityProvider<T>
          }
          else
          {
-            Types jtype = JsonUtils.getType(type);
-            if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
-               || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
-               || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
-               || jtype == Types.ARRAY_OBJECT)
+            Types jType = JsonUtils.getType(type);
+            if (jType == Types.ARRAY_BOOLEAN || jType == Types.ARRAY_BYTE || jType == Types.ARRAY_SHORT
+               || jType == Types.ARRAY_INT || jType == Types.ARRAY_LONG || jType == Types.ARRAY_FLOAT
+               || jType == Types.ARRAY_DOUBLE || jType == Types.ARRAY_CHAR || jType == Types.ARRAY_STRING
+               || jType == Types.ARRAY_OBJECT)
             {
                jsonValue = JsonGenerator.createJsonArray(t);
             }
-            else if (jtype == Types.COLLECTION)
+            else if (jType == Types.COLLECTION)
             {
                jsonValue = JsonGenerator.createJsonArray((Collection<?>)t);
             }
-            else if (jtype == Types.MAP)
+            else if (jType == Types.MAP)
             {
                jsonValue = JsonGenerator.createJsonObjectFromMap((Map<String, ?>)t);
             }

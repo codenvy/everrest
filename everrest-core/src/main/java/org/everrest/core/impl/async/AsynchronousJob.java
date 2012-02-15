@@ -18,11 +18,12 @@
  */
 package org.everrest.core.impl.async;
 
-import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -38,19 +39,18 @@ public class AsynchronousJob
    private final long expirationDate;
    private final ResourceMethodDescriptor method;
    private final Future<Object> future;
-   private final GenericContainerRequest request;
+   private final Map<String, Object> context;
 
    protected AsynchronousJob(String jobId,
                              Future<Object> future,
                              long expirationDate,
-                             ResourceMethodDescriptor method,
-                             GenericContainerRequest request)
+                             ResourceMethodDescriptor method)
    {
       this.future = future;
       this.jobId = jobId;
       this.expirationDate = expirationDate;
       this.method = method;
-      this.request = request;
+      context = new HashMap<String, Object>();
    }
 
    public String getJobId()
@@ -99,28 +99,33 @@ public class AsynchronousJob
       }
       catch (InterruptedException e)
       {
+         // We already check the Future is done.
          throw new InternalException(e);
       }
       catch (ExecutionException e)
       {
-         Throwable theCause = e.getCause();
-         if (theCause instanceof InvocationTargetException)
+         Throwable cause = e.getCause();
+         if (cause instanceof InvocationTargetException)
          {
-            theCause = ((InvocationTargetException)theCause).getTargetException();
-            if (theCause instanceof WebApplicationException)
+            cause = ((InvocationTargetException)cause).getTargetException();
+            if (cause instanceof WebApplicationException)
             {
-               throw (WebApplicationException)theCause;
+               throw (WebApplicationException)cause;
             }
-            throw new InternalException(theCause);
          }
-         throw new InternalException(e);
+         throw new InternalException(cause);
       }
 
       return result;
    }
 
-   public GenericContainerRequest getRequest()
+   /**
+    * The storage for context attributes.
+    *
+    * @return map never <code>null</code>
+    */
+   public Map<String, Object> getContext()
    {
-      return request;
+      return context;
    }
 }

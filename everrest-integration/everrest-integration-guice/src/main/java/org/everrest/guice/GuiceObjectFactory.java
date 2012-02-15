@@ -44,9 +44,7 @@ public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<
       this.provider = provider;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Object getInstance(ApplicationContext context)
    {
       Object object = provider.get();
@@ -54,14 +52,14 @@ public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<
       if (fieldInjectors != null && fieldInjectors.size() > 0)
       {
          for (FieldInjector injector : fieldInjectors)
+         {
             injector.inject(object, context);
+         }
       }
       return object;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public T getObjectModel()
    {
       return model;

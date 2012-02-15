@@ -65,7 +65,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * This loader registers any bean annotated with &#64;Path, &#64;Provider or &#64;Filter in the EverRest framework.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -125,13 +125,13 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
    protected EverrestConfiguration configuration;
 
    public SpringComponentsLoader(ResourceBinder resources, ApplicationProviderBinder providers,
-      DependencySupplier dependencies)
+                                 DependencySupplier dependencies)
    {
       this(resources, providers, new EverrestConfiguration(), dependencies);
    }
 
    public SpringComponentsLoader(ResourceBinder resources, ApplicationProviderBinder providers,
-      EverrestConfiguration configuration, DependencySupplier dependencies)
+                                 EverrestConfiguration configuration, DependencySupplier dependencies)
    {
       this.resources = resources;
       this.providers = providers;
@@ -143,9 +143,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
    {
    }
 
-   /**
-    * @see org.springframework.web.servlet.HandlerMapping#getHandler(javax.servlet.http.HttpServletRequest)
-    */
+   /** @see org.springframework.web.servlet.HandlerMapping#getHandler(javax.servlet.http.HttpServletRequest) */
    @Override
    public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception
    {
@@ -154,7 +152,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
 
    /**
     * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(
-    * org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
+    *org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
     */
    @Override
    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException
@@ -181,20 +179,28 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             pDescriptor.accept(rdv);
 
             if (ContextResolver.class.isAssignableFrom(beanClass))
+            {
                providers.addContextResolver(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
                   beanFactory));
+            }
 
             if (ExceptionMapper.class.isAssignableFrom(beanClass))
+            {
                providers.addExceptionMapper(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
                   beanFactory));
+            }
 
             if (MessageBodyReader.class.isAssignableFrom(beanClass))
+            {
                providers.addMessageBodyReader(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
                   beanFactory));
+            }
 
             if (MessageBodyWriter.class.isAssignableFrom(beanClass))
+            {
                providers.addMessageBodyWriter(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
                   beanFactory));
+            }
          }
          else if (beanClass.getAnnotation(Filter.class) != null)
          {
@@ -202,16 +208,22 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             fDescriptor.accept(rdv);
 
             if (MethodInvokerFilter.class.isAssignableFrom(beanClass))
+            {
                providers.addMethodInvokerFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName,
                   beanFactory));
+            }
 
             if (RequestFilter.class.isAssignableFrom(beanClass))
+            {
                providers
                   .addRequestFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+            }
 
             if (ResponseFilter.class.isAssignableFrom(beanClass))
+            {
                providers
                   .addResponseFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
+            }
          }
          else if (beanClass.getAnnotation(Path.class) != null)
          {
@@ -236,7 +248,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
    /**
     * Add binding for HttpHeaders, InitialProperties, Request, SecurityContext, UriInfo. All this types will be
     * supported for injection in constructor or fields of component of Spring IoC container.
-    * 
+    *
     * @param beanFactory bean factory
     * @see org.springframework.beans.factory.annotation.Autowired
     */
@@ -248,7 +260,9 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
          {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
+            {
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+            }
             return context.getHttpHeaders();
          }
       });
@@ -258,7 +272,9 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
          {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
+            {
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+            }
             return context.getInitialProperties();
          }
       });
@@ -268,7 +284,9 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
          {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
+            {
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+            }
             return context.getRequest();
          }
       });
@@ -278,7 +296,9 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
          {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
+            {
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+            }
             return context.getSecurityContext();
          }
       });
@@ -288,7 +308,9 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
          {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null)
+            {
                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+            }
             return context.getUriInfo();
          }
       });

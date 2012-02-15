@@ -77,7 +77,8 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     * Default EverrestGuiceContextListener implementation. It gets application's FQN from context-param
     * <i>javax.ws.rs.Application</i> and instantiate it. If such parameter is not specified then scan (if scanning is
     * enabled) web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS annotations.
-    * Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS components
+    * Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS
+    * components
     * is managed by contex-param <i>org.everrest.scan.components</i>. This parameter must be <i>true</i> to enable
     * scanning.
     */
@@ -94,9 +95,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
 
    protected ApplicationProviderBinder providers;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public final void contextInitialized(ServletContextEvent sce)
    {
@@ -122,9 +121,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       processBindings(injector);
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    public void contextDestroyed(ServletContextEvent sce)
    {
@@ -142,9 +139,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       return new FileCollectorDestroyer();
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    @Override
    protected final Injector getInjector()
    {
@@ -156,17 +151,21 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
       List<Module> all = new ArrayList<Module>();
       ServletModule servletModule = getServletModule();
       if (servletModule != null)
+      {
          all.add(servletModule);
+      }
       all.add(new EverrestModule());
       List<Module> modules = getModules();
       if (modules != null && modules.size() > 0)
+      {
          all.addAll(modules);
+      }
       return all;
    }
 
    /**
     * Implementor can provide set of own {@link Module} for JAX-RS components.
-    * 
+    * <p/>
     * <pre>
     * protected List&lt;Module&gt; getModules()
     * {
@@ -182,14 +181,14 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     *    return modules;
     * }
     * </pre>
-    * 
+    *
     * @return JAX-RS modules
     */
    protected abstract List<Module> getModules();
 
    /**
     * Create servlet module. By default return module with one component GuiceEverrestServlet.
-    * 
+    *
     * @return ServletModule
     */
    protected ServletModule getServletModule()
@@ -231,15 +230,23 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
                com.google.inject.Provider<?> guiceProvider = binding.getProvider();
                pDescriptor.accept(rdv);
                if (ContextResolver.class.isAssignableFrom(clazz))
+               {
                   providers.addContextResolver(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               }
                if (ExceptionMapper.class.isAssignableFrom(clazz))
+               {
                   providers.addExceptionMapper(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               }
                if (MessageBodyReader.class.isAssignableFrom(clazz))
+               {
                   providers
                      .addMessageBodyReader(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               }
                if (MessageBodyWriter.class.isAssignableFrom(clazz))
+               {
                   providers
                      .addMessageBodyWriter(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
+               }
             }
             else if (clazz.getAnnotation(Filter.class) != null)
             {
@@ -248,12 +255,18 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
                com.google.inject.Provider<?> guiceProvider = binding.getProvider();
 
                if (MethodInvokerFilter.class.isAssignableFrom(clazz))
+               {
                   providers
                      .addMethodInvokerFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
+               }
                if (RequestFilter.class.isAssignableFrom(clazz))
+               {
                   providers.addRequestFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
+               }
                if (ResponseFilter.class.isAssignableFrom(clazz))
+               {
                   providers.addResponseFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
+               }
             }
             else if (clazz.getAnnotation(Path.class) != null)
             {

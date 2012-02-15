@@ -144,7 +144,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier
    /**
     * Get Provider of type <code>providerType</code>.
     *
-    * @param providerType
+    * @param providerType parameterized javax.inject.Provider type
     * @return Provider the instance of javax.inject.Provider for specified <code>providerType</code>
     */
    public javax.inject.Provider<?> getProvider(Type providerType)
@@ -152,6 +152,10 @@ public abstract class BaseDependencySupplier implements DependencySupplier
       if (!(providerType instanceof ParameterizedType))
       {
          throw new RuntimeException("Cannot inject provider without type parameter. ");
+      }
+      if (((ParameterizedType)providerType).getRawType() != javax.inject.Provider.class)
+      {
+         throw new RuntimeException("Type " + providerType + " is not javax.inject.Provider. ");
       }
       final Type actualType = ((ParameterizedType)providerType).getActualTypeArguments()[0];
       final Class<?> componentType;

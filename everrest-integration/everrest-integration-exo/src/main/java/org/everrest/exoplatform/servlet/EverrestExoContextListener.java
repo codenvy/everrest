@@ -66,7 +66,7 @@ import javax.ws.rs.ext.Provider;
  * ExoContainer used for injecting requested dependencies in Resources and Providers. If method
  * {@link #getContainer(ServletContext)} returns instance of ExoContainer (not null) then it used for lookup JAX-RS
  * components (instances of classes annotated with {@link Path}, {@link Provider} and {@link Filter}).
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -76,15 +76,14 @@ public abstract class EverrestExoContextListener implements ServletContextListen
     * Default EverrestExoContextListener implementation. It gets application's FQN from context-param
     * <i>javax.ws.rs.Application</i> and instantiate it. If such parameter is not specified then scan (if scanning is
     * enabled) web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS annotations.
-    * Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS components
-    * is managed by contex-param <i>org.everrest.scan.components</i>. This parameter must be <i>true</i> to enable
+    * Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS
+    * components
+    * is managed by context-param <i>org.everrest.scan.components</i>. This parameter must be <i>true</i> to enable
     * scanning.
     */
    public static class DefaultListener extends EverrestExoContextListener
    {
-      /**
-       * @see org.everrest.exoplatform.servlet.EverrestExoContextListener#getContainer(javax.servlet.ServletContext)
-       */
+      /** @see org.everrest.exoplatform.servlet.EverrestExoContextListener#getContainer(javax.servlet.ServletContext) */
       @Override
       protected ExoContainer getContainer(ServletContext servletContext)
       {
@@ -95,10 +94,11 @@ public abstract class EverrestExoContextListener implements ServletContextListen
    /**
     * Implementation of EverrestExoContextListener which get path to StandaloneContainer configuration from
     * context-param <i>everrest.exoplatform.standalone.config</i>. If path to configuration found then this path added
-    * in to StandaloneContainer configuration. All other configuration located in war and jar files will be processed as
+    * in to StandaloneContainer configuration. All other configuration located in war and jar files will be processed
+    * as
     * described <a
     * href="http://platform30.demo.exoplatform.org/docs/refguide/html/ch-service-configuration-for-beginners.html"
-    * >here</a>. Additionally this implementation do the same work as {@link #DefaultListener}.
+    * >here</a>. Additionally this implementation do the same work as {@link DefaultListener}.
     */
    public static class StandaloneContainerStarter extends EverrestExoContextListener
    {
@@ -110,9 +110,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
       private StandaloneContainer container;
 
-      /**
-       * @see org.everrest.exoplatform.servlet.EverrestExoContextListener#getContainer(javax.servlet.ServletContext)
-       */
+      /** @see org.everrest.exoplatform.servlet.EverrestExoContextListener#getContainer(javax.servlet.ServletContext) */
       @Override
       protected ExoContainer getContainer(ServletContext servletContext)
       {
@@ -166,9 +164,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
          return container;
       }
 
-      /**
-       * {@inheritDoc}
-       */
+      /** {@inheritDoc} */
       public void contextDestroyed(ServletContextEvent sce)
       {
          if (container != null)
@@ -185,9 +181,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
    protected ApplicationProviderBinder providers;
 
-   /**
-    * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
-    */
+   /** @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent) */
    @Override
    public final void contextInitialized(ServletContextEvent sce)
    {
@@ -212,9 +206,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
       processComponents(servletContext);
    }
 
-   /**
-    * @param container eXo Container instance.
-    */
+   /** @param servletContext ServletContext. */
    @SuppressWarnings({"rawtypes", "unchecked"})
    protected void processComponents(ServletContext servletContext)
    {
@@ -229,28 +221,36 @@ public abstract class EverrestExoContextListener implements ServletContextListen
             // If need more per-request component then use javax.ws.rs.core.Application for deploy.
             ComponentLifecycleScope lifeCycle = ComponentLifecycleScope.SINGLETON;
 
-            for (Iterator iter = adapters.iterator(); iter.hasNext();)
+            for (Object o : adapters)
             {
-               ComponentAdapter cadapter = (ComponentAdapter)iter.next();
+               ComponentAdapter componentAdapter = (ComponentAdapter)o;
 
-               Class clazz = cadapter.getComponentImplementation();
+               Class clazz = componentAdapter.getComponentImplementation();
                if (clazz.isAnnotationPresent(Provider.class))
                {
                   ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, lifeCycle);
                   pDescriptor.accept(rdv);
 
                   if (ContextResolver.class.isAssignableFrom(clazz))
-                     providers.addContextResolver(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor, cadapter
-                        .getComponentInstance(container)));
+                  {
+                     providers.addContextResolver(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
+                        componentAdapter.getComponentInstance(container)));
+                  }
                   if (ExceptionMapper.class.isAssignableFrom(clazz))
-                     providers.addExceptionMapper(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor, cadapter
+                  {
+                     providers.addExceptionMapper(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor, componentAdapter
                         .getComponentInstance(container)));
+                  }
                   if (MessageBodyReader.class.isAssignableFrom(clazz))
+                  {
                      providers.addMessageBodyReader(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
-                        cadapter.getComponentInstance(container)));
+                        componentAdapter.getComponentInstance(container)));
+                  }
                   if (MessageBodyWriter.class.isAssignableFrom(clazz))
+                  {
                      providers.addMessageBodyWriter(new SingletonObjectFactory<ProviderDescriptor>(pDescriptor,
-                        cadapter.getComponentInstance(container)));
+                        componentAdapter.getComponentInstance(container)));
+                  }
                }
                else if (clazz.isAnnotationPresent(Filter.class))
                {
@@ -258,21 +258,27 @@ public abstract class EverrestExoContextListener implements ServletContextListen
                   fDescriptor.accept(rdv);
 
                   if (MethodInvokerFilter.class.isAssignableFrom(clazz))
+                  {
                      providers.addMethodInvokerFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor,
-                        cadapter.getComponentInstance(container)));
+                        componentAdapter.getComponentInstance(container)));
+                  }
                   if (RequestFilter.class.isAssignableFrom(clazz))
-                     providers.addRequestFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, cadapter
+                  {
+                     providers.addRequestFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, componentAdapter
                         .getComponentInstance(container)));
+                  }
                   if (ResponseFilter.class.isAssignableFrom(clazz))
-                     providers.addResponseFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, cadapter
+                  {
+                     providers.addResponseFilter(new SingletonObjectFactory<FilterDescriptor>(fDescriptor, componentAdapter
                         .getComponentInstance(container)));
+                  }
                }
                else if (clazz.isAnnotationPresent(Path.class))
                {
                   AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz, lifeCycle);
                   rDescriptor.accept(rdv);
 
-                  resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(rDescriptor, cadapter
+                  resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(rDescriptor, componentAdapter
                      .getComponentInstance(container)));
                }
             }
@@ -285,21 +291,19 @@ public abstract class EverrestExoContextListener implements ServletContextListen
     * &#064;javax.ws.rs.Path, &#064;javax.ws.rs.ext.Provider, &#064;org.everrest.core.Filter annotations or subclasses
     * of javax.ws.rs.core.Application from it. If not need to load any components from ExoContainer this method must
     * return <code>null</code>.
-    * 
+    *
     * @param servletContext servlet context
     * @return ExoContainer instance or <code>null</code>
     */
    protected abstract ExoContainer getContainer(ServletContext servletContext);
 
-   /**
-    * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
-    */
+   /** @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent) */
    @Override
    public void contextDestroyed(ServletContextEvent sce)
    {
       makeFileCollectorDestroyer().stopFileCollector();
-      ServletContext sctx = sce.getServletContext();
-      EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());
+      ServletContext servletContext = sce.getServletContext();
+      EverrestProcessor processor = (EverrestProcessor)servletContext.getAttribute(EverrestProcessor.class.getName());
       if (processor != null)
       {
          processor.stop();

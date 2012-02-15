@@ -30,7 +30,7 @@ public abstract class AbstractHeaderDelegate<T> implements HeaderDelegate<T>
 {
 
    /**
-    * @return the class which is supported by HeadeDelegate instance.
+    * @return the class which is supported by HeaderDelegate instance.
     */
    public abstract Class<T> support();
 

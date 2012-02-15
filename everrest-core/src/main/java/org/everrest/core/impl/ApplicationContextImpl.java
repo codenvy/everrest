@@ -135,6 +135,8 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
 
    private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
 
+   private final boolean asynchronous;
+
    /**
     * Constructs new instance of ApplicationContext.
     *
@@ -163,6 +165,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       this.response = response;
       this.providers = providers;
       this.methodInvokerDecoratorFactory = methodInvokerDecoratorFactory;
+      this.asynchronous = Boolean.parseBoolean(getQueryParameters().getFirst("async"));
    }
 
    /** {@inheritDoc} */
@@ -172,6 +175,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public void addMatchedURI(String uri)
    {
       encodedMatchedURIs.add(0, uri);
@@ -179,6 +183,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public URI getAbsolutePath()
    {
       if (absolutePath != null)
@@ -190,78 +195,91 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public UriBuilder getAbsolutePathBuilder()
    {
       return UriBuilder.fromUri(getAbsolutePath());
    }
 
    /** {@inheritDoc} */
+   @Override
    public Map<String, Object> getAttributes()
    {
       return attributes == null ? attributes = new HashMap<String, Object>() : attributes;
    }
 
    /** {@inheritDoc} */
+   @Override
    public URI getBaseUri()
    {
       return request.getBaseUri();
    }
 
    /** {@inheritDoc} */
+   @Override
    public UriBuilder getBaseUriBuilder()
    {
       return UriBuilder.fromUri(getBaseUri());
    }
 
    /** {@inheritDoc} */
+   @Override
    public GenericContainerRequest getContainerRequest()
    {
       return request;
    }
 
    /** {@inheritDoc} */
+   @Override
    public GenericContainerResponse getContainerResponse()
    {
       return response;
    }
 
    /** {@inheritDoc} */
+   @Override
    public DependencySupplier getDependencySupplier()
    {
       return depInjector;
    }
 
    /** {@inheritDoc} */
+   @Override
    public HttpHeaders getHttpHeaders()
    {
       return request;
    }
 
    /** {@inheritDoc} */
+   @Override
    public InitialProperties getInitialProperties()
    {
       return this;
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<Object> getMatchedResources()
    {
       return matchedResources;
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<String> getMatchedURIs()
    {
       return getMatchedURIs(true);
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<String> getMatchedURIs(boolean decode)
    {
       return decode ? matchedURIs : encodedMatchedURIs;
    }
 
    /** {@inheritDoc} */
+   @Override
    public MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor)
    {
       String method = request.getMethod();
@@ -275,16 +293,15 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       }
       // Never use AsynchronousMethodInvoker for process SubResourceLocatorDescriptor.
       // Locators can't be processed in asynchronous mode since it is not end point of request.
-      if ((methodDescriptor instanceof ResourceMethodDescriptor)
-         && Boolean.parseBoolean(getQueryParameters().getFirst("async")))
+      if (isAsynchronous() && methodDescriptor instanceof ResourceMethodDescriptor)
       {
-         ContextResolver<AsynchronousJobPool> asynchJobsResolver =
+         ContextResolver<AsynchronousJobPool> asyncJobsResolver =
             getProviders().getContextResolver(AsynchronousJobPool.class, null);
-         if (asynchJobsResolver == null)
+         if (asyncJobsResolver == null)
          {
             throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");
          }
-         invoker = new AsynchronousMethodInvoker(asynchJobsResolver.getContext(null));
+         invoker = new AsynchronousMethodInvoker(asyncJobsResolver.getContext(null));
       }
       if (invoker == null)
       {
@@ -298,18 +315,21 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<String> getParameterValues()
    {
       return parameterValues;
    }
 
    /** {@inheritDoc} */
+   @Override
    public String getPath()
    {
       return getPath(true);
    }
 
    /** {@inheritDoc} */
+   @Override
    public String getPath(boolean decode)
    {
       if (encodedPath == null)
@@ -332,12 +352,14 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public MultivaluedMap<String, String> getPathParameters()
    {
       return getPathParameters(true);
    }
 
    /** {@inheritDoc} */
+   @Override
    public MultivaluedMap<String, String> getPathParameters(boolean decode)
    {
       if (encodedPathParameters == null)
@@ -370,12 +392,14 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<PathSegment> getPathSegments()
    {
       return getPathSegments(true);
    }
 
    /** {@inheritDoc} */
+   @Override
    public List<PathSegment> getPathSegments(boolean decode)
    {
       if (decode)
@@ -387,30 +411,42 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public Map<String, String> getProperties()
    {
       return properties == null ? properties = new HashMap<String, String>() : properties;
    }
 
    /** {@inheritDoc} */
+   @Override
    public String getProperty(String name)
    {
       return getProperties().get(name);
    }
 
    /** {@inheritDoc} */
+   @Override
    public ProviderBinder getProviders()
    {
       return providers;
    }
 
+   /** @param providers ProviderBinder */
+   @Override
+   public void setProviders(ProviderBinder providers)
+   {
+      this.providers = providers;
+   }
+
    /** {@inheritDoc} */
+   @Override
    public MultivaluedMap<String, String> getQueryParameters()
    {
       return getQueryParameters(true);
    }
 
    /** {@inheritDoc} */
+   @Override
    public MultivaluedMap<String, String> getQueryParameters(boolean decode)
    {
       if (decode)
@@ -423,42 +459,49 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public Request getRequest()
    {
       return request;
    }
 
    /** {@inheritDoc} */
+   @Override
    public URI getRequestUri()
    {
       return request.getRequestUri();
    }
 
    /** {@inheritDoc} */
+   @Override
    public UriBuilder getRequestUriBuilder()
    {
       return UriBuilder.fromUri(getRequestUri());
    }
 
    /** {@inheritDoc} */
+   @Override
    public SecurityContext getSecurityContext()
    {
       return request;
    }
 
    /** {@inheritDoc} */
+   @Override
    public UriInfo getUriInfo()
    {
       return this;
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setDependencySupplier(DependencySupplier depInjector)
    {
       this.depInjector = depInjector;
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setParameterNames(List<String> parameterNames)
    {
       if (encodedPathParameters == null)
@@ -474,9 +517,17 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    }
 
    /** {@inheritDoc} */
+   @Override
    public void setProperty(String name, String value)
    {
       getProperties().put(name, value);
+   }
+
+   /** {@inheritDoc} */
+   @Override
+   public boolean isAsynchronous()
+   {
+      return asynchronous;
    }
 
    /** @see org.everrest.core.Lifecycle#start() */
@@ -508,11 +559,5 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
          }
          perRequest.clear();
       }
-   }
-
-   /** @param providers ProviderBinder */
-   public void setProviders(ProviderBinder providers)
-   {
-      this.providers = providers;
    }
 }

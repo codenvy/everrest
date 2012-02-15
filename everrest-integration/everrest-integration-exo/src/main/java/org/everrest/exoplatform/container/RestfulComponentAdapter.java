@@ -247,14 +247,14 @@ public class RestfulComponentAdapter implements ComponentAdapter
       return new ParameterizedType[0];
    }
 
-   private static ParameterizedType getGenericInterface(Class<?> itype, Class<?> type)
+   private static ParameterizedType getGenericInterface(Class<?> interfaceType, Class<?> type)
    {
       for (Type t : type.getGenericInterfaces())
       {
          if (t instanceof ParameterizedType)
          {
             ParameterizedType parameterized = (ParameterizedType)t;
-            if (itype == parameterized.getRawType())
+            if (interfaceType == parameterized.getRawType())
             {
                return parameterized;
             }
@@ -263,7 +263,7 @@ public class RestfulComponentAdapter implements ComponentAdapter
       Class<?> sc = type.getSuperclass();
       if (sc != null && sc != Object.class)
       {
-         return getGenericInterface(itype, sc);
+         return getGenericInterface(interfaceType, sc);
       }
       return null;
    }

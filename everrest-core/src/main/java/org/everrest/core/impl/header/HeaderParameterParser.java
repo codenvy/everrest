@@ -153,7 +153,7 @@ public class HeaderParameterParser
    private void init(String source)
    {
       // looking for start parameters position
-      // e.g. text/plain ; charsert=utf-8
+      // e.g. text/plain ; charset=utf-8
       pos = source.indexOf(SEPARATOR);
       if (pos < 0)
       // header string does not contains parameters
@@ -181,20 +181,20 @@ public class HeaderParameterParser
       // indicate was previous character '\'
       boolean escape = false;
       // indicate is final '"' already found
-      boolean qoute = false;
+      boolean quote = false;
 
       while (hasChars())
       {
          char c = chars[pos];
 
-         if (c == SEPARATOR && !qoute)
+         if (c == SEPARATOR && !quote)
          {
             break;
          }
 
          if (c == '"' && !escape)
          {
-            qoute = !qoute;
+            quote = !quote;
          }
 
          escape = !escape && c == '\\';
@@ -202,9 +202,9 @@ public class HeaderParameterParser
          i2++;
       }
 
-      if (qoute)
+      if (quote)
       {
-         throw new ParseException("String must be ended with qoute.", pos);
+         throw new ParseException("String must be ended with quote.", pos);
       }
 
       String token = getToken(true);

@@ -60,14 +60,15 @@ import javax.ws.rs.ext.Provider;
 /**
  * Register components of containers with different webapp scopes (application, session, request) in EverRest framework
  * if they are annotated with &#64;Path, &#64;Provider or &#64;Filter annotation.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  * @see WebappComposer
  */
 public abstract class EverrestComposer implements WebappComposer
 {
-   public enum Scope {
+   public enum Scope
+   {
       APPLICATION, SESSION, REQUEST
    }
 
@@ -82,7 +83,7 @@ public abstract class EverrestComposer implements WebappComposer
       /**
        * Do nothing in default implementation but can be overridden in subclasses to add component with application
        * scope.
-       * 
+       *
        * @see EverrestServletContextInitializer#getApplication()
        * @see PicoServletContainerListener
        */
@@ -93,7 +94,7 @@ public abstract class EverrestComposer implements WebappComposer
 
       /**
        * Do nothing in default implementation but can be overridden in subclasses to add component with request scope.
-       * 
+       *
        * @see PicoServletContainerListener
        */
       @Override
@@ -103,7 +104,7 @@ public abstract class EverrestComposer implements WebappComposer
 
       /**
        * Do nothing in default implementation but can be overridden in subclasses to add component with session scope.
-       * 
+       *
        * @see PicoServletContainerListener
        */
       @Override
@@ -121,9 +122,7 @@ public abstract class EverrestComposer implements WebappComposer
          this.processor = processor;
       }
 
-      /**
-       * @see org.picocontainer.Disposable#dispose()
-       */
+      /** @see org.picocontainer.Disposable#dispose() */
       @Override
       public void dispose()
       {
@@ -140,9 +139,7 @@ public abstract class EverrestComposer implements WebappComposer
          this.fileCollectorDestroyer = fileCollectorDestroyer;
       }
 
-      /**
-       * @see org.picocontainer.Disposable#dispose()
-       */
+      /** @see org.picocontainer.Disposable#dispose() */
       @Override
       public void dispose()
       {
@@ -197,7 +194,7 @@ public abstract class EverrestComposer implements WebappComposer
 
    /**
     * Compose components with application scope.
-    * 
+    * <p/>
     * <pre>
     * // Do this if need to keep default everrest framework behaviour.
     * processor.addApplication(everrestInitializer.getApplication());
@@ -205,7 +202,7 @@ public abstract class EverrestComposer implements WebappComposer
     * container.addComponent(MyApplicationScopeResource.class);
     * container.addComponent(MyApplicationScopeProvider.class);
     * </pre>
-    * 
+    *
     * @param container picocontainer
     * @param servletContext servlet context
     */
@@ -213,24 +210,24 @@ public abstract class EverrestComposer implements WebappComposer
 
    /**
     * Compose components with request scope.
-    * 
+    * <p/>
     * <pre>
     * container.addComponent(MyRequestScopeResource.class);
     * container.addComponent(MyRequestScopeProvider.class);
     * </pre>
-    * 
+    *
     * @param container picocontainer
     */
    protected abstract void doComposeRequest(MutablePicoContainer container);
 
    /**
     * Compose components with session scope.
-    * 
+    * <p/>
     * <pre>
     * container.addComponent(MySessionScopeResource.class);
     * container.addComponent(MySessionScopeProvider.class);
     * </pre>
-    * 
+    *
     * @param container picocontainer
     */
    protected abstract void doComposeSession(MutablePicoContainer container);
@@ -251,16 +248,24 @@ public abstract class EverrestComposer implements WebappComposer
             ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, lifeCycle);
             pDescriptor.accept(rdv);
             if (ContextResolver.class.isAssignableFrom(clazz))
+            {
                providers.addContextResolver(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+            }
 
             if (ExceptionMapper.class.isAssignableFrom(clazz))
+            {
                providers.addExceptionMapper(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+            }
 
             if (MessageBodyReader.class.isAssignableFrom(clazz))
+            {
                providers.addMessageBodyReader(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+            }
 
             if (MessageBodyWriter.class.isAssignableFrom(clazz))
+            {
                providers.addMessageBodyWriter(new PicoObjectFactory<ProviderDescriptor>(pDescriptor));
+            }
          }
          else if (clazz.getAnnotation(Filter.class) != null)
          {
@@ -268,13 +273,19 @@ public abstract class EverrestComposer implements WebappComposer
             fDescriptor.accept(rdv);
 
             if (MethodInvokerFilter.class.isAssignableFrom(clazz))
+            {
                providers.addMethodInvokerFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
+            }
 
             if (RequestFilter.class.isAssignableFrom(clazz))
+            {
                providers.addRequestFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
+            }
 
             if (ResponseFilter.class.isAssignableFrom(clazz))
+            {
                providers.addResponseFilter(new PicoObjectFactory<FilterDescriptor>(fDescriptor));
+            }
          }
          else if (clazz.getAnnotation(Path.class) != null)
          {

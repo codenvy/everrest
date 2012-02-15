@@ -89,7 +89,7 @@ public class AsyncTest extends StandaloneBaseTest
       response = getAsynchronousResponse(jobUrl, w);
       //System.out.println(response.getEntity());
       assertEquals(500, response.getStatus());
-      assertEquals("java.lang.RuntimeException: test process exceptions in asynchronous mode", new String(w.getBody()));
+      assertEquals("test process exceptions in asynchronous mode", new String(w.getBody()));
       resources.removeResource(Async1.class);
    }
 

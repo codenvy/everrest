@@ -41,7 +41,6 @@ import javax.ws.rs.ext.Providers;
  */
 public interface ApplicationContext extends UriInfo, InitialProperties
 {
-
    /**
     * Add ancestor resource, according to JSR-311:
     * <p>
@@ -51,7 +50,7 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * So add each new resource at the begin of list.
     *
     * @param resource the resource e. g. resource class, sub-resource method or
-    *        sub-resource locator.
+    * sub-resource locator.
     */
    void addMatchedResource(Object resource);
 
@@ -64,35 +63,29 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * So add each new URI at the begin of list.
     *
     * @param uri the partial part of that matched to resource class,
-    *        sub-resource method or sub-resource locator.
+    * sub-resource method or sub-resource locator.
     */
    void addMatchedURI(String uri);
 
-   /**
-    * @return get mutable runtime attributes
-    */
+   /** @return get mutable runtime attributes */
    Map<String, Object> getAttributes();
 
-   /**
-    * @return See {@link GenericContainerRequest}
-    */
+   /** @return See {@link GenericContainerRequest} */
    GenericContainerRequest getContainerRequest();
 
-   /**
-    * @return See {@link GenericContainerResponse}
-    */
+   /** @return See {@link GenericContainerResponse} */
    GenericContainerResponse getContainerResponse();
 
+   /** @return See {@link DependencySupplier} */
    DependencySupplier getDependencySupplier();
 
-   /**
-    * @return See {@link HttpHeaders}
-    */
+   /** @param depInjector DependencySupplier */
+   void setDependencySupplier(DependencySupplier depInjector);
+
+   /** @return See {@link HttpHeaders} */
    HttpHeaders getHttpHeaders();
 
-   /**
-    * @return {@link InitialProperties}
-    */
+   /** @return {@link InitialProperties} */
    InitialProperties getInitialProperties();
 
    /**
@@ -112,33 +105,30 @@ public interface ApplicationContext extends UriInfo, InitialProperties
    List<String> getParameterValues();
 
    /**
-    * @return {@link ProviderBinder}
-    * @see Providers
-    */
-   ProviderBinder getProviders();
-
-   /**
-    * @return See {@link Request}
-    */
-   Request getRequest();
-
-   /**
-    * @return See {@link SecurityContext}
-    */
-   SecurityContext getSecurityContext();
-
-   /**
-    * @return See {@link UriInfo}
-    */
-   UriInfo getUriInfo();
-
-   void setDependencySupplier(DependencySupplier depInjector);
-
-   /**
     * Pass in context list of path template parameters @see {@link UriPattern}.
     *
     * @param parameterNames list of templates parameters
     */
    void setParameterNames(List<String> parameterNames);
 
+   /**
+    * @return {@link ProviderBinder}
+    * @see Providers
+    */
+   ProviderBinder getProviders();
+
+   /** @param providers ProviderBinder */
+   void setProviders(ProviderBinder providers);
+
+   /** @return See {@link Request} */
+   Request getRequest();
+
+   /** @return See {@link SecurityContext} */
+   SecurityContext getSecurityContext();
+
+   /** @return See {@link UriInfo} */
+   UriInfo getUriInfo();
+
+   /** @return <code>true</code> if request is asynchronous and <code>false</code> otherwise, */
+   boolean isAsynchronous();
 }

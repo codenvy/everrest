@@ -27,7 +27,7 @@ package org.everrest.core.impl;
  * @version $Id$
  */
 @SuppressWarnings("serial")
-public class InternalException extends RuntimeException
+public final class InternalException extends RuntimeException
 {
    /**
     * @param s message

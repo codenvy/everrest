@@ -41,7 +41,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
    protected URL[] roots;
 
-   private int maxEntries = 256;
+   private final int maxEntries = 256;
 
    protected final Map<String, URL> resources;
    final ConcurrentMap<String, FileNameLock> locks;
@@ -66,7 +66,12 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       {
          protected boolean removeEldestEntry(Entry<String, URL> eldest)
          {
-            return size() > maxEntries;
+            if (size() > maxEntries)
+            {
+               locks.remove(eldest.getKey());
+               return true;
+            }
+            return false;
          }
       });
       locks = new ConcurrentHashMap<String, FileNameLock>();
@@ -77,9 +82,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       this(new URL[]{root});
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public final URL loadGroovySource(String filename) throws MalformedURLException
    {
       String[] sourceFileExtensions = getSourceFileExtensions();
@@ -105,7 +108,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          }
       }
 
-      URL resource = null;
+      URL resource;
       synchronized (lock)
       {
          resource = resources.get(filename);

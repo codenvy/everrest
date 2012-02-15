@@ -220,7 +220,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
                if (subPath == null)
                {
-                  // resource method
+                  // Resource method.
+
                   ResourceMethodDescriptor res = new ResourceMethodDescriptorImpl(method, httpMethod.value(), params,
                      this, consumes, produces, additional);
                   ResourceMethodDescriptor exist = findMethodResourceMediaType(
@@ -232,31 +233,29 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   else
                   {
                      throw new RuntimeException("Two resource method " + res + " and " + exist
-                        + " with the same HTTP method, consumes and produces found.");
+                        + " with the same HTTP method, consumes and produces found. ");
                   }
                }
                else
                {
-                  // sub-resource method
-                  SubResourceMethodDescriptor subRes =
-                     new SubResourceMethodDescriptorImpl(new PathValue(subPath.value()), method, httpMethod.value(),
-                        params, this, consumes, produces, additional);
+                  // Sub-resource method.
 
-                  ResourceMethodMap<SubResourceMethodDescriptor> rmm =
+                  SubResourceMethodDescriptor subRes = new SubResourceMethodDescriptorImpl(new PathValue(subPath.value()),
+                     method, httpMethod.value(), params, this, consumes, produces, additional);
+
+                  ResourceMethodMap<SubResourceMethodDescriptor> map =
                      subResourceMethods.getMethodMap(subRes.getUriPattern());
-                  // rmm is never null, empty map instead
 
-                  List<SubResourceMethodDescriptor> l = rmm.getList(httpMethod.value());
-                  SubResourceMethodDescriptor exist =
-                     (SubResourceMethodDescriptor)findMethodResourceMediaType(l, subRes.consumes(), subRes.produces());
+                  SubResourceMethodDescriptor exist = (SubResourceMethodDescriptor)findMethodResourceMediaType(
+                     map.getList(httpMethod.value()), subRes.consumes(), subRes.produces());
                   if (exist == null)
                   {
-                     rmm.add(httpMethod.value(), subRes);
+                     map.add(httpMethod.value(), subRes);
                   }
                   else
                   {
                      throw new RuntimeException("Two sub-resource method " + subRes + " and " + exist
-                        + " with the same HTTP method, path, consumes and produces found.");
+                        + " with the same HTTP method, path, consumes and produces found. ");
                   }
                }
             }
@@ -264,18 +263,18 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             {
                if (subPath != null)
                {
-                  // sub-resource locator
-                  SubResourceLocatorDescriptor loc =
-                     new SubResourceLocatorDescriptorImpl(new PathValue(subPath.value()), method, params, this,
-                        additional);
-                  if (!subResourceLocators.containsKey(loc.getUriPattern()))
+                  // Sub-resource locator.
+
+                  SubResourceLocatorDescriptor locator = new SubResourceLocatorDescriptorImpl(new PathValue(subPath.value()),
+                     method, params, this, additional);
+                  if (!subResourceLocators.containsKey(locator.getUriPattern()))
                   {
-                     subResourceLocators.put(loc.getUriPattern(), loc);
+                     subResourceLocators.put(locator.getUriPattern(), locator);
                   }
                   else
                   {
-                     throw new RuntimeException("Two sub-resource locators " + loc + " and "
-                        + subResourceLocators.get(loc.getUriPattern()) + " with the same path found.");
+                     throw new RuntimeException("Two sub-resource locators " + locator + " and "
+                        + subResourceLocators.get(locator.getUriPattern()) + " with the same path found. ");
                   }
                }
             }
@@ -284,9 +283,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       if (resourceMethods.size() + subResourceMethods.size() + subResourceLocators.size() == 0)
       {
          // Warn instead throw exception. Lets user resolve such situation. 
-         String msg =
-            "Not found any resource methods, sub-resource methods or sub-resource locators in "
-               + resourceClass.getName();
+         String msg = "Not found any resource methods, sub-resource methods or sub-resource locators in "
+            + resourceClass.getName();
          LOG.warn(msg);
       }
 
@@ -335,7 +333,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                      String msg =
                         "JAX-RS annotations on one of method parameters of resource " + toString() + ", method "
                            + method.getName() + " are equivocality. " + "Annotations: " + annotation + " and " + a
-                           + " can't be applied to one parameter.";
+                           + " can't be applied to one parameter. ";
                      throw new RuntimeException(msg);
                   }
                   annotation = a;
@@ -385,29 +383,34 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
       if (getResources != null && getResources.size() > 0)
       {
          List<ResourceMethodDescriptor> headResources = resourceMethods.getList(HttpMethod.HEAD);
-         for (ResourceMethodDescriptor rmd : getResources)
+         for (ResourceMethodDescriptor resourceMethod : getResources)
          {
-            if (findMethodResourceMediaType(headResources, rmd.consumes(), rmd.produces()) == null)
+            if (findMethodResourceMediaType(headResources, resourceMethod.consumes(), resourceMethod.produces()) == null)
             {
-               headResources.add(new ResourceMethodDescriptorImpl(rmd.getMethod(), HttpMethod.HEAD, rmd.getMethodParameters(),
-                  this, rmd.consumes(), rmd.produces(), rmd.getAnnotations()));
+               headResources.add(
+                  new ResourceMethodDescriptorImpl(resourceMethod.getMethod(), HttpMethod.HEAD,
+                     resourceMethod.getMethodParameters(), this, resourceMethod.consumes(), resourceMethod.produces(),
+                     resourceMethod.getAnnotations())
+               );
             }
          }
       }
 
-      for (ResourceMethodMap<SubResourceMethodDescriptor> rmm : subResourceMethods.values())
+      for (ResourceMethodMap<SubResourceMethodDescriptor> map : subResourceMethods.values())
       {
-         List<SubResourceMethodDescriptor> getSubResources = rmm.get(HttpMethod.GET);
+         List<SubResourceMethodDescriptor> getSubResources = map.get(HttpMethod.GET);
          if (getSubResources != null && getSubResources.size() > 0)
          {
-            List<SubResourceMethodDescriptor> headSubResources = rmm.getList(HttpMethod.HEAD);
-            for (SubResourceMethodDescriptor srmd : getSubResources)
+            List<SubResourceMethodDescriptor> headSubResources = map.getList(HttpMethod.HEAD);
+            for (SubResourceMethodDescriptor subResourceMethod : getSubResources)
             {
-               if (findMethodResourceMediaType(headSubResources, srmd.consumes(), srmd.produces()) == null)
+               if (findMethodResourceMediaType(headSubResources, subResourceMethod.consumes(), subResourceMethod.produces()) == null)
                {
-                  headSubResources.add(new SubResourceMethodDescriptorImpl(srmd.getPathValue(), srmd.getMethod(),
-                     HttpMethod.HEAD, srmd.getMethodParameters(), this, srmd.consumes(), srmd.produces(),
-                     srmd.getAnnotations()));
+                  headSubResources.add(
+                     new SubResourceMethodDescriptorImpl(subResourceMethod.getPathValue(), subResourceMethod.getMethod(),
+                        HttpMethod.HEAD, subResourceMethod.getMethodParameters(), this, subResourceMethod.consumes(),
+                        subResourceMethod.produces(), subResourceMethod.getAnnotations())
+                  );
                }
             }
          }
@@ -424,14 +427,14 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     */
    protected void resolveOptionsRequest()
    {
-      List<ResourceMethodDescriptor> o = resourceMethods.getList("OPTIONS");
-      if (o.size() == 0)
+      List<ResourceMethodDescriptor> optionResources = resourceMethods.getList("OPTIONS");
+      if (optionResources.size() == 0)
       {
          List<MethodParameter> mps = Collections.emptyList();
          List<MediaType> consumes = MediaTypeHelper.DEFAULT_TYPE_LIST;
          List<MediaType> produces = Collections.singletonList(MediaTypeHelper.WADL_TYPE);
-         o.add(new OptionsRequestResourceMethodDescriptorImpl(null, "OPTIONS", mps, this, consumes, produces,
-            new Annotation[0]));
+         optionResources.add(new OptionsRequestResourceMethodDescriptorImpl(null, "OPTIONS", mps, this, consumes,
+            produces, new Annotation[0]));
       }
    }
 
@@ -529,28 +532,28 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     * Check is collection of {@link ResourceMethodDescriptor} already contains ResourceMethodDescriptor with the same
     * media types.
     *
-    * @param rmds {@link java.util.Set} of {@link ResourceMethodDescriptor}
+    * @param resourceMethods {@link java.util.Set} of {@link ResourceMethodDescriptor}
     * @param consumes resource method consumed media type
     * @param produces resource method produced media type
     * @return ResourceMethodDescriptor or null if nothing found
     */
-   protected <T extends ResourceMethodDescriptor> ResourceMethodDescriptor findMethodResourceMediaType(List<T> rmds,
+   protected <T extends ResourceMethodDescriptor> ResourceMethodDescriptor findMethodResourceMediaType(List<T> resourceMethods,
                                                                                                        List<MediaType> consumes,
                                                                                                        List<MediaType> produces)
    {
       ResourceMethodDescriptor matched = null;
-      for (Iterator<T> iterator = rmds.iterator(); matched == null && iterator.hasNext(); )
+      for (Iterator<T> iterator = resourceMethods.iterator(); matched == null && iterator.hasNext(); )
       {
-         T rmd = iterator.next();
+         T method = iterator.next();
 
-         if (rmd.consumes().size() != consumes.size() || rmd.produces().size() != produces.size())
+         if (method.consumes().size() != consumes.size() || method.produces().size() != produces.size())
          {
             continue;
          }
 
-         if (rmd.consumes().containsAll(consumes) && rmd.produces().containsAll(produces))
+         if (method.consumes().containsAll(consumes) && method.produces().containsAll(produces))
          {
-            matched = rmd; // matched resource method
+            matched = method; // matched resource method
          }
       }
       return matched;
@@ -579,14 +582,14 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
          a = getAnnotation(clazz, aClasses);
          if (a == null)
          {
-            java.lang.reflect.Method inhMethod;
+            java.lang.reflect.Method inheritedMethod;
             Class<?> superclass = clazz.getSuperclass();
             try
             {
                if (superclass != null && superclass != Object.class)
                {
-                  inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
-                  a = getAnnotation(inhMethod, aClasses);
+                  inheritedMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
+                  a = getAnnotation(inheritedMethod, aClasses);
                }
             }
             catch (NoSuchMethodException ignored)
@@ -605,8 +608,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                   {
                      try
                      {
-                        inhMethod = interfaces[k].getMethod(method.getName(), method.getParameterTypes());
-                        a = getAnnotation(inhMethod, aClasses);
+                        inheritedMethod = interfaces[k].getMethod(method.getName(), method.getParameterTypes());
+                        a = getAnnotation(inheritedMethod, aClasses);
                      }
                      catch (NoSuchMethodException ignored)
                      {

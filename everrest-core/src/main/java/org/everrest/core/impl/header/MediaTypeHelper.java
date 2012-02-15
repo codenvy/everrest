@@ -159,7 +159,7 @@ public final class MediaTypeHelper
    }
 
    /**
-    * Compare two mimetypes. The main rule for sorting media types is :
+    * Compare two mime-types. The main rule for sorting media types is :
     * <p/>
     * <li>n / m</li>
     * <li>n / *</li>

@@ -18,7 +18,6 @@
  */
 package org.everrest.core.impl.async;
 
-import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.util.Logger;
@@ -150,14 +149,12 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     * @param resource object that contains resource method
     * @param resourceMethod resource or sub-resource method to invoke
     * @param params method parameters
-    * @param request request
-    * @return id assigned to add asynchronous job
+    * @return asynchronous job
     * @throws AsynchronousJobRejectedException if this task cannot be added to pool
     */
-   public String addJob(Object resource,
-                        ResourceMethodDescriptor resourceMethod,
-                        Object[] params,
-                        GenericContainerRequest request) throws AsynchronousJobRejectedException
+   public AsynchronousJob addJob(Object resource,
+                                 ResourceMethodDescriptor resourceMethod,
+                                 Object[] params) throws AsynchronousJobRejectedException
    {
       Future<Object> future;
       try
@@ -173,9 +170,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          nextJobId(),
          future,
          System.currentTimeMillis() + jobTimeout * 60 * 1000,
-         resourceMethod,
-         request
-      );
+         resourceMethod);
 
       String jobId = job.getJobId();
       jobs.put(jobId, job);
@@ -185,7 +180,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          LOG.debug("Add asynchronous job, ID " + jobId);
       }
 
-      return jobId;
+      return job;
    }
 
    protected Callable<Object> newCallable(final Object resource, final Method method, final Object[] params)

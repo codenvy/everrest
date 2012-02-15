@@ -124,7 +124,7 @@ public abstract class JsonValue
     * Get value by key.
     *
     * @param key the key.
-    * @return JsonVAlue with specified key.
+    * @return JsonValue with specified key.
     */
    public JsonValue getElement(String key)
    {

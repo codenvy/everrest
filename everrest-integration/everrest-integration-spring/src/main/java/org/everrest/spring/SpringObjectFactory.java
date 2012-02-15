@@ -49,9 +49,7 @@ public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory
       this.beanFactory = beanFactory;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Object getInstance(ApplicationContext context)
    {
       Object bean = beanFactory.getBean(name);
@@ -59,14 +57,14 @@ public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory
       if (fieldInjectors != null && fieldInjectors.size() > 0)
       {
          for (FieldInjector injector : fieldInjectors)
+         {
             injector.inject(bean, context);
+         }
       }
       return bean;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public T getObjectModel()
    {
       return model;

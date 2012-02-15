@@ -202,7 +202,7 @@ public class AsynchronousRequestTest extends BaseTest
       response = getAsynchronousResponse(jobUrl, writer);
       assertEquals(500, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
-      assertEquals("java.lang.RuntimeException: test process exceptions in asynchronous mode", new String(writer.getBody()));
+      assertEquals("test process exceptions in asynchronous mode", new String(writer.getBody()));
       unregistry(Resource3.class);
    }
 

@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class ProvidersRegistry
 {
-   protected Map<String, ProviderBinder> all = new HashMap<String, ProviderBinder>();
+   protected final Map<String, ProviderBinder> all = new HashMap<String, ProviderBinder>();
 
    public void addProviders(String applicationName, ProviderBinder apb)
    {

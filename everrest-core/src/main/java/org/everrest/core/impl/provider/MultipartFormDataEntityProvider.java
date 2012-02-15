@@ -44,7 +44,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Processing multipart data based on apache fileupload.
+ * Processing multipart data based on apache file-upload.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: MultipartFormDataEntityProvider.java 497 2009-11-08 13:19:25Z

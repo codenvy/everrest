@@ -18,7 +18,9 @@
  */
 package org.everrest.core.impl.async;
 
+import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.impl.ProviderBinder;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -68,8 +70,9 @@ public class AsynchronousJobService
             .type(MediaType.TEXT_PLAIN).build());
       }
 
+      GenericContainerRequest request = (GenericContainerRequest)job.getContext().get("org.everrest.async.request");
       if (securityContext.isUserInRole("administrators")
-         || principalMatched(job.getRequest().getUserPrincipal(), securityContext.getUserPrincipal()))
+         || principalMatched(request.getUserPrincipal(), securityContext.getUserPrincipal()))
       {
          if (job.isDone())
          {
@@ -81,6 +84,8 @@ public class AsynchronousJobService
             finally
             {
                pool.removeJob(jobId);
+               ApplicationContextImpl.getCurrent().setProviders(
+                  (ProviderBinder)job.getContext().get("org.everrest.async.providers"));
             }
 
             // This response will be sent to client side.
@@ -95,13 +100,13 @@ public class AsynchronousJobService
 
                if (response.getEntity() != null && response.getMetadata().getFirst(HttpHeaders.CONTENT_TYPE) == null)
                {
-                  MediaType contentType = job.getRequest().getAcceptableMediaType(job.getResourceMethod().produces());
+                  MediaType contentType = request.getAcceptableMediaType(job.getResourceMethod().produces());
                   response.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
                }
             }
             else
             {
-               MediaType contentType = job.getRequest().getAcceptableMediaType(job.getResourceMethod().produces());
+               MediaType contentType = request.getAcceptableMediaType(job.getResourceMethod().produces());
                response = Response.ok(result, contentType).build();
             }
 
@@ -139,11 +144,12 @@ public class AsynchronousJobService
       List<AsynchronousProcess> processes = new ArrayList<AsynchronousProcess>(jobs.size());
       for (AsynchronousJob job : jobs)
       {
-         Principal principal = job.getRequest().getUserPrincipal();
+         GenericContainerRequest request = (GenericContainerRequest)job.getContext().get("org.everrest.async.request");
+         Principal principal = request.getUserPrincipal();
          processes.add(new AsynchronousProcess(
             principal != null ? principal.getName() : null,
             job.getJobId(),
-            job.getRequest().getRequestUri().getPath(),
+            request.getRequestUri().getPath(),
             job.isDone() ? "done" : "running"));
       }
       // Wrap list with GenericEntity to have chance to determine suitable MessageBodyWriter.
@@ -168,7 +174,8 @@ public class AsynchronousJobService
       }
 
       if (securityContext.isUserInRole("administrators")
-         || principalMatched(job.getRequest().getUserPrincipal(), securityContext.getUserPrincipal()))
+         || principalMatched(((GenericContainerRequest)job.getContext().get("org.everrest.async.request")).getUserPrincipal(),
+         securityContext.getUserPrincipal()))
       {
          pool.removeJob(jobId);
       }

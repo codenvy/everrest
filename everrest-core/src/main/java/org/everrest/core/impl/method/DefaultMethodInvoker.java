@@ -127,7 +127,7 @@ public class DefaultMethodInvoker implements MethodInvoker
                            + mp.getParameterClass();
                      if (LOG.isDebugEnabled())
                      {
-                        LOG.warn(msg);
+                        LOG.debug(msg);
                      }
                      throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
                         .entity(msg).type(MediaType.TEXT_PLAIN).build());
@@ -153,11 +153,15 @@ public class DefaultMethodInvoker implements MethodInvoker
                   {
                      if (LOG.isDebugEnabled())
                      {
-                        LOG.error(e.getMessage(), e);
+                        LOG.debug(e.getMessage(), e);
                      }
                      if (e instanceof WebApplicationException)
                      {
                         throw (WebApplicationException)e;
+                     }
+                     if (e instanceof InternalException)
+                     {
+                        throw (InternalException)e;
                      }
                      throw new InternalException(e);
                   }
@@ -188,7 +192,7 @@ public class DefaultMethodInvoker implements MethodInvoker
       }
    }
 
-   /** @deprecated Use {@link #invokeMethod(Object, GenericMethodResource, Object[], ApplicationContext)} instead. */
+   @Deprecated
    protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p)
    {
       return invokeMethod(resource, methodResource, p, ApplicationContextImpl.getCurrent());
@@ -203,26 +207,34 @@ public class DefaultMethodInvoker implements MethodInvoker
       }
       catch (IllegalArgumentException argExc)
       {
-         // should not be thrown
+         // Should not be thrown.
          throw new InternalException(argExc);
       }
       catch (IllegalAccessException accessExc)
       {
-         // should not be thrown
+         // Should not be thrown.
          throw new InternalException(accessExc);
       }
       catch (InvocationTargetException invExc)
       {
          if (LOG.isDebugEnabled())
          {
-            LOG.error(invExc.getMessage(), invExc);
+            LOG.debug(invExc.getMessage(), invExc);
          }
-         // get cause of exception that method produces
+
+         // Get cause of exception that method produces.
          Throwable cause = invExc.getCause();
-         // if WebApplicationException than it may contain response
-         if (WebApplicationException.class == cause.getClass())
+
+         // If WebApplicationException than it may contain response.
+         if (cause instanceof WebApplicationException)
          {
             throw (WebApplicationException)cause;
+         }
+
+         // InternalException may be thrown by some internal service but should never be thrown by custom services.
+         if (cause instanceof InternalException)
+         {
+            throw (InternalException)cause;
          }
 
          throw new InternalException(cause);

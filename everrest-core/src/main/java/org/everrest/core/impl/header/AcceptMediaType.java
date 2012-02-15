@@ -75,10 +75,10 @@ public class AcceptMediaType extends MediaType implements QualityValue
    public AcceptMediaType(String type, String subtype, Map<String, String> parameters)
    {
       super(type, subtype, parameters);
-      String qstring;
-      if (parameters != null && (qstring = parameters.get(QVALUE)) != null)
+      String qString;
+      if (parameters != null && (qString = parameters.get(QVALUE)) != null)
       {
-         this.qValue = HeaderHelper.parseQualityValue(qstring);
+         this.qValue = HeaderHelper.parseQualityValue(qString);
       }
       else
       {

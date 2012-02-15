@@ -76,23 +76,37 @@ class ExoApplicationPublisher extends ApplicationPublisher
                {
                   // singleton provider
                   if (instance instanceof ContextResolver)
+                  {
                      providers.addContextResolver((ContextResolver)instance);
+                  }
                   if (instance instanceof ExceptionMapper)
+                  {
                      providers.addExceptionMapper((ExceptionMapper)instance);
+                  }
                   if (instance instanceof MessageBodyReader)
+                  {
                      providers.addMessageBodyReader((MessageBodyReader)instance);
+                  }
                   if (instance instanceof MessageBodyWriter)
+                  {
                      providers.addMessageBodyWriter((MessageBodyWriter)instance);
+                  }
                }
                else if (clazz.getAnnotation(Filter.class) != null)
                {
                   // singleton filter
                   if (instance instanceof MethodInvokerFilter)
+                  {
                      providers.addMethodInvokerFilter((MethodInvokerFilter)instance);
+                  }
                   if (instance instanceof RequestFilter)
+                  {
                      providers.addRequestFilter((RequestFilter)instance);
+                  }
                   if (instance instanceof ResponseFilter)
+                  {
                      providers.addResponseFilter((ResponseFilter)instance);
+                  }
                }
                else if (clazz.getAnnotation(Path.class) != null)
                {
@@ -113,23 +127,37 @@ class ExoApplicationPublisher extends ApplicationPublisher
                {
                   // per-request provider
                   if (ContextResolver.class.isAssignableFrom(clazz))
+                  {
                      providers.addContextResolver(clazz);
+                  }
                   if (ExceptionMapper.class.isAssignableFrom(clazz))
+                  {
                      providers.addExceptionMapper(clazz);
+                  }
                   if (MessageBodyReader.class.isAssignableFrom(clazz))
+                  {
                      providers.addMessageBodyReader(clazz);
+                  }
                   if (MessageBodyWriter.class.isAssignableFrom(clazz))
+                  {
                      providers.addMessageBodyWriter(clazz);
+                  }
                }
                else if (clazz.getAnnotation(Filter.class) != null)
                {
                   // per-request filter
                   if (MethodInvokerFilter.class.isAssignableFrom(clazz))
+                  {
                      providers.addMethodInvokerFilter(clazz);
+                  }
                   if (RequestFilter.class.isAssignableFrom(clazz))
+                  {
                      providers.addRequestFilter(clazz);
+                  }
                   if (ResponseFilter.class.isAssignableFrom(clazz))
+                  {
                      providers.addResponseFilter(clazz);
+                  }
                }
                else if (clazz.getAnnotation(Path.class) != null)
                {

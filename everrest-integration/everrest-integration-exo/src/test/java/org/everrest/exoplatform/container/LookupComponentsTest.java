@@ -19,6 +19,12 @@
 package org.everrest.exoplatform.container;
 
 import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.impl.ContainerRequest;
+import org.everrest.core.impl.ContainerResponse;
+import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.tools.DummyContainerResponseWriter;
+import org.everrest.core.tools.EmptyInputStream;
 import org.everrest.exoplatform.StandaloneBaseTest;
 import org.picocontainer.ComponentAdapter;
 
@@ -27,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,12 +64,12 @@ public class LookupComponentsTest extends StandaloneBaseTest
    {
       super.setUp();
       restfulContainer = new RestfulContainer(container);
-      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, null));
+      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
+         new ContainerRequest("XXX", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl()),
+         new ContainerResponse(new DummyContainerResponseWriter()), ProviderBinder.getInstance()));
    }
 
-   /**
-    * @see org.everrest.exoplatform.BaseTest#tearDown()
-    */
+   /** @see org.everrest.exoplatform.BaseTest#tearDown() */
    @Override
    protected void tearDown() throws Exception
    {
@@ -240,7 +247,7 @@ public class LookupComponentsTest extends StandaloneBaseTest
 
       @Override
       public void writeTo(ToWrite t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
+                          MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
          WebApplicationException
       {
       }
@@ -264,7 +271,7 @@ public class LookupComponentsTest extends StandaloneBaseTest
 
       @Override
       public void writeTo(ToWrite t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
+                          MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
          WebApplicationException
       {
       }
@@ -285,7 +292,7 @@ public class LookupComponentsTest extends StandaloneBaseTest
 
       @Override
       public ToRead readFrom(Class<ToRead> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
+                             MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
          WebApplicationException
       {
          return null;
@@ -304,7 +311,7 @@ public class LookupComponentsTest extends StandaloneBaseTest
 
       @Override
       public ToRead readFrom(Class<ToRead> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
+                             MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
          WebApplicationException
       {
          return null;

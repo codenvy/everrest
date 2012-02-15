@@ -55,8 +55,7 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream>
                                InputStream entityStream) throws IOException
    {
       ApplicationContext context = ApplicationContextImpl.getCurrent();
-      boolean async = Boolean.parseBoolean(context.getQueryParameters().getFirst("async"));
-      if (async)
+      if (context.isAsynchronous())
       {
          // If request is asynchronous spool content of stream to file or memory.
          Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);

@@ -41,9 +41,7 @@ public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T
       this.model = model;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public Object getInstance(ApplicationContext context)
    {
       Class<?> clazz = model.getObjectClass();
@@ -54,15 +52,15 @@ public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T
          if (fieldInjectors != null && fieldInjectors.size() > 0)
          {
             for (FieldInjector injector : fieldInjectors)
+            {
                injector.inject(component, context);
+            }
          }
       }
       return component;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public T getObjectModel()
    {
       return model;

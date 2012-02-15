@@ -50,17 +50,13 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
 
    private ServletConfig servletConfig;
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public long getLastModified(HttpServletRequest request, Object handler)
    {
       return -1;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
       throws Exception
    {
@@ -75,25 +71,19 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
       return null;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setServletConfig(ServletConfig servletConfig)
    {
       this.servletConfig = servletConfig;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public void setServletContext(ServletContext servletContext)
    {
       this.servletContext = servletContext;
    }
 
-   /**
-    * {@inheritDoc}
-    */
+   /** {@inheritDoc} */
    public boolean supports(Object handler)
    {
       return handler instanceof EverrestProcessor;

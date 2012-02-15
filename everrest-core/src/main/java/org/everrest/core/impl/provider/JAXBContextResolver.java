@@ -87,11 +87,11 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     * Add prepared JAXBContext that will be mapped to set of class. In this case
     * this class works as cache for JAXBContexts.
     *
-    * @param jaxbctx JAXBContext
+    * @param jaxbContext JAXBContext
     * @param clazz java classes to be bound
     */
-   public void addJAXBContext(JAXBContext jaxbctx, Class<?> clazz)
+   public void addJAXBContext(JAXBContext jaxbContext, Class<?> clazz)
    {
-      jaxbContexts.put(clazz, jaxbctx);
+      jaxbContexts.put(clazz, jaxbContext);
    }
 }

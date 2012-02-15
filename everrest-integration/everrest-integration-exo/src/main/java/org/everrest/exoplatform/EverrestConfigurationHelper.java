@@ -44,10 +44,10 @@ final class EverrestConfigurationHelper extends EverrestConfiguration
          {
             if (initParams != null)
             {
-               ValueParam vparam = initParams.getValueParam(name);
-               if (vparam != null)
+               ValueParam valueParam = initParams.getValueParam(name);
+               if (valueParam != null)
                {
-                  return vparam.getValue();
+                  return valueParam.getValue();
                }
             }
             return null;

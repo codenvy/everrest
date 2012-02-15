@@ -99,27 +99,27 @@ public class ProviderBinder implements Providers
    private static final RuntimePermission PROVIDERS_PERMISSIONS = new RuntimePermission("providersManagePermission");
 
    /** Providers binder instance. */
-   private static final AtomicReference<ProviderBinder> ainst = new AtomicReference<ProviderBinder>();
+   private static final AtomicReference<ProviderBinder> INSTANCE = new AtomicReference<ProviderBinder>();
 
    /** @return instance of {@link ProviderBinder} */
    public static ProviderBinder getInstance()
    {
-      ProviderBinder t = ainst.get();
+      ProviderBinder t = INSTANCE.get();
       if (t != null)
       {
          return t;
       }
-      synchronized (ainst)
+      synchronized (INSTANCE)
       {
-         t = ainst.get();
+         t = INSTANCE.get();
          if (t != null)
          {
             return t;
          }
          t = new ProviderBinder();
-         ainst.compareAndSet(null, t);
+         INSTANCE.compareAndSet(null, t);
       }
-      return ainst.get();
+      return INSTANCE.get();
    }
 
    /**
@@ -135,7 +135,7 @@ public class ProviderBinder implements Providers
       {
          security.checkPermission(PROVIDERS_PERMISSIONS);
       }
-      ainst.set(inst);
+      INSTANCE.set(inst);
    }
 
    /** Read message body providers. Also see {@link MediaTypeMultivaluedMap}. */
@@ -528,13 +528,13 @@ public class ProviderBinder implements Providers
             ParameterizedType pt = (ParameterizedType)type;
             if (ContextResolver.class == pt.getRawType())
             {
-               Type[] atypes = pt.getActualTypeArguments();
-               if (atypes.length > 1)
+               Type[] typeArguments = pt.getActualTypeArguments();
+               if (typeArguments.length > 1)
                {
                   throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
                }
 
-               Class<?> aclazz = (Class<?>)atypes[0];
+               Class<?> aclazz = (Class<?>)typeArguments[0];
                MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(aclazz);
 
                if (pm == null)
@@ -570,12 +570,12 @@ public class ProviderBinder implements Providers
             ParameterizedType pt = (ParameterizedType)type;
             if (ExceptionMapper.class == pt.getRawType())
             {
-               Type[] atypes = pt.getActualTypeArguments();
-               if (atypes.length > 1)
+               Type[] typeArguments = pt.getActualTypeArguments();
+               if (typeArguments.length > 1)
                {
                   throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
                }
-               Class<? extends Throwable> exc = (Class<? extends Throwable>)atypes[0];
+               Class<? extends Throwable> exc = (Class<? extends Throwable>)typeArguments[0];
 
                if (exceptionMappers.get(exc) != null)
                {
@@ -602,7 +602,7 @@ public class ProviderBinder implements Providers
    public void addMessageBodyWriter(ObjectFactory<ProviderDescriptor> writerFactory)
    {
       // MessageBodyWriter is smart component and can determine which type it
-      // supports, see method MessageBodyWriter.isWriteable. So here does not
+      // supports, see method MessageBodyWriter#isWriteable. So here does not
       // check is writer for the same Java and media type already exists.
       // Let it be under developer's control.
       for (MediaType mime : writerFactory.getObjectModel().produces())

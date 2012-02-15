@@ -146,8 +146,8 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
       {
          throw new RuntimeException("Not found any JAXBContextResolver for media type " + mediaType);
       }
-      JAXBContextResolver jaxbres = resolver.getContext(null);
-      return jaxbres.getJAXBContext(type);
+      JAXBContextResolver jaxbContextResolver = resolver.getContext(null);
+      return jaxbContextResolver.getJAXBContext(type);
    }
 
 }

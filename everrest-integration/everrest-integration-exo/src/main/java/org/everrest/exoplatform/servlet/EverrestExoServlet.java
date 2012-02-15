@@ -79,7 +79,7 @@ public class EverrestExoServlet extends AbstractHttpServlet
       catch (IOException ioe)
       {
          // Met problem with Acrobat Reader HTTP client when use EverRest for WebDav.
-         // Client close connection before all data transfered and it cause error on server side.
+         // Client close connection before all data transferred and it cause error on server side.
          if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException"))
          {
             if (log.isDebugEnabled())

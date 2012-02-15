@@ -106,7 +106,7 @@ public class JsonWriter
          {
             //System.out.println(token);
             // wrong JSON structure.
-            throw new JsonException("Sysntax error. Unexpected element '}'.");
+            throw new JsonException("Syntax error. Unexpected element '}'.");
          }
          writer.write('}');
          commaFirst = true;
@@ -124,7 +124,7 @@ public class JsonWriter
       //if (token != JsonToken.key && token != JsonToken.array)
       if (token != null && token != JsonToken.key && token != JsonToken.array)
       {
-         throw new JsonException("Sysntax error. Unexpected element '['.");
+         throw new JsonException("Syntax error. Unexpected element '['.");
       }
       try
       {
@@ -158,7 +158,7 @@ public class JsonWriter
          if (token != JsonToken.array)
          {
             // wrong JSON structure
-            throw new JsonException("Sysntax error. Unexpected element ']'.");
+            throw new JsonException("Syntax error. Unexpected element ']'.");
          }
          writer.write(']');
          commaFirst = true;
@@ -180,7 +180,7 @@ public class JsonWriter
       JsonToken token = stack.peek();
       if (token != JsonToken.object)
       {
-         throw new JsonException("Sysntax error. Unexpected characters '" + key + "'.");
+         throw new JsonException("Syntax error. Unexpected characters '" + key + "'.");
       }
       try
       {

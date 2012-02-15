@@ -48,7 +48,9 @@ public class EverrestModule implements Module
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getHttpHeaders();
       }
    }
@@ -59,7 +61,9 @@ public class EverrestModule implements Module
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getInitialProperties();
       }
    }
@@ -70,7 +74,9 @@ public class EverrestModule implements Module
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getProviders();
       }
    }
@@ -81,7 +87,9 @@ public class EverrestModule implements Module
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getRequest();
       }
    }
@@ -92,7 +100,9 @@ public class EverrestModule implements Module
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getSecurityContext();
       }
    }
@@ -103,7 +113,9 @@ public class EverrestModule implements Module
       {
          EnvironmentContext context = EnvironmentContext.getCurrent();
          if (context == null)
+         {
             throw new ProvisionException("EverRest EnvironmentContext is not initialized.");
+         }
          return (ServletConfig)EnvironmentContext.getCurrent().get(ServletConfig.class);
       }
    }
@@ -114,7 +126,9 @@ public class EverrestModule implements Module
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          if (context == null)
+         {
             throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+         }
          return context.getUriInfo();
       }
    }

@@ -128,13 +128,13 @@ public class RequestHandlerImpl implements RequestHandler
       this(dispatcher, null, dependencySupplier, config);
    }
 
-   /** @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future. */
+   @Deprecated
    public RequestHandlerImpl(ResourceBinder resources, DependencySupplier dependencySupplier)
    {
       this(new RequestDispatcher(resources), null, dependencySupplier, new EverrestConfiguration());
    }
 
-   /** @deprecated do not use it any more. It is kept for back compatibility only. Will be removed in future. */
+   @Deprecated
    public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier,
                              EverrestConfiguration config)
    {
@@ -207,7 +207,7 @@ public class RequestHandlerImpl implements RequestHandler
 
                int errorStatus = errorResponse.getStatus();
                Throwable cause = e.getCause();
-               // should be some of 4xx status
+               // Should be some of 4xx status.
                if (errorStatus < 500)
                {
                   // Warn about error in debug mode only.
