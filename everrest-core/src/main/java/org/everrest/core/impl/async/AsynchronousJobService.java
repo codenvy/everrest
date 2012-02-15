@@ -70,6 +70,7 @@ public class AsynchronousJobService
             .type(MediaType.TEXT_PLAIN).build());
       }
 
+      // Get original request which initialize asynchronous job.
       GenericContainerRequest request = (GenericContainerRequest)job.getContext().get("org.everrest.async.request");
       if (securityContext.isUserInRole("administrators")
          || principalMatched(request.getUserPrincipal(), securityContext.getUserPrincipal()))
@@ -84,6 +85,7 @@ public class AsynchronousJobService
             finally
             {
                pool.removeJob(jobId);
+               // Restore resource specific set of providers.
                ApplicationContextImpl.getCurrent().setProviders(
                   (ProviderBinder)job.getContext().get("org.everrest.async.providers"));
             }
@@ -110,7 +112,7 @@ public class AsynchronousJobService
                response = Response.ok(result, contentType).build();
             }
 
-            // Result of job.
+            // Result of job. Client get this response.
             ApplicationContextImpl.getCurrent().getContainerResponse().setResponse(response);
 
             // This response (204) never sent to client side.

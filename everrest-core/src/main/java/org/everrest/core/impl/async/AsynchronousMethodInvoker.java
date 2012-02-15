@@ -87,6 +87,7 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
          // Resource locators can't be processed in asynchronous mode since it is not end point of request.
          AsynchronousJob job = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
          job.getContext().put("org.everrest.async.request", copyRequest);
+         // Save current set of providers. In some environments they can be resource specific.
          job.getContext().put("org.everrest.async.providers", context.getProviders());
          final String jobUri = context.getBaseUriBuilder().path(AsynchronousJobService.class, "get")
             .build(job.getJobId()).toString();
