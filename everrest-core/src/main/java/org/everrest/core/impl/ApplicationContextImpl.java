@@ -135,8 +135,6 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
 
    private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
 
-   private final boolean asynchronous;
-
    /**
     * Constructs new instance of ApplicationContext.
     *
@@ -165,7 +163,6 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       this.response = response;
       this.providers = providers;
       this.methodInvokerDecoratorFactory = methodInvokerDecoratorFactory;
-      this.asynchronous = Boolean.parseBoolean(getQueryParameters().getFirst("async"));
    }
 
    /** {@inheritDoc} */
@@ -527,7 +524,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    @Override
    public boolean isAsynchronous()
    {
-      return asynchronous;
+      return Boolean.parseBoolean(getQueryParameters().getFirst("async"));
    }
 
    /** @see org.everrest.core.Lifecycle#start() */
