@@ -353,8 +353,7 @@ public class ObjectBuilder
       {
          // Enum is not instantiable via CLass.getInstance().
          // This is used when enum is member of array or collection.
-         Class c = clazz;
-         return (T)Enum.valueOf(c, jsonValue.getStringValue());
+         return (T)createEnum(clazz, jsonValue.getStringValue());
       }
 
       if (!jsonValue.isObject())
@@ -419,8 +418,7 @@ public class ObjectBuilder
                      {
                         if (parameterType == Types.ENUM)
                         {
-                           Class c = methodParameterClass;
-                           Enum<?> en = Enum.valueOf(c, childJsonValue.getStringValue());
+                           Enum<?> en = createEnum(methodParameterClass, childJsonValue.getStringValue());
                            method.invoke(object, en);
                         }
                         else if (parameterType == Types.ARRAY_OBJECT)
@@ -461,6 +459,16 @@ public class ObjectBuilder
          }
       }
       return object;
+   }
+
+   @SuppressWarnings("unchecked")
+   private static Enum<?> createEnum(Class c, String json)
+   {
+      if (json == null || json.isEmpty())
+      {
+         return null;
+      }
+      return Enum.valueOf(c, json);
    }
 
    /**
