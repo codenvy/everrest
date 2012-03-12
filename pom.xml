@@ -27,7 +27,7 @@
    <groupId>org.everrest</groupId>
    <artifactId>everrest-parent</artifactId>
    <name>EverRest :: Parent</name>
-   <version>1.0.3-SNAPSHOT</version>
+   <version>1.0.3</version>
    <packaging>pom</packaging>
 
    <description>everREST is a project which provides a way to build RESTful applications using own complete implementation of JAX-RS specification (a.k.a JSR-311)
@@ -60,9 +60,9 @@
    </licenses>
    
    <scm> 
-      <connection>scm:svn:http://everrest.googlecode.com/svn/trunk/</connection> 
-      <developerConnection>scm:svn:https://everrest.googlecode.com/svn/trunk/</developerConnection> 
-      <url>http://code.google.com/p/everrest/source/browse/</url> 
+      <connection>scm:svn:http://everrest.googlecode.com/svn/tags/1.0.3</connection> 
+      <developerConnection>scm:svn:https://everrest.googlecode.com/svn/tags/1.0.3</developerConnection> 
+      <url>http://code.google.com/p/everrest/source/browse/tags/1.0.3</url> 
    </scm>
    
    <distributionManagement>
@@ -80,7 +80,7 @@
       <exo.product.name>everrest</exo.product.name>
       <exo.product.specification>1.0</exo.product.specification>
 
-      <org.everrest.version>1.0.3-SNAPSHOT</org.everrest.version>
+      <org.everrest.version>1.0.3</org.everrest.version>
 
       <javax.ws.rs.version>1.0</javax.ws.rs.version>
       <javax.servlet.version>2.4</javax.servlet.version>

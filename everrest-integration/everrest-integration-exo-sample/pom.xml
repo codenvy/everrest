@@ -4,7 +4,7 @@
    <parent>
       <groupId>org.everrest</groupId>
       <artifactId>everrest-parent</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
       <relativePath>../../pom.xml</relativePath>
    </parent>
 
@@ -47,7 +47,7 @@
       <dependency>
          <groupId>org.everrest</groupId>
          <artifactId>everrest-integration-exo</artifactId>
-         <version>1.0.3-SNAPSHOT</version>
+         <version>1.0.3</version>
       </dependency>
       <dependency>
          <groupId>org.exoplatform.kernel</groupId>
