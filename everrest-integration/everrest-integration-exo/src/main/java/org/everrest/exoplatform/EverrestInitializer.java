@@ -28,6 +28,7 @@ import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.util.Logger;
 import org.exoplatform.container.ExoContainer;
@@ -95,7 +96,7 @@ public class EverrestInitializer implements Startable
       Application everrest = new Application()
       {
          private final Set<Class<?>> classes = new HashSet<Class<?>>(1);
-         private final Set<Object> singletons = new HashSet<Object>(2);
+         private final Set<Object> singletons = new HashSet<Object>(3);
 
          @Override
          public Set<Class<?>> getClasses()
@@ -113,6 +114,7 @@ public class EverrestInitializer implements Startable
       if (config.isAsynchronousSupported())
       {
          everrest.getSingletons().add(new ExoAsynchronousJobPool(config));
+         everrest.getSingletons().add(new AsynchronousProcessListWriter());
          everrest.getClasses().add(AsynchronousJobService.class);
       }
       if (config.isCheckSecurity())
