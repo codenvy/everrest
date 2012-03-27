@@ -60,8 +60,8 @@
    </licenses>
    
    <scm> 
-      <connection>scm:svn:http://everrest.googlecode.com/svn/trunk/</connection> 
-      <developerConnection>scm:svn:https://everrest.googlecode.com/svn/trunk/</developerConnection> 
+      <connection>scm:git:https://code.google.com/p/everrest/</connection> 
+      <developerConnection>scm:git:https://code.google.com/p/everrest/</developerConnection> 
       <url>http://code.google.com/p/everrest/source/browse/</url> 
    </scm>
    
