@@ -30,8 +30,10 @@ import org.everrest.core.ResourcePublicationException;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.uri.UriPattern;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -41,7 +43,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Path;
@@ -395,7 +396,8 @@ public class GroovyResourcePublisher
     */
    protected GroovyCodeSource createCodeSource(InputStream in, String name)
    {
-      GroovyCodeSource gcs = new GroovyCodeSource(in, name, "/groovy/script/jaxrs");
+      GroovyCodeSource gcs =
+         new GroovyCodeSource(new BufferedReader(new InputStreamReader(in)), name, "/groovy/script/jaxrs");
       gcs.setCachable(false);
       return gcs;
    }
