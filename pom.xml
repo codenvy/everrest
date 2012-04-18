@@ -80,8 +80,6 @@
       <exo.product.name>everrest</exo.product.name>
       <exo.product.specification>1.0</exo.product.specification>
 
-      <org.everrest.version>1.0.5-SNAPSHOT</org.everrest.version>
-
       <javax.ws.rs.version>1.0</javax.ws.rs.version>
       <javax.servlet.version>2.4</javax.servlet.version>
 
@@ -153,27 +151,27 @@
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-test</artifactId>
-            <version>${org.everrest.version}</version>
+            <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-core</artifactId>
-            <version>${org.everrest.version}</version>
+            <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-groovy</artifactId>
-            <version>${org.everrest.version}</version>
+            <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-httpclient</artifactId>
-            <version>${org.everrest.version}</version>
+            <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-proxy</artifactId>
-            <version>${org.everrest.version}</version>
+            <version>${project.version}</version>
          </dependency>
          <!-- Third part dependencies -->
          <dependency>
