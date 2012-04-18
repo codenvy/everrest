@@ -26,7 +26,7 @@
   <parent>
     <groupId>org.everrest</groupId>
     <artifactId>everrest-parent</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
   </parent>
 
   <artifactId>everrest-test</artifactId>
