@@ -219,7 +219,6 @@ public class UriBuilderImpl extends UriBuilder
          int p = 0;
          while (p < str.length())
          {
-
             if (str.charAt(p) == '=') // something like a=x&=y
             {
                throw new UriBuilderException("Query parameter name is empty. ");
@@ -231,21 +230,33 @@ public class UriBuilderImpl extends UriBuilder
                n = str.length();
             }
 
+            // skip empty pair, like a=x&&b=y
             if (n > p)
             {
-               // skip empty pair, like a=x&&b=y
-               String pair = str.substring(p, n);
+               final String pair = str.substring(p, n);
                if (query.length() > 0)
                {
                   query.append('&');
                }
 
-               if (pair.charAt(pair.length() - 1) == '=')
+               final int eq = pair.indexOf('=');
+               if (eq == -1)
                {
-                  pair = pair.substring(0, pair.length() - 1);
+                  // no value
+                  query.append(UriComponent.recognizeEncode(pair, UriComponent.QUERY, true));
                }
-               // encode string and keep special character '='
-               query.append(UriComponent.recognizeEncode(pair, UriComponent.QUERY, true));
+               else if (eq == (pair.length() - 1))
+               {
+                  // no value but '=' present
+                  query.append(UriComponent.recognizeEncode(pair.substring(0, eq), UriComponent.QUERY, true));
+               }
+               else
+               {
+                  // encode key and value and keep delimiter '='
+                  query.append(UriComponent.recognizeEncode(pair.substring(0, eq), UriComponent.QUERY, true));
+                  query.append('=');
+                  query.append(UriComponent.recognizeEncode(pair.substring(eq + 1), UriComponent.QUERY, true));
+               }
             }
             p = n + 1;
          }
