@@ -2,8 +2,8 @@
 <web-app id="BookSamplePico" version="2.5" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_5.xsd">
    <context-param>
       <param-name>webapp-composer-class</param-name>
-      <param-value>org.everrest.sample.pico.BookApplicationComposer</param-value>
-      <!-- param-value>org.everrest.pico.EverrestComposer$DefaultComposer</param-value -->
+      <!--<param-value>org.everrest.sample.pico.BookApplicationComposer</param-value>-->
+      <param-value>org.everrest.pico.EverrestComposer$DefaultComposer</param-value>
    </context-param>
    <listener>
       <listener-class>org.picocontainer.web.PicoServletContainerListener</listener-class>
