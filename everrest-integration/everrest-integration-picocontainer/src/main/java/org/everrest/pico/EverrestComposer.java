@@ -45,6 +45,7 @@ import org.picocontainer.Disposable;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.web.PicoServletContainerListener;
 import org.picocontainer.web.WebappComposer;
+import org.picocontainer.web.script.ScriptedWebappComposer;
 
 import java.util.Collection;
 
@@ -78,7 +79,7 @@ public abstract class EverrestComposer implements WebappComposer
     * WEB-INF/lib for classes which contains JAX-RS annotations. Interesting for three annotations {@link Path},
     * {@link Provider} and {@link Filter} .
     */
-   public static class DefaultComposser extends EverrestComposer
+   public static class DefaultComposer extends EverrestComposer
    {
       /**
        * Do nothing in default implementation but can be overridden in subclasses to add component with application
@@ -148,11 +149,40 @@ public abstract class EverrestComposer implements WebappComposer
    }
 
    protected ApplicationProviderBinder providers;
-
    protected ResourceBinder resources;
+
+   private ScriptedWebappComposer scriptedComposer;
+   private String sessionScript;
+   private String requestScript;
 
    public final void composeApplication(MutablePicoContainer container, ServletContext servletContext)
    {
+      String applicationScript = servletContext.getInitParameter("application-script");
+      if (applicationScript == null)
+      {
+         applicationScript = ScriptedWebappComposer.DEFAULT_APPLICATION_SCRIPT;
+      }
+
+      sessionScript = servletContext.getInitParameter("session-script");
+      if (sessionScript == null)
+      {
+         sessionScript = ScriptedWebappComposer.DEFAULT_SESSION_SCRIPT;
+      }
+
+      requestScript = servletContext.getInitParameter("request-script");
+      if (requestScript == null)
+      {
+         requestScript = ScriptedWebappComposer.DEFAULT_REQUEST_SCRIPT;
+      }
+
+      String containerBuilder = servletContext.getInitParameter("scripted-container-builder");
+      if (containerBuilder == null)
+      {
+         containerBuilder = ScriptedWebappComposer.DEFAULT_CONTAINER_BUILDER;
+      }
+
+      scriptedComposer = new ScriptedWebappComposer(containerBuilder, applicationScript, sessionScript, requestScript);
+
       EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
       this.resources = new ResourceBinderImpl();
       this.providers = new ApplicationProviderBinder();
@@ -171,6 +201,11 @@ public abstract class EverrestComposer implements WebappComposer
       servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
       servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
 
+      if (isResourceAvailable(applicationScript))
+      {
+         scriptedComposer.composeApplication(container, servletContext);
+      }
+
       doComposeApplication(container, servletContext);
       processComponents(container, Scope.APPLICATION);
    }
@@ -180,16 +215,31 @@ public abstract class EverrestComposer implements WebappComposer
       return new FileCollectorDestroyer();
    }
 
+   public final void composeSession(MutablePicoContainer container)
+   {
+      if (isResourceAvailable(sessionScript))
+      {
+         scriptedComposer.composeSession(container);
+      }
+
+      doComposeSession(container);
+      processComponents(container, Scope.SESSION);
+   }
+
    public final void composeRequest(MutablePicoContainer container)
    {
+      if (isResourceAvailable(requestScript))
+      {
+         scriptedComposer.composeRequest(container);
+      }
+
       doComposeRequest(container);
       processComponents(container, Scope.REQUEST);
    }
 
-   public final void composeSession(MutablePicoContainer container)
+   private boolean isResourceAvailable(String resource)
    {
-      doComposeSession(container);
-      processComponents(container, Scope.SESSION);
+      return Thread.currentThread().getContextClassLoader().getResource(resource) != null;
    }
 
    /**
@@ -203,8 +253,10 @@ public abstract class EverrestComposer implements WebappComposer
     * container.addComponent(MyApplicationScopeProvider.class);
     * </pre>
     *
-    * @param container picocontainer
-    * @param servletContext servlet context
+    * @param container
+    *    picocontainer
+    * @param servletContext
+    *    servlet context
     */
    protected abstract void doComposeApplication(MutablePicoContainer container, ServletContext servletContext);
 
@@ -216,7 +268,8 @@ public abstract class EverrestComposer implements WebappComposer
     * container.addComponent(MyRequestScopeProvider.class);
     * </pre>
     *
-    * @param container picocontainer
+    * @param container
+    *    picocontainer
     */
    protected abstract void doComposeRequest(MutablePicoContainer container);
 
@@ -228,7 +281,8 @@ public abstract class EverrestComposer implements WebappComposer
     * container.addComponent(MySessionScopeProvider.class);
     * </pre>
     *
-    * @param container picocontainer
+    * @param container
+    *    picocontainer
     */
    protected abstract void doComposeSession(MutablePicoContainer container);
 

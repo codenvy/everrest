@@ -9,16 +9,16 @@ You can download it from http://maven.apache.org/download.html
    Create war but do not install it in maven repository:
    mvn package
    
-   As result you will get ${PROJECT_HOME}/target/pico-book-service.war.
+   As result you will get ${PROJECT_HOME}/target/spring-book-service.war.
    You can deploy it at apache-tomcat or other servlet container and try
    it (see section 3). jar file that can be add in already existed web
-   application available at ${PROJECT_HOME}/target/pico-book-service/WEB-INF/lib/pico-books-service.jar
+   application available at ${PROJECT_HOME}/target/spring-book-service/WEB-INF/lib/spring-books-service.jar
 
 2. Run project with maven-jetty plugin.
    Run command: mvn jetty:run.
 
 3. How to try.
-   Point you web browser to http://localhost:8080/pico-book-service/books/101.
+   Point you web browser to http://localhost:8080/spring-book-service/books/101.
    You will see JSON representation of book:
    {"id":"101","author":"Vincent Massol","title":"JUnit in Action","price":19.37,"pages":386}
     
@@ -30,5 +30,5 @@ You can download it from http://maven.apache.org/download.html
    curl -X PUT \
    -H "Content-type:application/json" \
    -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
-   http://localhost:8080/pico-book-service/books/ 
+   http://localhost:8080/spring-book-service/books/
          

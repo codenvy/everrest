@@ -100,21 +100,21 @@ public class PicoResourcesTest extends BaseTest
       @GET
       public void m(Message m)
       {
-         assertEquals(mesageBody, m.getMessage());
+         assertEquals(messageBody, m.getMessage());
       }
    }
 
-   private static final String mesageBody = "PICO RESOURCE TEST";
+   private static final String messageBody = "PICO RESOURCE TEST";
 
    public void test() throws Exception
    {
-      assertEquals(204, launcher.service("GET", "/a", "", null, mesageBody.getBytes(), null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
    }
 
    @Override
-   protected Composser getComposser()
+   protected Composer getComposer()
    {
-      return new Composser() {
+      return new Composer() {
          protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext) {
             container.addComponent(MessageProvider.class);
          }

@@ -1,0 +1,3 @@
+<container>
+    <component-implementation class='org.everrest.sample.pico.BookService' />
+</container>

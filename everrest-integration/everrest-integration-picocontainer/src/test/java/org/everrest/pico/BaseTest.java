@@ -43,7 +43,7 @@ import javax.servlet.ServletContext;
  */
 public abstract class BaseTest extends TestCase
 {
-   protected abstract class Composser extends EverrestComposer
+   protected abstract class Composer extends EverrestComposer
    {
       protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext)
       {
@@ -67,11 +67,11 @@ public abstract class BaseTest extends TestCase
       appContainer.start();
       DefaultPicoContainer sesContainer = new DefaultPicoContainer();
       DefaultPicoContainer reqContainer = new DefaultPicoContainer();
-      Composser composser = getComposser();
-      MockServletContext sctx = new MockServletContext();
-      composser.composeApplication(appContainer, sctx);
-      composser.composeSession(sesContainer);
-      composser.composeRequest(reqContainer);
+      Composer composer = getComposer();
+      MockServletContext servletContext = new MockServletContext();
+      composer.composeApplication(appContainer, servletContext);
+      composer.composeSession(sesContainer);
+      composer.composeRequest(reqContainer);
 
       // NOTE Injection for constructors will not work properly. Just set up scoped containers here.
       EverrestPicoFilter picoFilter = new EverrestPicoFilter();
@@ -79,10 +79,10 @@ public abstract class BaseTest extends TestCase
       picoFilter.setSessionContainer(sesContainer);
       picoFilter.setRequestContainer(reqContainer);
 
-      DependencySupplier dependencies = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
-      ResourceBinder resources = (ResourceBinder)sctx.getAttribute(ResourceBinder.class.getName());
+      DependencySupplier dependencies = (DependencySupplier)servletContext.getAttribute(DependencySupplier.class.getName());
+      ResourceBinder resources = (ResourceBinder)servletContext.getAttribute(ResourceBinder.class.getName());
       ApplicationProviderBinder providers =
-         (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
+         (ApplicationProviderBinder)servletContext.getAttribute(ApplicationProviderBinder.class.getName());
 
       RequestHandler requestHandler =
          new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
@@ -97,5 +97,5 @@ public abstract class BaseTest extends TestCase
       super.tearDown();
    }
 
-   protected abstract Composser getComposser();
+   protected abstract Composer getComposer();
 }
