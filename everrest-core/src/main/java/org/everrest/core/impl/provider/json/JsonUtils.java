@@ -183,7 +183,8 @@ public final class JsonUtils
    /**
     * Transform Java String to JSON string.
     *
-    * @param string source String.
+    * @param string
+    *    source String.
     * @return result.
     */
    public static String getJsonString(String string)
@@ -247,7 +248,8 @@ public final class JsonUtils
    /**
     * Check is given Object is known.
     *
-    * @param o Object.
+    * @param o
+    *    Object.
     * @return true if Object is known, false otherwise.
     */
    public static boolean isKnownType(Object o)
@@ -258,7 +260,8 @@ public final class JsonUtils
    /**
     * Check is given Class is known.
     *
-    * @param clazz Class.
+    * @param clazz
+    *    Class.
     * @return true if Class is known, false otherwise.
     */
    public static boolean isKnownType(Class<?> clazz)
@@ -269,7 +272,8 @@ public final class JsonUtils
    /**
     * Get 'type' of Object. @see {@link #KNOWN_TYPES} .
     *
-    * @param o Object.
+    * @param o
+    *    Object.
     * @return 'type'.
     */
    public static Types getType(Object o)
@@ -304,7 +308,8 @@ public final class JsonUtils
    /**
     * Get 'type' of Class. @see {@link #KNOWN_TYPES} .
     *
-    * @param clazz Class.
+    * @param clazz
+    *    Class.
     * @return 'type'.
     */
    public static Types getType(Class<?> clazz)
@@ -337,7 +342,8 @@ public final class JsonUtils
     * {@link JsonTransient} annotation . Transient fields will be not serialized
     * in JSON representation.
     *
-    * @param clazz the class.
+    * @param clazz
+    *    the class.
     * @return set of fields which must be skipped.
     */
    public static Set<String> getTransientFields(Class<?> clazz)
@@ -364,12 +370,18 @@ public final class JsonUtils
       {
          throw new IllegalArgumentException("Type '" + interf.getSimpleName() + "' is not interface. ");
       }
-      return (T)Proxy.newProxyInstance(interf.getClassLoader(), new Class[]{interf}, new BeanProxy());
+      return (T)Proxy.newProxyInstance(interf.getClassLoader(), new Class[]{interf}, new ProxyObject(interf));
    }
 
-   private static final class BeanProxy implements InvocationHandler
+   private static final class ProxyObject implements InvocationHandler
    {
       private final Map<String, Object> values = new HashMap<String, Object>();
+      private final Class<?> interf;
+
+      private ProxyObject(Class<?> interf)
+      {
+         this.interf = interf;
+      }
 
       @Override
       public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
@@ -380,77 +392,117 @@ public final class JsonUtils
             // It is getter if there is no argument.
             if (args == null)
             {
-               Object value = values.get(key);
-               Class<?> valueType;
-               if (value == null && (valueType = method.getReturnType()).isPrimitive())
-               {
-                  // Cannot return null for primitive types return default values instead.
-                  if (Boolean.TYPE == valueType)
-                  {
-                     value = false;
-                  }
-                  else if (Byte.TYPE == valueType)
-                  {
-                     value = (byte)0;
-                  }
-                  else if (Short.TYPE == valueType)
-                  {
-                     value = (short)0;
-                  }
-                  else if (Character.TYPE == valueType)
-                  {
-                     value = (char)0;
-                  }
-                  else if (Integer.TYPE == valueType)
-                  {
-                     value = 0;
-                  }
-                  else if (Long.TYPE == valueType)
-                  {
-                     value = 0l;
-                  }
-                  else if (Float.TYPE == valueType)
-                  {
-                     value = 0.0f;
-                  }
-                  else if (Double.TYPE == valueType)
-                  {
-                     value = 0.0d;
-                  }
-               }
-               return value;
+               return value(key, method);
             }
 
             // Setter.
             values.put(key, args[0]);
+            return null;
          }
-         // Neither getter nor setter. Cannot process such methods.
+         else if ("toString".equals(method.getName()))
+         {
+            // EVERREST-41
+            // Simplify viewing all properties of object.
+            StringBuilder buf = new StringBuilder();
+            buf.append('{');
+            Method[] allMethods = interf.getMethods();
+            for (int i = 0, length = allMethods.length; i < length; i++)
+            {
+               // Check all 'getters'. Such method must have not parameters
+               // and must have name 'getXXX' or 'isXXX' (for boolean only).
+               if (allMethods[i].getParameterTypes().length == 0 && (key = key(allMethods[i])) != null)
+               {
+                  if (i > 0)
+                  {
+                     buf.append(',');
+                     buf.append(' ');
+                  }
+                  buf.append(key);
+                  buf.append('=');
+                  buf.append(value(key, allMethods[i]));
+               }
+            }
+            return buf.append('}').toString();
+         }
+         // Neither toString nor getter nor setter. Cannot process such methods.
          return null;
       }
 
-      private static String key(Method method)
+      private Object value(String key, Method method)
+      {
+         Object value = values.get(key);
+         Class<?> valueType;
+         if (value != null)
+         {
+            return value;
+         }
+         else if ((valueType = method.getReturnType()).isPrimitive())
+         {
+            // Cannot return null for primitive types return default value instead.
+            if (Boolean.TYPE == valueType)
+            {
+               return false;
+            }
+            else if (Byte.TYPE == valueType)
+            {
+               return (byte)0;
+            }
+            else if (Short.TYPE == valueType)
+            {
+               return (short)0;
+            }
+            else if (Character.TYPE == valueType)
+            {
+               return (char)0;
+            }
+            else if (Integer.TYPE == valueType)
+            {
+               return 0;
+            }
+            else if (Long.TYPE == valueType)
+            {
+               return 0l;
+            }
+            else if (Float.TYPE == valueType)
+            {
+               return 0.0f;
+            }
+            else if (Double.TYPE == valueType)
+            {
+               return 0.0d;
+            }
+         }
+         return null;
+      }
+
+      private String key(Method method)
       {
          String name = method.getName();
-         if ("getClass".equals(name)
-            || "getMetaClass".equals(name)
-            || "setMetaClass".equals(name))
+         Class<?>[] parameters = method.getParameterTypes();
+         if ("getClass".equals(name) || "getMetaClass".equals(name) || "setMetaClass".equals(name)
+            || parameters.length > 1 /* Neither getter nor setter if has more then one argument. */)
          {
             return null;
          }
 
-         Class<?>[] parameters = method.getParameterTypes();
          String key = null;
-         if (name.startsWith("set") && name.length() > 3 && parameters.length == 1)
+         if (parameters.length == 1)
          {
-            key = name.substring(3);
+            if (name.startsWith("set") && name.length() > 3)
+            {
+               key = name.substring(3);
+            }
          }
-         else if (name.startsWith("get") && name.length() > 3 && parameters.length == 0)
+         else
          {
-            key = name.substring(3);
-         }
-         else if (name.startsWith("is") && name.length() > 2 && parameters.length == 0 && method.getReturnType() == boolean.class)
-         {
-            key = name.substring(2);
+            if (name.startsWith("get") && name.length() > 3)
+            {
+               key = name.substring(3);
+            }
+            else if (name.startsWith("is") && name.length() > 2 && method.getReturnType() == boolean.class)
+            {
+               key = name.substring(2);
+            }
          }
          if (key != null)
          {
