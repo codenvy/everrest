@@ -66,7 +66,7 @@ import javax.ws.rs.ext.Provider;
  * @version $Id$
  * @see WebappComposer
  */
-public abstract class EverrestComposer implements WebappComposer
+public class EverrestComposer implements WebappComposer
 {
    public enum Scope
    {
@@ -78,6 +78,7 @@ public abstract class EverrestComposer implements WebappComposer
     * instantiate it. If such parameter is not specified then scan web application's folders WEB-INF/classes and
     * WEB-INF/lib for classes which contains JAX-RS annotations. Interesting for three annotations {@link Path},
     * {@link Provider} and {@link Filter} .
+    * @deprecated Use EverrestComposer directly
     */
    public static class DefaultComposer extends EverrestComposer
    {
@@ -258,7 +259,9 @@ public abstract class EverrestComposer implements WebappComposer
     * @param servletContext
     *    servlet context
     */
-   protected abstract void doComposeApplication(MutablePicoContainer container, ServletContext servletContext);
+   protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext)
+   {
+   }
 
    /**
     * Compose components with request scope.
@@ -271,7 +274,9 @@ public abstract class EverrestComposer implements WebappComposer
     * @param container
     *    picocontainer
     */
-   protected abstract void doComposeRequest(MutablePicoContainer container);
+   protected void doComposeRequest(MutablePicoContainer container)
+   {
+   }
 
    /**
     * Compose components with session scope.
@@ -284,7 +289,9 @@ public abstract class EverrestComposer implements WebappComposer
     * @param container
     *    picocontainer
     */
-   protected abstract void doComposeSession(MutablePicoContainer container);
+   protected void doComposeSession(MutablePicoContainer container)
+   {
+   }
 
    protected void processComponents(MutablePicoContainer container, Scope scope)
    {
