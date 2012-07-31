@@ -184,11 +184,43 @@ public class EverrestComposer implements WebappComposer
 
       scriptedComposer = new ScriptedWebappComposer(containerBuilder, applicationScript, sessionScript, requestScript);
 
+      if (isResourceAvailable(applicationScript))
+      {
+         scriptedComposer.composeApplication(container, servletContext);
+      }
+
       EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
-      this.resources = new ResourceBinderImpl();
-      this.providers = new ApplicationProviderBinder();
-      DependencySupplier dependencySupplier = new PicoDependencySupplier();
-      EverrestConfiguration config = everrestInitializer.getConfiguration();
+
+      this.resources = container.getComponent(ResourceBinder.class);
+
+      this.providers = container.getComponent(ApplicationProviderBinder.class);
+      EverrestConfiguration config = container.getComponent(EverrestConfiguration.class);
+      DependencySupplier dependencySupplier = container.getComponent(DependencySupplier.class);
+
+      if (this.resources == null)
+      {
+         this.resources = new ResourceBinderImpl();
+         container.addComponent(ResourceBinder.class, this.resources);
+      }
+
+      if (this.providers == null)
+      {
+         this.providers = new ApplicationProviderBinder();
+         container.addComponent(ApplicationProviderBinder.class, this.providers);
+      }
+
+      if (config == null)
+      {
+         config = everrestInitializer.getConfiguration();
+         container.addComponent(EverrestConfiguration.class, config);
+      }
+
+      if (dependencySupplier == null)
+      {
+         dependencySupplier = new PicoDependencySupplier();
+         container.addComponent(DependencySupplier.class, dependencySupplier);
+      }
+
       Application application = everrestInitializer.getApplication();
       EverrestApplication everrest = new EverrestApplication(config);
       everrest.addApplication(application);
@@ -201,11 +233,6 @@ public class EverrestComposer implements WebappComposer
       servletContext.setAttribute(ResourceBinder.class.getName(), resources);
       servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
       servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
-
-      if (isResourceAvailable(applicationScript))
-      {
-         scriptedComposer.composeApplication(container, servletContext);
-      }
 
       doComposeApplication(container, servletContext);
       processComponents(container, Scope.APPLICATION);
