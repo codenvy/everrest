@@ -86,4 +86,13 @@ public class MediaTypeTest extends BaseTest
       assertEquals("plain", mime.getSubtype());
    }
 
+   public void testNoMediaType() throws Exception
+   {
+      MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
+      String header = "; charset=utf8";
+      MediaType mime = hd.fromString(header);
+      assertEquals("utf8", mime.getParameters().get("charset"));
+      assertEquals("*", mime.getType());
+      assertEquals("*", mime.getSubtype());
+   }
 }

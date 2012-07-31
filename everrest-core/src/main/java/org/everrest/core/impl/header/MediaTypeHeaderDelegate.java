@@ -65,6 +65,11 @@ public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType>
             return new MediaType(HeaderHelper.removeWhitespaces(header.substring(0, p)),
                HeaderHelper.removeWhitespaces(header.substring(p + 1)));
          }
+         else if (p < 0 && col == 0)
+         { // string just start from ';'
+            type = null;
+            // sub-type is null
+         }
          else if (p < 0 && col > 0)
          { // there is no '/' but present ';'
             type = HeaderHelper.removeWhitespaces(header.substring(0, col));
