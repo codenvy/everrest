@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 eXo Platform SAS.
+ * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -18,40 +18,14 @@
  */
 package org.everrest.core.impl.async;
 
-import org.everrest.core.resource.ResourceMethodDescriptor;
-
-import java.util.Map;
-
 /**
+ * Implementation of this interface may be notified when asynchronous job is done.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
+ * @see AsynchronousJobPool
  */
-public interface AsynchronousJob
+public interface AsynchronousJobListener
 {
-   String getJobId();
-
-   long getExpirationDate();
-
-   ResourceMethodDescriptor getResourceMethod();
-
-   boolean isDone();
-
-   boolean cancel();
-
-   /**
-    * Get result of job. If job is not done yet this method throws IllegalStateException.
-    * Before call this method caller must check is job done or not with method {@link #isDone()} .
-    *
-    * @return result
-    * @throws IllegalStateException
-    *    if job is not done yet
-    */
-   Object getResult() throws IllegalStateException;
-
-   /**
-    * The storage for context attributes.
-    *
-    * @return map never <code>null</code>
-    */
-   Map<String, Object> getContext();
+   void done(AsynchronousJob job);
 }

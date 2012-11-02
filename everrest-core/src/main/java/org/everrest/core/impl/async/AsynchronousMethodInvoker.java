@@ -19,17 +19,9 @@
 package org.everrest.core.impl.async;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.GenericContainerRequest;
-import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
-import org.everrest.core.tools.DummySecurityContext;
-import org.everrest.core.tools.EmptyInputStream;
-import org.everrest.core.tools.SecurityContextRequest;
-import org.everrest.core.tools.SimplePrincipal;
-
-import java.security.Principal;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -64,31 +56,9 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker
    {
       try
       {
-         GenericContainerRequest request = context.getContainerRequest();
-         Principal principal = request.getUserPrincipal();
-
-         // Create copy of request. Need to keep 'Accept' headers to be able determine MessageBodyWriter which can be
-         // used to serialize result of method invocation. Do not copy entity stream. This stream is empty any way.
-         Principal copyPrincipal = null;
-         if (principal != null)
-         {
-            copyPrincipal = new SimplePrincipal(principal.getName());
-         }
-
-         ContainerRequest copyRequest = new SecurityContextRequest(
-            request.getMethod(),
-            request.getRequestUri(),
-            request.getBaseUri(),
-            new EmptyInputStream(),
-            request.getRequestHeaders(),
-            new DummySecurityContext(copyPrincipal));
-
          // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
          // Resource locators can't be processed in asynchronous mode since it is not end point of request.
          AsynchronousJob job = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
-         job.getContext().put("org.everrest.async.request", copyRequest);
-         // Save current set of providers. In some environments they can be resource specific.
-         job.getContext().put("org.everrest.async.providers", context.getProviders());
          final String jobUri = context.getBaseUriBuilder().path(AsynchronousJobService.class, "get")
             .build(job.getJobId()).toString();
 

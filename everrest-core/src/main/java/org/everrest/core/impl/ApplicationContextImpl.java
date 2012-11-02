@@ -70,7 +70,8 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    /**
     * Set ApplicationContext for current thread.
     *
-    * @param context the ApplicationContext.
+    * @param context
+    *    the ApplicationContext.
     */
    public static void setCurrent(ApplicationContext context)
    {
@@ -138,9 +139,12 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    /**
     * Constructs new instance of ApplicationContext.
     *
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @param providers See {@link ProviderBinder}
+    * @param request
+    *    See {@link GenericContainerRequest}
+    * @param response
+    *    See {@link GenericContainerResponse}
+    * @param providers
+    *    See {@link ProviderBinder}
     */
    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
                                  ProviderBinder providers)
@@ -151,10 +155,14 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    /**
     * Constructs new instance of ApplicationContext.
     *
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @param providers See {@link ProviderBinder}
-    * @param methodInvokerDecoratorFactory See {@link MethodInvokerDecoratorFactory}
+    * @param request
+    *    See {@link GenericContainerRequest}
+    * @param response
+    *    See {@link GenericContainerResponse}
+    * @param providers
+    *    See {@link ProviderBinder}
+    * @param methodInvokerDecoratorFactory
+    *    See {@link MethodInvokerDecoratorFactory}
     */
    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
                                  ProviderBinder providers, MethodInvokerDecoratorFactory methodInvokerDecoratorFactory)
@@ -280,14 +288,14 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    public MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor)
    {
       String method = request.getMethod();
-      MethodInvoker invoker = null;
       if ("OPTIONS".equals(method) && methodDescriptor.getMethod() == null)
       {
          // GenericMethodResource.getMethod() always return null if method for
          // "OPTIONS" request was not described in source code of service. In
          // this case we provide mechanism for "fake" method invoking.
-         invoker = new OptionsRequestMethodInvoker();
+         return new OptionsRequestMethodInvoker();
       }
+      MethodInvoker invoker = null;
       // Never use AsynchronousMethodInvoker for process SubResourceLocatorDescriptor.
       // Locators can't be processed in asynchronous mode since it is not end point of request.
       if (isAsynchronous() && methodDescriptor instanceof ResourceMethodDescriptor)
@@ -296,7 +304,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
             getProviders().getContextResolver(AsynchronousJobPool.class, null);
          if (asyncJobsResolver == null)
          {
-            throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");
+            throw new IllegalStateException("Asynchronous jobs feature is not configured properly. ");
          }
          invoker = new AsynchronousMethodInvoker(asyncJobsResolver.getContext(null));
       }
@@ -428,7 +436,10 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
       return providers;
    }
 
-   /** @param providers ProviderBinder */
+   /**
+    * @param providers
+    *    ProviderBinder
+    */
    @Override
    public void setProviders(ProviderBinder providers)
    {
@@ -524,7 +535,8 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    @Override
    public boolean isAsynchronous()
    {
-      return Boolean.parseBoolean(getQueryParameters().getFirst("async"));
+      return Boolean.parseBoolean(getQueryParameters().getFirst("async"))
+         || Boolean.parseBoolean(request.getRequestHeaders().getFirst("x-everrest-async"));
    }
 
    /** @see org.everrest.core.Lifecycle#start() */

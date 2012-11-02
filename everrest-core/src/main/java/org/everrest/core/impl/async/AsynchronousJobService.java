@@ -222,6 +222,6 @@ public class AsynchronousJobService
             return asyncJobsResolver.getContext(null);
          }
       }
-      throw new RuntimeException("Asynchronous jobs feature is not configured properly. ");
+      throw new IllegalStateException("Asynchronous jobs feature is not configured properly. ");
    }
 }

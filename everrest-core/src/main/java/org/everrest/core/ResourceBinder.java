@@ -68,7 +68,7 @@ public interface ResourceBinder
     * @see ObjectModel#getProperties()
     * @see ObjectModel#getProperty(String)
     */
-   void addResource(final Class<?> resourceClass, MultivaluedMap<String, String> properties);
+   void addResource(Class<?> resourceClass, MultivaluedMap<String, String> properties);
 
    /**
     * Register supplied Object as singleton root resource if it has valid JAX-RS
@@ -93,7 +93,7 @@ public interface ResourceBinder
     * @see ObjectModel#getProperties()
     * @see ObjectModel#getProperty(String)
     */
-   void addResource(final Object resource, MultivaluedMap<String, String> properties);
+   void addResource(Object resource, MultivaluedMap<String, String> properties);
 
    /**
     * Register supplied root resource if no one resource with the same
@@ -104,7 +104,7 @@ public interface ResourceBinder
     * because resource with the sane {@link UriPattern} already
     * registered
     */
-   void addResource(final ObjectFactory<AbstractResourceDescriptor> resourceFactory);
+   void addResource(ObjectFactory<AbstractResourceDescriptor> resourceFactory);
 
    /**
     * Get root resource matched to <code>requestPath</code>.

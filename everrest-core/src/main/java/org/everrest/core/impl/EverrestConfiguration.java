@@ -19,6 +19,8 @@
 
 package org.everrest.core.impl;
 
+import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +45,8 @@ public class EverrestConfiguration
    public static final String EVERREST_ASYNCHRONOUS_CACHE_SIZE = "org.everrest.asynchronous.cache.size";
 
    public static final String EVERREST_ASYNCHRONOUS_JOB_TIMEOUT = "org.everrest.asynchronous.job.timeout";
+
+   public static final String METHOD_INVOKER_DECORATOR_FACTORY = MethodInvokerDecoratorFactory.class.getName();
 
    /**
     * Max buffer size attribute name. Entities that has size greater then specified will be stored in temporary

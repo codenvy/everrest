@@ -131,6 +131,7 @@
       <module>everrest-integration/everrest-integration-guice-sample</module>
       <module>everrest-integration/everrest-integration-spring-sample</module>
       <module>everrest-project-template-war</module>
+      <module>everrest-websockets</module>
    </modules>
 
    <repositories>
@@ -171,6 +172,11 @@
          <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-proxy</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.everrest</groupId>
+            <artifactId>everrest-websockets</artifactId>
             <version>${project.version}</version>
          </dependency>
          <!-- Third part dependencies -->
@@ -250,6 +256,21 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.8</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>7.0.32</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-coyote</artifactId>
+            <version>7.0.32</version>
+         </dependency>
+         <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.6</version>
          </dependency>
       </dependencies>
    </dependencyManagement>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 eXo Platform SAS.
+ * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,42 +16,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.core.impl.async;
+package org.everrest.websockets.servlet;
 
-import org.everrest.core.resource.ResourceMethodDescriptor;
+import org.everrest.websockets.WebSocketConnection;
 
-import java.util.Map;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 /**
+ * Close websocket connections when HTTP session to which these connections associated is going to be invalidated.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface AsynchronousJob
+public final class WebSocketDestroyer implements HttpSessionListener
 {
-   String getJobId();
+   @Override
+   public void sessionCreated(HttpSessionEvent se)
+   {
+   }
 
-   long getExpirationDate();
-
-   ResourceMethodDescriptor getResourceMethod();
-
-   boolean isDone();
-
-   boolean cancel();
-
-   /**
-    * Get result of job. If job is not done yet this method throws IllegalStateException.
-    * Before call this method caller must check is job done or not with method {@link #isDone()} .
-    *
-    * @return result
-    * @throws IllegalStateException
-    *    if job is not done yet
-    */
-   Object getResult() throws IllegalStateException;
-
-   /**
-    * The storage for context attributes.
-    *
-    * @return map never <code>null</code>
-    */
-   Map<String, Object> getContext();
+   @Override
+   public void sessionDestroyed(HttpSessionEvent se)
+   {
+      WebSocketConnection.close(se.getSession().getId());
+   }
 }

@@ -37,9 +37,7 @@ import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.WebApplicationException;
@@ -93,13 +91,17 @@ public class RequestHandlerImpl implements RequestHandler
 
    private final int maxBufferSize;
 
-   private MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
+   private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
 
    /**
-    * @param dispatcher RequestDispatcher
-    * @param providers ProviderBinder. May be <code>null</code> then default set of providers used
-    * @param dependencySupplier DependencySupplier
-    * @param config EverrestConfiguration. May be <code>null</code> then default configuration used
+    * @param dispatcher
+    *    RequestDispatcher
+    * @param providers
+    *    ProviderBinder. May be <code>null</code> then default set of providers used
+    * @param dependencySupplier
+    *    DependencySupplier
+    * @param config
+    *    EverrestConfiguration. May be <code>null</code> then default configuration used
     */
    public RequestHandlerImpl(RequestDispatcher dispatcher, ProviderBinder providers,
                              DependencySupplier dependencySupplier, EverrestConfiguration config)
@@ -114,11 +116,23 @@ public class RequestHandlerImpl implements RequestHandler
       httpMethodOverrideFeature = config.isHttpMethodOverride();
       normalizeUriFeature = config.isNormalizeUri();
       maxBufferSize = config.getMaxBufferSize();
-      ServiceLoader<MethodInvokerDecoratorFactory> s = ServiceLoader.load(MethodInvokerDecoratorFactory.class);
-      Iterator<MethodInvokerDecoratorFactory> iterator = s.iterator();
-      if (iterator.hasNext())
+      String decoratorFactoryClassName =
+         (String)config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
+      if (decoratorFactoryClassName != null)
       {
-         methodInvokerDecoratorFactory = iterator.next();
+         try
+         {
+            methodInvokerDecoratorFactory = MethodInvokerDecoratorFactory.class.cast(
+               Thread.currentThread().getContextClassLoader().loadClass(decoratorFactoryClassName).newInstance());
+         }
+         catch (Throwable e)
+         {
+            throw new IllegalStateException("Cannot instantiate '" + decoratorFactoryClassName + "', : " + e, e);
+         }
+      }
+      else
+      {
+         methodInvokerDecoratorFactory = null;
       }
    }
 
@@ -328,8 +342,10 @@ public class RequestHandlerImpl implements RequestHandler
    /**
     * Create error response with specified status and body message.
     *
-    * @param status response status
-    * @param message response message
+    * @param status
+    *    response status
+    * @param message
+    *    response message
     * @return response
     */
    private Response createErrorResponse(int status, String message)

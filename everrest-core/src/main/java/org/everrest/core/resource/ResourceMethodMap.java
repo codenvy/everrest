@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
@@ -130,6 +131,14 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
     */
    public Collection<String> getAllow()
    {
-      return keySet();
+      List<String> allowed = new ArrayList<String>();
+      for (Map.Entry<String, List<T>> e : entrySet())
+      {
+         if (!e.getValue().isEmpty())
+         {
+            allowed.add(e.getKey());
+         }
+      }
+      return allowed;
    }
 }

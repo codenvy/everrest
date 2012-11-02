@@ -18,21 +18,35 @@
  */
 package org.everrest.core.impl.async;
 
+import org.everrest.core.ApplicationContext;
+import org.everrest.core.GenericContainerRequest;
+import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.InternalException;
 import org.everrest.core.resource.ResourceMethodDescriptor;
+import org.everrest.core.tools.DummySecurityContext;
+import org.everrest.core.tools.EmptyInputStream;
+import org.everrest.core.tools.SecurityContextRequest;
+import org.everrest.core.tools.SimplePrincipal;
 import org.everrest.core.util.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -41,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PreDestroy;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -96,6 +111,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    /** Asynchronous jobs cache. */
    private final Map<String, AsynchronousJob> jobs;
 
+   private final CopyOnWriteArrayList<AsynchronousJobListener> jobListeners;
+
    @SuppressWarnings("serial")
    public AsynchronousJobPool(EverrestConfiguration config)
    {
@@ -136,6 +153,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
             return false;
          }
       });
+
+      this.jobListeners = new CopyOnWriteArrayList<AsynchronousJobListener>();
    }
 
    /** @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class) */
@@ -146,31 +165,58 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
    }
 
    /**
-    * @param resource object that contains resource method
-    * @param resourceMethod resource or sub-resource method to invoke
-    * @param params method parameters
+    * @param resource
+    *    object that contains resource method
+    * @param resourceMethod
+    *    resource or sub-resource method to invoke
+    * @param params
+    *    method parameters
     * @return asynchronous job
-    * @throws AsynchronousJobRejectedException if this task cannot be added to pool
+    * @throws AsynchronousJobRejectedException
+    *    if this task cannot be added to pool
     */
    public AsynchronousJob addJob(Object resource,
                                  ResourceMethodDescriptor resourceMethod,
                                  Object[] params) throws AsynchronousJobRejectedException
    {
-      Future<Object> future;
+      AsynchronousFuture job = new AsynchronousFuture(
+         nextJobId(),
+         newCallable(resource, resourceMethod.getMethod(), params),
+         System.currentTimeMillis() + jobTimeout * 60 * 1000,
+         resourceMethod
+      );
+
+      ApplicationContext context = ApplicationContextImpl.getCurrent();
+      GenericContainerRequest request = context.getContainerRequest();
+      Principal principal = request.getUserPrincipal();
+
+      // Create copy of request. Need to keep 'Accept' headers to be able determine MessageBodyWriter which can be
+      // used to serialize result of method invocation. Do not copy entity stream. This stream is empty any way.
+      Principal copyPrincipal = null;
+      if (principal != null)
+      {
+         copyPrincipal = new SimplePrincipal(principal.getName());
+      }
+
+      ContainerRequest copyRequest = new SecurityContextRequest(
+         request.getMethod(),
+         request.getRequestUri(),
+         request.getBaseUri(),
+         new EmptyInputStream(),
+         request.getRequestHeaders(),
+         new DummySecurityContext(copyPrincipal));
+      job.getContext().put("org.everrest.async.request", copyRequest);
+      // Save current set of providers. In some environments they can be resource specific.
+      job.getContext().put("org.everrest.async.providers", context.getProviders());
+
       try
       {
-         future = pool.submit(newCallable(resource, resourceMethod.getMethod(), params));
+         pool.execute(job);
       }
       catch (RejectedExecutionException e)
       {
          throw new AsynchronousJobRejectedException(e.getMessage());
       }
-
-      AsynchronousJob job = new AsynchronousJob(
-         nextJobId(),
-         future,
-         System.currentTimeMillis() + jobTimeout * 60 * 1000,
-         resourceMethod);
 
       String jobId = job.getJobId();
       jobs.put(jobId, job);
@@ -181,6 +227,106 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       }
 
       return job;
+   }
+
+   private class AsynchronousFuture extends FutureTask<Object> implements AsynchronousJob
+   {
+      private final String jobId;
+      private final long expirationDate;
+      private final ResourceMethodDescriptor method;
+      private final Map<String, Object> context;
+
+      protected AsynchronousFuture(String jobId,
+                                   Callable<Object> callable,
+                                   long expirationDate,
+                                   ResourceMethodDescriptor method)
+      {
+         super(callable);
+         this.jobId = jobId;
+         this.expirationDate = expirationDate;
+         this.method = method;
+         context = new HashMap<String, Object>();
+      }
+
+      @Override
+      protected void done()
+      {
+         for (AsynchronousJobListener l : jobListeners)
+         {
+            l.done(this);
+         }
+      }
+
+      @Override
+      public String getJobId()
+      {
+         return jobId;
+      }
+
+      @Override
+      public long getExpirationDate()
+      {
+         return expirationDate;
+      }
+
+      @Override
+      public ResourceMethodDescriptor getResourceMethod()
+      {
+         return method;
+      }
+
+      @Override
+      public boolean isDone()
+      {
+         return super.isDone();
+      }
+
+      @Override
+      public boolean cancel()
+      {
+         return super.cancel(true);
+      }
+
+      @Override
+      public Object getResult() throws IllegalStateException
+      {
+         if (!isDone())
+         {
+            throw new IllegalStateException("Job is not done yet. ");
+         }
+
+         Object result;
+         try
+         {
+            result = super.get();
+         }
+         catch (InterruptedException e)
+         {
+            // We already check the Future is done.
+            throw new InternalException(e);
+         }
+         catch (ExecutionException e)
+         {
+            Throwable cause = e.getCause();
+            if (cause instanceof InvocationTargetException)
+            {
+               cause = ((InvocationTargetException)cause).getTargetException();
+               if (cause instanceof WebApplicationException)
+               {
+                  throw (WebApplicationException)cause;
+               }
+            }
+            throw new InternalException(cause);
+         }
+
+         return result;
+      }
+
+      @Override
+      public Map<String, Object> getContext()
+      {
+         return context;
+      }
    }
 
    protected Callable<Object> newCallable(final Object resource, final Method method, final Object[] params)
@@ -216,6 +362,32 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       List<AsynchronousJob> copy = new ArrayList<AsynchronousJob>(all.size());
       copy.addAll(all);
       return copy;
+   }
+
+   /**
+    * Register new listener if it is not registered yet.
+    *
+    * @param listener
+    *    listener
+    * @return <code>true</code> if new listener registered and <code>false</code> otherwise.
+    * @see AsynchronousJobListener
+    */
+   public boolean registerListener(AsynchronousJobListener listener)
+   {
+      return jobListeners.addIfAbsent(listener);
+   }
+
+   /**
+    * Unregister listener.
+    *
+    * @param listener
+    *    listener to unregister
+    * @return <code>true</code> if listener unregistered and <code>false</code> otherwise.
+    * @see AsynchronousJobListener
+    */
+   public boolean unregisterListener(AsynchronousJobListener listener)
+   {
+      return jobListeners.remove(listener);
    }
 
    @PreDestroy

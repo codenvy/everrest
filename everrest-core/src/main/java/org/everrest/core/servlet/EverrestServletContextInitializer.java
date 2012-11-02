@@ -200,6 +200,9 @@ public class EverrestServletContextInitializer
       config.setMaxBufferSize(getNumber(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE,
          EverrestConfiguration.defaultMaxBufferSize).intValue());
 
+      config.setProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY,
+         getParameter(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY));
+
       return config;
    }
 

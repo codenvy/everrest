@@ -418,12 +418,12 @@ public final class UriComponent
 
       p = 0; // reset pointer
       StringBuilder sb = new StringBuilder();
-      ByteArrayOutputStream out = new NoSyncByteArrayOutputStream(4);
       while (p < length)
       {
          char c = str.charAt(p);
          if (c == '%')
          {
+            ByteArrayOutputStream out = new NoSyncByteArrayOutputStream(4);
             p = percentDecode(str, p, out);
             byte[] buff = out.toByteArray();
 
