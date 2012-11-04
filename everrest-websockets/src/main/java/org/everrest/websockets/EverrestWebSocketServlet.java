@@ -119,7 +119,6 @@ public class EverrestWebSocketServlet extends WebSocketServlet
          WSConnectionContext.open(request.getSession().getId(), getChannel(request), messageConverter);
       connection.registerMessageReceiver(restAdapter);
       return connection;
-      // {"method":"GET", "path":"books"}
    }
 
    protected EverrestProcessor getEverrestProcessor()
