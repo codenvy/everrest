@@ -18,11 +18,10 @@
  */
 package org.everrest.websockets;
 
-import org.apache.commons.codec.binary.Base64;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
-import org.everrest.websockets.message.OutputMessage;
 import org.everrest.websockets.message.Pair;
+import org.everrest.websockets.message.RESTfulOutputMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,20 +29,20 @@ import java.io.IOException;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
+ * Fill RESTfulOutputMessage by result of calling RESTful method.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class MessageWriter implements ContainerResponseWriter
+class EverrestResponseWriter implements ContainerResponseWriter
 {
-   private final OutputMessage output;
-   private final boolean encodeBodyBase64;
+   private final RESTfulOutputMessage output;
 
    private boolean commited;
 
-   public MessageWriter(OutputMessage output, boolean encodeBodyBase64)
+   EverrestResponseWriter(RESTfulOutputMessage output)
    {
       this.output = output;
-      this.encodeBodyBase64 = encodeBodyBase64;
    }
 
    @Override
@@ -53,7 +52,7 @@ public class MessageWriter implements ContainerResponseWriter
       {
          throw new IllegalStateException("Response has been commited. Unable write headers. ");
       }
-      output.setStatus(response.getStatus());
+      output.setResponseCode(response.getStatus());
       output.setHeaders(Pair.fromMap(response.getHttpHeaders()));
       commited = true;
    }
@@ -69,11 +68,6 @@ public class MessageWriter implements ContainerResponseWriter
          entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
             response.getHttpHeaders(), out);
          byte[] body = out.toByteArray();
-         if (encodeBodyBase64)
-         {
-            body = Base64.encodeBase64(body);
-         }
-         output.setBodyEncodedBase64(encodeBodyBase64);
          output.setBody(new String(body));
       }
    }

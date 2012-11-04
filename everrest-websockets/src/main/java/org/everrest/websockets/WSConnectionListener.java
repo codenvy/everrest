@@ -16,36 +16,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.websockets.message;
+package org.everrest.websockets;
 
 /**
- * For convert websocket raw input message represented by String to InputMessage and convert back OutputMessage to
- * plain String.
+ * Notified when WSConnection opened and closed. Implementation of this interface should be registered in
+ * WSConnectionContext context.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
+ * @see WSConnectionContext#registerConnectionListener(WSConnectionListener)
+ * @see WSConnectionContext#removeConnectionListener(WSConnectionListener)
  */
-public interface MessageConverter
+public interface WSConnectionListener
 {
    /**
-    * Decode raw message to InputMessage.
+    * Called when new connection opened.
     *
-    * @param message
-    *    raw message
-    * @return input message
-    * @throws MessageConversionException
-    *    if message conversion failed, e.g. if message malformed of not supported by implementation of this interface
+    * @param connection
+    *    new connection
     */
-   <T extends InputMessage> T decode(String message, Class<T> clazz) throws MessageConversionException;
+   void onOpen(WSConnection connection);
 
    /**
-    * Encode OutputMessage to String.
+    * Called when connection closed.
     *
-    * @param output
-    *    output message
-    * @return String that contains serialized OutputMessage
-    * @throws MessageConversionException
-    *    if message conversion failed
+    * @param connectionId
+    *    connection identifier
+    * @param code
+    *    code with represent the connection close status
+    * @see org.everrest.websockets.WSConnection#getConnectionId()
     */
-   String encode(OutputMessage output) throws MessageConversionException;
+   void onClose(Long connectionId, int code);
 }

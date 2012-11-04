@@ -18,8 +18,6 @@
  */
 package org.everrest.websockets.message;
 
-import java.util.Arrays;
-
 /**
  * Input message.
  *
@@ -28,45 +26,4 @@ import java.util.Arrays;
  */
 public class InputMessage extends Message
 {
-   private boolean encodeResponseBodyBase64;
-
-   public InputMessage()
-   {
-   }
-
-   /**
-    * Indicate should response body for this message to be base64 encoded or not.
-    *
-    * @return <code>true</code> if response body should be encoded and <code>false</code> otherwise
-    */
-   public boolean isEncodeResponseBodyBase64()
-   {
-      return encodeResponseBodyBase64;
-   }
-
-   /**
-    * Indicate should response body for this message to be base64 encoded or not.
-    *
-    * @param encodeResponseBodyBase64
-    *    <code>true</code> if response body should be encoded and <code>false</code> otherwise
-    */
-   public void setEncodeResponseBodyBase64(boolean encodeResponseBodyBase64)
-   {
-      this.encodeResponseBodyBase64 = encodeResponseBodyBase64;
-   }
-
-   @Override
-   public String toString()
-   {
-      return "InputMessage{" +
-         "uuid='" + getUuid() + '\'' +
-         ", channel='" + getChannel() + '\'' +
-         ", method='" + getMethod() + '\'' +
-         ", path='" + getPath() + '\'' +
-         ", headers=" + (getHeaders() == null ? null : Arrays.asList(getHeaders())) +
-         ", body='" + getBody() + '\'' +
-         ", bodyBase64Encoded=" + isBodyEncodedBase64() +
-         ", encodeResponseBodyBase64=" + encodeResponseBodyBase64 +
-         '}';
-   }
 }

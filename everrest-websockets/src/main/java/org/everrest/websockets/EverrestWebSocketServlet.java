@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.websockets.servlet;
+package org.everrest.websockets;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
@@ -25,7 +25,6 @@ import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.util.Logger;
-import org.everrest.websockets.WebSocketConnection;
 import org.everrest.websockets.message.JsonMessageConverter;
 import org.everrest.websockets.message.MessageConverter;
 import org.w3c.dom.Document;
@@ -114,9 +113,13 @@ public class EverrestWebSocketServlet extends WebSocketServlet
          }
       }
 
-      final String httpSessionId = request.getSession().getId();
-      return WebSocketConnection
-         .open(httpSessionId, getChannel(request), securityContext, processor, asynchronousPool, messageConverter);
+      WS2RESTAdapter restAdapter = new WS2RESTAdapter(securityContext, processor, asynchronousPool);
+      WSConnectionContext.registerConnectionListener(restAdapter);
+      WSConnectionImpl connection =
+         WSConnectionContext.open(request.getSession().getId(), getChannel(request), messageConverter);
+      connection.registerMessageReceiver(restAdapter);
+      return connection;
+      // {"method":"GET", "path":"books"}
    }
 
    protected EverrestProcessor getEverrestProcessor()

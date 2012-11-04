@@ -16,29 +16,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.websockets.servlet;
+package org.everrest.websockets;
 
-import org.everrest.websockets.WebSocketConnection;
-
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import org.everrest.websockets.message.InputMessage;
 
 /**
- * Close websocket connections when HTTP session to which these connections associated is going to be invalidated.
+ * Receives incoming messages. Implementation of this interface should be added to WSConnection.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
+ * @see WSConnection#registerMessageReceiver(WSMessageReceiver)
+ * @see WSConnection#removeMessageReceiver(WSMessageReceiver)
  */
-public final class WebSocketDestroyer implements HttpSessionListener
+public interface WSMessageReceiver
 {
-   @Override
-   public void sessionCreated(HttpSessionEvent se)
-   {
-   }
+   /**
+    * Called when new message received.
+    *
+    * @param input
+    *    input message
+    */
+   void onMessage(InputMessage input);
 
-   @Override
-   public void sessionDestroyed(HttpSessionEvent se)
-   {
-      WebSocketConnection.close(se.getSession().getId());
-   }
+   /**
+    * Called when error occurs when process incoming message so method {@link #onMessage(org.everrest.websockets.message.InputMessage)}
+    * cannot be called.
+    *
+    * @param error
+    *    error
+    */
+   void onError(Exception error);
 }

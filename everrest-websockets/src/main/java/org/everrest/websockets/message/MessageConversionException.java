@@ -23,18 +23,16 @@ package org.everrest.websockets.message;
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
- * @see org.everrest.websockets.WebSocketConnection#unwrapInputMessage(java.nio.CharBuffer)
- * @see org.everrest.websockets.WebSocketConnection#wrapOutputMessage(OutputMessage)
  */
 @SuppressWarnings("serial")
-public class MessageConverterException extends Exception
+public class MessageConversionException extends Exception
 {
-   public MessageConverterException(String message)
+   public MessageConversionException(String message)
    {
       super(message);
    }
 
-   public MessageConverterException(String message, Throwable cause)
+   public MessageConversionException(String message, Throwable cause)
    {
       super(message, cause);
    }

@@ -16,36 +16,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.websockets.message;
+package org.everrest.websockets;
+
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 /**
- * For convert websocket raw input message represented by String to InputMessage and convert back OutputMessage to
- * plain String.
+ * Close web socket connections when HTTP session to which these connections associated is going to be invalidated.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface MessageConverter
+public final class WSConnectionTracker implements HttpSessionListener
 {
-   /**
-    * Decode raw message to InputMessage.
-    *
-    * @param message
-    *    raw message
-    * @return input message
-    * @throws MessageConversionException
-    *    if message conversion failed, e.g. if message malformed of not supported by implementation of this interface
-    */
-   <T extends InputMessage> T decode(String message, Class<T> clazz) throws MessageConversionException;
+   @Override
+   public void sessionCreated(HttpSessionEvent se)
+   {
+   }
 
-   /**
-    * Encode OutputMessage to String.
-    *
-    * @param output
-    *    output message
-    * @return String that contains serialized OutputMessage
-    * @throws MessageConversionException
-    *    if message conversion failed
-    */
-   String encode(OutputMessage output) throws MessageConversionException;
+   @Override
+   public void sessionDestroyed(HttpSessionEvent se)
+   {
+      WSConnectionContext.closeAll(se.getSession().getId());
+   }
 }

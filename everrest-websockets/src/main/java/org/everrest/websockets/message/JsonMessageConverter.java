@@ -27,32 +27,33 @@ import org.everrest.core.impl.provider.json.ObjectBuilder;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.CharBuffer;
 
 /**
+ * Implementation of MessageConverter that supports JSON messages.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
 public class JsonMessageConverter implements MessageConverter
 {
    @Override
-   public InputMessage read(CharBuffer input) throws MessageConverterException
+   public <T extends InputMessage> T decode(String input, Class<T> clazz) throws MessageConversionException
    {
       try
       {
          JsonParser parser = new JsonParser();
-         parser.parse(new StringReader(input.toString()));
+         parser.parse(new StringReader(input));
          JsonValue json = parser.getJsonObject();
-         return ObjectBuilder.createObject(InputMessage.class, json);
+         return ObjectBuilder.createObject(clazz, json);
       }
       catch (JsonException e)
       {
-         throw new MessageConverterException(e.getMessage(), e);
+         throw new MessageConversionException(e.getMessage(), e);
       }
    }
 
    @Override
-   public CharBuffer write(OutputMessage output) throws MessageConverterException
+   public String encode(OutputMessage output) throws MessageConversionException
    {
       try
       {
@@ -61,11 +62,11 @@ public class JsonMessageConverter implements MessageConverter
          JsonWriter jsonWriter = new JsonWriter(writer);
          jsonOutput.writeTo(jsonWriter);
          jsonWriter.flush();
-         return CharBuffer.wrap(writer.toString());
+         return writer.toString();
       }
       catch (JsonException e)
       {
-         throw new MessageConverterException(e.getMessage(), e);
+         throw new MessageConversionException(e.getMessage(), e);
       }
    }
 }

@@ -18,8 +18,6 @@
  */
 package org.everrest.websockets.message;
 
-import java.util.Arrays;
-
 /**
  * Output message.
  *
@@ -28,45 +26,30 @@ import java.util.Arrays;
  */
 public class OutputMessage extends Message
 {
-   private int status;
+   private int responseCode;
 
    public OutputMessage()
    {
    }
 
    /**
-    * Get response status.
+    * Get response code.
     *
-    * @return response status.
+    * @return response code.
     */
-   public int getStatus()
+   public int getResponseCode()
    {
-      return status;
+      return responseCode;
    }
 
    /**
-    * Get response status.
+    * Get response code.
     *
-    * @param status
-    *    response status.
+    * @param responseCode
+    *    response code.
     */
-   public void setStatus(int status)
+   public void setResponseCode(int responseCode)
    {
-      this.status = status;
-   }
-
-   @Override
-   public String toString()
-   {
-      return "OutputMessage{" +
-         "status=" + status +
-         ", uuid='" + getUuid() + '\'' +
-         ", channel='" + getChannel() + '\'' +
-         ", method='" + getMethod() + '\'' +
-         ", path='" + getPath() + '\'' +
-         ", headers=" + (getHeaders() == null ? null : Arrays.asList(getHeaders())) +
-         ", body='" + getBody() + '\'' +
-         ", base64Encoded=" + isBodyEncodedBase64() +
-         '}';
+      this.responseCode = responseCode;
    }
 }
