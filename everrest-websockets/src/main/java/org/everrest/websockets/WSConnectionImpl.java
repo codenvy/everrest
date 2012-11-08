@@ -29,6 +29,7 @@ import org.everrest.websockets.message.RESTfulInputMessage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class WSConnectionImpl extends MessageInbound implements WSConnection
 {
    private static final AtomicLong counter = new AtomicLong(1);
+   private static final Charset UTF8_CS = Charset.forName("UTF-8");
 
    private final long connectionId = counter.getAndIncrement();
    private final String httpSessionId;
@@ -59,7 +61,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    @Override
    protected void onBinaryMessage(ByteBuffer message) throws IOException
    {
-      throw new UnsupportedOperationException("Binary messages is not supported. ");
+      getWsOutbound().close(Constants.STATUS_UNEXPECTED_DATA_TYPE, UTF8_CS.encode("Binary messages is not supported. "));
    }
 
    @Override

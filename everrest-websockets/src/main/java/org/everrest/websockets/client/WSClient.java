@@ -546,13 +546,19 @@ public class WSClient
 
          final byte opCode = (byte)(firstByte & 0x0F);
 
+         byte[] payload;
          switch (opCode)
          {
             case 0:
                // Should never happen since we already checked most significant bit in this byte.
                throw new ConnectionException(1003, "Continuation frame is not supported. ");
             case 1:
-               readTextFrame();
+               payload = readFrame();
+               String data = new String(payload, UTF8_CS);
+               for (ClientMessageListener listener : listeners)
+               {
+                  listener.onMessage(data);
+               }
                break;
             case 2:
                throw new ConnectionException(1003, "Binary messages is not supported. ");
@@ -564,7 +570,28 @@ public class WSClient
                // Do nothing fo this.
                break;
             case 8:
-               onClose(1000, null); // normal closure
+               payload = readFrame();
+               int status;
+               // Read status.
+               if (payload.length > 0)
+               {
+                  status = ((payload[0] & 0xFF) << 8);
+                  status += (payload[1] & 0xFF);
+               }
+               else
+               {
+                  status = 1000; // Normal closure.
+               }
+               // Do not send body here even if server provide it.
+               // Specification says: body is not guaranteed to be human readable.
+               // Do not show it in listeners but log about it.
+               onClose(status, null);
+               if (status != 1000)
+               {
+                  // Two bytes contains status code. The rest of bytes is message.
+                  LOG.warn(
+                     "Close status: {}, message: {} ", status, new String(payload, 2, payload.length - 2, UTF8_CS));
+               }
                break;
             case 9:
             case 0x0A:
@@ -586,7 +613,7 @@ public class WSClient
       }
    }
 
-   private void readTextFrame() throws IOException
+   private byte[] readFrame() throws IOException
    {
       // This byte contains info about message mask and about length of payload.
       final int secondByte = in.read();
@@ -635,12 +662,7 @@ public class WSClient
          }
       }
 
-      String data = new String(payload, UTF8_CS);
-
-      for (ClientMessageListener listener : listeners)
-      {
-         listener.onMessage(data);
-      }
+      return payload;
    }
 
    private long getPayloadLength(byte[] bytes) throws IOException
@@ -651,6 +673,11 @@ public class WSClient
          throw new IOException("Unable get payload length. Invalid length bytes. Length must be represented by 2 or 8 bytes but " +
             bytes.length + " reached. ");
       }
+      return getLongFromBytes(bytes);
+   }
+
+   private long getLongFromBytes(byte[] bytes) throws IOException
+   {
       long length = 0;
       for (int i = bytes.length - 1, shift = 0; i >= 0; i--, shift += 8)
       {
