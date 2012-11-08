@@ -16,35 +16,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.websockets.message;
+package org.everrest.websockets.client;
 
 /**
- * For convert websocket raw input message represented by String to Message and convert back Message to plain String.
+ * Base implementation of ClientMessageListener. Implemented methods do nothing. Extend this class instead implement
+ * ClientMessageListener if need just few of methods declared in ClientMessageListener.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface MessageConverter
+public class BaseClientMessageListener implements ClientMessageListener
 {
-   /**
-    * Convert raw String to Message.
-    *
-    * @param message
-    *    raw message
-    * @return message
-    * @throws MessageConversionException
-    *    if message conversion failed, e.g. if message malformed of not supported by implementation of this interface
-    */
-   <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException;
+   @Override
+   public void onMessage(String data)
+   {
+   }
 
-   /**
-    * Convert Message to String.
-    *
-    * @param output
-    *    output message
-    * @return String that contains serialized OutputMessage
-    * @throws MessageConversionException
-    *    if message conversion failed
-    */
-   String toString(Message output) throws MessageConversionException;
+   @Override
+   public void onMessage(byte[] data)
+   {
+   }
+
+   @Override
+   public void onOpen(WSClient client)
+   {
+   }
+
+   @Override
+   public void onClose(int status, String message)
+   {
+   }
 }

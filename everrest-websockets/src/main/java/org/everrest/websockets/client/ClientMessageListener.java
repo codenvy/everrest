@@ -16,35 +16,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.everrest.websockets.message;
+package org.everrest.websockets.client;
 
 /**
- * For convert websocket raw input message represented by String to Message and convert back Message to plain String.
+ * Implementation of this interface passed to WSClient. After open connection to remote server listener notified about
+ * incoming messages from server.
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface MessageConverter
+public interface ClientMessageListener
 {
    /**
-    * Convert raw String to Message.
+    * Notify listener about test message.
     *
-    * @param message
-    *    raw message
-    * @return message
-    * @throws MessageConversionException
-    *    if message conversion failed, e.g. if message malformed of not supported by implementation of this interface
+    * @param data
+    *    text message
     */
-   <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException;
+   void onMessage(String data);
 
    /**
-    * Convert Message to String.
+    * Notify listener about binary message.
     *
-    * @param output
-    *    output message
-    * @return String that contains serialized OutputMessage
-    * @throws MessageConversionException
-    *    if message conversion failed
+    * @param data
+    *    binary message
     */
-   String toString(Message output) throws MessageConversionException;
+   void onMessage(byte[] data);
+
+   /**
+    * Notify listener about connection open and WSClient is ready to use.
+    *
+    * @param client
+    *    websocket client
+    */
+   void onOpen(WSClient client);
+
+   /**
+    * Notify listener that connection closed.
+    *
+    * @param status
+    *    connection closed status or <code>0</code> if unknown
+    * @param message
+    *    optional message MAY be passed if connection closed abnormally
+    */
+   void onClose(int status, String message);
 }

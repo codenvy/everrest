@@ -37,12 +37,12 @@ import java.io.StringWriter;
 public class JsonMessageConverter implements MessageConverter
 {
    @Override
-   public <T extends InputMessage> T decode(String input, Class<T> clazz) throws MessageConversionException
+   public <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException
    {
       try
       {
          JsonParser parser = new JsonParser();
-         parser.parse(new StringReader(input));
+         parser.parse(new StringReader(message));
          JsonValue json = parser.getJsonObject();
          return ObjectBuilder.createObject(clazz, json);
       }
@@ -53,7 +53,7 @@ public class JsonMessageConverter implements MessageConverter
    }
 
    @Override
-   public String encode(OutputMessage output) throws MessageConversionException
+   public String toString(Message output) throws MessageConversionException
    {
       try
       {

@@ -45,8 +45,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    private final String httpSessionId;
    private final String channel;
    private final MessageConverter messageConverter;
-   private final List<WSMessageReceiver> messageReceivers =
-      new CopyOnWriteArrayList<WSMessageReceiver>();
+   private final List<WSMessageReceiver> messageReceivers = new CopyOnWriteArrayList<WSMessageReceiver>();
 
    WSConnectionImpl(String httpSessionId, String channel, MessageConverter messageConverter)
    {
@@ -68,7 +67,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    {
       try
       {
-         RESTfulInputMessage input = messageConverter.decode(message.toString(), RESTfulInputMessage.class);
+         RESTfulInputMessage input = messageConverter.fromString(message.toString(), RESTfulInputMessage.class);
          for (WSMessageReceiver receiver : messageReceivers)
          {
             receiver.onMessage(input);
@@ -130,9 +129,9 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    @Override
    public void sendMessage(OutputMessage output) throws MessageConversionException, IOException
    {
-      CharBuffer message = CharBuffer.wrap(messageConverter.encode(output));
+      CharBuffer message = CharBuffer.wrap(messageConverter.toString(output));
       WsOutbound out = getWsOutbound();
-      out.writeTextMessage(message.duplicate());
+      out.writeTextMessage(message);
       out.flush();
    }
 

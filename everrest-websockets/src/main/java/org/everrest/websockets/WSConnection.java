@@ -68,7 +68,7 @@ public interface WSConnection
     * @throws MessageConversionException
     *    if message cannot be serialized
     * @throws IOException
-    *    if any i/o/ error occurs when try to send message to client
+    *    if any i/o error occurs when try to send message to client
     */
    void sendMessage(OutputMessage output) throws MessageConversionException, IOException;
 
