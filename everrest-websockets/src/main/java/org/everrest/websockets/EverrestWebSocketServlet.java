@@ -24,6 +24,7 @@ import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.tools.DummySecurityContext;
 import org.everrest.core.util.Logger;
 import org.everrest.websockets.message.JsonMessageConverter;
 import org.everrest.websockets.message.MessageConverter;
@@ -111,6 +112,7 @@ public class EverrestWebSocketServlet extends WebSocketServlet
                iterator.remove();
             }
          }
+         securityContext = new DummySecurityContext(principal, roles);
       }
 
       WS2RESTAdapter restAdapter = new WS2RESTAdapter(securityContext, processor, asynchronousPool);
