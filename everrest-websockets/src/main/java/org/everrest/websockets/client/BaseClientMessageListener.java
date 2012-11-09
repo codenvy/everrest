@@ -38,6 +38,11 @@ public class BaseClientMessageListener implements ClientMessageListener
    }
 
    @Override
+   public void onPong(byte[] data)
+   {
+   }
+
+   @Override
    public void onOpen(WSClient client)
    {
    }

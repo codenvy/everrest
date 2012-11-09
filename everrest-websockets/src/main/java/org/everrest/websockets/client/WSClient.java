@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -64,7 +63,6 @@ public class WSClient
    private static final Charset UTF8_CS = Charset.forName("UTF-8");
    private static final char[] CHARS = new char[36];
    private static final int MASK_SIZE = 4;
-   private static final byte[] CLOSE_FRAME_BEGIN = {(byte)0x88, (byte)0x80};
 
    static
    {
@@ -272,7 +270,7 @@ public class WSClient
     * Close connection to remote server. Method has no effect if connection already closed.
     *
     * @throws IOException
-    *    if i/o error occurs when try to close connection.
+    *    if i/o error occurred when try to close connection.
     */
    public synchronized void disconnect() throws IOException
    {
@@ -281,14 +279,20 @@ public class WSClient
          // Already closed or not connected.
          return;
       }
-      byte[] closeFrame = new byte[2 + MASK_SIZE];
-      System.arraycopy(CLOSE_FRAME_BEGIN, 0, closeFrame, 0, CLOSE_FRAME_BEGIN.length);
-      byte[] mask = generateMask();
-      System.arraycopy(mask, 0, closeFrame, 2, mask.length);
-      out.write(closeFrame);
-      out.flush();
+
+      writeFrame((byte)0x88, new byte[0]);
    }
 
+   /**
+    * Send text message.
+    *
+    * @param message
+    *    text message
+    * @throws IOException
+    *    if any i/o errors occurred
+    * @throws IllegalArgumentException
+    *    if message is <code>null</code>
+    */
    public synchronized void send(String message) throws IOException
    {
       if (!connected)
@@ -296,33 +300,66 @@ public class WSClient
          throw new IOException("Not connected. ");
       }
 
-      final ByteBuffer bb = UTF8_CS.encode(message);
-      final int length = bb.limit();
-
-      // Represent length of payload data as described in section 5.2. Base Framing Protocol of RFC-6455
-      // See for details: http://tools.ietf.org/html/rfc6455#section-5.2
-      final byte[] lengthBytes = getLengthAsBytes(length);
-      // Turn on 'mask' bit.
-      lengthBytes[0] |= 0x80;
-      // Generate mask bytes.
-      final byte[] mask = generateMask();
-
-      // Send 'text' message without fragments.
-      out.write(0x81);
-      // Payload length bytes.
-      out.write(lengthBytes);
-      // Mask bytes.
-      out.write(mask);
-
-      final byte[] array = bb.array();
-      for (int i = 0; i < length; i++)
+      if (message == null)
       {
-         // Mask each byte of payload.
-         out.write((array[i] ^ mask[i % 4]));
+         throw new IllegalArgumentException("Message may not be null. ");
       }
 
-      out.flush();
+      writeFrame((byte)0x81, UTF8_CS.encode(message).array());
    }
+
+   /**
+    * Send ping message
+    *
+    * @param message
+    *    message body
+    * @throws IOException
+    *    if any i/o errors occurred
+    * @throws IllegalArgumentException
+    *    if message length is greater than 125 bytes
+    */
+   public synchronized void ping(byte[] message) throws IOException
+   {
+      if (!connected)
+      {
+         throw new IOException("Not connected. ");
+      }
+
+      if (message == null)
+      {
+         message = new byte[0];
+      }
+      else if (message.length > 125)
+      {
+         throw new IllegalArgumentException("Ping message to large, may not be greater than 125 bytes. ");
+      }
+
+      writeFrame((byte)0x89, message);
+   }
+
+   /**
+    * Get value for "Origin" header for sending to server when handshake. By default this method returns
+    * <code>null</code>.
+    *
+    * @return value for "Origin" header for sending to server when handshake
+    */
+   protected String getOrigin()
+   {
+      return null;
+   }
+
+   /**
+    * Get value for "Sec-WebSocket-Protocol" header for sending to server when handshake. By default this method
+    * returns<code>null</code>.
+    *
+    * @return value for "Sec-WebSocket-Protocol" header for sending to server when handshake
+    */
+   protected String[] getSubProtocols()
+   {
+      return null;
+   }
+
+   //
 
    private byte[] getHandshake()
    {
@@ -359,30 +396,6 @@ public class WSClient
       return out.toByteArray();
    }
 
-   /**
-    * Get value for "Origin" header for sending to server when handshake. By default this method returns
-    * <code>null</code>.
-    *
-    * @return value for "Origin" header for sending to server when handshake
-    */
-   protected String getOrigin()
-   {
-      return null;
-   }
-
-   /**
-    * Get value for "Sec-WebSocket-Protocol" header for sending to server when handshake. By default this method
-    * returns<code>null</code>.
-    *
-    * @return value for "Sec-WebSocket-Protocol" header for sending to server when handshake
-    */
-   protected String[] getSubProtocols()
-   {
-      return null;
-   }
-
-   //
-
    private void onOpen()
    {
       for (ClientMessageListener listener : listeners)
@@ -390,6 +403,36 @@ public class WSClient
          try
          {
             listener.onOpen(this);
+         }
+         catch (Exception e)
+         {
+            LOG.error(e.getMessage(), e);
+         }
+      }
+   }
+
+   private void onMessage(String message)
+   {
+      for (ClientMessageListener listener : listeners)
+      {
+         try
+         {
+            listener.onMessage(message);
+         }
+         catch (Exception e)
+         {
+            LOG.error(e.getMessage(), e);
+         }
+      }
+   }
+
+   private void onPong(byte[] message)
+   {
+      for (ClientMessageListener listener : listeners)
+      {
+         try
+         {
+            listener.onPong(message);
          }
          catch (Exception e)
          {
@@ -554,11 +597,7 @@ public class WSClient
                throw new ConnectionException(1003, "Continuation frame is not supported. ");
             case 1:
                payload = readFrame();
-               String data = new String(payload, UTF8_CS);
-               for (ClientMessageListener listener : listeners)
-               {
-                  listener.onMessage(data);
-               }
+               onMessage(new String(payload, UTF8_CS));
                break;
             case 2:
                throw new ConnectionException(1003, "Binary messages is not supported. ");
@@ -580,21 +619,32 @@ public class WSClient
                }
                else
                {
-                  status = 1000; // Normal closure.
+                  status = 0; // No status.
                }
-               // Do not send body here even if server provide it.
+               // Do not send body to the listeners here even if server provide it.
                // Specification says: body is not guaranteed to be human readable.
-               // Do not show it in listeners but log about it.
                onClose(status, null);
-               if (status != 1000)
+               if (!(status == 0 || status == 1000))
                {
                   // Two bytes contains status code. The rest of bytes is message.
-                  LOG.warn(
-                     "Close status: {}, message: {} ", status, new String(payload, 2, payload.length - 2, UTF8_CS));
+                  String message = null;
+                  if (payload.length > 2)
+                  {
+                     message = new String(payload, 2, payload.length - 2, UTF8_CS);
+                  }
+                  LOG.warn("Close status: {}, message: {} ", status, message);
                }
                break;
             case 9:
+               payload = readFrame();
+               // 'pong' response for the 'ping' message.
+               writeFrame((byte)0x8A, payload);
+               LOG.debug("Ping: {} ", new String(payload, UTF8_CS));
+               break;
             case 0x0A:
+               payload = readFrame();
+               onPong(payload);
+               break;
             case 0x0B:
             case 0x0C:
             case 0x0D:
@@ -663,6 +713,32 @@ public class WSClient
       }
 
       return payload;
+   }
+
+   private void writeFrame(byte opCode, byte[] payload) throws IOException
+   {
+      // Represent length of payload data as described in section 5.2. Base Framing Protocol of RFC-6455
+      // See for details: http://tools.ietf.org/html/rfc6455#section-5.2
+      final byte[] lengthBytes = getLengthAsBytes(payload.length);
+      // Turn on 'mask' bit.
+      lengthBytes[0] |= 0x80;
+      // Generate mask bytes.
+      final byte[] mask = generateMask();
+
+      // Send 'text' message without fragments.
+      out.write(opCode);
+      // Payload length bytes.
+      out.write(lengthBytes);
+      // Mask bytes.
+      out.write(mask);
+
+      for (int i = 0, length = payload.length; i < length; i++)
+      {
+         // Mask each byte of payload.
+         out.write((payload[i] ^ mask[i % 4]));
+      }
+
+      out.flush();
    }
 
    private long getPayloadLength(byte[] bytes) throws IOException

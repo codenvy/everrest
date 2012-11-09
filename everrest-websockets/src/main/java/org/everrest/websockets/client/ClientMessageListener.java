@@ -44,6 +44,14 @@ public interface ClientMessageListener
    void onMessage(byte[] data);
 
    /**
+    * Notify about pong message.
+    *
+    * @param data
+    *    pong message data
+    */
+   void onPong(byte[] data);
+
+   /**
     * Notify listener about connection open and WSClient is ready to use.
     *
     * @param client
@@ -57,7 +65,9 @@ public interface ClientMessageListener
     * @param status
     *    connection closed status or <code>0</code> if unknown
     * @param message
-    *    optional message MAY be passed if connection closed abnormally
+    *    optional message MAY be passed if connection closed abnormally.This is never message which sent by server when
+    *    it closed connection.  This message generated on client side when some error is occurred and client decide to
+    *    close connection
     */
    void onClose(int status, String message);
 }
