@@ -86,12 +86,6 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
    @Override
    public void onMessage(InputMessage input)
    {
-      if (connection == null)
-      {
-         // Be sure already able to write in output.
-         throw new IllegalStateException("Connection is closed. ");
-      }
-
       // See method onTextMessage(CharBuffer) in class WSConnectionImpl.
       if (!(input instanceof RESTfulInputMessage))
       {
@@ -99,6 +93,20 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
       }
 
       final RESTfulInputMessage restInputMessage = (RESTfulInputMessage)input;
+
+      MultivaluedMap<String, String> headers = Pair.toMap(restInputMessage.getHeaders());
+
+      if ("ping".equalsIgnoreCase(headers.getFirst("x-everrest-websocket-message-type")))
+      {
+         // At the moment is no JavaScript API to send ping message from client side.
+         RESTfulOutputMessage pong = newOutputMessage(restInputMessage);
+         // Copy body from ping request.
+         pong.setBody(restInputMessage.getBody());
+         pong.setResponseCode(200);
+         pong.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "pong")});
+         safeSendMessage(pong);
+         return;
+      }
 
       final String internalUuid = UUID.randomUUID().toString();
 
@@ -157,7 +165,6 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
       }
 
       URI requestUri = UriBuilder.fromPath("/").path(restInputMessage.getPath()).build();
-      MultivaluedMap<String, String> headers = Pair.toMap(restInputMessage.getHeaders());
       if (data != null)
       {
          // Always know content length since we use ByteArrayInputStream.
@@ -204,6 +211,12 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
 
    private void safeSendMessage(OutputMessage output)
    {
+      if (connection == null)
+      {
+         // Be sure we are able to write in output.
+         throw new IllegalStateException("Connection is closed. ");
+      }
+
       try
       {
          connection.sendMessage(output);
