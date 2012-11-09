@@ -164,7 +164,13 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
          }
       }
 
-      URI requestUri = UriBuilder.fromPath("/").path(restInputMessage.getPath()).build();
+      String requestPath = restInputMessage.getPath();
+      if (!requestPath.startsWith("/"))
+      {
+         requestPath = "/" + requestPath;
+      }
+      URI requestUri = UriBuilder.fromUri(requestPath).build();
+
       if (data != null)
       {
          // Always know content length since we use ByteArrayInputStream.
