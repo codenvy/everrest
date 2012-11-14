@@ -22,6 +22,7 @@ import org.everrest.websockets.message.MessageConversionException;
 import org.everrest.websockets.message.OutputMessage;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Web socket connection abstraction.
@@ -46,11 +47,35 @@ public interface WSConnection
    String getHttpSessionId();
 
    /**
-    * Get optional name of this connection
+    * Subscribe this connection to specified channel.
     *
-    * @return optional name of this connection
+    * @param channel
+    *    channel name
+    * @return <code>true</code> if this connection is subscribed to channel successfully and <code>false</code> if
+    *         connection already subscribed to specified channel
+    * @see WSConnectionContext#sendMessage(String, org.everrest.websockets.message.OutputMessage)
     */
-   String getChannel();
+   boolean subscribeToChannel(String channel);
+
+   /**
+    * Unsubscribe this connection from specified channel.
+    *
+    * @param channel
+    *    channel name
+    * @return <code>true</code> if this connection is unsubscribed from channel successfully and <code>false</code> if
+    *         connection is not subscribed to specified channel
+    * @see WSConnectionContext#sendMessage(String, org.everrest.websockets.message.OutputMessage)
+    */
+   boolean unsubscribeFromChannel(String channel);
+
+   /**
+    * Get optional set of channels assigned for this connection. Channel may be used for sending the same message to
+    * more than one connection at one time.
+    *
+    * @return unmodifiable set of channel names this connection subscribed
+    * @see WSConnectionContext#sendMessage(String, org.everrest.websockets.message.OutputMessage)
+    */
+   Collection<String> getChannels();
 
    /**
     * Close this connection.

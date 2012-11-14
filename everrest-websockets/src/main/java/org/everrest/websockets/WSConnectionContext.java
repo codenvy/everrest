@@ -19,7 +19,9 @@
 package org.everrest.websockets;
 
 import org.everrest.core.util.Logger;
+import org.everrest.websockets.message.MessageConversionException;
 import org.everrest.websockets.message.MessageConverter;
+import org.everrest.websockets.message.OutputMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +49,52 @@ public class WSConnectionContext
    public static boolean removeConnectionListener(WSConnectionListener listener)
    {
       return connectionListeners.remove(listener);
+   }
+
+   /**
+    * Send message to all connections subscribed to <code>channel</code>. Method tries to send message to as many
+    * connections as possible. Even if method fails to send message to the first connection it will try to send message
+    * to other connections, if any. After that a first occurred error is rethrown.
+    *
+    * @param channel
+    *    channel name
+    * @param output
+    *    message
+    * @throws MessageConversionException
+    *    if message cannot be serialized
+    * @throws IOException
+    *    if any i/o error occurs when try to send message to client
+    */
+   public static void sendMessage(String channel, OutputMessage output) throws MessageConversionException, IOException
+   {
+      Exception error = null;
+      for (WSConnectionImpl connection : connections.values())
+      {
+         if (connection.getChannels().contains(channel))
+         {
+            try
+            {
+               connection.sendMessage(output);
+            }
+            catch (MessageConversionException e)
+            {
+               error = e;
+            }
+            catch (IOException e)
+            {
+               error = e;
+            }
+         }
+      }
+      if (error instanceof MessageConversionException)
+      {
+         throw (MessageConversionException)error;
+      }
+      else if (error != null)
+      {
+         // If error is not null then may be IOException only.
+         throw (IOException)error;
+      }
    }
 
    static
@@ -78,15 +126,13 @@ public class WSConnectionContext
     * @param httpSessionId
     *    id of HTTP session associated to this connection. If few connections open for the same HTTP session all of
     *    them receive response for request sent to one of connections
-    * @param channel
-    *    optional name on channel
     * @param messageConverter
     *    converts input messages from raw message represented by String to InputMessage and converts back OutputMessage
     *    to String
     * @see #registerConnectionListener(WSConnectionListener)
     * @see #removeConnectionListener(WSConnectionListener)
     */
-   static WSConnectionImpl open(String httpSessionId, String channel, MessageConverter messageConverter)
+   static WSConnectionImpl open(String httpSessionId, MessageConverter messageConverter)
    {
       if (httpSessionId == null)
       {
@@ -96,7 +142,7 @@ public class WSConnectionContext
       {
          throw new IllegalArgumentException("MessageConverter required. ");
       }
-      WSConnectionImpl newConnection = new WSConnectionImpl(httpSessionId, channel, messageConverter);
+      WSConnectionImpl newConnection = new WSConnectionImpl(httpSessionId, messageConverter);
       connections.put(newConnection.getConnectionId(), newConnection);
       return newConnection;
    }

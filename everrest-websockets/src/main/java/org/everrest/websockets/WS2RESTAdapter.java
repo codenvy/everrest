@@ -26,6 +26,9 @@ import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.async.AsynchronousJob;
 import org.everrest.core.impl.async.AsynchronousJobListener;
 import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.provider.json.JsonException;
+import org.everrest.core.impl.provider.json.JsonParser;
+import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.tools.SecurityContextRequest;
 import org.everrest.core.util.Logger;
 import org.everrest.websockets.message.InputMessage;
@@ -37,6 +40,7 @@ import org.everrest.websockets.message.RESTfulOutputMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.UUID;
@@ -96,7 +100,9 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
 
       MultivaluedMap<String, String> headers = Pair.toMap(restInputMessage.getHeaders());
 
-      if ("ping".equalsIgnoreCase(headers.getFirst("x-everrest-websocket-message-type")))
+      final String messageType = headers.getFirst("x-everrest-websocket-message-type");
+
+      if ("ping".equalsIgnoreCase(messageType))
       {
          // At the moment is no JavaScript API to send ping message from client side.
          RESTfulOutputMessage pong = newOutputMessage(restInputMessage);
@@ -105,6 +111,35 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
          pong.setResponseCode(200);
          pong.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "pong")});
          safeSendMessage(pong);
+         return;
+      }
+      else if ("subscribe-channel".equalsIgnoreCase(messageType) || "unsubscribe-channel".equalsIgnoreCase(messageType))
+      {
+         final String channel = parseSubscriptionMessage(input);
+         RESTfulOutputMessage response = newOutputMessage(restInputMessage);
+         // Send the same body as in request.
+         response.setBody(restInputMessage.getBody());
+         response.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", messageType)});
+         if (channel != null)
+         {
+            checkConnection();
+            if ("subscribe-channel".equalsIgnoreCase(messageType))
+            {
+               connection.subscribeToChannel(channel);
+            }
+            else
+            {
+               connection.unsubscribeFromChannel(channel);
+            }
+            response.setResponseCode(200);
+         }
+         else
+         {
+            LOG.error("Invalid message: {} ", input.getBody());
+            // If cannot get channel name from input message consider it is client error.
+            response.setResponseCode(400);
+         }
+         safeSendMessage(response);
          return;
       }
 
@@ -127,8 +162,7 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
                   new InputHeadersMap(), securityContext);
 
                RESTfulOutputMessage output = newOutputMessage(restInputMessage);
-               ContainerResponse resp = new ContainerResponse(
-                  new EverrestResponseWriter(output));
+               ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
 
                try
                {
@@ -215,14 +249,17 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
       return output;
    }
 
-   private void safeSendMessage(OutputMessage output)
+   private void checkConnection()
    {
       if (connection == null)
       {
-         // Be sure we are able to write in output.
          throw new IllegalStateException("Connection is closed. ");
       }
+   }
 
+   private void safeSendMessage(OutputMessage output)
+   {
+      checkConnection();
       try
       {
          connection.sendMessage(output);
@@ -235,5 +272,24 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
       {
          LOG.error(e.getMessage(), e);
       }
+   }
+
+   /**
+    * Get name of channel from input message. Expected format of message: {"channel":"my_channel"}. Method return
+    * <code>null</code> if message is invalid.
+    */
+   private String parseSubscriptionMessage(InputMessage input)
+   {
+      JsonParser p = new JsonParser();
+      try
+      {
+         p.parse(new StringReader(input.getBody()));
+      }
+      catch (JsonException e)
+      {
+         return null;
+      }
+      JsonValue jv = p.getJsonObject().getElement("channel");
+      return jv != null ? jv.getStringValue() : null;
    }
 }

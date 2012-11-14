@@ -30,8 +30,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -45,15 +49,18 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
 
    private final long connectionId = counter.getAndIncrement();
    private final String httpSessionId;
-   private final String channel;
    private final MessageConverter messageConverter;
-   private final List<WSMessageReceiver> messageReceivers = new CopyOnWriteArrayList<WSMessageReceiver>();
+   private final List<WSMessageReceiver> messageReceivers;
+   private final Set<String> channels;
+   private final Set<String> readOnlyChannels;
 
-   WSConnectionImpl(String httpSessionId, String channel, MessageConverter messageConverter)
+   WSConnectionImpl(String httpSessionId, MessageConverter messageConverter)
    {
       this.httpSessionId = httpSessionId;
-      this.channel = channel;
       this.messageConverter = messageConverter;
+      this.messageReceivers = new CopyOnWriteArrayList<WSMessageReceiver>();
+      this.channels = new CopyOnWriteArraySet<String>();
+      this.readOnlyChannels = Collections.unmodifiableSet(channels);
    }
 
    //
@@ -117,9 +124,29 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    }
 
    @Override
-   public String getChannel()
+   public boolean subscribeToChannel(String channel)
    {
-      return channel;
+      if (channel == null)
+      {
+         throw new IllegalArgumentException("Channel name may not be null. ");
+      }
+      return channels.add(channel);
+   }
+
+   @Override
+   public boolean unsubscribeFromChannel(String channel)
+   {
+      if (channel == null)
+      {
+         throw new IllegalArgumentException("Channel name may not be null. ");
+      }
+      return channels.remove(channel);
+   }
+
+   @Override
+   public Collection<String> getChannels()
+   {
+      return readOnlyChannels;
    }
 
    @Override
@@ -152,10 +179,10 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    @Override
    public String toString()
    {
-      return "WSConnection{" +
+      return "WSConnectionImpl{" +
          "connectionId=" + connectionId +
          ", httpSessionId='" + httpSessionId + '\'' +
-         ", channel='" + channel + '\'' +
+         ", channels=" + channels +
          '}';
    }
 }

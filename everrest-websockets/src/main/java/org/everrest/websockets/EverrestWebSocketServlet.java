@@ -117,8 +117,7 @@ public class EverrestWebSocketServlet extends WebSocketServlet
 
       WS2RESTAdapter restAdapter = new WS2RESTAdapter(securityContext, processor, asynchronousPool);
       WSConnectionContext.registerConnectionListener(restAdapter);
-      WSConnectionImpl connection =
-         WSConnectionContext.open(request.getSession().getId(), getChannel(request), messageConverter);
+      WSConnectionImpl connection = WSConnectionContext.open(request.getSession().getId(), messageConverter);
       connection.registerMessageReceiver(restAdapter);
       return connection;
    }
@@ -175,10 +174,5 @@ public class EverrestWebSocketServlet extends WebSocketServlet
          result.add(all.item(i).getTextContent());
       }
       return result;
-   }
-
-   protected String getChannel(HttpServletRequest request)
-   {
-      return request.getParameter("channel");
    }
 }
