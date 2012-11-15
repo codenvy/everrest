@@ -25,7 +25,7 @@
    <parent>
       <groupId>org.everrest</groupId>
       <artifactId>everrest-parent</artifactId>
-      <version>1.0.7</version>
+      <version>1.0.8-SNAPSHOT</version>
       <relativePath>../../pom.xml</relativePath>
    </parent>
 
@@ -68,7 +68,7 @@
       <dependency>
          <groupId>org.everrest</groupId>
          <artifactId>everrest-integration-picocontainer</artifactId>
-         <version>1.0.7</version>
+         <version>1.0.8-SNAPSHOT</version>
       </dependency>
       <dependency>
          <groupId>org.picocontainer</groupId>
