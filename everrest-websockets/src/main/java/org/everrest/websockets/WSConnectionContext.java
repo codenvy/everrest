@@ -78,11 +78,17 @@ public class WSConnectionContext
             }
             catch (MessageConversionException e)
             {
-               error = e;
+               if (error == null)
+               {
+                  error = e;
+               }
             }
             catch (IOException e)
             {
-               error = e;
+               if (error == null)
+               {
+                  error = e;
+               }
             }
          }
       }
