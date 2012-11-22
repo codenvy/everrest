@@ -27,7 +27,7 @@
    <groupId>org.everrest</groupId>
    <artifactId>everrest-parent</artifactId>
    <name>EverRest :: Parent</name>
-   <version>1.0.8-SNAPSHOT</version>
+   <version>1.0.8</version>
    <packaging>pom</packaging>
 
    <description>everREST is a project which provides a way to build RESTful applications using own complete implementation of JAX-RS specification (a.k.a JSR-311)
