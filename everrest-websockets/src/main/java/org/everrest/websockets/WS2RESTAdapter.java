@@ -60,12 +60,15 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
    private final SecurityContext securityContext;
    private final EverrestProcessor everrestProcessor;
    private final AsynchronousJobPool asynchronousPool;
+
    private WSConnection connection;
 
-   WS2RESTAdapter(SecurityContext securityContext,
+   WS2RESTAdapter(WSConnection connection,
+                  SecurityContext securityContext,
                   EverrestProcessor everrestProcessor,
                   AsynchronousJobPool asynchronousPool)
    {
+      this.connection = connection;
       this.securityContext = securityContext;
       this.everrestProcessor = everrestProcessor;
       this.asynchronousPool = asynchronousPool;
@@ -76,13 +79,15 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
    @Override
    public void onOpen(WSConnection connection)
    {
-      this.connection = connection;
    }
 
    @Override
    public void onClose(Long connectionId, int status)
    {
-      this.connection = null;
+      if (connection.getConnectionId().equals(connectionId))
+      {
+         this.connection = null;
+      }
    }
 
    //
