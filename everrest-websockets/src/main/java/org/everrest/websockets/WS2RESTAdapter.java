@@ -53,44 +53,37 @@ import javax.ws.rs.core.UriBuilder;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
+class WS2RESTAdapter implements WSMessageReceiver
 {
    private static final Logger LOG = Logger.getLogger(WS2RESTAdapter.class);
 
+   private final WSConnection connection;
    private final SecurityContext securityContext;
    private final EverrestProcessor everrestProcessor;
    private final AsynchronousJobPool asynchronousPool;
-
-   private WSConnection connection;
 
    WS2RESTAdapter(WSConnection connection,
                   SecurityContext securityContext,
                   EverrestProcessor everrestProcessor,
                   AsynchronousJobPool asynchronousPool)
    {
+      if (connection == null)
+      {
+         throw new IllegalArgumentException();
+      }
+      if (everrestProcessor == null)
+      {
+         throw new IllegalArgumentException();
+      }
+      if (asynchronousPool == null)
+      {
+         throw new IllegalArgumentException();
+      }
       this.connection = connection;
       this.securityContext = securityContext;
       this.everrestProcessor = everrestProcessor;
       this.asynchronousPool = asynchronousPool;
    }
-
-   //
-
-   @Override
-   public void onOpen(WSConnection connection)
-   {
-   }
-
-   @Override
-   public void onClose(Long connectionId, int status)
-   {
-      if (connection.getConnectionId().equals(connectionId))
-      {
-         this.connection = null;
-      }
-   }
-
-   //
 
    @Override
    public void onMessage(InputMessage input)
@@ -115,7 +108,7 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
          pong.setBody(restInputMessage.getBody());
          pong.setResponseCode(200);
          pong.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "pong")});
-         safeSendMessage(pong);
+         doSendMessage(pong);
          return;
       }
       else if ("subscribe-channel".equalsIgnoreCase(messageType) || "unsubscribe-channel".equalsIgnoreCase(messageType))
@@ -127,7 +120,6 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
          response.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", messageType)});
          if (channel != null)
          {
-            checkConnection();
             if ("subscribe-channel".equalsIgnoreCase(messageType))
             {
                connection.subscribeToChannel(channel);
@@ -144,7 +136,7 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
             // If cannot get channel name from input message consider it is client error.
             response.setResponseCode(400);
          }
-         safeSendMessage(response);
+         doSendMessage(response);
          return;
       }
 
@@ -156,34 +148,45 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
          @Override
          public void done(AsynchronousJob job)
          {
-            MultivaluedMap<String, String> requestHeaders = ((ContainerRequest)job.getContext()
-               .get("org.everrest.async.request")).getRequestHeaders();
-
-            if ("websocket".equals(requestHeaders.getFirst("x-everrest-protocol"))
-               && internalUuid.equals(requestHeaders.getFirst("x-everrest-websocket-tracker-id")))
+            if (connection.isConnected())
             {
-               URI requestUri = UriBuilder.fromPath("/async/" + job.getJobId()).build();
-               ContainerRequest req = new SecurityContextRequest("GET", requestUri, URI.create(""), null,
-                  new InputHeadersMap(), securityContext);
+               MultivaluedMap<String, String> requestHeaders = ((ContainerRequest)job.getContext()
+                  .get("org.everrest.async.request")).getRequestHeaders();
 
-               RESTfulOutputMessage output = newOutputMessage(restInputMessage);
-               ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
+               if ("websocket".equals(requestHeaders.getFirst("x-everrest-protocol"))
+                  && internalUuid.equals(requestHeaders.getFirst("x-everrest-websocket-tracker-id")))
+               {
+                  URI requestUri = UriBuilder.fromPath("/async/" + job.getJobId()).build();
+                  ContainerRequest req = new SecurityContextRequest("GET", requestUri, URI.create(""), null,
+                     new InputHeadersMap(), securityContext);
 
-               try
-               {
-                  everrestProcessor.process(req, resp, new EnvironmentContext());
-               }
-               catch (Exception e)
-               {
-                  LOG.error(e.getMessage(), e);
-               }
-               finally
-               {
-                  // Not need this listener any more.
-                  asynchronousPool.unregisterListener(this);
-               }
+                  RESTfulOutputMessage output = newOutputMessage(restInputMessage);
+                  ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
 
-               safeSendMessage(output);
+                  try
+                  {
+                     everrestProcessor.process(req, resp, new EnvironmentContext());
+                  }
+                  catch (Exception e)
+                  {
+                     LOG.error(e.getMessage(), e);
+                  }
+                  finally
+                  {
+                     // Not need this listener any more.
+                     asynchronousPool.unregisterListener(this);
+                  }
+
+                  doSendMessage(output);
+               }
+            }
+            else
+            {
+               // If the connection is already closed while the task was done do not get result. Lets user get result
+               // manually after restoring of connection.
+               LOG.debug("Connection already closed skip getting result of job: {}. ", job.getJobId());
+               // Not need this listener any more.
+               asynchronousPool.unregisterListener(this);
             }
          }
       });
@@ -206,7 +209,7 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
       String requestPath = restInputMessage.getPath();
       if (!requestPath.startsWith("/"))
       {
-         requestPath = "/" + requestPath;
+         requestPath = '/' + requestPath;
       }
       URI requestUri = UriBuilder.fromUri(requestPath).build();
 
@@ -236,7 +239,7 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
          LOG.error(e.getMessage(), e);
       }
 
-      safeSendMessage(output);
+      doSendMessage(output);
    }
 
    @Override
@@ -254,28 +257,26 @@ class WS2RESTAdapter implements WSMessageReceiver, WSConnectionListener
       return output;
    }
 
-   private void checkConnection()
+   private void doSendMessage(OutputMessage output)
    {
-      if (connection == null)
+      if (connection.isConnected())
       {
-         throw new IllegalStateException("Connection is closed. ");
+         try
+         {
+            connection.sendMessage(output);
+         }
+         catch (MessageConversionException e)
+         {
+            LOG.error(e.getMessage(), e);
+         }
+         catch (IOException e)
+         {
+            LOG.error(e.getMessage(), e);
+         }
       }
-   }
-
-   private void safeSendMessage(OutputMessage output)
-   {
-      checkConnection();
-      try
+      else
       {
-         connection.sendMessage(output);
-      }
-      catch (MessageConversionException e)
-      {
-         LOG.error(e.getMessage(), e);
-      }
-      catch (IOException e)
-      {
-         LOG.error(e.getMessage(), e);
+         LOG.warn("Connection is already closed. ");
       }
    }
 

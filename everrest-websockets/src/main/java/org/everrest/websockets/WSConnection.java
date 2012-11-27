@@ -78,6 +78,13 @@ public interface WSConnection
    Collection<String> getChannels();
 
    /**
+    * Check connection state.
+    *
+    * @return <code>true</code> if connection is alive and <code>false</code> if connection already closed.
+    */
+   boolean isConnected();
+
+   /**
     * Close this connection.
     *
     * @throws IOException

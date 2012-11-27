@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -53,6 +54,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    private final List<WSMessageReceiver> messageReceivers;
    private final Set<String> channels;
    private final Set<String> readOnlyChannels;
+   private final AtomicBoolean connected = new AtomicBoolean(false);
 
    WSConnectionImpl(String httpSessionId, MessageConverter messageConverter)
    {
@@ -68,25 +70,39 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    @Override
    protected void onBinaryMessage(ByteBuffer message) throws IOException
    {
-      getWsOutbound().close(Constants.STATUS_UNEXPECTED_DATA_TYPE, UTF8_CS.encode("Binary messages is not supported. "));
+      if (connected.compareAndSet(true, false))
+      {
+         getWsOutbound().close(Constants.STATUS_UNEXPECTED_DATA_TYPE, UTF8_CS.encode("Binary messages is not supported. "));
+      }
+      throw new UnsupportedOperationException("Binary messages is not supported. ");
    }
 
    @Override
    protected void onTextMessage(CharBuffer message) throws IOException
    {
+      RESTfulInputMessage input = null;
+      MessageConversionException error = null;
       try
       {
-         RESTfulInputMessage input = messageConverter.fromString(message.toString(), RESTfulInputMessage.class);
-         for (WSMessageReceiver receiver : messageReceivers)
-         {
-            receiver.onMessage(input);
-         }
+         input = messageConverter.fromString(message.toString(), RESTfulInputMessage.class);
       }
       catch (MessageConversionException e)
       {
+         error = e;
+      }
+
+      if (error != null)
+      {
          for (WSMessageReceiver receiver : messageReceivers)
          {
-            receiver.onError(e);
+            receiver.onError(error);
+         }
+      }
+      else
+      {
+         for (WSMessageReceiver receiver : messageReceivers)
+         {
+            receiver.onMessage(input);
          }
       }
    }
@@ -99,11 +115,14 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
       {
          connectionListener.onOpen(this);
       }
+      connected.compareAndSet(false, true);
    }
 
    @Override
    protected void onClose(int status)
    {
+      connected.compareAndSet(true, false);
+      // Notify connection listeners about this connection is closed.
       for (WSConnectionListener connectionListener : WSConnectionContext.connectionListeners)
       {
          connectionListener.onClose(connectionId, status);
@@ -150,9 +169,18 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    }
 
    @Override
+   public boolean isConnected()
+   {
+      return connected.get();
+   }
+
+   @Override
    public void close() throws IOException
    {
-      getWsOutbound().close(Constants.STATUS_CLOSE_NORMAL, null);
+      if (connected.compareAndSet(true, false))
+      {
+         getWsOutbound().close(Constants.STATUS_CLOSE_NORMAL, null);
+      }
    }
 
    @Override

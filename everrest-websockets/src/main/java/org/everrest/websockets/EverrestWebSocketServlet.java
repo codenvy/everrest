@@ -116,9 +116,7 @@ public class EverrestWebSocketServlet extends WebSocketServlet
       }
 
       WSConnectionImpl connection = WSConnectionContext.open(request.getSession().getId(), messageConverter);
-      WS2RESTAdapter restAdapter = new WS2RESTAdapter(connection, securityContext, processor, asynchronousPool);
-      WSConnectionContext.registerConnectionListener(restAdapter);
-      connection.registerMessageReceiver(restAdapter);
+      connection.registerMessageReceiver(new WS2RESTAdapter(connection, securityContext, processor, asynchronousPool));
       return connection;
    }
 
