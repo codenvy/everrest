@@ -56,6 +56,10 @@ public class WebApplicationDeclaredRoles
    protected Set<String> loadRoles(ServletContext servletContext) throws UnhandledException
    {
       InputStream input = servletContext.getResourceAsStream("/WEB-INF/web.xml");
+      if (input == null)
+      {
+         return Collections.emptySet();
+      }
       try
       {
          DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
