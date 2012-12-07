@@ -198,6 +198,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       // Save current set of providers. In some environments they can be resource specific.
       job.getContext().put("org.everrest.async.providers", context.getProviders());
 
+      String jobId = job.getJobId();
+      jobs.put(jobId, job);
+
       try
       {
          pool.execute(job);
@@ -206,9 +209,6 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       {
          throw new AsynchronousJobRejectedException(e.getMessage());
       }
-
-      String jobId = job.getJobId();
-      jobs.put(jobId, job);
 
       if (LOG.isDebugEnabled())
       {
