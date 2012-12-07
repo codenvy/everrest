@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 /**
- * Contract of this class thats constrains access to the resource method that
+ * Contract of this class is constraint access to the resource method that
  * use JSR-250 security common annotations. See also https://jsr250.dev.java.net
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -53,7 +53,6 @@ public class SecurityConstraint implements MethodInvokerFilter
     */
    public void accept(GenericMethodResource method) throws WebApplicationException
    {
-      SecurityContext security = ApplicationContextImpl.getCurrent().getSecurityContext();
       for (Annotation a : method.getAnnotations())
       {
          Class<?> aClass = a.annotationType();
@@ -68,6 +67,7 @@ public class SecurityConstraint implements MethodInvokerFilter
          }
          else if (aClass == RolesAllowed.class)
          {
+            SecurityContext security = ApplicationContextImpl.getCurrent().getSecurityContext();
             for (String role : ((RolesAllowed)a).value())
             {
                if (security.isUserInRole(role))

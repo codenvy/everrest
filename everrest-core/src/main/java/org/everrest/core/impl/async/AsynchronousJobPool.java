@@ -25,15 +25,11 @@ import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.resource.ResourceMethodDescriptor;
-import org.everrest.core.tools.DummySecurityContext;
 import org.everrest.core.tools.EmptyInputStream;
-import org.everrest.core.tools.SecurityContextRequest;
-import org.everrest.core.tools.SimplePrincipal;
 import org.everrest.core.util.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -188,23 +184,16 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
       ApplicationContext context = ApplicationContextImpl.getCurrent();
       GenericContainerRequest request = context.getContainerRequest();
-      Principal principal = request.getUserPrincipal();
 
       // Create copy of request. Need to keep 'Accept' headers to be able determine MessageBodyWriter which can be
       // used to serialize result of method invocation. Do not copy entity stream. This stream is empty any way.
-      Principal copyPrincipal = null;
-      if (principal != null)
-      {
-         copyPrincipal = new SimplePrincipal(principal.getName());
-      }
-
-      ContainerRequest copyRequest = new SecurityContextRequest(
+      ContainerRequest copyRequest = new ContainerRequest(
          request.getMethod(),
          request.getRequestUri(),
          request.getBaseUri(),
          new EmptyInputStream(),
          request.getRequestHeaders(),
-         new DummySecurityContext(copyPrincipal));
+         context.getSecurityContext());
       job.getContext().put("org.everrest.async.request", copyRequest);
       // Save current set of providers. In some environments they can be resource specific.
       job.getContext().put("org.everrest.async.providers", context.getProviders());

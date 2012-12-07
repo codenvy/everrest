@@ -24,6 +24,7 @@ import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.servlet.ServletContainerRequest;
 import org.everrest.core.servlet.ServletContainerResponseWriter;
+import org.everrest.core.tools.WebApplicationDeclaredRoles;
 import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -45,10 +46,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAware, ServletConfigAware
 {
-
    private ServletContext servletContext;
-
    private ServletConfig servletConfig;
+   private WebApplicationDeclaredRoles webApplicationRoles;
 
    /** {@inheritDoc} */
    public long getLastModified(HttpServletRequest request, Object handler)
@@ -65,6 +65,8 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
       env.put(HttpServletResponse.class, request);
       env.put(ServletConfig.class, servletConfig);
       env.put(ServletContext.class, servletContext);
+      env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
+System.out.println("\n\n"+webApplicationRoles.getDeclaredRoles()+"\n");
       ((EverrestProcessor)handler).process(new ServletContainerRequest(request), new ContainerResponse(
          new ServletContainerResponseWriter(response)), env);
       // return null since request handled directly.
@@ -81,6 +83,7 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
    public void setServletContext(ServletContext servletContext)
    {
       this.servletContext = servletContext;
+      webApplicationRoles = new WebApplicationDeclaredRoles(servletContext);
    }
 
    /** {@inheritDoc} */
@@ -88,5 +91,4 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
    {
       return handler instanceof EverrestProcessor;
    }
-
 }

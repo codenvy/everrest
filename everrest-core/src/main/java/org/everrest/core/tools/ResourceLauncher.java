@@ -85,7 +85,7 @@ public class ResourceLauncher
 
       if (baseURI.isEmpty() && !requestURI.startsWith("/"))
       {
-         requestURI = "/" + requestURI;
+         requestURI = '/' + requestURI;
       }
 
       if (headers == null)
@@ -118,7 +118,12 @@ public class ResourceLauncher
 
       SecurityContext securityContext = (SecurityContext)env.get(SecurityContext.class);
 
-      ContainerRequest request = new SecurityContextRequest(method, new URI(requestURI), new URI(baseURI), in,
+      if (securityContext == null)
+      {
+         securityContext = new SimpleSecurityContext(false);
+      }
+
+      ContainerRequest request = new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in,
          new InputHeadersMap(headers), securityContext);
       ContainerResponse response = new ContainerResponse(writer);
       requestHandler.handleRequest(request, response);

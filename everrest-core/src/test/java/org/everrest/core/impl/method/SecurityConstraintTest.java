@@ -22,7 +22,7 @@ package org.everrest.core.impl.method;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
-import org.everrest.core.tools.DummySecurityContext;
+import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.test.mock.MockPrincipal;
 
 import java.security.Principal;
@@ -57,9 +57,9 @@ public class SecurityConstraintTest extends BaseTest
       adminRoles.add("administrators");
    }
 
-   private SecurityContext userSctx = new DummySecurityContext(userPrincipal, userRoles);
+   private SecurityContext userSctx = new SimpleSecurityContext(userPrincipal, userRoles, "BASIC", false);
 
-   private SecurityContext adminSctx = new DummySecurityContext(adminPrincipal, adminRoles);
+   private SecurityContext adminSctx = new SimpleSecurityContext(adminPrincipal, adminRoles, "BASIC", false);
 
    public void setUp() throws Exception
    {

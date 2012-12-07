@@ -33,13 +33,20 @@ import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
+import org.everrest.core.servlet.ServletContainerRequest;
+import org.everrest.core.tools.SimplePrincipal;
+import org.everrest.core.tools.SimpleSecurityContext;
+import org.everrest.core.tools.WebApplicationDeclaredRoles;
 import org.everrest.core.util.Logger;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -135,6 +142,8 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    private MultivaluedMap<String, String> queryParameters;
 
    private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
+
+   private SecurityContext asynchronousSecurityContext;
 
    /**
     * Constructs new instance of ApplicationContext.
@@ -491,6 +500,46 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle
    @Override
    public SecurityContext getSecurityContext()
    {
+      // We get security information from HttpServletRequest but we may be not able to do this is asynchronous mode.
+      // In asynchronous mode resource method processed when HTTP request ended already and we cannot use it any more.
+      // Do some workaround to keep security info even after request ends.
+      if (isAsynchronous() && (request instanceof ServletContainerRequest))
+      {
+         if (asynchronousSecurityContext == null)
+         {
+            Principal requestPrincipal = request.getUserPrincipal();
+            if (requestPrincipal == null)
+            {
+               asynchronousSecurityContext = new SimpleSecurityContext(request.isSecure());
+            }
+            else
+            {
+               // Info about roles declared for web application. We assume this is all roles that we can meet.
+               WebApplicationDeclaredRoles declaredRoles =
+                  (WebApplicationDeclaredRoles)EnvironmentContext.getCurrent().get(WebApplicationDeclaredRoles.class);
+               if (declaredRoles == null)
+               {
+                  // Cannot provide any info about roles in this case.
+                  asynchronousSecurityContext = new SimpleSecurityContext(new SimplePrincipal(requestPrincipal.getName()),
+                     null, request.getAuthenticationScheme(), request.isSecure());
+               }
+               else
+               {
+                  Set<String> userRoles = new LinkedHashSet<String>();
+                  for (String declaredRole : declaredRoles.getDeclaredRoles())
+                  {
+                     if (request.isUserInRole(declaredRole))
+                     {
+                        userRoles.add(declaredRole);
+                     }
+                  }
+                  asynchronousSecurityContext = new SimpleSecurityContext(new SimplePrincipal(requestPrincipal.getName()),
+                     userRoles, request.getAuthenticationScheme(), request.isSecure());
+               }
+            }
+         }
+         return asynchronousSecurityContext;
+      }
       return request;
    }
 

@@ -29,7 +29,6 @@ import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.provider.json.JsonException;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.JsonValue;
-import org.everrest.core.tools.SecurityContextRequest;
 import org.everrest.core.util.Logger;
 import org.everrest.websockets.message.InputMessage;
 import org.everrest.websockets.message.MessageConversionException;
@@ -157,7 +156,7 @@ class WS2RESTAdapter implements WSMessageReceiver
                   && internalUuid.equals(requestHeaders.getFirst("x-everrest-websocket-tracker-id")))
                {
                   URI requestUri = UriBuilder.fromPath("/async/" + job.getJobId()).build();
-                  ContainerRequest req = new SecurityContextRequest("GET", requestUri, URI.create(""), null,
+                  ContainerRequest req = new ContainerRequest("GET", requestUri, URI.create(""), null,
                      new InputHeadersMap(), securityContext);
 
                   RESTfulOutputMessage output = newOutputMessage(restInputMessage);
@@ -224,7 +223,7 @@ class WS2RESTAdapter implements WSMessageReceiver
       headers.putSingle("x-everrest-protocol", "websocket");
       headers.putSingle("x-everrest-websocket-tracker-id", internalUuid);
 
-      ContainerRequest req = new SecurityContextRequest(restInputMessage.getMethod(), requestUri, URI.create(""), data,
+      ContainerRequest req = new ContainerRequest(restInputMessage.getMethod(), requestUri, URI.create(""), data,
          new InputHeadersMap(headers), securityContext);
 
       RESTfulOutputMessage output = newOutputMessage(restInputMessage);

@@ -30,6 +30,7 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 
 /**
@@ -39,52 +40,47 @@ import javax.ws.rs.core.UriBuilder;
  */
 public final class ServletContainerRequest extends ContainerRequest
 {
-
-   /** See {@link HttpServletRequest}. */
-   private HttpServletRequest servletRequest;
-
-   /** @param servletRequest HttpServletRequest */
-   public ServletContainerRequest(HttpServletRequest servletRequest)
+   /**
+    * @param req
+    *    HttpServletRequest
+    */
+   public ServletContainerRequest(final HttpServletRequest req)
    {
-      super(getMethod(servletRequest), getRequestUri(servletRequest), getBaseUri(servletRequest),
-         getEntityStream(servletRequest), getHeader(servletRequest));
-      this.servletRequest = servletRequest;
-   }
+      super(getMethod(req), getRequestUri(req), getBaseUri(req), getEntityStream(req), getHeader(req),
+         new SecurityContext()
+         {
+            @Override
+            public Principal getUserPrincipal()
+            {
+               return req.getUserPrincipal();
+            }
 
-   /** {@inheritDoc} */
-   public String getAuthenticationScheme()
-   {
-      return servletRequest.getAuthType();
-   }
+            @Override
+            public boolean isUserInRole(String role)
+            {
+               return req.isUserInRole(role);
+            }
 
-   /** {@inheritDoc} */
-   public Principal getUserPrincipal()
-   {
-      return servletRequest.getUserPrincipal();
-   }
+            @Override
+            public boolean isSecure()
+            {
+               return req.isSecure();
+            }
 
-   /** {@inheritDoc} */
-   public boolean isSecure()
-   {
-      return servletRequest.isSecure();
-   }
-
-   /** {@inheritDoc} */
-   public boolean isUserInRole(String role)
-   {
-      return servletRequest.isUserInRole(role);
-   }
-
-   /** @return See {@link HttpServletRequest} */
-   public HttpServletRequest getServletRequest()
-   {
-      return servletRequest;
+            @Override
+            public String getAuthenticationScheme()
+            {
+               return req.getAuthType();
+            }
+         }
+      );
    }
 
    /**
     * Extract HTTP method name from servlet request.
     *
-    * @param servletRequest {@link HttpServletRequest}
+    * @param servletRequest
+    *    {@link HttpServletRequest}
     * @return HTTP method name
     * @see HttpServletRequest#getMethod()
     */
@@ -97,13 +93,13 @@ public final class ServletContainerRequest extends ContainerRequest
     * Constructs full request URI from {@link HttpServletRequest}, URI includes
     * query string and fragment.
     *
-    * @param servletRequest {@link HttpServletRequest}
+    * @param servletRequest
+    *    {@link HttpServletRequest}
     * @return newly created URI
     */
    private static URI getRequestUri(HttpServletRequest servletRequest)
    {
-      // servletRequest.getQueryString() return part of URI after '?', so it
-      // return fragment component also
+      // servletRequest.getQueryString() return part of URI after '?', so it return fragment component also
       UriBuilder baseBuilder = UriBuilder.fromUri(getBaseUri(servletRequest));
       return baseBuilder.replacePath(servletRequest.getRequestURI()).replaceQuery(servletRequest.getQueryString())
          .build();
@@ -112,7 +108,8 @@ public final class ServletContainerRequest extends ContainerRequest
    /**
     * Constructs base request URI from {@link HttpServletRequest} .
     *
-    * @param servletRequest {@link HttpServletRequest}
+    * @param servletRequest
+    *    {@link HttpServletRequest}
     * @return newly created URI
     */
    private static URI getBaseUri(HttpServletRequest servletRequest)
@@ -131,32 +128,31 @@ public final class ServletContainerRequest extends ContainerRequest
    /**
     * Get HTTP headers from {@link HttpServletRequest} .
     *
-    * @param servletRequest {@link HttpServletRequest}
+    * @param servletRequest
+    *    {@link HttpServletRequest}
     * @return request headers
     */
    private static MultivaluedMap<String, String> getHeader(HttpServletRequest servletRequest)
    {
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
-      Enumeration<?> temp = servletRequest.getHeaderNames();
-      while (temp.hasMoreElements())
+      Enumeration<?> headerNames = servletRequest.getHeaderNames();
+      while (headerNames.hasMoreElements())
       {
-         String k = (String)temp.nextElement();
-
-         Enumeration<?> e = servletRequest.getHeaders(k);
+         String name = (String)headerNames.nextElement();
+         Enumeration<?> e = servletRequest.getHeaders(name);
          while (e.hasMoreElements())
          {
-            h.add(k, (String)e.nextElement());
+            h.add(name, (String)e.nextElement());
          }
-
       }
-
       return new InputHeadersMap(h);
    }
 
    /**
     * Get input stream from {@link HttpServletRequest} .
     *
-    * @param servletRequest {@link HttpServletRequest}
+    * @param servletRequest
+    *    {@link HttpServletRequest}
     * @return request stream or null
     */
    private static InputStream getEntityStream(HttpServletRequest servletRequest)
@@ -170,5 +166,4 @@ public final class ServletContainerRequest extends ContainerRequest
          throw new RuntimeException(e);
       }
    }
-
 }

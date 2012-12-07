@@ -24,6 +24,7 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.servlet.ServletContainerRequest;
 import org.everrest.core.servlet.ServletContainerResponseWriter;
+import org.everrest.core.tools.WebApplicationDeclaredRoles;
 import org.everrest.core.util.Logger;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.RequestLifeCycle;
@@ -50,6 +51,13 @@ import javax.servlet.http.HttpServletResponse;
 public class EverrestExoServlet extends AbstractHttpServlet
 {
    private static final Logger log = Logger.getLogger(EverrestExoServlet.class);
+   private WebApplicationDeclaredRoles webApplicationRoles;
+
+   @Override
+   protected void afterInit(ServletConfig config) throws ServletException
+   {
+      webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
+   }
 
    /**
     * @see org.exoplatform.container.web.AbstractHttpServlet#onService(org.exoplatform.container.ExoContainer,
@@ -68,6 +76,7 @@ public class EverrestExoServlet extends AbstractHttpServlet
       env.put(HttpServletResponse.class, res);
       env.put(ServletConfig.class, config);
       env.put(ServletContext.class, getServletContext());
+      env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
 
       try
       {

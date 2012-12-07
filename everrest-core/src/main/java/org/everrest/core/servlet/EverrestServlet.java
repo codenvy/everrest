@@ -22,6 +22,7 @@ import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.tools.WebApplicationDeclaredRoles;
 import org.everrest.core.util.Logger;
 
 import java.io.IOException;
@@ -41,15 +42,14 @@ import javax.servlet.http.HttpServletResponse;
 public class EverrestServlet extends HttpServlet
 {
    private static final Logger LOG = Logger.getLogger(EverrestServlet.class.getName());
+   private WebApplicationDeclaredRoles webApplicationRoles;
 
    protected EverrestProcessor processor;
 
-   protected ServletConfig servletConfig;
-
-   public void init(ServletConfig servletConfig)
+   public void init() throws ServletException
    {
-      this.servletConfig = servletConfig;
-      processor = (EverrestProcessor)servletConfig.getServletContext().getAttribute(EverrestProcessor.class.getName());
+      processor = (EverrestProcessor)getServletConfig().getServletContext().getAttribute(EverrestProcessor.class.getName());
+      webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
    }
 
    public void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
@@ -58,8 +58,9 @@ public class EverrestServlet extends HttpServlet
       EnvironmentContext env = new EnvironmentContext();
       env.put(HttpServletRequest.class, httpRequest);
       env.put(HttpServletResponse.class, httpResponse);
-      env.put(ServletConfig.class, servletConfig);
-      env.put(ServletContext.class, servletConfig.getServletContext());
+      env.put(ServletConfig.class, getServletConfig());
+      env.put(ServletContext.class, getServletContext());
+      env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
       try
       {
          ServletContainerRequest request = new ServletContainerRequest(httpRequest);
@@ -88,5 +89,4 @@ public class EverrestServlet extends HttpServlet
          throw new ServletException(e);
       }
    }
-
 }

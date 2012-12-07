@@ -30,28 +30,31 @@ import javax.ws.rs.core.SecurityContext;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class DummySecurityContext implements SecurityContext
+public class SimpleSecurityContext implements SecurityContext
 {
+   private final String authenticationScheme;
    private final Principal principal;
    private final Set<String> userRoles;
+   private final boolean secure;
 
-   public DummySecurityContext(Principal principal, Set<String> userRoles)
+   public SimpleSecurityContext(Principal principal, Set<String> userRoles, String authenticationScheme, boolean secure)
    {
       this.principal = principal;
-      this.userRoles = Collections.unmodifiableSet(new HashSet<String>(userRoles));
+      this.authenticationScheme = authenticationScheme;
+      this.secure = secure;
+      this.userRoles = userRoles == null
+         ? Collections.<String>emptySet() : Collections.unmodifiableSet(new HashSet<String>(userRoles));
    }
 
-   public DummySecurityContext(Principal principal)
+   public SimpleSecurityContext(boolean secure)
    {
-      this.principal = principal;
-      this.userRoles = Collections.emptySet();
+      this(null, null, null, secure);
    }
 
    /** {@inheritDoc} */
    public String getAuthenticationScheme()
    {
-      // Consider as Basic Authentication
-      return BASIC_AUTH;
+      return authenticationScheme;
    }
 
    /** {@inheritDoc} */
@@ -63,13 +66,13 @@ public class DummySecurityContext implements SecurityContext
    /** {@inheritDoc} */
    public boolean isSecure()
    {
-      return false;
+      return secure;
    }
 
    /** {@inheritDoc} */
    public boolean isUserInRole(String role)
    {
-      return userRoles.contains(role);
+      return principal != null && userRoles.contains(role);
    }
 
    public Set<String> getUserRoles()

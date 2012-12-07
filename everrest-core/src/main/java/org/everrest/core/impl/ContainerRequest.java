@@ -43,6 +43,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Variant;
 
 /**
@@ -84,6 +85,9 @@ public class ContainerRequest implements GenericContainerRequest
    /** Base URI, e.g. servlet path. */
    private URI baseUri;
 
+   /** Security context. */
+   private SecurityContext securityContext;
+
    /**
     * Constructs new instance of ContainerRequest.
     *
@@ -92,15 +96,17 @@ public class ContainerRequest implements GenericContainerRequest
     * @param baseUri base request URI
     * @param entityStream request message body as stream
     * @param httpHeaders HTTP headers
+    * @param securityContext SecurityContext
     */
    public ContainerRequest(String method, URI requestUri, URI baseUri, InputStream entityStream,
-                           MultivaluedMap<String, String> httpHeaders)
+                           MultivaluedMap<String, String> httpHeaders, SecurityContext securityContext)
    {
       this.method = method;
       this.requestUri = requestUri;
       this.baseUri = baseUri;
       this.entityStream = entityStream;
       this.httpHeaders = httpHeaders;
+      this.securityContext = securityContext;
    }
 
    // GenericContainerRequest
@@ -224,37 +230,32 @@ public class ContainerRequest implements GenericContainerRequest
 
    // javax.ws.rs.core.SecurityContext
 
-   // Methods from SecurityContext will have different implementation for
-   // different container. Currently thinking about servlet container only but
-   // for flexible don't implement it here, it must be implemented in super
-   // classes.
-
    /** {@inheritDoc} */
    @Override
    public String getAuthenticationScheme()
    {
-      throw new UnsupportedOperationException();
+      return securityContext.getAuthenticationScheme();
    }
 
    /** {@inheritDoc} */
    @Override
    public Principal getUserPrincipal()
    {
-      throw new UnsupportedOperationException();
+      return securityContext.getUserPrincipal();
    }
 
    /** {@inheritDoc} */
    @Override
    public boolean isSecure()
    {
-      throw new UnsupportedOperationException();
+      return securityContext.isSecure();
    }
 
    /** {@inheritDoc} */
    @Override
    public boolean isUserInRole(String role)
    {
-      throw new UnsupportedOperationException();
+      return securityContext.isUserInRole(role);
    }
 
    // javax.ws.rs.core.Request

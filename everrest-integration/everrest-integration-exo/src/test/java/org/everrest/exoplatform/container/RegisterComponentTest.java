@@ -25,6 +25,7 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.DummyContainerResponseWriter;
+import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.exoplatform.StandaloneBaseTest;
 
 import java.io.ByteArrayInputStream;
@@ -67,7 +68,7 @@ public class RegisterComponentTest extends StandaloneBaseTest
       h.putSingle("TEST", "TO BE OR NOT TO BE");
       ContainerRequest request =
          new ContainerRequest("GET", new URI("/a"), new URI(""), new ByteArrayInputStream(new byte[0]),
-            new InputHeadersMap(h));
+            new InputHeadersMap(h), new SimpleSecurityContext(false));
       ContainerResponse response = new ContainerResponse(writer);
       ApplicationContextImpl.setCurrent(new ApplicationContextImpl(request, response, null));
       // Add dependencies to different containers to be sure both are resolvable.

@@ -25,6 +25,7 @@ import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.tools.DummyContainerResponseWriter;
 import org.everrest.core.tools.EmptyInputStream;
+import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.exoplatform.StandaloneBaseTest;
 import org.picocontainer.ComponentAdapter;
 
@@ -65,7 +66,8 @@ public class LookupComponentsTest extends StandaloneBaseTest
       super.setUp();
       restfulContainer = new RestfulContainer(container);
       ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
-         new ContainerRequest("XXX", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl()),
+         new ContainerRequest("XXX", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(),
+            new SimpleSecurityContext(false)),
          new ContainerResponse(new DummyContainerResponseWriter()), ProviderBinder.getInstance()));
    }
 

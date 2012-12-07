@@ -27,6 +27,7 @@ import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
+import org.everrest.core.tools.SimpleSecurityContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,7 +77,7 @@ public abstract class BaseTest extends TestCase
    protected void setContext()
    {
       ApplicationContextImpl.setCurrent(new ApplicationContextImpl(new ContainerRequest("", URI.create(""), URI
-         .create(""), new EmptyStream(), new MultivaluedMapImpl()), null, providers));
+         .create(""), new EmptyStream(), new MultivaluedMapImpl(), new SimpleSecurityContext(false)), null, providers));
    }
 
    public void tearDown() throws Exception
