@@ -112,7 +112,8 @@ public class WSConnectionContext
    {
       RESTfulOutputMessage transport = new RESTfulOutputMessage();
       transport.setUuid(message.getUuid());
-      transport.setHeaders(new Pair[]{new Pair("x-everrest-websocket-channel", message.getChannel())});
+      transport.setHeaders(new Pair[]{new Pair("x-everrest-websocket-channel", message.getChannel()),
+         new Pair("x-everrest-websocket-message-type", message.getType().toString())});
       transport.setBody(message.getBody());
       return transport;
    }
