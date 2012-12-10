@@ -70,7 +70,7 @@ public class EverrestWebSocketServlet extends WebSocketServlet
    @Override
    protected StreamInbound createWebSocketInbound(String s, HttpServletRequest req)
    {
-      WSConnectionImpl connection = WSConnectionContext.open(req.getSession().getId(), messageConverter);
+      WSConnectionImpl connection = WSConnectionContext.open(req.getSession(), messageConverter);
       connection.registerMessageReceiver(
          new WS2RESTAdapter(connection, createSecurityContext(req), processor, asynchronousPool));
       return connection;

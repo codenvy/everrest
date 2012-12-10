@@ -305,6 +305,7 @@ public class WSClient
          throw new IllegalArgumentException("Message may not be null. ");
       }
 
+      // Send 'text' message without fragments.
       writeFrame((byte)0x81, UTF8_CS.encode(message).array());
    }
 
@@ -725,7 +726,6 @@ public class WSClient
       // Generate mask bytes.
       final byte[] mask = generateMask();
 
-      // Send 'text' message without fragments.
       out.write(opCode);
       // Payload length bytes.
       out.write(lengthBytes);

@@ -39,7 +39,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.servlet.http.HttpSession;
+
 /**
+ * Receives text messages over websocket connection and notify all registered WSMessageReceivers. This implementation
+ * does not support binary messages. If binary message received then connection will be closed with error status and
+ * then UnsupportedOperationException will be thrown.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -49,16 +55,16 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    private static final Charset UTF8_CS = Charset.forName("UTF-8");
 
    private final long connectionId = counter.getAndIncrement();
-   private final String httpSessionId;
+   private final HttpSession httpSession;
    private final MessageConverter messageConverter;
    private final List<WSMessageReceiver> messageReceivers;
    private final Set<String> channels;
    private final Set<String> readOnlyChannels;
    private final AtomicBoolean connected = new AtomicBoolean(false);
 
-   WSConnectionImpl(String httpSessionId, MessageConverter messageConverter)
+   WSConnectionImpl(HttpSession httpSession, MessageConverter messageConverter)
    {
-      this.httpSessionId = httpSessionId;
+      this.httpSession = httpSession;
       this.messageConverter = messageConverter;
       this.messageReceivers = new CopyOnWriteArrayList<WSMessageReceiver>();
       this.channels = new CopyOnWriteArraySet<String>();
@@ -137,9 +143,9 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    }
 
    @Override
-   public String getHttpSessionId()
+   public HttpSession getHttpSession()
    {
-      return httpSessionId;
+      return httpSession;
    }
 
    @Override
@@ -209,7 +215,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    {
       return "WSConnectionImpl{" +
          "connectionId=" + connectionId +
-         ", httpSessionId='" + httpSessionId + '\'' +
+         ", httpSessionId='" + httpSession.getId() + '\'' +
          ", channels=" + channels +
          '}';
    }

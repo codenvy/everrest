@@ -164,7 +164,9 @@ class WS2RESTAdapter implements WSMessageReceiver
 
                   try
                   {
-                     everrestProcessor.process(req, resp, new EnvironmentContext());
+                     EnvironmentContext env = new EnvironmentContext();
+                     env.put(WSConnection.class, connection);
+                     everrestProcessor.process(req, resp, env);
                   }
                   catch (Exception e)
                   {
@@ -231,7 +233,9 @@ class WS2RESTAdapter implements WSMessageReceiver
 
       try
       {
-         everrestProcessor.process(req, resp, new EnvironmentContext());
+         EnvironmentContext env = new EnvironmentContext();
+         env.put(WSConnection.class, connection);
+         everrestProcessor.process(req, resp, env);
       }
       catch (Exception e)
       {

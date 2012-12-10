@@ -24,6 +24,8 @@ import org.everrest.websockets.message.OutputMessage;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * Web socket connection abstraction.
  *
@@ -40,11 +42,11 @@ public interface WSConnection
    Long getConnectionId();
 
    /**
-    * Get id of HTTP session associated to this connection.
+    * Get HTTP session associated to this connection.
     *
-    * @return id of HTTP session associated to this connection
+    * @return HTTP session associated to this connection
     */
-   String getHttpSessionId();
+   HttpSession getHttpSession();
 
    /**
     * Subscribe this connection to specified channel.
@@ -53,7 +55,7 @@ public interface WSConnection
     *    channel name
     * @return <code>true</code> if this connection is subscribed to channel successfully and <code>false</code> if
     *         connection already subscribed to specified channel
-    * @see WSConnectionContext#sendMessage(String, org.everrest.websockets.message.OutputMessage)
+    * @see WSConnectionContext#sendMessage(org.everrest.websockets.message.ChannelBroadcastMessage)
     */
    boolean subscribeToChannel(String channel);
 
@@ -64,7 +66,7 @@ public interface WSConnection
     *    channel name
     * @return <code>true</code> if this connection is unsubscribed from channel successfully and <code>false</code> if
     *         connection is not subscribed to specified channel
-    * @see WSConnectionContext#sendMessage(String, org.everrest.websockets.message.OutputMessage)
+    * @see WSConnectionContext#sendMessage(org.everrest.websockets.message.ChannelBroadcastMessage)
     */
    boolean unsubscribeFromChannel(String channel);
 
@@ -73,7 +75,7 @@ public interface WSConnection
     * more than one connection at one time.
     *
     * @return unmodifiable set of channel names this connection subscribed
-    * @see WSConnectionContext#sendMessage(String, org.everrest.websockets.message.OutputMessage)
+    * @see WSConnectionContext#sendMessage(org.everrest.websockets.message.ChannelBroadcastMessage)
     */
    Collection<String> getChannels();
 

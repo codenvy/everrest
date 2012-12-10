@@ -19,9 +19,11 @@
 package org.everrest.websockets;
 
 import org.everrest.core.util.Logger;
+import org.everrest.websockets.message.ChannelBroadcastMessage;
 import org.everrest.websockets.message.MessageConversionException;
 import org.everrest.websockets.message.MessageConverter;
-import org.everrest.websockets.message.OutputMessage;
+import org.everrest.websockets.message.Pair;
+import org.everrest.websockets.message.RESTfulOutputMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -52,21 +56,22 @@ public class WSConnectionContext
    }
 
    /**
-    * Send message to all connections subscribed to <code>channel</code>. Method tries to send message to as many
-    * connections as possible. Even if method fails to send message to the first connection it will try to send message
-    * to other connections, if any. After that a first occurred error is rethrown.
+    * Send message to all connections subscribed to the channel. Method tries to send message to as many connections as
+    * possible. Even if method fails to send message to the first connection it will try to send message to other
+    * connections, if any. After that a first occurred error is rethrown.
     *
-    * @param channel
-    *    channel name
-    * @param output
+    * @param message
     *    message
     * @throws MessageConversionException
     *    if message cannot be serialized
     * @throws IOException
     *    if any i/o error occurs when try to send message to client
+    * @see org.everrest.websockets.message.ChannelBroadcastMessage#getChannel()
     */
-   public static void sendMessage(String channel, OutputMessage output) throws MessageConversionException, IOException
+   public static void sendMessage(ChannelBroadcastMessage message) throws MessageConversionException, IOException
    {
+      final String channel = message.getChannel();
+      final RESTfulOutputMessage output = newRESTfulOutputMessage(message);
       Exception error = null;
       for (WSConnectionImpl connection : connections.values())
       {
@@ -103,6 +108,15 @@ public class WSConnectionContext
       }
    }
 
+   private static RESTfulOutputMessage newRESTfulOutputMessage(ChannelBroadcastMessage message)
+   {
+      RESTfulOutputMessage transport = new RESTfulOutputMessage();
+      transport.setUuid(message.getUuid());
+      transport.setHeaders(new Pair[]{new Pair("x-everrest-websocket-channel", message.getChannel())});
+      transport.setBody(message.getBody());
+      return transport;
+   }
+
    static
    {
       registerConnectionListener(new WSConnectionListener()
@@ -129,26 +143,25 @@ public class WSConnectionContext
     * it directly. After creation connection may not be ready to use yet. Always need register WSConnectionListener and
     * use connection passed in method {@link WSConnectionListener#onOpen(WSConnection)}.
     *
-    * @param httpSessionId
-    *    id of HTTP session associated to this connection. If few connections open for the same HTTP session all of
-    *    them receive response for request sent to one of connections
+    * @param httpSession
+    *    HTTP session associated to this connection
     * @param messageConverter
     *    converts input messages from raw message represented by String to InputMessage and converts back OutputMessage
     *    to String
     * @see #registerConnectionListener(WSConnectionListener)
     * @see #removeConnectionListener(WSConnectionListener)
     */
-   static WSConnectionImpl open(String httpSessionId, MessageConverter messageConverter)
+   static WSConnectionImpl open(HttpSession httpSession, MessageConverter messageConverter)
    {
-      if (httpSessionId == null)
+      if (httpSession == null)
       {
-         throw new IllegalArgumentException("HTTP Session Id required. ");
+         throw new IllegalArgumentException("HTTP Session required. ");
       }
       if (messageConverter == null)
       {
          throw new IllegalArgumentException("MessageConverter required. ");
       }
-      WSConnectionImpl newConnection = new WSConnectionImpl(httpSessionId, messageConverter);
+      WSConnectionImpl newConnection = new WSConnectionImpl(httpSession, messageConverter);
       connections.put(newConnection.getConnectionId(), newConnection);
       return newConnection;
    }
@@ -164,12 +177,12 @@ public class WSConnectionContext
    {
       if (httpSessionId == null)
       {
-         throw new IllegalArgumentException("HTTP session id may not be null. ");
+         throw new IllegalArgumentException("HTTP session may not be null. ");
       }
       List<WSConnectionImpl> result = new ArrayList<WSConnectionImpl>();
       for (WSConnectionImpl connection : connections.values())
       {
-         if (httpSessionId.equals(connection.getHttpSessionId()))
+         if (httpSessionId.equals(connection.getHttpSession().getId()))
          {
             result.add(connection);
          }
