@@ -40,7 +40,7 @@ import javax.ws.rs.core.Application;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class EverrestProcessor implements Lifecycle
+public final class EverrestProcessor implements Lifecycle
 {
    private static final Logger LOG = Logger.getLogger(EverrestProcessor.class.getName());
    private final RequestHandler requestHandler;
@@ -51,8 +51,7 @@ public class EverrestProcessor implements Lifecycle
    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencies,
                             EverrestConfiguration config, Application application)
    {
-      this(new RequestHandlerImpl(
-         new RequestDispatcher(resources), providers, dependencies, config),
+      this(new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, config),
          resources,
          providers,
          application);
@@ -61,8 +60,8 @@ public class EverrestProcessor implements Lifecycle
    // TODO : workaround to make possible use customized request handler. typically not need this for everrest itself but
    // may be useful for some integration. At the moment need this to get work exo integration through web sockets.
    // Need to find something smarter to configure RequestHandler.
-   protected EverrestProcessor(RequestHandler handler, ResourceBinder resources, ProviderBinder providers,
-                               Application application)
+   public EverrestProcessor(RequestHandler handler, ResourceBinder resources, ProviderBinder providers,
+                            Application application)
    {
       this.resources = resources;
       this.providers = providers;
