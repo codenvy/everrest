@@ -129,10 +129,10 @@ public class WSConnectionContext
          }
 
          @Override
-         public void onClose(Long connectionId, int code)
+         public void onClose(WSConnection connection)
          {
-            LOG.debug("Close connection {} with code {} ", connectionId, code);
-            connections.remove(connectionId);
+            LOG.debug("Close connection {} with status {} ", connection, connection.getCloseStatus());
+            connections.remove(connection.getConnectionId());
          }
       });
    }

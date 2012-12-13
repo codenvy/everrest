@@ -61,6 +61,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    private final Set<String> channels;
    private final Set<String> readOnlyChannels;
    private final AtomicBoolean connected = new AtomicBoolean(false);
+   private int closeStatus = 0;
 
    WSConnectionImpl(HttpSession httpSession, MessageConverter messageConverter)
    {
@@ -128,10 +129,11 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    protected void onClose(int status)
    {
       connected.compareAndSet(true, false);
+      closeStatus = status;
       // Notify connection listeners about this connection is closed.
       for (WSConnectionListener connectionListener : WSConnectionContext.connectionListeners)
       {
-         connectionListener.onClose(connectionId, status);
+         connectionListener.onClose(this);
       }
    }
 
@@ -178,6 +180,12 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    public boolean isConnected()
    {
       return connected.get();
+   }
+
+   @Override
+   public int getCloseStatus()
+   {
+      return closeStatus;
    }
 
    @Override

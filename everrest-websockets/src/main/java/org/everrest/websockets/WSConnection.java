@@ -87,6 +87,13 @@ public interface WSConnection
    boolean isConnected();
 
    /**
+    * Get connection close status. If connection is alive or not opened yet this method return <code>0</code>.
+    *
+    * @return connection close status or <code>0</code> if connection is alive or not opened yet
+    */
+   int getCloseStatus();
+
+   /**
     * Close this connection.
     *
     * @throws IOException

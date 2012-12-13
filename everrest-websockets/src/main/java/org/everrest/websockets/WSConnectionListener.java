@@ -40,11 +40,8 @@ public interface WSConnectionListener
    /**
     * Called when connection closed.
     *
-    * @param connectionId
-    *    connection identifier
-    * @param code
-    *    code with represent the connection close status
-    * @see org.everrest.websockets.WSConnection#getConnectionId()
+    * @param connection
+    *    closed connection
     */
-   void onClose(Long connectionId, int code);
+   void onClose(WSConnection connection);
 }
