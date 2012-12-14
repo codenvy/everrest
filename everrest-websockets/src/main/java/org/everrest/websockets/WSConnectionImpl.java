@@ -54,7 +54,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    private static final AtomicLong counter = new AtomicLong(1);
    private static final Charset UTF8_CS = Charset.forName("UTF-8");
 
-   private final long connectionId = counter.getAndIncrement();
+   private final long id = counter.getAndIncrement();
    private final HttpSession httpSession;
    private final MessageConverter messageConverter;
    private final List<WSMessageReceiver> messageReceivers;
@@ -139,9 +139,9 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
 
    //
 
-   public Long getConnectionId()
+   public Long getId()
    {
-      return connectionId;
+      return id;
    }
 
    @Override
@@ -222,8 +222,8 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection
    public String toString()
    {
       return "WSConnectionImpl{" +
-         "connectionId=" + connectionId +
-         ", httpSessionId='" + httpSession.getId() + '\'' +
+         "id=" + id +
+         ", httpSession='" + httpSession.getId() + '\'' +
          ", channels=" + channels +
          '}';
    }

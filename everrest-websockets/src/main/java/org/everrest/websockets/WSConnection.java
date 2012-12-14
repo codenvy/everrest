@@ -39,7 +39,7 @@ public interface WSConnection
     *
     * @return unique connection identifier
     */
-   Long getConnectionId();
+   Long getId();
 
    /**
     * Get HTTP session associated to this connection.

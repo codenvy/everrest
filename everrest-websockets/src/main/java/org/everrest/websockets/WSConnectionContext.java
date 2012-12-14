@@ -132,7 +132,7 @@ public class WSConnectionContext
          public void onClose(WSConnection connection)
          {
             LOG.debug("Close connection {} with status {} ", connection, connection.getCloseStatus());
-            connections.remove(connection.getConnectionId());
+            connections.remove(connection.getId());
          }
       });
    }
@@ -163,7 +163,7 @@ public class WSConnectionContext
          throw new IllegalArgumentException("MessageConverter required. ");
       }
       WSConnectionImpl newConnection = new WSConnectionImpl(httpSession, messageConverter);
-      connections.put(newConnection.getConnectionId(), newConnection);
+      connections.put(newConnection.getId(), newConnection);
       return newConnection;
    }
 
