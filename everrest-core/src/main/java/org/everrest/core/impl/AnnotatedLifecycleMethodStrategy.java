@@ -62,11 +62,11 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
        */
       boolean accept(Method m)
       {
-         return m.isAnnotationPresent(annotation) //
-            && (!Modifier.isStatic(m.getModifiers())) //
-            && m.getParameterTypes().length == 0 //
+         return (!Modifier.isStatic(m.getModifiers())) //
             && (m.getReturnType() == void.class || m.getReturnType() == Void.class) //
-            && noCheckedException(m);
+            && m.getParameterTypes().length == 0 //
+            && noCheckedException(m)
+            && m.getAnnotation(annotation) != null;
       }
 
       private boolean noCheckedException(Method m)

@@ -299,28 +299,30 @@ public class ResourceBinderImpl implements ResourceBinder
    public ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues)
    {
       ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
+      List<ObjectFactory<AbstractResourceDescriptor>> snapshot;
       synchronized (rootResources)
       {
-         for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources)
+         snapshot = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(rootResources);
+      }
+      for (ObjectFactory<AbstractResourceDescriptor> resource : snapshot)
+      {
+         if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues))
          {
-            if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues))
+            // all times will at least 1
+            int len = parameterValues.size();
+            // If capturing group contains last element and this element is
+            // neither null nor '/' then ResourceClass must contains at least one
+            // sub-resource method or sub-resource locator.
+            if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
             {
-               // all times will at least 1
-               int len = parameterValues.size();
-               // If capturing group contains last element and this element is
-               // neither null nor '/' then ResourceClass must contains at least one
-               // sub-resource method or sub-resource locator.
-               if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
+               if (0 == resource.getObjectModel().getSubResourceMethods().size()
+                  + resource.getObjectModel().getSubResourceLocators().size())
                {
-                  if (0 == resource.getObjectModel().getSubResourceMethods().size()
-                     + resource.getObjectModel().getSubResourceLocators().size())
-                  {
-                     continue;
-                  }
+                  continue;
                }
-               resourceFactory = resource;
-               break;
             }
+            resourceFactory = resource;
+            break;
          }
       }
       return resourceFactory;
@@ -331,10 +333,7 @@ public class ResourceBinderImpl implements ResourceBinder
    {
       synchronized (rootResources)
       {
-         List<ObjectFactory<AbstractResourceDescriptor>> copy
-            = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(rootResources.size());
-         copy.addAll(rootResources);
-         return copy;
+         return new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(rootResources);
       }
    }
 

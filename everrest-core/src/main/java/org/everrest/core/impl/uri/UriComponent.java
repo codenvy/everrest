@@ -70,94 +70,155 @@ public final class UriComponent
    /** Encoded '%' character. */
    public static final String PERCENT = "%25";
 
-   /** The letters of the basic Latin alphabet. */
-   private static final String ALPHA = fillTable("A-Z") + fillTable("a-z");
-
-   /** Digits. */
-   private static final String DIGIT = fillTable("0-9");
-
-   /**
-    * Characters that are allowed in a URI but do not have a reserved purpose
-    * are called unreserved. These include uppercase and lowercase letters,
-    * decimal digits, hyphen, period, underscore, and tilde.
-    * <p>
-    * Unreserved = ALPHA | DIGIT | '-' | '.' | '_' | '~'
-    */
-   private static final String UNRESERVED = ALPHA + DIGIT + "-._~";
-
-   /**
-    * The subset of the reserved characters (gen-delims) is used as delimiters
-    * of the generic URI components.
-    */
-   private static final String GEN_DELIM = ":/?#[]@";
-
-   /** Sub-delims characters. */
-   private static final String SUB_DELIM = "!$&'()*+,;=";
-
    // --------------------
 
    /** Characters that used for percent encoding. */
-   private static final String HEX_DIGITS = "0123456789ABCDEF";
+   private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+   private static final char[][][] ENCODED = new char[9][128][3];
 
    /** Array of legal characters for each component of URI. */
-   private static final String[] ENCODING = new String[9];
-
-   private static final String[][] ENCODED = new String[9][128];
+   private static final int[][] ENCODING = new int[9][128];
 
    // fill table
    static
    {
-      ENCODING[SCHEME] = ALPHA + DIGIT + "+-.";
-      ENCODING[USER_INFO] = UNRESERVED + SUB_DELIM + ':';
-      ENCODING[HOST] = UNRESERVED + SUB_DELIM;
-      ENCODING[PORT] = DIGIT;
-      ENCODING[PATH_SEGMENT] = UNRESERVED + SUB_DELIM + ":@";
-      ENCODING[PATH] = ENCODING[PATH_SEGMENT] + '/';
-      ENCODING[QUERY] = UNRESERVED + "!$'()*,;:@?/";
-      ENCODING[FRAGMENT] = ENCODING[QUERY];
-      ENCODING[SSP] = UNRESERVED + SUB_DELIM + GEN_DELIM;
+      for (int i = SCHEME; i <= SSP; i++)
+      {
+         ENCODING[i] = new int[128];
+      }
+
+      /* The letters of the basic Latin alphabet */
+      int[] alphabet = new int[128];
+      fillTable(alphabet, 'a', 'z');
+      fillTable(alphabet, 'A', 'Z');
+      /* Digits */
+      int[] digit = new int[128];
+      fillTable(digit, '0', '9');
+      /* Characters that are allowed in a URI but do not have a reserved purpose are called unreserved. These include
+       * uppercase and lowercase letters, decimal digits, hyphen, period, underscore, and tilde.
+       * Unreserved = ALPHA | DIGIT | '-' | '.' | '_' | '~' */
+      int[] unreserved = new int[128];
+      set(alphabet, unreserved);
+      set(digit, unreserved);
+      unreserved['-'] = 1;
+      unreserved['.'] = 1;
+      unreserved['_'] = 1;
+      unreserved['~'] = 1;
+      /* The subset of the reserved characters (gen-delims) is used as delimiters of the generic URI components. */
+      int[] gendelim = new int[128];
+      gendelim[':'] = 1;
+      gendelim['/'] = 1;
+      gendelim['?'] = 1;
+      gendelim['#'] = 1;
+      gendelim['['] = 1;
+      gendelim[']'] = 1;
+      gendelim['@'] = 1;
+      /* Sub-delims characters. */
+      int[] subdelim = new int[128];
+      subdelim['!'] = 1;
+      subdelim['$'] = 1;
+      subdelim['&'] = 1;
+      subdelim['\''] = 1;
+      subdelim['('] = 1;
+      subdelim[')'] = 1;
+      subdelim['*'] = 1;
+      subdelim['+'] = 1;
+      subdelim[','] = 1;
+      subdelim[';'] = 1;
+      subdelim['='] = 1;
+
+      set(alphabet, ENCODING[SCHEME]);
+      set(digit, ENCODING[SCHEME]);
+      ENCODING[SCHEME]['-'] = 1;
+      ENCODING[SCHEME]['+'] = 1;
+      ENCODING[SCHEME]['.'] = 1;
+
+      set(unreserved, ENCODING[USER_INFO]);
+      set(subdelim, ENCODING[USER_INFO]);
+      ENCODING[USER_INFO][':'] = 1;
+
+      set(unreserved, ENCODING[HOST]);
+      set(subdelim, ENCODING[HOST]);
+
+      set(digit, ENCODING[PORT]);
+
+      set(unreserved, ENCODING[PATH_SEGMENT]);
+      set(subdelim, ENCODING[PATH_SEGMENT]);
+      ENCODING[PATH_SEGMENT][':'] = 1;
+      ENCODING[PATH_SEGMENT]['@'] = 1;
+
+      set(unreserved, ENCODING[PATH]);
+      set(subdelim, ENCODING[PATH]);
+      ENCODING[PATH][':'] = 1;
+      ENCODING[PATH]['@'] = 1;
+      ENCODING[PATH]['/'] = 1;
+
+      set(unreserved, ENCODING[QUERY]);
+      ENCODING[QUERY]['-'] = 1;
+      ENCODING[QUERY]['.'] = 1;
+      ENCODING[QUERY]['_'] = 1;
+      ENCODING[QUERY]['~'] = 1;
+      ENCODING[QUERY]['!'] = 1;
+      ENCODING[QUERY]['$'] = 1;
+      ENCODING[QUERY]['\''] = 1;
+      ENCODING[QUERY]['('] = 1;
+      ENCODING[QUERY][')'] = 1;
+      ENCODING[QUERY]['*'] = 1;
+      ENCODING[QUERY][','] = 1;
+      ENCODING[QUERY][';'] = 1;
+      ENCODING[QUERY][':'] = 1;
+      ENCODING[QUERY]['@'] = 1;
+      ENCODING[QUERY]['?'] = 1;
+      ENCODING[QUERY]['/'] = 1;
+
+      System.arraycopy(ENCODING[QUERY], 0, ENCODING[FRAGMENT], 0, ENCODING[QUERY].length);
+
+      set(unreserved, ENCODING[SSP]);
+      set(subdelim, ENCODING[SSP]);
+      set(gendelim, ENCODING[SSP]);
 
       for (int i = SCHEME; i <= SSP; i++)
       {
          for (int j = 0; j < 128; j++)
          {
-            if (ENCODING[i].indexOf(j) < 0)
+            if (ENCODING[i][j] == 0)
             {
-               StringBuilder sb = new StringBuilder();
-               addPercentEncoded(j, sb);
-               ENCODED[i][j] = sb.toString();
+               char[] ca = new char[3];
+               ca[0] = '%';
+               ca[1] = HEX_DIGITS[j >> 4];
+               ca[2] = HEX_DIGITS[j & 0x0F];
+               ENCODED[i][j] = ca;
             }
          }
       }
    }
 
-   /**
-    * UTF-8 Charset.
-    */
+   /** UTF-8 Charset. */
    private static final Charset UTF8 = Charset.forName("UTF-8");
 
-   /**
-    * For processing statements such as 'a-z', '0-9', etc.
-    *
-    * @param statement statement
-    * @return string abcd...zABCD...Z0123456789
-    */
-   private static String fillTable(String statement)
+   private static void fillTable(int[] array, char begin, char end)
    {
-      StringBuilder sb = new StringBuilder();
-      if (statement.length() != 3 || statement.charAt(1) != '-')
+      if (begin < 0 || end < 0 || begin > 127 || end > 127 || begin > end)
       {
-         throw new IllegalArgumentException("Illegal format of source string, e. g. A-Z");
+         throw new IllegalArgumentException("Invalid range '" + begin + "' - '" + end + '\'');
       }
-
-      char end = statement.charAt(2);
-
-      for (char c = statement.charAt(0); c <= end; c++)
+      for (char c = begin; c <= end; c++)
       {
-         sb.append(c);
+         array[c] = 1;
       }
+   }
 
-      return sb.toString();
+   private static void set(int[] src, int[] dest)
+   {
+      for (int i = 0, srcLength = src.length; i < srcLength; i++)
+      {
+         int flag = src[i];
+         if (flag == 1)
+         {
+            dest[i] = 1;
+         }
+      }
    }
 
    // -------------------------------------------
@@ -166,7 +227,8 @@ public final class UriComponent
     * Normalization URI according to rfc3986. For details see
     * http://www.unix.com.ua/rfc/rfc3986.html#s6.2.2 .
     *
-    * @param uri source URI
+    * @param uri
+    *    source URI
     * @return normalized URI
     */
    public static URI normalize(URI uri)
@@ -261,8 +323,10 @@ public final class UriComponent
     * Checks if the segment is a complete path segment
     * http://www.unix.com.ua/rfc/rfc3986.html#sB.
     *
-    * @param segment path segment
-    * @param path whole path
+    * @param segment
+    *    path segment
+    * @param path
+    *    whole path
     * @return true if segment is complete path segment false otherwise
     */
    private static boolean isCompletePathSeg(String segment, String path)
@@ -273,9 +337,12 @@ public final class UriComponent
    /**
     * Encode given URI string.
     *
-    * @param str the URI string
-    * @param containsUriParams true if the source string contains URI parameters
-    * @param component component of URI, scheme, host, port, etc
+    * @param str
+    *    the URI string
+    * @param containsUriParams
+    *    true if the source string contains URI parameters
+    * @param component
+    *    component of URI, scheme, host, port, etc
     * @return encoded string
     */
    public static String encode(String str, int component, boolean containsUriParams)
@@ -290,9 +357,12 @@ public final class UriComponent
    /**
     * Validate content of percent-encoding string.
     *
-    * @param str the string which must be validate
-    * @param component component of URI, scheme, host, port, etc
-    * @param containsUriParams true if the source string contains URI parameters
+    * @param str
+    *    the string which must be validate
+    * @param component
+    *    component of URI, scheme, host, port, etc
+    * @param containsUriParams
+    *    true if the source string contains URI parameters
     * @return the source string
     */
    public static String validate(String str, int component, boolean containsUriParams)
@@ -318,9 +388,12 @@ public final class UriComponent
     * '%25' otherwise keep characters without change, there is no double
     * encoding.
     *
-    * @param str source string
-    * @param component part of URI, e. g. schema, host, path
-    * @param containsUriParams does string may contains URI templates
+    * @param str
+    *    source string
+    * @param component
+    *    part of URI, e. g. schema, host, path
+    * @param containsUriParams
+    *    does string may contains URI templates
     * @return valid string
     */
    public static String recognizeEncode(String str, int component, boolean containsUriParams)
@@ -333,10 +406,14 @@ public final class UriComponent
    }
 
    /**
-    * @param str source string
-    * @param component part of URI, e. g. schema, host, path
-    * @param containsUriParams does string may contains URI templates
-    * @param recognizeEncoded must check string to avoid double encoding
+    * @param str
+    *    source string
+    * @param component
+    *    part of URI, e. g. schema, host, path
+    * @param containsUriParams
+    *    does string may contains URI templates
+    * @param recognizeEncoded
+    *    must check string to avoid double encoding
     * @return valid string
     */
    private static String encodingInt(String str, int component, boolean containsUriParams, boolean recognizeEncoded)
@@ -375,7 +452,14 @@ public final class UriComponent
             }
             else if (ch < 128)
             {
-               sb.append(needEncode(ch, component) ? ENCODED[component][ch] : ch);
+               if (needEncode(ch, component))
+               {
+                  sb.append(ENCODED[component][ch]);
+               }
+               else
+               {
+                  sb.append(ch);
+               }
             }
             else
             {
@@ -390,10 +474,12 @@ public final class UriComponent
    /**
     * Decode percent encoded URI string.
     *
-    * @param str the source percent encoded string
-    * @param component component of URI, scheme, host, port, etc. NOTE type of
-    *        component is not used currently but will be used for decoding IPv6
-    *        addresses
+    * @param str
+    *    the source percent encoded string
+    * @param component
+    *    component of URI, scheme, host, port, etc. NOTE type of
+    *    component is not used currently but will be used for decoding IPv6
+    *    addresses
     * @return decoded string
     */
    public static String decode(String str, int component)
@@ -449,37 +535,44 @@ public final class UriComponent
    /**
     * Check must charter be encoded.
     *
-    * @param ch character
-    * @param component the URI component
+    * @param ch
+    *    character
+    * @param component
+    *    the URI component
     * @return true if character must be encoded false otherwise
     */
    private static boolean needEncode(char ch, int component)
    {
-      return ENCODING[component].indexOf(ch) == -1;
+      int[] allowed = ENCODING[component];
+      return allowed.length <= ch || allowed[ch] == 0;
    }
 
    /**
     * Append percent encoded character in StringBuilder.
     *
-    * @param c character which must be encoded
-    * @param sb StringBuilder to add character
+    * @param c
+    *    character which must be encoded
+    * @param sb
+    *    StringBuilder to add character
     */
    private static void addPercentEncoded(int c, StringBuilder sb)
    {
       sb.append('%');
-      sb.append(HEX_DIGITS.charAt(c >> 4));
-      sb.append(HEX_DIGITS.charAt(c & 0x0F));
+      sb.append(HEX_DIGITS[c >> 4]);
+      sb.append(HEX_DIGITS[c & 0x0F]);
    }
 
    /**
     * Append UTF-8 encoded character in StringBuilder.
     *
-    * @param c character which must be encoded
-    * @param sb StringBuilder to add character
+    * @param c
+    *    character which must be encoded
+    * @param sb
+    *    StringBuilder to add character
     */
    private static void addUTF8Encoded(char c, StringBuilder sb)
    {
-      ByteBuffer buf = UTF8.encode("" + c);
+      ByteBuffer buf = UTF8.encode(CharBuffer.wrap(Character.toChars(c)));
       while (buf.hasRemaining())
       {
          addPercentEncoded(buf.get() & 0xFF, sb);
@@ -489,9 +582,12 @@ public final class UriComponent
    /**
     * Decode percent encoded string.
     *
-    * @param str the source string
-    * @param p start position in string
-    * @param out output buffer for decoded characters
+    * @param str
+    *    the source string
+    * @param p
+    *    start position in string
+    * @param out
+    *    output buffer for decoded characters
     * @return current position in source string
     */
    private static int percentDecode(String str, int p, ByteArrayOutputStream out)
@@ -521,8 +617,10 @@ public final class UriComponent
     * Check does two next characters after '%' represent percent-encoded
     * character.
     *
-    * @param s source string
-    * @param p position of character in string
+    * @param s
+    *    source string
+    * @param p
+    *    position of character in string
     * @return true is two characters after '%' represent percent-encoded
     *         character false otherwise
     */
@@ -548,8 +646,10 @@ public final class UriComponent
     * Extract character from given string and check is it one of valid for hex
     * sequence.
     *
-    * @param s source string
-    * @param p position of character in string
+    * @param s
+    *    source string
+    * @param p
+    *    position of character in string
     * @return character
     */
    private static char getHexCharacter(String s, int p)
@@ -574,20 +674,23 @@ public final class UriComponent
     * Decodes bytes to characters using the UTF-8 decoding and add them to a
     * StringBuilder.
     *
-    * @param buff source bytes
-    * @param sb StringBuilder for append characters
+    * @param buff
+    *    source bytes
+    * @param sb
+    *    StringBuilder for append characters
     */
    private static void addUTF8Decoded(byte[] buff, StringBuilder sb)
    {
-      CharBuffer cbuff = UTF8.decode(ByteBuffer.wrap(buff));
-      sb.append(cbuff.toString());
+      sb.append(UTF8.decode(ByteBuffer.wrap(buff)));
    }
 
    /**
     * Parse path segments.
     *
-    * @param path the relative path
-    * @param decode true if character must be decoded false otherwise
+    * @param path
+    *    the relative path
+    * @param decode
+    *    true if character must be decoded false otherwise
     * @return List of {@link PathSegment}
     */
    public static List<PathSegment> parsePathSegments(String path, boolean decode)
@@ -621,8 +724,10 @@ public final class UriComponent
    /**
     * Parse encoded query string.
     *
-    * @param rawQuery source query string
-    * @param decode if true then query parameters will be decoded
+    * @param rawQuery
+    *    source query string
+    * @param decode
+    *    if true then query parameters will be decoded
     * @return {@link MultivaluedMap} with query parameters
     */
    public static MultivaluedMap<String, String> parseQueryString(String rawQuery, boolean decode)

@@ -631,6 +631,38 @@ public class UriBuilderTest extends BaseTest
       }
    }
 
+   public void testBuildUriFromMap2()
+   {
+      Map<String, Object> m = new HashMap<String, Object>();
+      m.put("foo", "%25x");
+      m.put("bar", "%y");
+      try
+      {
+         URI uri = UriBuilder.fromUri("http://localhost:8080/a/b/c/").path("{foo}/{bar}/baz/foo").buildFromMap(m);
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%2525x/%25y/baz/foo"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
+   public void testBuildUriFromMap3()
+   {
+      Map<String, Object> m = new HashMap<String, Object>();
+      m.put("foo", "%25x");
+      m.put("bar", "%y");
+      try
+      {
+         URI uri = UriBuilder.fromUri("http://localhost:8080/a/b/c/").path("{foo}/{bar}/{foo}/baz").buildFromMap(m);
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%2525x/%25y/%2525x/baz"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
    public void testBuildUriFromEncodedMap()
    {
       Map<String, Object> m = new HashMap<String, Object>();
@@ -648,20 +680,124 @@ public class UriBuilderTest extends BaseTest
       }
    }
 
+   public void testBuildUriFromEncodedMap2()
+   {
+      Map<String, Object> m = new HashMap<String, Object>();
+      m.put("foo", "%25x");
+      m.put("bar", "%y");
+      try
+      {
+         URI uri = UriBuilder.fromUri("http://localhost:8080/a/b/c/").path("{foo}/{bar}/baz/foo").buildFromEncodedMap(m);
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%25x/%25y/baz/foo"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
+   public void testBuildUriFromEncodedMap3()
+   {
+      Map<String, Object> m = new HashMap<String, Object>();
+      m.put("foo", "%25x");
+      m.put("bar", "%y");
+      try
+      {
+         URI uri = UriBuilder.fromUri("http://localhost:8080/a/b/c/").path("{foo}/{bar}/{foo}/baz").buildFromEncodedMap(m);
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%25x/%25y/%25x/baz"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
    public void testTemplates()
    {
-      URI uri =
-         UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/{baz}/{foo}").build("%25x", "%y", "z",
-            "wrong");
-      assertEquals(URI.create("http://localhost:8080/a/b/c/%2525x/%25y/z/%2525x"), uri);
+      try
+      {
+         URI uri =
+            UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/{baz}/{foo}").build("%25x", "%y", "z",
+               "wrong");
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%2525x/%25y/z/%2525x"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
+   public void testTemplates2()
+   {
+      try
+      {
+         URI uri =
+            UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/baz/foo").build("z", "y");
+         assertEquals(URI.create("http://localhost:8080/a/b/c/z/y/baz/foo"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
+   public void testTemplates3()
+   {
+      try
+      {
+         URI uri =
+            UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/{foo}/baz").build("z", "y");
+         assertEquals(URI.create("http://localhost:8080/a/b/c/z/y/z/baz"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
    }
 
    public void testEncodedTemplates()
    {
-      URI uri =
-         UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/{baz}/{foo}").buildFromEncoded("%25x",
-            "%y", "z", "wrong");
-      assertEquals(URI.create("http://localhost:8080/a/b/c/%25x/%25y/z/%25x"), uri);
+      try
+      {
+         URI uri =
+            UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/{baz}/{foo}").buildFromEncoded("%25x",
+               "%y", "z", "wrong");
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%25x/%25y/z/%25x"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
+   public void testEncodedTemplates2()
+   {
+      try
+      {
+         URI uri =
+            UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/baz/foo").buildFromEncoded("%25x",
+               "%y", "wrong");
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%25x/%25y/baz/foo"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
+   }
+
+   public void testEncodedTemplates3()
+   {
+      try
+      {
+         URI uri =
+            UriBuilder.fromUri("http://localhost:8080/a/b/c").path("/{foo}/{bar}/{foo}/baz").buildFromEncoded("%25x",
+               "%y", "wrong");
+         assertEquals(URI.create("http://localhost:8080/a/b/c/%25x/%25y/%25x/baz"), uri);
+      }
+      catch (UriBuilderException e)
+      {
+         fail(e.getMessage());
+      }
    }
 
    public void testClone()

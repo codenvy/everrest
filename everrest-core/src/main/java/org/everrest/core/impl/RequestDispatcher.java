@@ -43,6 +43,7 @@ import org.everrest.core.util.Tracer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -65,13 +66,17 @@ public class RequestDispatcher
 {
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(RequestDispatcher.class);
-   /** See {@link ResourceBinder}. */
+   /** See {@link org.everrest.core.ResourceBinder}. */
    protected final ResourceBinder resourceBinder;
+
+   private final MyCache<Class<?>, AbstractResourceDescriptor> locatorDescriptorCache =
+      new MyCache<Class<?>, AbstractResourceDescriptor>();
 
    /**
     * Constructs new instance of RequestDispatcher.
     *
-    * @param resourceBinder See {@link ResourceBinder}
+    * @param resourceBinder
+    *    See {@link org.everrest.core.ResourceBinder}
     */
    public RequestDispatcher(ResourceBinder resourceBinder)
    {
@@ -79,10 +84,12 @@ public class RequestDispatcher
    }
 
    /**
-    * Dispatch {@link ContainerRequest} to resource which can serve request.
+    * Dispatch {@link org.everrest.core.impl.ContainerRequest} to resource which can serve request.
     *
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
     */
    public void dispatch(GenericContainerRequest request, GenericContainerResponse response)
    {
@@ -106,7 +113,8 @@ public class RequestDispatcher
    /**
     * Get last element from path parameters. This element will be used as request path for child resources.
     *
-    * @param parameterValues See {@link ApplicationContextImpl#getParameterValues()}
+    * @param parameterValues
+    *    See {@link org.everrest.core.impl.ApplicationContextImpl#getParameterValues()}
     * @return last element from given list or empty string if last element is null
     */
    protected static String getPathTail(List<String> parameterValues)
@@ -118,14 +126,20 @@ public class RequestDispatcher
    /**
     * Process resource methods, sub-resource methods and sub-resource locators to find the best one for serve request.
     *
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @param context See {@link ApplicationContextImpl}
-    * @param resourceFactory the root resource factory or resource factory which was created by previous sub-resource
-    * locator
-    * @param resource instance of resource class
-    * @param requestPath request path, it is relative path to the base URI or other resource which was called before
-    * (one of sub-resource locators)
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
+    * @param context
+    *    See {@link org.everrest.core.impl.ApplicationContextImpl}
+    * @param resourceFactory
+    *    the root resource factory or resource factory which was created by previous sub-resource
+    *    locator
+    * @param resource
+    *    instance of resource class
+    * @param requestPath
+    *    request path, it is relative path to the base URI or other resource which was called before
+    *    (one of sub-resource locators)
     */
    protected void dispatch(GenericContainerRequest request,
                            GenericContainerResponse response,
@@ -248,12 +262,17 @@ public class RequestDispatcher
    /**
     * Invoke resource methods.
     *
-    * @param rmd See {@link ResourceMethodDescriptor}
-    * @param resource instance of resource class
-    * @param context See {@link ApplicationContextImpl}
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @see ResourceMethodDescriptor
+    * @param rmd
+    *    See {@link org.everrest.core.resource.ResourceMethodDescriptor}
+    * @param resource
+    *    instance of resource class
+    * @param context
+    *    See {@link org.everrest.core.impl.ApplicationContextImpl}
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
+    * @see org.everrest.core.resource.ResourceMethodDescriptor
     */
    private void invokeResourceMethod(ResourceMethodDescriptor rmd,
                                      Object resource,
@@ -269,13 +288,19 @@ public class RequestDispatcher
    /**
     * Invoke sub-resource methods.
     *
-    * @param requestPath request path
-    * @param srmd See {@link SubResourceMethodDescriptor}
-    * @param resource instance of resource class
-    * @param context See {@link ApplicationContextImpl}
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @see SubResourceMethodDescriptor
+    * @param requestPath
+    *    request path
+    * @param srmd
+    *    See {@link org.everrest.core.resource.SubResourceMethodDescriptor}
+    * @param resource
+    *    instance of resource class
+    * @param context
+    *    See {@link org.everrest.core.impl.ApplicationContextImpl}
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
+    * @see org.everrest.core.resource.SubResourceMethodDescriptor
     */
    private void invokeSubResourceMethod(String requestPath,
                                         SubResourceMethodDescriptor srmd,
@@ -307,13 +332,19 @@ public class RequestDispatcher
    /**
     * Invoke sub-resource locators.
     *
-    * @param requestPath request path
-    * @param srld See {@link SubResourceLocatorDescriptor}
-    * @param resource instance of resource class
-    * @param context See {@link ApplicationContextImpl}
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @see SubResourceLocatorDescriptor
+    * @param requestPath
+    *    request path
+    * @param srld
+    *    See {@link org.everrest.core.resource.SubResourceLocatorDescriptor}
+    * @param resource
+    *    instance of resource class
+    * @param context
+    *    See {@link org.everrest.core.impl.ApplicationContextImpl}
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
+    * @see org.everrest.core.resource.SubResourceLocatorDescriptor
     */
    private void invokeSubResourceLocator(String requestPath,
                                          SubResourceLocatorDescriptor srld,
@@ -337,8 +368,16 @@ public class RequestDispatcher
 
       resource = invoker.invokeMethod(resource, srld, context);
 
-      AbstractResourceDescriptor descriptor =
-         new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON);
+      AbstractResourceDescriptor descriptor;
+      synchronized (locatorDescriptorCache)
+      {
+         descriptor = locatorDescriptorCache.get(resource.getClass());
+         if (descriptor == null)
+         {
+            descriptor = new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON);
+            locatorDescriptorCache.put(resource.getClass(), descriptor);
+         }
+      }
       SingletonObjectFactory<AbstractResourceDescriptor> locResource =
          new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, resource);
 
@@ -367,16 +406,20 @@ public class RequestDispatcher
    }
 
    /**
-    * Compare two sub-resources. One of it is {@link SubResourceMethodDescriptor} and other one id
-    * {@link SubResourceLocatorDescriptor}. First compare UriPattern, see {@link UriPattern#URIPATTERN_COMPARATOR}.
+    * Compare two sub-resources. One of it is {@link org.everrest.core.resource.SubResourceMethodDescriptor} and other
+    * one id
+    * {@link org.everrest.core.resource.SubResourceLocatorDescriptor}. First compare UriPattern, see {@link
+    * org.everrest.core.uri.UriPattern#URIPATTERN_COMPARATOR}.
     * NOTE
     * URI comparator compare UriPatterns for descending sorting. So it it return negative integer then it minds
     * SubResourceMethodDescriptor has higher priority by UriPattern comparison. If comparator return positive integer
     * then SubResourceLocatorDescriptor has higher priority. And finally if zero was returned then UriPattern is
     * equals, in this case SubResourceMethodDescriptor must be selected.
     *
-    * @param srmd See {@link SubResourceMethodDescriptor}
-    * @param srld See {@link SubResourceLocatorDescriptor}
+    * @param srmd
+    *    See {@link org.everrest.core.resource.SubResourceMethodDescriptor}
+    * @param srld
+    *    See {@link org.everrest.core.resource.SubResourceLocatorDescriptor}
     * @return result of comparison sub-resources
     */
    private int compareSubResources(SubResourceMethodDescriptor srmd, SubResourceLocatorDescriptor srld)
@@ -387,15 +430,20 @@ public class RequestDispatcher
    }
 
    /**
-    * Process result of invoked method, and set {@link Response} parameters dependent of returned object.
+    * Process result of invoked method, and set {@link javax.ws.rs.core.Response} parameters dependent of returned
+    * object.
     *
-    * @param o result of invoked method
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @param produces list of method produces media types
-    * @see ResourceMethodDescriptor
-    * @see SubResourceMethodDescriptor
-    * @see SubResourceLocatorDescriptor
+    * @param o
+    *    result of invoked method
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
+    * @param produces
+    *    list of method produces media types
+    * @see org.everrest.core.resource.ResourceMethodDescriptor
+    * @see org.everrest.core.resource.SubResourceMethodDescriptor
+    * @see org.everrest.core.resource.SubResourceLocatorDescriptor
     */
    private void processResponse(Object o,
                                 GenericContainerRequest request,
@@ -439,11 +487,16 @@ public class RequestDispatcher
    /**
     * Process resource methods.
     *
-    * @param <T> ResourceMethodDescriptor extension
-    * @param rmm See {@link ResourceMethodMap}
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @param methods list for method resources
+    * @param <T>
+    *    ResourceMethodDescriptor extension
+    * @param rmm
+    *    See {@link org.everrest.core.resource.ResourceMethodMap}
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
+    * @param methods
+    *    list for method resources
     * @return true if at least one resource method found false otherwise
     */
    private <T extends ResourceMethodDescriptor> boolean processResourceMethod(ResourceMethodMap<T> rmm,
@@ -478,7 +531,7 @@ public class RequestDispatcher
 
       if (methods.isEmpty())
       {
-         response.setResponse(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
+         response.setResponse(Response.status(Status.UNSUPPORTED_MEDIA_TYPE)
             .entity("Media type " + contentType + " is not supported.").type(MediaType.TEXT_PLAIN).build());
          return false;
       }
@@ -521,7 +574,7 @@ public class RequestDispatcher
          return true;
       }
 
-      response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).entity("Not Acceptable")
+      response.setResponse(Response.status(Status.NOT_ACCEPTABLE).entity("Not Acceptable")
          .type(MediaType.TEXT_PLAIN).build());
       return false;
    }
@@ -529,13 +582,19 @@ public class RequestDispatcher
    /**
     * Process sub-resource methods.
     *
-    * @param srmm See {@link SubResourceLocatorMap}
-    * @param requestedPath part of requested path
-    * @param request See {@link GenericContainerRequest}
-    * @param response See {@link GenericContainerResponse}
-    * @param capturingValues the list for keeping template values. See
-    * {@link javax.ws.rs.core.UriInfo#getPathParameters()}
-    * @param methods list for method resources
+    * @param srmm
+    *    See {@link org.everrest.core.resource.SubResourceLocatorMap}
+    * @param requestedPath
+    *    part of requested path
+    * @param request
+    *    See {@link org.everrest.core.GenericContainerRequest}
+    * @param response
+    *    See {@link org.everrest.core.GenericContainerResponse}
+    * @param capturingValues
+    *    the list for keeping template values. See
+    *    {@link javax.ws.rs.core.UriInfo#getPathParameters()}
+    * @param methods
+    *    list for method resources
     * @return true if at least one sub-resource method found false otherwise
     */
    private boolean processSubResourceMethod(SubResourceMethodMap srmm,
@@ -588,10 +647,14 @@ public class RequestDispatcher
    /**
     * Process sub-resource locators.
     *
-    * @param srlm See {@link SubResourceLocatorMap}
-    * @param requestedPath part of requested path
-    * @param capturingValues the list for keeping template values
-    * @param locators list for sub-resource locators
+    * @param srlm
+    *    See {@link org.everrest.core.resource.SubResourceLocatorMap}
+    * @param requestedPath
+    *    part of requested path
+    * @param capturingValues
+    *    the list for keeping template values
+    * @param locators
+    *    list for sub-resource locators
     * @return true if at least one SubResourceLocatorDescriptor found false otherwise
     */
    private boolean processSubResourceLocator(SubResourceLocatorMap srlm,
@@ -599,7 +662,7 @@ public class RequestDispatcher
                                              List<String> capturingValues,
                                              List<SubResourceLocatorDescriptor> locators)
    {
-      for (Map.Entry<UriPattern, SubResourceLocatorDescriptor> e : srlm.entrySet())
+      for (Entry<UriPattern, SubResourceLocatorDescriptor> e : srlm.entrySet())
       {
          if (e.getKey().match(requestedPath, capturingValues))
          {
@@ -619,12 +682,15 @@ public class RequestDispatcher
    /**
     * Get root resource.
     *
-    * @param parameterValues is taken from context
-    * @param requestPath is taken from context
+    * @param parameterValues
+    *    is taken from context
+    * @param requestPath
+    *    is taken from context
     * @return root resource
-    * @throws WebApplicationException if there is no matched root resources. Exception with prepared error response
-    * with
-    * 'Not Found' status
+    * @throws javax.ws.rs.WebApplicationException
+    *    if there is no matched root resources. Exception with prepared error response
+    *    with
+    *    'Not Found' status
     */
    protected ObjectFactory<AbstractResourceDescriptor> getRootResource(List<String> parameterValues, String requestPath)
    {
@@ -638,7 +704,7 @@ public class RequestDispatcher
          }
 
          // Stop here, there is no matched root resource
-         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+         throw new WebApplicationException(Response.status(Status.NOT_FOUND)
             .entity("There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN)
             .build());
       }
@@ -652,5 +718,88 @@ public class RequestDispatcher
       }
 
       return resourceFactory;
+   }
+
+   // required external synchronization
+   private static class MyCache<K, V>
+   {
+      private final int cacheSize = 63;
+      private final int maxQueryCount = 500;
+      private final int expiredAfter = 60000;
+      private final Map<K, MyEntry<V>> map = new LinkedHashMap<K, MyEntry<V>>(cacheSize + 1, 1.1f, true)
+      {
+         @Override
+         protected boolean removeEldestEntry(Entry<K, MyEntry<V>> eldest)
+         {
+            return size() > cacheSize;
+         }
+      };
+
+      private int queryCount;
+
+      V get(K key)
+      {
+         if (++queryCount >= maxQueryCount)
+         {
+            cleanup();
+         }
+         MyEntry<V> myEntry = map.get(key);
+         if (myEntry != null)
+         {
+            myEntry.lastAccess = System.currentTimeMillis();
+            return myEntry.value;
+         }
+         return null;
+      }
+
+      void put(K key, V value)
+      {
+         if (++queryCount >= maxQueryCount)
+         {
+            cleanup();
+         }
+         MyEntry<V> myEntry = map.get(key);
+         if (myEntry != null)
+         {
+            myEntry.lastAccess = System.currentTimeMillis();
+            myEntry.value = value;
+         }
+         else
+         {
+            map.put(key, new MyEntry<V>(value, System.currentTimeMillis()));
+         }
+      }
+
+      @SuppressWarnings("unchecked")
+      void cleanup()
+      {
+         Object[] keys = map.keySet().toArray();
+         for (int i = 0; i < keys.length; i++)
+         {
+            K key = (K)keys[i];
+            MyEntry<V> myEntry = map.get(key);
+            if (myEntry != null)
+            {
+               long inCache = System.currentTimeMillis() - myEntry.lastAccess;
+               if (inCache < 0 || inCache > expiredAfter)
+               {
+                  map.remove(key);
+               }
+            }
+         }
+         queryCount = 0;
+      }
+
+      private static class MyEntry<V>
+      {
+         V value;
+         long lastAccess;
+
+         MyEntry(V value, long lastAccess)
+         {
+            this.value = value;
+            this.lastAccess = lastAccess;
+         }
+      }
    }
 }

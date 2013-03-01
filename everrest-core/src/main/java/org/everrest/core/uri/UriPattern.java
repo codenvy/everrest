@@ -128,14 +128,15 @@ public class UriPattern
    /**
     * Constructs UriPattern.
     *
-    * @param template the source template
+    * @param template
+    *    the source template
     * @see {@link javax.ws.rs.Path}
     */
    public UriPattern(String template)
    {
       if (template.length() > 0 && template.charAt(0) != '/')
       {
-         template = "/" + template;
+         template = '/' + template;
       }
 
       UriTemplateParser parser = new UriTemplateParser(template);
@@ -230,8 +231,10 @@ public class UriPattern
     * is cleared. List will be 1 greater then number of keys. It can be used for check is resource is matching to
     * requested. If resource is match the last element in list must be '/' or null.
     *
-    * @param uri the URI string
-    * @param parameters target list
+    * @param uri
+    *    the URI string
+    * @param parameters
+    *    target list
     * @return true if URI string is match to pattern, false otherwise
     */
    public boolean match(String uri, List<String> parameters)
@@ -283,16 +286,25 @@ public class UriPattern
    /**
     * Create URI from URI part. Each URI part can contains templates.
     *
-    * @param schema the schema URI part
-    * @param userInfo the user info URI part
-    * @param host the host name URI part
-    * @param port the port number URI part
-    * @param path the path URI part
-    * @param query the query string URI part
-    * @param fragment the fragment URI part
-    * @param values the values which must be used instead templates parameters
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
-    * characters
+    * @param schema
+    *    the schema URI part
+    * @param userInfo
+    *    the user info URI part
+    * @param host
+    *    the host name URI part
+    * @param port
+    *    the port number URI part
+    * @param path
+    *    the path URI part
+    * @param query
+    *    the query string URI part
+    * @param fragment
+    *    the fragment URI part
+    * @param values
+    *    the values which must be used instead templates parameters
+    * @param encode
+    *    if true then encode value before add it in URI, otherwise value must be validate to legal
+    *    characters
     * @return the URI string
     */
    public static String createUriWithValues(String schema,
@@ -361,16 +373,25 @@ public class UriPattern
    /**
     * Create URI from URI part. Each URI part can contains templates.
     *
-    * @param schema the schema URI part
-    * @param userInfo the user info URI part
-    * @param host the host name URI part
-    * @param port the port number URI part
-    * @param path the path URI part
-    * @param query the query string URI part
-    * @param fragment the fragment URI part
-    * @param values the values which must be used instead templates parameters
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
-    * characters
+    * @param schema
+    *    the schema URI part
+    * @param userInfo
+    *    the user info URI part
+    * @param host
+    *    the host name URI part
+    * @param port
+    *    the port number URI part
+    * @param path
+    *    the path URI part
+    * @param query
+    *    the query string URI part
+    * @param fragment
+    *    the fragment URI part
+    * @param values
+    *    the values which must be used instead templates parameters
+    * @param encode
+    *    if true then encode value before add it in URI, otherwise value must be validate to legal
+    *    characters
     * @return the URI string
     */
    public static String createUriWithValues(String schema,
@@ -440,12 +461,17 @@ public class UriPattern
    }
 
    /**
-    * @param sb the StringBuilder for appending URI part
-    * @param uriPart URI part
-    * @param component the URI component
-    * @param values values map
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
-    * characters
+    * @param sb
+    *    the StringBuilder for appending URI part
+    * @param uriPart
+    *    URI part
+    * @param component
+    *    the URI component
+    * @param values
+    *    values map
+    * @param encode
+    *    if true then encode value before add it in URI, otherwise value must be validate to legal
+    *    characters
     */
    private static void appendUriPart(StringBuilder sb,
                                      String uriPart,
@@ -453,51 +479,70 @@ public class UriPattern
                                      Map<String, ?> values,
                                      boolean encode)
    {
-      if (hasUriTemplates(uriPart))
+      final int length = uriPart.length();
+      int lastTemplate = 0;
+      for (int i = 0; i < length; i++)
       {
-         Matcher m = UriTemplateParser.URI_PARAMETERS_PATTERN.matcher(uriPart);
-
-         int start = 0;
-         while (m.find())
+         char c = uriPart.charAt(i);
+         if (c == '{')
          {
-            sb.append(uriPart, start, m.start()); // 'static' part
-            String param = uriPart.substring(m.start() + 1, m.end() - 1);
-
-            Object o = values.get(param);
+            sb.append(uriPart, lastTemplate, i);
+            lastTemplate = i;
+            while (++i < length && (c = uriPart.charAt(i)) != '}')
+            {
+            }
+            if (c != '}')
+            {
+               throw new IllegalArgumentException("Invalid URI template " + uriPart + ". Opened '{' is not closed by '}'. ");
+            }
+            String name = uriPart.substring(lastTemplate + 1, i);
+            Object o = values.get(name);
             if (o == null)
             {
-               throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
+               throw new IllegalArgumentException("Not found corresponding value for parameter " + name);
             }
 
             String value = o.toString();
-            sb.append(encode ? UriComponent.encode(value, component, true) : UriComponent.recognizeEncode(value,
-               component, true));
-            start = m.end();
+            sb.append(encode
+               ? UriComponent.encode(value, component, true)
+               : UriComponent.recognizeEncode(value, component, true)
+            );
+            lastTemplate = i + 1;
          }
-
-         // copy the last part or uriPart
-         sb.append(uriPart, start, uriPart.length());
       }
-      else
+      if (lastTemplate == 0)
       {
+         // There is no any templates in string. Add it as is.
          sb.append(uriPart);
+      }
+      else if (lastTemplate < length)
+      {
+         // append the tail of uri part
+         sb.append(uriPart, lastTemplate, length);
       }
    }
 
    /**
-    * @param sb the StringBuilder for appending URI part
-    * @param uriPart URI part
-    * @param component the URI component
-    * @param sourceValues the source array of values
-    * @param offset the offset in array
-    * @param values values map, keep parameter/value pair which have been already found. From java docs:
-    * <p>
-    * All instances of the same template parameter will be replaced by the same value that corresponds to the
-    * position of the first instance of the template parameter. e.g. the template "{a}/{b}/{a}" with values
-    * {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i> "x/y/z".
-    * </p>
-    * @param encode if true then encode value before add it in URI, otherwise value must be validate to legal
-    * characters
+    * @param sb
+    *    the StringBuilder for appending URI part
+    * @param uriPart
+    *    URI part
+    * @param component
+    *    the URI component
+    * @param sourceValues
+    *    the source array of values
+    * @param offset
+    *    the offset in array
+    * @param values
+    *    values map, keep parameter/value pair which have been already found. From java docs:
+    *    <p>
+    *    All instances of the same template parameter will be replaced by the same value that corresponds to the
+    *    position of the first instance of the template parameter. e.g. the template "{a}/{b}/{a}" with values
+    *    {"x", "y", "z"} will result in the the URI "x/y/x", <i>not</i> "x/y/z".
+    *    </p>
+    * @param encode
+    *    if true then encode value before add it in URI, otherwise value must be validate to legal
+    *    characters
     * @return offset
     */
    private static int appendUriPart(StringBuilder sb,
@@ -508,27 +553,35 @@ public class UriPattern
                                     Map<String, String> values,
                                     boolean encode)
    {
-      if (hasUriTemplates(uriPart))
+      final int length = uriPart.length();
+      int lastTemplate = 0;
+      for (int i = 0; i < length; i++)
       {
-         Matcher m = UriTemplateParser.URI_PARAMETERS_PATTERN.matcher(uriPart);
-
-         int start = 0;
-         while (m.find())
+         char c = uriPart.charAt(i);
+         if (c == '{')
          {
-            sb.append(uriPart, start, m.start()); // 'static' part
-            String param = uriPart.substring(m.start() + 1, m.end() - 1);
+            sb.append(uriPart, lastTemplate, i);
+            lastTemplate = i;
+            while (++i < length && (c = uriPart.charAt(i)) != '}')
+            {
+            }
+            if (c != '}')
+            {
+               throw new IllegalArgumentException("Invalid URI template " + uriPart + ". Opened '{' is not closed by '}'. ");
+            }
+            String paramName = uriPart.substring(lastTemplate + 1, i);
 
-            String value = values.get(param);
+            String value = values.get(paramName);
             if (value != null)
             {
-               // Value already known, then don't take new one from array. Value from
-               // map is already validate or encoded, so do nothing about it
+               // Value already known, then don't take new one from array.
+               // Value from map is already validate or encoded, so do nothing about it.
                sb.append(value);
             }
             else
             {
-               // Value is unknown, we met it first time, then process it and keep in
-               // map. Value will be encoded (or validate)before putting in map.
+               // Value is unknown, we met it first time, then process it and keep in map.
+               // Value will be encoded (or validate)before putting in map.
                if (offset < sourceValues.length)
                {
                   value = sourceValues[offset++].toString();
@@ -536,38 +589,30 @@ public class UriPattern
 
                if (value != null)
                {
-                  value =
-                     encode ? UriComponent.encode(value, component, true) : UriComponent.recognizeEncode(value, component,
-                        true);
-                  values.put(param, value);
+                  value = encode
+                     ? UriComponent.encode(value, component, true)
+                     : UriComponent.recognizeEncode(value, component, true);
+                  values.put(paramName, value);
                   sb.append(value);
                }
                else
                {
-                  throw new IllegalArgumentException("Not found corresponding value for parameter " + param);
+                  throw new IllegalArgumentException("Not found corresponding value for parameter " + paramName);
                }
             }
-            start = m.end();
+            lastTemplate = i + 1;
          }
-
-         // copy the last part or uriPart
-         sb.append(uriPart, start, uriPart.length());
       }
-      else
+      if (lastTemplate == 0)
       {
+         // There is no any templates in string. Add it as is.
          sb.append(uriPart);
       }
+      else if (lastTemplate < length)
+      {
+         // append the tail of uri part
+         sb.append(uriPart, lastTemplate, length);
+      }
       return offset;
-   }
-
-   /**
-    * Check does given URI string has templates.
-    *
-    * @param uri the URI which must be checked
-    * @return true if URI has templates false otherwise
-    */
-   private static boolean hasUriTemplates(String uri)
-   {
-      return uri.indexOf('{') != -1;
    }
 }
