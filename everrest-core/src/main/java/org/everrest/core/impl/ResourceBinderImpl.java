@@ -299,30 +299,28 @@ public class ResourceBinderImpl implements ResourceBinder
    public ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues)
    {
       ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
-      List<ObjectFactory<AbstractResourceDescriptor>> snapshot;
       synchronized (rootResources)
       {
-         snapshot = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(rootResources);
-      }
-      for (ObjectFactory<AbstractResourceDescriptor> resource : snapshot)
-      {
-         if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues))
+         for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources)
          {
-            // all times will at least 1
-            int len = parameterValues.size();
-            // If capturing group contains last element and this element is
-            // neither null nor '/' then ResourceClass must contains at least one
-            // sub-resource method or sub-resource locator.
-            if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
+            if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues))
             {
-               if (0 == resource.getObjectModel().getSubResourceMethods().size()
-                  + resource.getObjectModel().getSubResourceLocators().size())
+               // all times will at least 1
+               int len = parameterValues.size();
+               // If capturing group contains last element and this element is
+               // neither null nor '/' then ResourceClass must contains at least one
+               // sub-resource method or sub-resource locator.
+               if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
                {
-                  continue;
+                  if (0 == resource.getObjectModel().getSubResourceMethods().size()
+                     + resource.getObjectModel().getSubResourceLocators().size())
+                  {
+                     continue;
+                  }
                }
+               resourceFactory = resource;
+               break;
             }
-            resourceFactory = resource;
-            break;
          }
       }
       return resourceFactory;
