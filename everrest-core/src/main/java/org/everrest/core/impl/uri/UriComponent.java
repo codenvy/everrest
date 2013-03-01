@@ -184,11 +184,7 @@ public final class UriComponent
          {
             if (ENCODING[i][j] == 0)
             {
-               char[] ca = new char[3];
-               ca[0] = '%';
-               ca[1] = HEX_DIGITS[j >> 4];
-               ca[2] = HEX_DIGITS[j & 0x0F];
-               ENCODED[i][j] = ca;
+               ENCODED[i][j] = new char[]{'%', HEX_DIGITS[j >> 4], HEX_DIGITS[j & 0x0F]};
             }
          }
       }
@@ -331,7 +327,7 @@ public final class UriComponent
     */
    private static boolean isCompletePathSeg(String segment, String path)
    {
-      return path.equals("/" + segment) || (path.charAt(path.indexOf(segment) + segment.length()) == '/');
+      return path.equals('/' + segment) || (path.charAt(path.indexOf(segment) + segment.length()) == '/');
    }
 
    /**
@@ -370,9 +366,9 @@ public final class UriComponent
       for (int i = 0; i < str.length(); i++)
       {
          char ch = str.charAt(i);
-         if ((!(ch >= 128 || needEncode(ch, component)))
-            || (containsUriParams && (ch == '{' || ch == '}'))
-            || (ch == '%'))
+         if (ch == '%'
+            || ((ch == '{' || ch == '}') && containsUriParams)
+            || !(ch >= 128 || needEncode(ch, component)))
          {
             continue;
          }
@@ -419,53 +415,47 @@ public final class UriComponent
    private static String encodingInt(String str, int component, boolean containsUriParams, boolean recognizeEncoded)
    {
       int length = str.length();
-
+      StringBuilder sb = new StringBuilder(length);
       boolean encode = false;
-      for (int i = 0; i < length && !encode; i++)
+      for (int i = 0; i < length; i++)
       {
-         encode = needEncode(str.charAt(i), component);
-      }
-
-      if (encode)
-      {
-         StringBuilder sb = new StringBuilder();
-         for (int i = 0; i < length; i++)
+         char ch = str.charAt(i);
+         encode |= needEncode(ch, component);
+         if (ch == '%' && recognizeEncoded)
          {
-            char ch = str.charAt(i);
-
-            if (ch == '%' && recognizeEncoded)
-            {
-               if (checkHexCharacters(str, i))
-               {
-                  sb.append(ch);
-                  sb.append(str.charAt(++i));
-                  sb.append(str.charAt(++i));
-               }
-               else
-               {
-                  sb.append(PERCENT);
-               }
-            }
-            else if (containsUriParams && (ch == '{' || ch == '}'))
+            if (checkHexCharacters(str, i))
             {
                sb.append(ch);
-            }
-            else if (ch < 128)
-            {
-               if (needEncode(ch, component))
-               {
-                  sb.append(ENCODED[component][ch]);
-               }
-               else
-               {
-                  sb.append(ch);
-               }
+               sb.append(str.charAt(++i));
+               sb.append(str.charAt(++i));
             }
             else
             {
-               addUTF8Encoded(ch, sb);
+               sb.append(PERCENT);
             }
          }
+         else if (containsUriParams && (ch == '{' || ch == '}'))
+         {
+            sb.append(ch);
+         }
+         else if (ch < 128)
+         {
+            if (needEncode(ch, component))
+            {
+               sb.append(ENCODED[component][ch]);
+            }
+            else
+            {
+               sb.append(ch);
+            }
+         }
+         else
+         {
+            addUTF8Encoded(ch, sb);
+         }
+      }
+      if (encode)
+      {
          return sb.toString();
       }
       return str;
@@ -504,31 +494,43 @@ public final class UriComponent
 
       p = 0; // reset pointer
       StringBuilder sb = new StringBuilder();
+      NoSyncByteArrayOutputStream buff = null;
       while (p < length)
       {
          char c = str.charAt(p);
-         if (c == '%')
+         switch (c)
          {
-            ByteArrayOutputStream out = new NoSyncByteArrayOutputStream(4);
-            p = percentDecode(str, p, out);
-            byte[] buff = out.toByteArray();
-
-            if (buff.length == 1 && (buff[0] & 0xFF) < 128)
-            {
-               sb.append((char)buff[0]);
-            }
-            else
-            {
-               addUTF8Decoded(buff, sb);
-            }
-            out.reset();
-         }
-         else
-         {
-            sb.append(c == '+' ? ' ' : c);
-            p++;
+            case '%':
+               if (buff == null)
+               {
+                  buff = new NoSyncByteArrayOutputStream(4);
+               }
+               else
+               {
+                  buff.reset();
+               }
+               p = percentDecode(str, p, buff);
+               byte[] bytes = buff.toByteArray();
+               if (bytes.length == 1 && (bytes[0] & 0xFF) < 128)
+               {
+                  sb.append((char)bytes[0]);
+               }
+               else
+               {
+                  sb.append(UTF8.decode(ByteBuffer.wrap(bytes)));
+               }
+               break;
+            case '+':
+               sb.append(' ');
+               p++;
+               break;
+            default:
+               sb.append(c);
+               p++;
+               break;
          }
       }
+
       return sb.toString();
    }
 
@@ -548,21 +550,6 @@ public final class UriComponent
    }
 
    /**
-    * Append percent encoded character in StringBuilder.
-    *
-    * @param c
-    *    character which must be encoded
-    * @param sb
-    *    StringBuilder to add character
-    */
-   private static void addPercentEncoded(int c, StringBuilder sb)
-   {
-      sb.append('%');
-      sb.append(HEX_DIGITS[c >> 4]);
-      sb.append(HEX_DIGITS[c & 0x0F]);
-   }
-
-   /**
     * Append UTF-8 encoded character in StringBuilder.
     *
     * @param c
@@ -575,7 +562,10 @@ public final class UriComponent
       ByteBuffer buf = UTF8.encode(CharBuffer.wrap(Character.toChars(c)));
       while (buf.hasRemaining())
       {
-         addPercentEncoded(buf.get() & 0xFF, sb);
+         int b = buf.get() & 0xFF;
+         sb.append('%');
+         sb.append(HEX_DIGITS[b >> 4]);
+         sb.append(HEX_DIGITS[b & 0x0F]);
       }
    }
 
@@ -665,23 +655,9 @@ public final class UriComponent
       }
       if (c >= 'a' && c <= 'f')
       {
-         return Character.toUpperCase(c);
+         return Character.toUpperCase(c); // (char)(c - 32);
       }
       throw new IllegalArgumentException("Malformed string at index " + p);
-   }
-
-   /**
-    * Decodes bytes to characters using the UTF-8 decoding and add them to a
-    * StringBuilder.
-    *
-    * @param buff
-    *    source bytes
-    * @param sb
-    *    StringBuilder for append characters
-    */
-   private static void addUTF8Decoded(byte[] buff, StringBuilder sb)
-   {
-      sb.append(UTF8.decode(ByteBuffer.wrap(buff)));
    }
 
    /**
