@@ -46,12 +46,12 @@ import javax.ws.rs.ext.Provider;
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id$
  */
-class ExoApplicationPublisher extends ApplicationPublisher
+public class ExoApplicationPublisher extends ApplicationPublisher
 {
    private final ResourceBinder resources;
    private final ProviderBinder providers;
 
-   ExoApplicationPublisher(ResourceBinder resources, ProviderBinder providers)
+   public ExoApplicationPublisher(ResourceBinder resources, ProviderBinder providers)
    {
       super(resources, providers);
       this.resources = resources;

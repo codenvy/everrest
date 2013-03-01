@@ -26,12 +26,12 @@ import javax.ws.rs.core.Application;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-final class ApplicationConfiguration extends Application
+public final class ApplicationConfiguration extends Application
 {
    private final String applicationName;
    private final Application application;
 
-   ApplicationConfiguration(String applicationName, Application application)
+   public ApplicationConfiguration(String applicationName, Application application)
    {
       this.applicationName = applicationName;
       this.application = application;

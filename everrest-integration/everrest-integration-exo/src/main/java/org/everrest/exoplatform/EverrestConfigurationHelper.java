@@ -30,11 +30,11 @@ import java.util.Iterator;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-final class EverrestConfigurationHelper extends EverrestConfiguration
+public final class EverrestConfigurationHelper extends EverrestConfiguration
 {
-   static final String DEFAULT_RESTFUL_CONTAINER_NAME = "everrest";
+   public static final String DEFAULT_RESTFUL_CONTAINER_NAME = "everrest";
 
-   static EverrestConfiguration createEverrestConfiguration(final InitParams initParams)
+   public static EverrestConfiguration createEverrestConfiguration(final InitParams initParams)
    {
       // Get all parameters from init-params so not need servlet context and pass null instead. 
       EverrestConfiguration configuration = new EverrestServletContextInitializer(null)
