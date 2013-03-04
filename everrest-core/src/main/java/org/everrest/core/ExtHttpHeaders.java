@@ -141,26 +141,6 @@ public interface ExtHttpHeaders extends HttpHeaders
    public static final String OVERWRITE = "Overwrite";
 
    /**
-    * JCR-specific header to add an opportunity to create nodes of the specific
-    * types via WebDAV.
-    * @deprecated
-    */
-   public static final String FILE_NODETYPE = "File-NodeType";
-
-   /**
-    * JCR-specific header to add an opportunity to create nodes of the specific
-    * types via WebDAV.
-    * @deprecated
-    */
-   public static final String CONTENT_NODETYPE = "Content-NodeType";
-
-   /**
-    * JCR-specific header to add an opportunity to set node mixins via WebDAV.
-    * @deprecated
-    */
-   public static final String CONTENT_MIXINTYPES = "Content-MixinTypes";
-
-   /**
     * X-HTTP-Method-Override header. See <a
     * href='http://code.google.com/apis/gdata/docs/2.0/basics.html'>here</a>.
     */

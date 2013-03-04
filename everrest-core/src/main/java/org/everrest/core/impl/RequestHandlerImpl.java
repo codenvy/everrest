@@ -28,7 +28,6 @@ import org.everrest.core.Lifecycle;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.RequestHandler;
-import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
@@ -140,19 +139,6 @@ public class RequestHandlerImpl implements RequestHandler
                              EverrestConfiguration config)
    {
       this(dispatcher, null, dependencySupplier, config);
-   }
-
-   @Deprecated
-   public RequestHandlerImpl(ResourceBinder resources, DependencySupplier dependencySupplier)
-   {
-      this(new RequestDispatcher(resources), null, dependencySupplier, new EverrestConfiguration());
-   }
-
-   @Deprecated
-   public RequestHandlerImpl(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier,
-                             EverrestConfiguration config)
-   {
-      this(new RequestDispatcher(resources), providers, dependencySupplier, config);
    }
 
    /** {@inheritDoc} */

@@ -69,8 +69,8 @@ public class RequestDispatcher
    /** See {@link org.everrest.core.ResourceBinder}. */
    protected final ResourceBinder resourceBinder;
 
-   private final MyCache<Class<?>, AbstractResourceDescriptor> locatorDescriptorCache =
-      new MyCache<Class<?>, AbstractResourceDescriptor>();
+   private final HelperCache<Class<?>, AbstractResourceDescriptor> locatorDescriptorCache =
+      new HelperCache<Class<?>, AbstractResourceDescriptor>(60 * 1000, 50);
 
    /**
     * Constructs new instance of RequestDispatcher.
@@ -363,7 +363,7 @@ public class RequestDispatcher
       // map parameter's names to values
       context.setParameterNames(srld.getUriPattern().getParameterNames());
 
-      // NOTE Locators can't accept entity
+      // NOTE Locator can't accept entity
       MethodInvoker invoker = context.getMethodInvoker(srld);
 
       resource = invoker.invokeMethod(resource, srld, context);
@@ -673,12 +673,6 @@ public class RequestDispatcher
       return !locators.isEmpty();
    }
 
-   @Deprecated
-   protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
-   {
-      return getRootResource(parameterValues, requestPath);
-   }
-
    /**
     * Get root resource.
     *
@@ -718,88 +712,5 @@ public class RequestDispatcher
       }
 
       return resourceFactory;
-   }
-
-   // required external synchronization
-   private static class MyCache<K, V>
-   {
-      private final int cacheSize = 63;
-      private final int maxQueryCount = 500;
-      private final int expiredAfter = 60000;
-      private final Map<K, MyEntry<V>> map = new LinkedHashMap<K, MyEntry<V>>(cacheSize + 1, 1.1f, true)
-      {
-         @Override
-         protected boolean removeEldestEntry(Entry<K, MyEntry<V>> eldest)
-         {
-            return size() > cacheSize;
-         }
-      };
-
-      private int queryCount;
-
-      V get(K key)
-      {
-         if (++queryCount >= maxQueryCount)
-         {
-            cleanup();
-         }
-         MyEntry<V> myEntry = map.get(key);
-         if (myEntry != null)
-         {
-            myEntry.lastAccess = System.currentTimeMillis();
-            return myEntry.value;
-         }
-         return null;
-      }
-
-      void put(K key, V value)
-      {
-         if (++queryCount >= maxQueryCount)
-         {
-            cleanup();
-         }
-         MyEntry<V> myEntry = map.get(key);
-         if (myEntry != null)
-         {
-            myEntry.lastAccess = System.currentTimeMillis();
-            myEntry.value = value;
-         }
-         else
-         {
-            map.put(key, new MyEntry<V>(value, System.currentTimeMillis()));
-         }
-      }
-
-      @SuppressWarnings("unchecked")
-      void cleanup()
-      {
-         Object[] keys = map.keySet().toArray();
-         for (int i = 0; i < keys.length; i++)
-         {
-            K key = (K)keys[i];
-            MyEntry<V> myEntry = map.get(key);
-            if (myEntry != null)
-            {
-               long inCache = System.currentTimeMillis() - myEntry.lastAccess;
-               if (inCache < 0 || inCache > expiredAfter)
-               {
-                  map.remove(key);
-               }
-            }
-         }
-         queryCount = 0;
-      }
-
-      private static class MyEntry<V>
-      {
-         V value;
-         long lastAccess;
-
-         MyEntry(V value, long lastAccess)
-         {
-            this.value = value;
-            this.lastAccess = lastAccess;
-         }
-      }
    }
 }

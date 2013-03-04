@@ -41,7 +41,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
    protected URL[] roots;
 
-   private final int maxEntries = 256;
+   private final int maxEntries = 200;
 
    protected final Map<String, URL> resources;
    final ConcurrentMap<String, FileNameLock> locks;
@@ -159,12 +159,6 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    protected String[] getSourceFileExtensions()
    {
       return new String[]{DEFAULT_SOURCE_FILE_EXTENSION};
-   }
-
-   @Deprecated
-   protected String getSourceFileExtension()
-   {
-      return DEFAULT_SOURCE_FILE_EXTENSION;
    }
 
    private static final class FileNameLock

@@ -31,13 +31,11 @@ import org.everrest.core.util.Logger;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -120,25 +118,13 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       this.maxCacheSize = config.getAsynchronousCacheSize();
       this.jobTimeout = config.getAsynchronousJobTimeout();
 
-      /* Number of threads to serve asynchronous jobs. */
-      int poolSize = config.getAsynchronousPoolSize();
-      /* Maximum number of task in queue. */
-      int queueSize = config.getAsynchronousQueueSize();
-
-      this.pool = new ThreadPoolExecutor(
-         poolSize,
-         poolSize,
-         0L,
-         TimeUnit.MILLISECONDS,
-         new LinkedBlockingQueue<Runnable>(queueSize),
-         new ManyJobsPolicy(new ThreadPoolExecutor.AbortPolicy())
-      );
+      this.pool = makeExecutorService(config);
 
       // TODO Use something more flexible (cache strategy) for setup cache behavior. 
       this.jobs = Collections.synchronizedMap(new LinkedHashMap<String, AsynchronousJob>()
       {
          @Override
-         protected boolean removeEldestEntry(Entry<String, AsynchronousJob> eldest)
+         protected boolean removeEldestEntry(Map.Entry<String, AsynchronousJob> eldest)
          {
             AsynchronousJob job = eldest.getValue();
             if (size() > maxCacheSize || job.getExpirationDate() < System.currentTimeMillis())
@@ -151,6 +137,16 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       });
 
       this.jobListeners = new CopyOnWriteArrayList<AsynchronousJobListener>();
+   }
+
+   protected ExecutorService makeExecutorService(EverrestConfiguration config)
+   {
+      /* Number of threads to serve asynchronous jobs. */
+      int poolSize = config.getAsynchronousPoolSize();
+      /* Maximum number of task in queue. */
+      int queueSize = config.getAsynchronousQueueSize();
+      return new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS,
+         new LinkedBlockingQueue<Runnable>(queueSize), new ManyJobsPolicy(new ThreadPoolExecutor.AbortPolicy()));
    }
 
    /** @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class) */
@@ -171,9 +167,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     * @throws AsynchronousJobRejectedException
     *    if this task cannot be added to pool
     */
-   public AsynchronousJob addJob(Object resource,
-                                 ResourceMethodDescriptor resourceMethod,
-                                 Object[] params) throws AsynchronousJobRejectedException
+   public final AsynchronousJob addJob(Object resource,
+                                       ResourceMethodDescriptor resourceMethod,
+                                       Object[] params) throws AsynchronousJobRejectedException
    {
       AsynchronousFuture job = new AsynchronousFuture(
          nextJobId(),
@@ -193,10 +189,13 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
          request.getBaseUri(),
          new EmptyInputStream(),
          request.getRequestHeaders(),
-         context.getSecurityContext());
+         context.getSecurityContext()
+      );
       job.getContext().put("org.everrest.async.request", copyRequest);
       // Save current set of providers. In some environments they can be resource specific.
       job.getContext().put("org.everrest.async.providers", context.getProviders());
+
+      initAsynchronousJobContext(job);
 
       String jobId = job.getJobId();
       jobs.put(jobId, job);
@@ -207,6 +206,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       }
       catch (RejectedExecutionException e)
       {
+         jobs.remove(jobId);
          throw new AsynchronousJobRejectedException(e.getMessage());
       }
 
@@ -218,6 +218,106 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       return job;
    }
 
+   /**
+    * Init context of asynchronous job. Get job context by method
+    * {@link org.everrest.core.impl.async.AsynchronousJob#getContext()}
+    * and add required context parameter. This method is invoked by thread that adds new job.
+    * <p/>
+    * This implementation does nothing, but may be customized in subclasses.
+    */
+   protected void initAsynchronousJobContext(AsynchronousJob job)
+   {
+   }
+
+   protected Callable<Object> newCallable(Object resource, Method method, Object[] params)
+   {
+      return new MyCallable(resource, method, params);
+   }
+
+   public AsynchronousJob getJob(String jobId)
+   {
+      return jobs.get(jobId);
+   }
+
+   public AsynchronousJob removeJob(String jobId)
+   {
+      AsynchronousJob job = jobs.remove(jobId);
+      if (!(job == null || job.isDone()))
+      {
+         job.cancel();
+      }
+      return job;
+   }
+
+   public List<AsynchronousJob> getAll()
+   {
+      return new ArrayList<AsynchronousJob>(jobs.values());
+   }
+
+   /**
+    * Register new listener if it is not registered yet.
+    *
+    * @param listener
+    *    listener
+    * @return <code>true</code> if new listener registered and <code>false</code> otherwise.
+    * @see AsynchronousJobListener
+    */
+   public boolean registerListener(AsynchronousJobListener listener)
+   {
+      return jobListeners.addIfAbsent(listener);
+   }
+
+   /**
+    * Unregister listener.
+    *
+    * @param listener
+    *    listener to unregister
+    * @return <code>true</code> if listener unregistered and <code>false</code> otherwise.
+    * @see AsynchronousJobListener
+    */
+   public boolean unregisterListener(AsynchronousJobListener listener)
+   {
+      return jobListeners.remove(listener);
+   }
+
+   @PreDestroy
+   public void stop()
+   {
+      pool.shutdown();
+      try
+      {
+         if (!pool.awaitTermination(5, TimeUnit.SECONDS))
+         {
+            pool.shutdownNow();
+         }
+      }
+      catch (InterruptedException e)
+      {
+         pool.shutdownNow();
+         Thread.currentThread().interrupt();
+      }
+   }
+
+   private static class MyCallable implements Callable<Object>
+   {
+      private final Object resource;
+      private final Method method;
+      private final Object[] params;
+
+      private MyCallable(Object resource, Method method, Object[] params)
+      {
+         this.resource = resource;
+         this.method = method;
+         this.params = params;
+      }
+
+      @Override
+      public Object call() throws Exception
+      {
+         return method.invoke(resource, params);
+      }
+   }
+
    private class AsynchronousFuture extends FutureTask<Object> implements AsynchronousJob
    {
       private final String jobId;
@@ -225,10 +325,10 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       private final ResourceMethodDescriptor method;
       private final Map<String, Object> context;
 
-      protected AsynchronousFuture(String jobId,
-                                   Callable<Object> callable,
-                                   long expirationDate,
-                                   ResourceMethodDescriptor method)
+      private AsynchronousFuture(String jobId,
+                                 Callable<Object> callable,
+                                 long expirationDate,
+                                 ResourceMethodDescriptor method)
       {
          super(callable);
          this.jobId = jobId;
@@ -315,85 +415,6 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
       public Map<String, Object> getContext()
       {
          return context;
-      }
-   }
-
-   protected Callable<Object> newCallable(final Object resource, final Method method, final Object[] params)
-   {
-      return new Callable<Object>()
-      {
-         @Override
-         public Object call() throws Exception
-         {
-            return method.invoke(resource, params);
-         }
-      };
-   }
-
-   public AsynchronousJob getJob(String jobId)
-   {
-      return jobs.get(jobId);
-   }
-
-   public AsynchronousJob removeJob(String jobId)
-   {
-      AsynchronousJob job = jobs.remove(jobId);
-      if (!(job == null || job.isDone()))
-      {
-         job.cancel();
-      }
-      return job;
-   }
-
-   public List<AsynchronousJob> getAll()
-   {
-      Collection<AsynchronousJob> all = jobs.values();
-      List<AsynchronousJob> copy = new ArrayList<AsynchronousJob>(all.size());
-      copy.addAll(all);
-      return copy;
-   }
-
-   /**
-    * Register new listener if it is not registered yet.
-    *
-    * @param listener
-    *    listener
-    * @return <code>true</code> if new listener registered and <code>false</code> otherwise.
-    * @see AsynchronousJobListener
-    */
-   public boolean registerListener(AsynchronousJobListener listener)
-   {
-      return jobListeners.addIfAbsent(listener);
-   }
-
-   /**
-    * Unregister listener.
-    *
-    * @param listener
-    *    listener to unregister
-    * @return <code>true</code> if listener unregistered and <code>false</code> otherwise.
-    * @see AsynchronousJobListener
-    */
-   public boolean unregisterListener(AsynchronousJobListener listener)
-   {
-      return jobListeners.remove(listener);
-   }
-
-   @PreDestroy
-   public void stop()
-   {
-      pool.shutdown();
-      try
-      {
-         if (!pool.awaitTermination(5, TimeUnit.SECONDS))
-         {
-            pool.shutdownNow();
-         }
-      }
-      catch (InterruptedException e)
-      {
-         pool.shutdownNow();
-         Thread.currentThread().interrupt();
       }
    }
 }

@@ -56,7 +56,7 @@ public class MockServletContext implements ServletContext
    private String contextPath;
 
    /** The log buffer. */
-   private StringBuffer logBuffer = new StringBuffer();
+   private StringBuilder logBuffer = new StringBuilder();
 
    /**
     * Instantiates a new mock servlet context.
@@ -114,7 +114,7 @@ public class MockServletContext implements ServletContext
       }
       finally
       {
-         logBuffer = new StringBuffer();
+         logBuffer = new StringBuilder();
       }
    }
 
@@ -269,7 +269,7 @@ public class MockServletContext implements ServletContext
    @Deprecated
    public void log(Exception e, String s)
    {
-      logBuffer.append(s + e.getMessage());
+      logBuffer.append(s).append(e.getMessage());
    }
 
    /**
@@ -277,7 +277,7 @@ public class MockServletContext implements ServletContext
     */
    public void log(String s, Throwable throwable)
    {
-      logBuffer.append(s + throwable.getMessage());
+      logBuffer.append(s).append(throwable.getMessage());
    }
 
    /**

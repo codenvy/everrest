@@ -73,48 +73,6 @@ public class EverrestComposer implements WebappComposer
       APPLICATION, SESSION, REQUEST
    }
 
-   /**
-    * Default EverrestComposer implementation. It gets application's FQN from context-param javax.ws.rs.Application and
-    * instantiate it. If such parameter is not specified then scan web application's folders WEB-INF/classes and
-    * WEB-INF/lib for classes which contains JAX-RS annotations. Interesting for three annotations {@link Path},
-    * {@link Provider} and {@link Filter} .
-    * @deprecated Use EverrestComposer directly
-    */
-   public static class DefaultComposer extends EverrestComposer
-   {
-      /**
-       * Do nothing in default implementation but can be overridden in subclasses to add component with application
-       * scope.
-       *
-       * @see EverrestServletContextInitializer#getApplication()
-       * @see PicoServletContainerListener
-       */
-      @Override
-      protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext)
-      {
-      }
-
-      /**
-       * Do nothing in default implementation but can be overridden in subclasses to add component with request scope.
-       *
-       * @see PicoServletContainerListener
-       */
-      @Override
-      protected void doComposeRequest(MutablePicoContainer container)
-      {
-      }
-
-      /**
-       * Do nothing in default implementation but can be overridden in subclasses to add component with session scope.
-       *
-       * @see PicoServletContainerListener
-       */
-      @Override
-      protected void doComposeSession(MutablePicoContainer container)
-      {
-      }
-   }
-
    private static final class PicoEverrestProcessorDestroyer implements Disposable
    {
       private final EverrestProcessor processor;

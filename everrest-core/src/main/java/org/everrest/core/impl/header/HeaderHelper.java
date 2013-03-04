@@ -430,21 +430,6 @@ public final class HeaderHelper
    }
 
    /**
-    * @return list of allowed date formats
-    * @deprecated
-    */
-   public static List<SimpleDateFormat> getDateFormats()
-   {
-      SimpleDateFormat[] original = DateFormats.formats;
-      SimpleDateFormat[] copy = new SimpleDateFormat[original.length];
-      for (int i = 0; i < copy.length; i++)
-      {
-         copy[i] = (SimpleDateFormat)original[i].clone();
-      }
-      return Arrays.asList(copy);
-   }
-
-   /**
     * Parse date header. Will try to found appropriated format for given date header. Format can be one of see
     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>} .
     *

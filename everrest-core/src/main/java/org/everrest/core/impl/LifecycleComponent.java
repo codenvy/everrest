@@ -18,21 +18,19 @@
  */
 package org.everrest.core.impl;
 
-/** Life cycle wrapper for JAX-RS component (resource or provider). */
+import org.everrest.core.LifecycleMethodStrategy;
+
+/**
+ * Life cycle wrapper for JAX-RS component (resource or provider).
+ *
+ * @see LifecycleMethodStrategy
+ */
 public final class LifecycleComponent
 {
-   /** State of component. */
-   private enum State
-   {
-      INITIALIZED, DESTROYED
-   }
-
    private static final LifecycleMethodStrategy defaultStrategy = new AnnotatedLifecycleMethodStrategy();
 
    private final Object component;
    private final LifecycleMethodStrategy lifecycleStrategy;
-
-   private State state;
 
    public LifecycleComponent(Object component)
    {
@@ -45,95 +43,13 @@ public final class LifecycleComponent
       this.lifecycleStrategy = lifecycleStrategy;
    }
 
-   /**
-    * Get target JAX-RS component.
-    *
-    * @return target JAX-RS component
-    */
-   public Object getComponent()
-   {
-      return component;
-   }
-
-   /**
-    * Call "initialize" method on the JAX-RS component. It is up to the implementation of LifecycleMethodStrategy how
-    * to find "initialize" method. This method must be called once. It is possible to have more than one method of
-    * initialization but any particular order of methods invocation is not guaranteed. Any exception was thrown by
-    * "initialize" method must be wrapped by {@link InternalException}.
-    *
-    * @throws InternalException if "initialize" method throws an exception
-    * @see #isInitialized()
-    */
    public void initialize()
    {
-      lifecycleStrategy.invokeInitializeMethods(getComponent());
-      state = State.INITIALIZED;
+      lifecycleStrategy.invokeInitializeMethods(component);
    }
 
-   /**
-    * Call "destroy" method on the JAX-RS component. It is up to the implementation of LifecycleMethodStrategy how to
-    * find "destroy" method. This method must be called once. It is possible to have more than one "destroy" method but
-    * any particular order of methods invocation is not guaranteed. Any exception was thrown by "destroy" method must
-    * be wrapped by {@link InternalException}.
-    *
-    * @throws InternalException if "destroy" method throws an exception
-    * @see #isDestroyed()
-    */
    public void destroy()
    {
-      try
-      {
-         lifecycleStrategy.invokeDestroyMethods(getComponent());
-      }
-      finally
-      {
-         state = State.DESTROYED;
-      }
-   }
-
-   /**
-    * Check is component already initialized.
-    *
-    * @return <code>true</code> if component already initialized but not destroyed yet and <code>false</code> otherwise
-    * @see #initialize()
-    */
-   public boolean isInitialized()
-   {
-      return state == State.INITIALIZED;
-   }
-
-   /**
-    * Check is component already destroyed.
-    *
-    * @return <code>true</code> if component already destroyed and <code>false</code> otherwise
-    * @see #destroy()
-    */
-   public boolean isDestroyed()
-   {
-      return state == State.DESTROYED;
-   }
-
-   /** Call "initialize" and "destroy" methods of object. */
-   public static interface LifecycleMethodStrategy
-   {
-      /**
-       * Call "initialize" method on the specified object. It is up to the implementation how to find "initialize"
-       * method. It is possible to have more than one initialize method but any particular order of methods invocation
-       * is not guaranteed.
-       *
-       * @param o the object
-       * @throws InternalException if initialize method throws any exception
-       */
-      void invokeInitializeMethods(Object o);
-
-      /**
-       * Call "destroy" method on the specified object. It is up to the implementation how to find "destroy" method. It
-       * is possible to have more than one destroy method but any particular order of methods invocation is not
-       * guaranteed.
-       *
-       * @param o the object
-       * @throws InternalException if destroy method throws any exception
-       */
-      void invokeDestroyMethods(Object o);
+      lifecycleStrategy.invokeDestroyMethods(component);
    }
 }

@@ -192,12 +192,6 @@ public class DefaultMethodInvoker implements MethodInvoker
       }
    }
 
-   @Deprecated
-   protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p)
-   {
-      return invokeMethod(resource, methodResource, p, ApplicationContextImpl.getCurrent());
-   }
-
    public Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] params,
                               ApplicationContext context)
    {

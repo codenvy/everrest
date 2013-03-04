@@ -18,10 +18,14 @@
  */
 package org.everrest.core.impl;
 
+import org.everrest.core.LifecycleMethodStrategy;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -33,7 +37,7 @@ import javax.annotation.PreDestroy;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponent.LifecycleMethodStrategy
+public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodStrategy
 {
    private static class MethodFilter
    {
@@ -55,7 +59,8 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
        * <li>Method must not throw checked exception.</li>
        * </ul>
        *
-       * @param m the method
+       * @param m
+       *    the method
        * @return <code>true</code> if method is matched to requirements above and false otherwise
        * @see PostConstruct
        * @see PreDestroy
@@ -89,60 +94,94 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleComponen
    private static final MethodFilter POST_CONSTRUCT_METHOD_FILTER = new MethodFilter(PostConstruct.class);
    private static final MethodFilter PRE_DESTROY_METHOD_FILTER = new MethodFilter(PreDestroy.class);
 
-   /**
-    * @see org.everrest.core.impl.LifecycleComponent.LifecycleMethodStrategy#invokeInitializeMethods(java.lang.Object)
-    */
+   private final HelperCache<Class<?>, Method[]> initializeMethodsCache =
+      new HelperCache<Class<?>, Method[]>(60 * 1000, 250);
+   private final HelperCache<Class<?>, Method[]> destroyMethodsCache =
+      new HelperCache<Class<?>, Method[]>(60 * 1000, 250);
+
+   /** @see LifecycleMethodStrategy#invokeInitializeMethods(java.lang.Object) */
    @Override
    public void invokeInitializeMethods(Object o)
    {
-      doInvokeLifecycleMethods(o, POST_CONSTRUCT_METHOD_FILTER);
+      final Class<?> clazz = o.getClass();
+      Method[] initMethods;
+      synchronized (initializeMethodsCache)
+      {
+         initMethods = initializeMethodsCache.get(clazz);
+         if (initMethods == null)
+         {
+            initMethods = getLifecycleMethods(clazz, POST_CONSTRUCT_METHOD_FILTER);
+            initializeMethodsCache.put(clazz, initMethods);
+         }
+      }
+      doInvokeLifecycleMethods(o, initMethods);
    }
 
-   /**
-    * @see org.everrest.core.impl.LifecycleComponent.LifecycleMethodStrategy#invokeDestroyMethods(java.lang.Object)
-    */
+   /** @see LifecycleMethodStrategy#invokeDestroyMethods(java.lang.Object) */
    @Override
    public void invokeDestroyMethods(Object o)
    {
-      doInvokeLifecycleMethods(o, PRE_DESTROY_METHOD_FILTER);
+      final Class<?> clazz = o.getClass();
+      Method[] destroyMethods;
+      synchronized (destroyMethodsCache)
+      {
+         destroyMethods = destroyMethodsCache.get(clazz);
+         if (destroyMethods == null)
+         {
+            destroyMethods = getLifecycleMethods(clazz, PRE_DESTROY_METHOD_FILTER);
+            destroyMethodsCache.put(clazz, destroyMethods);
+         }
+      }
+      doInvokeLifecycleMethods(o, destroyMethods);
    }
 
-   @SuppressWarnings("rawtypes")
-   private void doInvokeLifecycleMethods(Object o, MethodFilter filter)
+   private Method[] getLifecycleMethods(Class<?> cl, MethodFilter filter)
    {
-      for (Class cl = o.getClass(); cl != Object.class; cl = cl.getSuperclass())
+      try
       {
-         Method[] methods = cl.getDeclaredMethods();
-         for (int i = 0; i < methods.length; i++)
+         List<Method> result = new ArrayList<Method>(2);
+         for (; cl != Object.class; cl = cl.getSuperclass())
          {
-            Method method = methods[i];
-            if (filter.accept(method))
+            Method[] methods = cl.getDeclaredMethods();
+            for (int i = 0; i < methods.length; i++)
             {
-               try
+               Method method = methods[i];
+               if (filter.accept(method))
                {
                   if (!Modifier.isPublic(method.getModifiers()))
                   {
                      method.setAccessible(true);
                   }
-                  method.invoke(o);
+                  result.add(method);
                }
-               catch (IllegalArgumentException e)
-               {
-                  throw new InternalException(e);
-               }
-               catch (IllegalAccessException e)
-               {
-                  throw new InternalException(e);
-               }
-               catch (SecurityException e)
-               {
-                  throw new InternalException(e);
-               }
-               catch (InvocationTargetException e)
-               {
-                  Throwable t = e.getTargetException();
-                  throw new InternalException(t);
-               }
+            }
+         }
+         return result.toArray(new Method[result.size()]);
+      }
+      catch (SecurityException e)
+      {
+         throw new InternalException(e);
+      }
+   }
+
+   private void doInvokeLifecycleMethods(Object o, Method[] lifecycleMethods)
+   {
+      if (lifecycleMethods.length > 0)
+      {
+         for (Method method : lifecycleMethods)
+         {
+            try
+            {
+               method.invoke(o);
+            }
+            catch (InvocationTargetException e)
+            {
+               Throwable t = e.getTargetException();
+               throw new InternalException(t);
+            }
+            catch (Exception e)
+            {
+               throw new InternalException(e);
             }
          }
       }

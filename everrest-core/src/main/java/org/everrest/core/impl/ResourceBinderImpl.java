@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
@@ -48,12 +49,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
  */
 public class ResourceBinderImpl implements ResourceBinder
 {
-   /**
-    * Name of property which may contains resource expiration date. Date
-    * expected as string representation of java.util.Date in long format.
-    */
-   public static final String RESOURCE_EXPIRED = "org.everrest.resource.expiration.date";
-
    /** Logger. */
    private static final Logger LOG = Logger.getLogger(ResourceBinderImpl.class);
 
@@ -79,87 +74,15 @@ public class ResourceBinderImpl implements ResourceBinder
          }
       };
 
-   protected boolean cleanerStop = false;
-
-   protected class ResourceCleaner implements Runnable
-   {
-
-      private final long cleanerDelay;
-
-      /** @param cleanerDelay cleaner process delay in seconds */
-      public ResourceCleaner(int cleanerDelay)
-      {
-         this.cleanerDelay = cleanerDelay * 1000; // to milliseconds
-      }
-
-      public void run()
-      {
-         while (!cleanerStop)
-         {
-            try
-            {
-               Thread.sleep(cleanerDelay);
-            }
-            catch (InterruptedException ignored)
-            {
-            }
-            if (!cleanerStop)
-            {
-               processResources();
-            }
-         }
-      }
-
-      protected void processResources()
-      {
-         if (LOG.isDebugEnabled())
-         {
-            LOG.debug("Start resource cleaner");
-         }
-
-         synchronized (rootResources)
-         {
-            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext(); )
-            {
-               ObjectFactory<AbstractResourceDescriptor> next = iter.next();
-               List<String> str = next.getObjectModel().getProperty(RESOURCE_EXPIRED);
-               long expirationDate = -1;
-               if (str != null && str.size() > 0)
-               {
-                  try
-                  {
-                     expirationDate = Long.parseLong(str.get(0));
-                  }
-                  catch (NumberFormatException ignored)
-                  {
-                  }
-               }
-               if (expirationDate > 0 && expirationDate < System.currentTimeMillis())
-               {
-                  iter.remove();
-                  for (ResourceListener listener : resourceListeners)
-                  {
-                     listener.resourceRemoved(next.getObjectModel());
-                  }
-                  if (LOG.isDebugEnabled())
-                  {
-                     LOG.debug("Remove expired resource: " + next.getObjectModel());
-                  }
-               }
-            }
-         }
-      }
-   }
-
    /** Root resource descriptors. */
-   protected final List<ObjectFactory<AbstractResourceDescriptor>> rootResources =
+   private volatile List<ObjectFactory<AbstractResourceDescriptor>> resources =
       new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
 
    /** Validator. */
-   protected final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
+   private final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
 
-   /** Resource listeners. */
-   protected final List<ResourceListener> resourceListeners = new ArrayList<ResourceListener>();
+   /** Update resources (add, remove, clear) lock. */
+   private final ReentrantLock lock = new ReentrantLock();
 
    public ResourceBinderImpl()
    {
@@ -168,7 +91,7 @@ public class ResourceBinderImpl implements ResourceBinder
       RuntimeDelegate.setInstance(rd);
    }
 
-   public void addResource(final Class<?> resourceClass, MultivaluedMap<String, String> properties)
+   public void addResource(Class<?> resourceClass, MultivaluedMap<String, String> properties)
    {
       Path path = resourceClass.getAnnotation(Path.class);
       if (path == null)
@@ -198,7 +121,7 @@ public class ResourceBinderImpl implements ResourceBinder
       }
    }
 
-   public void addResource(final Object resource, MultivaluedMap<String, String> properties)
+   public void addResource(Object resource, MultivaluedMap<String, String> properties)
    {
       Path path = resource.getClass().getAnnotation(Path.class);
       if (path == null)
@@ -228,99 +151,94 @@ public class ResourceBinderImpl implements ResourceBinder
       }
    }
 
-   public void addResource(final ObjectFactory<AbstractResourceDescriptor> resourceFactory)
+   public void addResource(ObjectFactory<AbstractResourceDescriptor> resourceFactory)
    {
       UriPattern pattern = resourceFactory.getObjectModel().getUriPattern();
-      synchronized (rootResources)
+      lock.lock();
+      try
       {
-         for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources)
+         List<ObjectFactory<AbstractResourceDescriptor>> snapshot =
+            new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
+
+         for (ObjectFactory<AbstractResourceDescriptor> resource : snapshot)
          {
             if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern()))
             {
                if (resource.getObjectModel().getObjectClass() == resourceFactory.getObjectModel().getObjectClass())
                {
-                  LOG.warn("Resource " + resourceFactory.getObjectModel().getObjectClass().getName()
-                     + " already registered.");
+                  //LOG.warn("Resource " + resourceFactory.getObjectModel().getObjectClass().getName()
+                  //   + " already registered.");
+
+                  return;
                }
-               else
-               {
-                  throw new ResourcePublicationException("Resource class "
-                     + resourceFactory.getObjectModel().getObjectClass().getName()
-                     + " can't be registered. Resource class " + resource.getObjectModel().getObjectClass().getName()
-                     + " with the same pattern " + pattern + " already registered.");
-               }
+               throw new ResourcePublicationException("Resource class "
+                  + resourceFactory.getObjectModel().getObjectClass().getName()
+                  + " can't be registered. Resource class " + resource.getObjectModel().getObjectClass().getName()
+                  + " with the same pattern " + pattern + " already registered.");
             }
          }
-         rootResources.add(resourceFactory);
-         Collections.sort(rootResources, RESOURCE_COMPARATOR);
-         for (ResourceListener listener : resourceListeners)
-         {
-            listener.resourceAdded(resourceFactory.getObjectModel());
-         }
+         snapshot.add(resourceFactory);
+         Collections.sort(snapshot, RESOURCE_COMPARATOR);
          if (LOG.isDebugEnabled())
          {
             LOG.debug("Add resource: " + resourceFactory.getObjectModel());
          }
+         resources = snapshot;
       }
-   }
-
-   /**
-    * Register new resource listener.
-    *
-    * @param listener listener
-    * @see ResourceListener
-    */
-   public void addResourceListener(ResourceListener listener)
-   {
-      resourceListeners.add(listener);
-      if (LOG.isDebugEnabled())
+      finally
       {
-         LOG.debug("Resource listener added: " + listener);
+         lock.unlock();
       }
    }
 
    /** Clear the list of resources. */
    public void clear()
    {
-      synchronized (rootResources)
+      lock.lock();
+      try
       {
-         rootResources.clear();
+         resources = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
+      }
+      finally
+      {
+         lock.unlock();
       }
    }
 
    /**
     * Get root resource matched to <code>requestPath</code>.
     *
-    * @param requestPath request path
-    * @param parameterValues see {@link ApplicationContext#getParameterValues()}
+    * @param requestPath
+    *    request path
+    * @param parameterValues
+    *    see {@link ApplicationContext#getParameterValues()}
     * @return root resource matched to <code>requestPath</code> or
     *         <code>null</code>
     */
    public ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues)
    {
       ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
-      synchronized (rootResources)
+      List<ObjectFactory<AbstractResourceDescriptor>> myResources = resources;
+
+      for (ObjectFactory<AbstractResourceDescriptor> resource : myResources)
       {
-         for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources)
+         if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues))
          {
-            if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues))
+            // all times will at least 1
+            int len = parameterValues.size();
+            // If capturing group contains last element and this element is
+            // neither null nor '/' then ResourceClass must contains at least one
+            // sub-resource method or sub-resource locator.
+            if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
             {
-               // all times will at least 1
-               int len = parameterValues.size();
-               // If capturing group contains last element and this element is
-               // neither null nor '/' then ResourceClass must contains at least one
-               // sub-resource method or sub-resource locator.
-               if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
+               if (0 == resource.getObjectModel().getSubResourceMethods().size()
+                  + resource.getObjectModel().getSubResourceLocators().size())
                {
-                  if (0 == resource.getObjectModel().getSubResourceMethods().size()
-                     + resource.getObjectModel().getSubResourceLocators().size())
-                  {
-                     continue;
-                  }
+                  continue;
                }
-               resourceFactory = resource;
-               break;
             }
+            resourceFactory = resource;
+            break;
          }
       }
       return resourceFactory;
@@ -329,81 +247,89 @@ public class ResourceBinderImpl implements ResourceBinder
    /** {@inheritDoc} */
    public List<ObjectFactory<AbstractResourceDescriptor>> getResources()
    {
-      synchronized (rootResources)
-      {
-         return new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(rootResources);
-      }
+      List<ObjectFactory<AbstractResourceDescriptor>> myResources = resources;
+      return new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(myResources);
    }
 
    /** {@inheritDoc} */
    public int getSize()
    {
-      synchronized (rootResources)
-      {
-         return rootResources.size();
-      }
+      List<ObjectFactory<AbstractResourceDescriptor>> myResources = resources;
+      return myResources.size();
    }
 
    public ObjectFactory<AbstractResourceDescriptor> removeResource(Class<?> clazz)
    {
-      ObjectFactory<AbstractResourceDescriptor> resource = null;
-      synchronized (rootResources)
+      lock.lock();
+      try
       {
-         for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
+         ObjectFactory<AbstractResourceDescriptor> resource = null;
+         List<ObjectFactory<AbstractResourceDescriptor>> snapshot =
+            new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
+
+         for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iterator = snapshot.iterator(); iterator.hasNext()
             && resource == null; )
          {
-            ObjectFactory<AbstractResourceDescriptor> next = iter.next();
+            ObjectFactory<AbstractResourceDescriptor> next = iterator.next();
             Class<?> resourceClass = next.getObjectModel().getObjectClass();
             if (clazz.equals(resourceClass))
             {
                resource = next;
-               iter.remove();
+               iterator.remove();
             }
          }
          if (resource != null)
          {
-            for (ResourceListener listener : resourceListeners)
-            {
-               listener.resourceRemoved(resource.getObjectModel());
-            }
             if (LOG.isDebugEnabled())
             {
                LOG.debug("Remove resource: " + resource.getObjectModel());
             }
+
+            resources = snapshot;
          }
+         return resource;
       }
-      return resource;
+      finally
+      {
+         lock.unlock();
+      }
    }
 
    public ObjectFactory<AbstractResourceDescriptor> removeResource(String path)
    {
-      ObjectFactory<AbstractResourceDescriptor> resource = null;
-      UriPattern pattern = new UriPattern(path);
-      synchronized (rootResources)
+      lock.lock();
+      try
       {
-         for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
+         ObjectFactory<AbstractResourceDescriptor> resource = null;
+         List<ObjectFactory<AbstractResourceDescriptor>> snapshot =
+            new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
+
+         UriPattern pattern = new UriPattern(path);
+         for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iterator = snapshot.iterator(); iterator.hasNext()
             && resource == null; )
          {
-            ObjectFactory<AbstractResourceDescriptor> next = iter.next();
+            ObjectFactory<AbstractResourceDescriptor> next = iterator.next();
             UriPattern resourcePattern = next.getObjectModel().getUriPattern();
             if (pattern.equals(resourcePattern))
             {
                resource = next;
-               iter.remove();
+               iterator.remove();
             }
          }
          if (resource != null)
          {
-            for (ResourceListener listener : resourceListeners)
-            {
-               listener.resourceRemoved(resource.getObjectModel());
-            }
             if (LOG.isDebugEnabled())
             {
                LOG.debug("Remove resource: " + resource.getObjectModel());
             }
+
+            resources = snapshot;
          }
+         return resource;
       }
-      return resource;
+      finally
+      {
+         lock.unlock();
+      }
    }
 }
