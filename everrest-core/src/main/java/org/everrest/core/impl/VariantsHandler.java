@@ -209,18 +209,14 @@ public final class VariantsHandler
          HeaderHelper.createAcceptedEncodingList(HeaderHelper.convertToString(r
             .getRequestHeader(ContainerRequest.ACCEPT_ENCODING)));
 
-      List<Variant> v = new ArrayList<Variant>(variants.size());
-      for (Variant a : variants)
-      {
-         v.add(a);
-      }
+      List<Variant> myVariants = new ArrayList<Variant>(variants);
 
-      handleVariants(m, v, MEDIA_TYPE_CHECKER);
-      handleVariants(l, v, LANGUAGE_CHECKER);
-      handleVariants(c, v, CHARSET_CHECKER);
-      handleVariants(e, v, ENCODING_CHECKER);
+      handleVariants(m, myVariants, MEDIA_TYPE_CHECKER);
+      handleVariants(l, myVariants, LANGUAGE_CHECKER);
+      handleVariants(c, myVariants, CHARSET_CHECKER);
+      handleVariants(e, myVariants, ENCODING_CHECKER);
 
-      return v.size() != 0 ? v.get(0) : null;
+      return myVariants.size() != 0 ? myVariants.get(0) : null;
    }
 
    /**

@@ -114,7 +114,10 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodSt
             initializeMethodsCache.put(clazz, initMethods);
          }
       }
-      doInvokeLifecycleMethods(o, initMethods);
+      if (initMethods.length > 0)
+      {
+         doInvokeLifecycleMethods(o, initMethods);
+      }
    }
 
    /** @see LifecycleMethodStrategy#invokeDestroyMethods(java.lang.Object) */
@@ -132,7 +135,10 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodSt
             destroyMethodsCache.put(clazz, destroyMethods);
          }
       }
-      doInvokeLifecycleMethods(o, destroyMethods);
+      if (destroyMethods.length > 0)
+      {
+         doInvokeLifecycleMethods(o, destroyMethods);
+      }
    }
 
    private Method[] getLifecycleMethods(Class<?> cl, MethodFilter filter)
@@ -166,23 +172,20 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodSt
 
    private void doInvokeLifecycleMethods(Object o, Method[] lifecycleMethods)
    {
-      if (lifecycleMethods.length > 0)
+      for (Method method : lifecycleMethods)
       {
-         for (Method method : lifecycleMethods)
+         try
          {
-            try
-            {
-               method.invoke(o);
-            }
-            catch (InvocationTargetException e)
-            {
-               Throwable t = e.getTargetException();
-               throw new InternalException(t);
-            }
-            catch (Exception e)
-            {
-               throw new InternalException(e);
-            }
+            method.invoke(o);
+         }
+         catch (InvocationTargetException e)
+         {
+            Throwable t = e.getTargetException();
+            throw new InternalException(t);
+         }
+         catch (Exception e)
+         {
+            throw new InternalException(e);
          }
       }
    }
