@@ -18,6 +18,7 @@
  */
 package org.everrest.core.impl.provider.json;
 
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -64,22 +65,17 @@ public class ObjectValue extends JsonValue
    @Override
    public String toString()
    {
-      StringBuilder sb = new StringBuilder();
-      sb.append('{');
-      int i = 0;
-      for (String key : children.keySet())
+      StringWriter w = new StringWriter();
+      JsonWriter jw = new JsonWriter(w);
+      try
       {
-         if (i > 0)
-         {
-            sb.append(',');
-         }
-         i++;
-         sb.append(JsonUtils.getJsonString(key));
-         sb.append(':');
-         sb.append(children.get(key).toString());
+         writeTo(jw);
       }
-      sb.append('}');
-      return sb.toString();
+      catch (JsonException e)
+      {
+         throw new RuntimeException(e.getMessage(), e);
+      }
+      return w.toString();
    }
 
    /** {@inheritDoc} */
