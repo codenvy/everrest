@@ -31,137 +31,108 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ResourceBinderTest extends BaseTest
-{
+public class ResourceBinderTest extends BaseTest {
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void setUp() throws Exception
-   {
-      super.setUp();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
-   public void testBind()
-   {
-      int prevSize = resources.getSize();
-      resources.addResource(Resource.class, null);
-      assertEquals((prevSize + 1), resources.getSize());
-   }
+    public void testBind() {
+        int prevSize = resources.getSize();
+        resources.addResource(Resource.class, null);
+        assertEquals((prevSize + 1), resources.getSize());
+    }
 
-   public void testUnbind()
-   {
-      int prevSize = resources.getSize();
-      resources.addResource(Resource.class, null);
-      resources.removeResource(Resource.class);
-      assertEquals(prevSize, resources.getSize());
-   }
+    public void testUnbind() {
+        int prevSize = resources.getSize();
+        resources.addResource(Resource.class, null);
+        resources.removeResource(Resource.class);
+        assertEquals(prevSize, resources.getSize());
+    }
 
-   @Path("/a/b/{c}")
-   public static class Resource
-   {
+    @Path("/a/b/{c}")
+    public static class Resource {
 
-      @SuppressWarnings("unused")
-      @PathParam("c")
-      private String pathsegm;
+        @SuppressWarnings("unused")
+        @PathParam("c")
+        private String pathsegm;
 
-      public Resource()
-      {
-      }
+        public Resource() {
+        }
 
-      public Resource(@Context UriInfo uriInfo)
-      {
-      }
+        public Resource(@Context UriInfo uriInfo) {
+        }
 
-      @GET
-      @Produces("text/html")
-      public void m1()
-      {
-      }
+        @GET
+        @Produces("text/html")
+        public void m1() {
+        }
 
-      @GET
-      @Path("d")
-      @Produces("text/html")
-      public void m2()
-      {
-      }
+        @GET
+        @Path("d")
+        @Produces("text/html")
+        public void m2() {
+        }
 
-      @Path("d")
-      public void m3()
-      {
-      }
-   }
+        @Path("d")
+        public void m3() {
+        }
+    }
 
-   //-------------------------------------
+    //-------------------------------------
 
-   public void testSameResourceURI()
-   {
-      int initSize = resources.getSize();
-      resources.addResource(SameURIResource1.class, null);
-      assertEquals(initSize + 1, resources.getSize());
-      try
-      {
-         resources.addResource(SameURIResource2.class, null);
-      }
-      catch (ResourcePublicationException e)
-      {
-      }
-      assertEquals(initSize + 1, resources.getSize());
+    public void testSameResourceURI() {
+        int initSize = resources.getSize();
+        resources.addResource(SameURIResource1.class, null);
+        assertEquals(initSize + 1, resources.getSize());
+        try {
+            resources.addResource(SameURIResource2.class, null);
+        } catch (ResourcePublicationException e) {
+        }
+        assertEquals(initSize + 1, resources.getSize());
 
-      resources.removeResource(SameURIResource1.class);
-      resources.addResource(SameURIResource2.class, null);
-      assertEquals(initSize + 1, resources.getSize());
-      try
-      {
-         resources.addResource(SameURIResource1.class, null);
-      }
-      catch (ResourcePublicationException e)
-      {
-      }
-      assertEquals(initSize + 1, resources.getSize());
+        resources.removeResource(SameURIResource1.class);
+        resources.addResource(SameURIResource2.class, null);
+        assertEquals(initSize + 1, resources.getSize());
+        try {
+            resources.addResource(SameURIResource1.class, null);
+        } catch (ResourcePublicationException e) {
+        }
+        assertEquals(initSize + 1, resources.getSize());
 
-      resources.removeResource(SameURIResource2.class);
-      resources.addResource(new SameURIResource1(), null);
-      assertEquals(initSize + 1, resources.getSize());
-      try
-      {
-         resources.addResource(new SameURIResource2(), null);
-      }
-      catch (ResourcePublicationException e)
-      {
-      }
-      assertEquals(initSize + 1, resources.getSize());
+        resources.removeResource(SameURIResource2.class);
+        resources.addResource(new SameURIResource1(), null);
+        assertEquals(initSize + 1, resources.getSize());
+        try {
+            resources.addResource(new SameURIResource2(), null);
+        } catch (ResourcePublicationException e) {
+        }
+        assertEquals(initSize + 1, resources.getSize());
 
-      resources.removeResource(SameURIResource1.class);
-      resources.addResource(new SameURIResource2(), null);
-      assertEquals(initSize + 1, resources.getSize());
-      try
-      {
-         resources.addResource(new SameURIResource1(), null);
-      }
-      catch (ResourcePublicationException e)
-      {
-      }
-      assertEquals(initSize + 1, resources.getSize());
-   }
+        resources.removeResource(SameURIResource1.class);
+        resources.addResource(new SameURIResource2(), null);
+        assertEquals(initSize + 1, resources.getSize());
+        try {
+            resources.addResource(new SameURIResource1(), null);
+        } catch (ResourcePublicationException e) {
+        }
+        assertEquals(initSize + 1, resources.getSize());
+    }
 
-   @Path("/a/b/c/{d}/e")
-   public static class SameURIResource1
-   {
-      @GET
-      public void m0()
-      {
-      }
-   }
+    @Path("/a/b/c/{d}/e")
+    public static class SameURIResource1 {
+        @GET
+        public void m0() {
+        }
+    }
 
-   @Path("/a/b/c/{d}/e")
-   public static class SameURIResource2
-   {
-      @GET
-      public void m0()
-      {
-      }
-   }
+    @Path("/a/b/c/{d}/e")
+    public static class SameURIResource2 {
+        @GET
+        public void m0() {
+        }
+    }
 
 }

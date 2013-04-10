@@ -40,30 +40,27 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/spring-component-test.xml"})
-public abstract class BaseTest
-{
-   @Autowired
-   protected ProviderBinder providers;
-   @Autowired
-   protected ResourceBinder resources;
-   @Autowired
-   protected DependencySupplier dependencies;
-   protected RequestHandlerImpl requestHandler;
-   protected ResourceLauncher launcher;
-   @Autowired
-   protected ConfigurableListableBeanFactory factory;
+public abstract class BaseTest {
+    @Autowired
+    protected ProviderBinder                  providers;
+    @Autowired
+    protected ResourceBinder                  resources;
+    @Autowired
+    protected DependencySupplier              dependencies;
+    protected RequestHandlerImpl              requestHandler;
+    protected ResourceLauncher                launcher;
+    @Autowired
+    protected ConfigurableListableBeanFactory factory;
 
-   @Before
-   public void start() throws Exception
-   {
-      requestHandler =
-         new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
-      launcher = new ResourceLauncher(requestHandler);
-   }
+    @Before
+    public void start() throws Exception {
+        requestHandler =
+                new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
+        launcher = new ResourceLauncher(requestHandler);
+    }
 
-   @After
-   public void stop()
-   {
-      //factory.destroyScopedBean("org.everrest.lifecycle.SpringEverrestProcessorDestroyer");
-   }
+    @After
+    public void stop() {
+        //factory.destroyScopedBean("org.everrest.lifecycle.SpringEverrestProcessorDestroyer");
+    }
 }

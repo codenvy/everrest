@@ -37,72 +37,62 @@ import java.net.URI;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class BaseTest extends TestCase
-{
-   private static class EmptyStream extends InputStream
-   {
-      @Override
-      public int read() throws IOException
-      {
-         return -1;
-      }
-   }
+public abstract class BaseTest extends TestCase {
+    private static class EmptyStream extends InputStream {
+        @Override
+        public int read() throws IOException {
+            return -1;
+        }
+    }
 
-   protected ProviderBinder providers;
+    protected ProviderBinder providers;
 
-   protected ResourceBinderImpl resources;
+    protected ResourceBinderImpl resources;
 
-   protected RequestHandlerImpl requestHandler;
+    protected RequestHandlerImpl requestHandler;
 
-   protected ResourceLauncher launcher;
+    protected ResourceLauncher launcher;
 
-   private AsynchronousJobPool asynchronousPool;
+    private AsynchronousJobPool asynchronousPool;
 
-   public void setUp() throws Exception
-   {
-      resources = new ResourceBinderImpl();
-      // reset embedded providers to be sure it is clean
-      ProviderBinder.setInstance(new ProviderBinder());
-      providers = new ApplicationProviderBinder();
-      asynchronousPool = new AsynchronousJobPool(new EverrestConfiguration());
-      providers.addContextResolver(asynchronousPool);
-      providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
-      resources.addResource(AsynchronousJobService.class, null);
-      requestHandler =
-         new RequestHandlerImpl(new RequestDispatcher(resources), providers, new DependencySupplierImpl(),
-            new EverrestConfiguration());
-      launcher = new ResourceLauncher(requestHandler);
-   }
+    public void setUp() throws Exception {
+        resources = new ResourceBinderImpl();
+        // reset embedded providers to be sure it is clean
+        ProviderBinder.setInstance(new ProviderBinder());
+        providers = new ApplicationProviderBinder();
+        asynchronousPool = new AsynchronousJobPool(new EverrestConfiguration());
+        providers.addContextResolver(asynchronousPool);
+        providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
+        resources.addResource(AsynchronousJobService.class, null);
+        requestHandler =
+                new RequestHandlerImpl(new RequestDispatcher(resources), providers, new DependencySupplierImpl(),
+                                       new EverrestConfiguration());
+        launcher = new ResourceLauncher(requestHandler);
+    }
 
-   protected void setContext()
-   {
-      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(new ContainerRequest("", URI.create(""), URI
-         .create(""), new EmptyStream(), new MultivaluedMapImpl(), new SimpleSecurityContext(false)), null, providers));
-   }
+    protected void setContext() {
+        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(new ContainerRequest("", URI.create(""), URI
+                .create(""), new EmptyStream(), new MultivaluedMapImpl(), new SimpleSecurityContext(false)), null, providers));
+    }
 
-   public void tearDown() throws Exception
-   {
-      asynchronousPool.stop();
-   }
+    public void tearDown() throws Exception {
+        asynchronousPool.stop();
+    }
 
-   public void registry(Object resource) throws Exception
-   {
-      resources.addResource(resource, null);
-   }
+    public void registry(Object resource) throws Exception {
+        resources.addResource(resource, null);
+    }
 
-   public void registry(Class<?> resourceClass) throws Exception
-   {
-      resources.addResource(resourceClass, null);
-   }
+    public void registry(Class<?> resourceClass) throws Exception {
+        resources.addResource(resourceClass, null);
+    }
 
-   public ObjectFactory<AbstractResourceDescriptor> unregistry(Object resource)
-   {
-      return resources.removeResource(resource.getClass());
-   }
+    public ObjectFactory<AbstractResourceDescriptor> unregistry(Object resource) {
+        return resources.removeResource(resource.getClass());
+    }
 
-   public ObjectFactory<AbstractResourceDescriptor> unregistry(Class<?> resourceClass)
-   {
-      return resources.removeResource(resourceClass);
-   }
+    public ObjectFactory<AbstractResourceDescriptor> unregistry(Class<?> resourceClass) {
+        return resources.removeResource(resourceClass);
+    }
 
 }

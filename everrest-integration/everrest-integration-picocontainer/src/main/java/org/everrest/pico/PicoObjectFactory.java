@@ -31,39 +31,32 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T>
-{
+public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
 
-   protected final T model;
+    protected final T model;
 
-   public PicoObjectFactory(T model)
-   {
-      this.model = model;
-   }
+    public PicoObjectFactory(T model) {
+        this.model = model;
+    }
 
-   /** {@inheritDoc} */
-   public Object getInstance(ApplicationContext context)
-   {
-      Class<?> clazz = model.getObjectClass();
-      Object component = EverrestPicoFilter.getComponent(clazz);
-      if (component != null)
-      {
-         List<FieldInjector> fieldInjectors = model.getFieldInjectors();
-         if (fieldInjectors != null && fieldInjectors.size() > 0)
-         {
-            for (FieldInjector injector : fieldInjectors)
-            {
-               injector.inject(component, context);
+    /** {@inheritDoc} */
+    public Object getInstance(ApplicationContext context) {
+        Class<?> clazz = model.getObjectClass();
+        Object component = EverrestPicoFilter.getComponent(clazz);
+        if (component != null) {
+            List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+            if (fieldInjectors != null && fieldInjectors.size() > 0) {
+                for (FieldInjector injector : fieldInjectors) {
+                    injector.inject(component, context);
+                }
             }
-         }
-      }
-      return component;
-   }
+        }
+        return component;
+    }
 
-   /** {@inheritDoc} */
-   public T getObjectModel()
-   {
-      return model;
-   }
+    /** {@inheritDoc} */
+    public T getObjectModel() {
+        return model;
+    }
 
 }

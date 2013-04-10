@@ -35,35 +35,39 @@ package org.everrest.http.client;
 /**
  * This is the interface that a cookie policy handler must implement. A policy
  * handler allows you to control which cookies are accepted and which are sent.
- * 
- * @see org.everrest.http.client.CookieModule#setCookiePolicyHandler(HTTPClient.CookiePolicyHandler)
- * @version 0.3-3 06/05/2001
+ *
  * @author Ronald Tschal�r
+ * @version 0.3-3 06/05/2001
+ * @see org.everrest.http.client.CookieModule#setCookiePolicyHandler(HTTPClient.CookiePolicyHandler)
  * @since V0.3
  */
-public interface CookiePolicyHandler
-{
-   /**
-    * This method is called for each cookie that a server tries to set via the
-    * Set-Cookie header. This enables you to implement your own cookie
-    * acceptance policy.
-    * 
-    * @param cookie the cookie in question
-    * @param req the request sent which prompted the response
-    * @param resp the response which is trying to set the cookie
-    * @return true if this cookie should be accepted, false if it is to be
-    *         rejected.
-    */
-   boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp);
+public interface CookiePolicyHandler {
+    /**
+     * This method is called for each cookie that a server tries to set via the
+     * Set-Cookie header. This enables you to implement your own cookie
+     * acceptance policy.
+     *
+     * @param cookie
+     *         the cookie in question
+     * @param req
+     *         the request sent which prompted the response
+     * @param resp
+     *         the response which is trying to set the cookie
+     * @return true if this cookie should be accepted, false if it is to be
+     *         rejected.
+     */
+    boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp);
 
-   /**
-    * This method is called for each cookie that is eligible for sending with a
-    * request (according to the matching rules for the path, domain, protocol,
-    * etc). This enables you to control the sending of cookies.
-    * 
-    * @param cookie the cookie in question
-    * @param req the request this cookie is to be sent with
-    * @return true if this cookie should be sent, false if it is to be ignored.
-    */
-   boolean sendCookie(Cookie cookie, RoRequest req);
+    /**
+     * This method is called for each cookie that is eligible for sending with a
+     * request (according to the matching rules for the path, domain, protocol,
+     * etc). This enables you to control the sending of cookies.
+     *
+     * @param cookie
+     *         the cookie in question
+     * @param req
+     *         the request this cookie is to be sent with
+     * @return true if this cookie should be sent, false if it is to be ignored.
+     */
+    boolean sendCookie(Cookie cookie, RoRequest req);
 }

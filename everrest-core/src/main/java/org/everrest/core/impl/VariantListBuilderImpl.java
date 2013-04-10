@@ -18,15 +18,14 @@
  */
 package org.everrest.core.impl;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Variant.VariantListBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.core.Variant.VariantListBuilder;
 
 /**
  * See {@link VariantListBuilder}.
@@ -34,95 +33,84 @@ import javax.ws.rs.core.Variant.VariantListBuilder;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class VariantListBuilderImpl extends VariantListBuilder
-{
-   /** Languages. */
-   private final List<Locale> languages = new ArrayList<Locale>();
+public class VariantListBuilderImpl extends VariantListBuilder {
+    /** Languages. */
+    private final List<Locale> languages = new ArrayList<Locale>();
 
-   /** Encodings. */
-   private final List<String> encodings = new ArrayList<String>();
+    /** Encodings. */
+    private final List<String> encodings = new ArrayList<String>();
 
-   /** Media Types. */
-   private final List<MediaType> mediaTypes = new ArrayList<MediaType>();
+    /** Media Types. */
+    private final List<MediaType> mediaTypes = new ArrayList<MediaType>();
 
-   /** List of {@link Variant}. */
-   private List<Variant> variants;
+    /** List of {@link Variant}. */
+    private List<Variant> variants;
 
-   /** {@inheritDoc} */
-   @Override
-   public VariantListBuilder add()
-   {
-      if (variants == null)
-      {
-         variants = new ArrayList<Variant>();
-      }
+    /** {@inheritDoc} */
+    @Override
+    public VariantListBuilder add() {
+        if (variants == null) {
+            variants = new ArrayList<Variant>();
+        }
 
-      Iterator<MediaType> mediaTypesIterator = mediaTypes.iterator();
+        Iterator<MediaType> mediaTypesIterator = mediaTypes.iterator();
 
-      // do iteration at least one time, even all list are empty
-      do
-      {
-         MediaType mediaType = mediaTypesIterator.hasNext() ? mediaTypesIterator.next() : null;
-         Iterator<Locale> languagesIterator = languages.iterator();
+        // do iteration at least one time, even all list are empty
+        do {
+            MediaType mediaType = mediaTypesIterator.hasNext() ? mediaTypesIterator.next() : null;
+            Iterator<Locale> languagesIterator = languages.iterator();
 
-         do
-         {
-            Locale language = languagesIterator.hasNext() ? languagesIterator.next() : null;
-            Iterator<String> encodingsIterator = encodings.iterator();
+            do {
+                Locale language = languagesIterator.hasNext() ? languagesIterator.next() : null;
+                Iterator<String> encodingsIterator = encodings.iterator();
 
-            do
-            {
-               String encoding = encodingsIterator.hasNext() ? encodingsIterator.next() : null;
-               variants.add(new Variant(mediaType, language, encoding));
+                do {
+                    String encoding = encodingsIterator.hasNext() ? encodingsIterator.next() : null;
+                    variants.add(new Variant(mediaType, language, encoding));
+                }
+                while (encodingsIterator.hasNext());
+
             }
-            while (encodingsIterator.hasNext());
+            while (languagesIterator.hasNext());
 
-         }
-         while (languagesIterator.hasNext());
+        }
+        while (mediaTypesIterator.hasNext());
 
-      }
-      while (mediaTypesIterator.hasNext());
+        clearAll();
+        return this;
+    }
 
-      clearAll();
-      return this;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public List<Variant> build() {
+        return variants == null ? variants = new ArrayList<Variant>() : variants;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public List<Variant> build()
-   {
-      return variants == null ? variants = new ArrayList<Variant>() : variants;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public VariantListBuilder encodings(String... encs) {
+        Collections.addAll(encodings, encs);
+        return this;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public VariantListBuilder encodings(String... encs)
-   {
-      Collections.addAll(encodings, encs);
-      return this;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public VariantListBuilder languages(Locale... langs) {
+        Collections.addAll(languages, langs);
+        return this;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public VariantListBuilder languages(Locale... langs)
-   {
-      Collections.addAll(languages, langs);
-      return this;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public VariantListBuilder mediaTypes(MediaType... mediaTypes) {
+        Collections.addAll(this.mediaTypes, mediaTypes);
+        return this;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public VariantListBuilder mediaTypes(MediaType... mediaTypes)
-   {
-      Collections.addAll(this.mediaTypes, mediaTypes);
-      return this;
-   }
-
-   /** Reset builder to default state. */
-   private void clearAll()
-   {
-      mediaTypes.clear();
-      languages.clear();
-      encodings.clear();
-   }
+    /** Reset builder to default state. */
+    private void clearAll() {
+        mediaTypes.clear();
+        languages.clear();
+        encodings.clear();
+    }
 }

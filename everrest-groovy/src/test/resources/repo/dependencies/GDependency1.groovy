@@ -1,6 +1,5 @@
 package dependencies
 
-class GDependency1
-{
-   String name = getClass().getName()
+class GDependency1 {
+    String name = getClass().getName()
 }

@@ -29,52 +29,59 @@ import org.everrest.core.provider.ProviderDescriptor;
  * {@link SubResourceMethodDescriptor}, {@link SubResourceLocatorDescriptor},
  * {@link ConstructorDescriptor}, {@link FieldInjector},
  * {@link ProviderDescriptor}, {@link FilterDescriptor}.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: ResourceDescriptorVisitor.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public interface ResourceDescriptorVisitor
-{
+public interface ResourceDescriptorVisitor {
 
-   /**
-    * @param ard See {@link AbstractResourceDescriptor}
-    */
-   void visitAbstractResourceDescriptor(AbstractResourceDescriptor ard);
+    /**
+     * @param ard
+     *         See {@link AbstractResourceDescriptor}
+     */
+    void visitAbstractResourceDescriptor(AbstractResourceDescriptor ard);
 
-   /**
-    * @param rmd See {@link ResourceMethodDescriptor}
-    */
-   void visitResourceMethodDescriptor(ResourceMethodDescriptor rmd);
+    /**
+     * @param rmd
+     *         See {@link ResourceMethodDescriptor}
+     */
+    void visitResourceMethodDescriptor(ResourceMethodDescriptor rmd);
 
-   /**
-    * @param srmd See {@link SubResourceMethodDescriptor}
-    */
-   void visitSubResourceMethodDescriptor(SubResourceMethodDescriptor srmd);
+    /**
+     * @param srmd
+     *         See {@link SubResourceMethodDescriptor}
+     */
+    void visitSubResourceMethodDescriptor(SubResourceMethodDescriptor srmd);
 
-   /**
-    * @param srld See {@link SubResourceLocatorDescriptor}
-    */
-   void visitSubResourceLocatorDescriptor(SubResourceLocatorDescriptor srld);
+    /**
+     * @param srld
+     *         See {@link SubResourceLocatorDescriptor}
+     */
+    void visitSubResourceLocatorDescriptor(SubResourceLocatorDescriptor srld);
 
-   /**
-    * @param ci ConstructorInjector
-    */
-   void visitConstructorInjector(ConstructorDescriptor ci);
+    /**
+     * @param ci
+     *         ConstructorInjector
+     */
+    void visitConstructorInjector(ConstructorDescriptor ci);
 
-   /**
-    * @param fi FieldInjector
-    */
-   void visitFieldInjector(FieldInjector fi);
+    /**
+     * @param fi
+     *         FieldInjector
+     */
+    void visitFieldInjector(FieldInjector fi);
 
-   /**
-    * @param pd ProviderDescriptor
-    */
-   void visitProviderDescriptor(ProviderDescriptor pd);
+    /**
+     * @param pd
+     *         ProviderDescriptor
+     */
+    void visitProviderDescriptor(ProviderDescriptor pd);
 
-   /**
-    * @param fd FilterDescriptor
-    */
-   void visitFilterDescriptor(FilterDescriptor fd);
+    /**
+     * @param fd
+     *         FilterDescriptor
+     */
+    void visitFilterDescriptor(FilterDescriptor fd);
 
 }

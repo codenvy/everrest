@@ -23,17 +23,14 @@ package org.everrest.core.impl.provider.json;
  * @version $Id: $
  */
 @SuppressWarnings("rawtypes")
-public class ClassTransfBean
-{
-   private Class klass;
+public class ClassTransfBean {
+    private Class klass;
 
-   public Class getKlass()
-   {
-      return klass;
-   }
+    public Class getKlass() {
+        return klass;
+    }
 
-   public void setKlass(Class klass)
-   {
-      this.klass = klass;
-   }
+    public void setKlass(Class klass) {
+        this.klass = klass;
+    }
 }

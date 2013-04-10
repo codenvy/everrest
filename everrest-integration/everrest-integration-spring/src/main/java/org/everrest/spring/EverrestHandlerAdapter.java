@@ -44,51 +44,45 @@ import javax.servlet.http.HttpServletResponse;
  * @version $Id$
  * @see EverrestHandlerMapping
  */
-public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAware, ServletConfigAware
-{
-   private ServletContext servletContext;
-   private ServletConfig servletConfig;
-   private WebApplicationDeclaredRoles webApplicationRoles;
+public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAware, ServletConfigAware {
+    private ServletContext              servletContext;
+    private ServletConfig               servletConfig;
+    private WebApplicationDeclaredRoles webApplicationRoles;
 
-   /** {@inheritDoc} */
-   public long getLastModified(HttpServletRequest request, Object handler)
-   {
-      return -1;
-   }
+    /** {@inheritDoc} */
+    public long getLastModified(HttpServletRequest request, Object handler) {
+        return -1;
+    }
 
-   /** {@inheritDoc} */
-   public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
-      throws Exception
-   {
-      EnvironmentContext env = new EnvironmentContext();
-      env.put(HttpServletRequest.class, request);
-      env.put(HttpServletResponse.class, request);
-      env.put(ServletConfig.class, servletConfig);
-      env.put(ServletContext.class, servletContext);
-      env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
-System.out.println("\n\n"+webApplicationRoles.getDeclaredRoles()+"\n");
-      ((EverrestProcessor)handler).process(new ServletContainerRequest(request), new ContainerResponse(
-         new ServletContainerResponseWriter(response)), env);
-      // return null since request handled directly.
-      return null;
-   }
+    /** {@inheritDoc} */
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        EnvironmentContext env = new EnvironmentContext();
+        env.put(HttpServletRequest.class, request);
+        env.put(HttpServletResponse.class, request);
+        env.put(ServletConfig.class, servletConfig);
+        env.put(ServletContext.class, servletContext);
+        env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
+        System.out.println("\n\n" + webApplicationRoles.getDeclaredRoles() + "\n");
+        ((EverrestProcessor)handler).process(new ServletContainerRequest(request), new ContainerResponse(
+                new ServletContainerResponseWriter(response)), env);
+        // return null since request handled directly.
+        return null;
+    }
 
-   /** {@inheritDoc} */
-   public void setServletConfig(ServletConfig servletConfig)
-   {
-      this.servletConfig = servletConfig;
-   }
+    /** {@inheritDoc} */
+    public void setServletConfig(ServletConfig servletConfig) {
+        this.servletConfig = servletConfig;
+    }
 
-   /** {@inheritDoc} */
-   public void setServletContext(ServletContext servletContext)
-   {
-      this.servletContext = servletContext;
-      webApplicationRoles = new WebApplicationDeclaredRoles(servletContext);
-   }
+    /** {@inheritDoc} */
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        webApplicationRoles = new WebApplicationDeclaredRoles(servletContext);
+    }
 
-   /** {@inheritDoc} */
-   public boolean supports(Object handler)
-   {
-      return handler instanceof EverrestProcessor;
-   }
+    /** {@inheritDoc} */
+    public boolean supports(Object handler) {
+        return handler instanceof EverrestProcessor;
+    }
 }

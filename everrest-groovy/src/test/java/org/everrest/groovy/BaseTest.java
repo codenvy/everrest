@@ -34,36 +34,33 @@ import java.lang.reflect.Constructor;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class BaseTest extends TestCase
-{
-   protected ProviderBinder providers;
+public abstract class BaseTest extends TestCase {
+    protected ProviderBinder providers;
 
-   protected ResourceBinderImpl resources;
+    protected ResourceBinderImpl resources;
 
-   protected RequestHandlerImpl requestHandler;
+    protected RequestHandlerImpl requestHandler;
 
-   protected ResourceLauncher launcher;
+    protected ResourceLauncher launcher;
 
-   protected GroovyResourcePublisher groovyPublisher;
+    protected GroovyResourcePublisher groovyPublisher;
 
-   protected DependencySupplierImpl dependencies;
+    protected DependencySupplierImpl dependencies;
 
-   protected void setUp() throws Exception
-   {
-      this.resources = new ResourceBinderImpl();
-      this.dependencies = new DependencySupplierImpl();
-      Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
-      c.setAccessible(true);
-      ProviderBinder.setInstance(c.newInstance());
-      this.providers = ProviderBinder.getInstance();
-      this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), dependencies, null);
-      this.launcher = new ResourceLauncher(requestHandler);
-      this.groovyPublisher = new GroovyResourcePublisher(resources, dependencies);
-   }
+    protected void setUp() throws Exception {
+        this.resources = new ResourceBinderImpl();
+        this.dependencies = new DependencySupplierImpl();
+        Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
+        c.setAccessible(true);
+        ProviderBinder.setInstance(c.newInstance());
+        this.providers = ProviderBinder.getInstance();
+        this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), dependencies, null);
+        this.launcher = new ResourceLauncher(requestHandler);
+        this.groovyPublisher = new GroovyResourcePublisher(resources, dependencies);
+    }
 
-   @Override
-   protected void tearDown() throws Exception
-   {
-      super.tearDown();
-   }
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
 }

@@ -20,18 +20,18 @@ package org.everrest.core.resource;
 
 /**
  * Common essence for all resource descriptors.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface ResourceDescriptor
-{
+public interface ResourceDescriptor {
 
-   /**
-    * Method is useful for validation.
-    * 
-    * @param visitor See {@link ResourceDescriptorVisitor}
-    */
-   void accept(ResourceDescriptorVisitor visitor);
+    /**
+     * Method is useful for validation.
+     *
+     * @param visitor
+     *         See {@link ResourceDescriptorVisitor}
+     */
+    void accept(ResourceDescriptorVisitor visitor);
 
 }

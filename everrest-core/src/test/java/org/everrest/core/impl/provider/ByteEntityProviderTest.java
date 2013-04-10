@@ -22,52 +22,48 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.MediaTypeHelper;
 
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
-
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ByteEntityProviderTest extends BaseTest
-{
+public class ByteEntityProviderTest extends BaseTest {
 
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   public void testRead() throws Exception
-   {
-      MessageBodyReader reader = providers.getMessageBodyReader(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE);
-      assertNotNull(reader);
-      // without media type
-      assertNotNull(providers.getMessageBodyReader(byte[].class, null, null, null));
-      assertTrue(reader.isReadable(byte[].class, null, null, null));
-      byte[] data = new byte[16];
-      for (int i = 0; i < data.length; i++)
-         data[i] = (byte)i;
-      assertTrue(reader.isReadable(data.getClass(), null, null, null));
-      byte[] result =
-         (byte[])reader.readFrom(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(),
-            new ByteArrayInputStream(data));
-      assertTrue(Arrays.equals(data, result));
-   }
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void testRead() throws Exception {
+        MessageBodyReader reader = providers.getMessageBodyReader(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE);
+        assertNotNull(reader);
+        // without media type
+        assertNotNull(providers.getMessageBodyReader(byte[].class, null, null, null));
+        assertTrue(reader.isReadable(byte[].class, null, null, null));
+        byte[] data = new byte[16];
+        for (int i = 0; i < data.length; i++)
+            data[i] = (byte)i;
+        assertTrue(reader.isReadable(data.getClass(), null, null, null));
+        byte[] result =
+                (byte[])reader.readFrom(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(),
+                                        new ByteArrayInputStream(data));
+        assertTrue(Arrays.equals(data, result));
+    }
 
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   public void testWrite() throws Exception
-   {
-      MessageBodyWriter writer = providers.getMessageBodyWriter(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE);
-      assertNotNull(writer);
-      // without media type
-      assertNotNull(providers.getMessageBodyWriter(byte[].class, null, null, null));
-      assertTrue(writer.isWriteable(byte[].class, null, null, null));
-      byte[] data = new byte[16];
-      for (int i = data.length - 1; i >= 0; i--)
-         data[i] = (byte)i;
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      writer.writeTo(data, byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(), out);
-      assertTrue(Arrays.equals(data, out.toByteArray()));
-   }
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void testWrite() throws Exception {
+        MessageBodyWriter writer = providers.getMessageBodyWriter(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE);
+        assertNotNull(writer);
+        // without media type
+        assertNotNull(providers.getMessageBodyWriter(byte[].class, null, null, null));
+        assertTrue(writer.isWriteable(byte[].class, null, null, null));
+        byte[] data = new byte[16];
+        for (int i = data.length - 1; i >= 0; i--)
+            data[i] = (byte)i;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writer.writeTo(data, byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(), out);
+        assertTrue(Arrays.equals(data, out.toByteArray()));
+    }
 
 }

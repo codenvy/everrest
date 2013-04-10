@@ -26,7 +26,6 @@ import org.everrest.core.method.MethodInvoker;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface MethodInvokerDecoratorFactory
-{
-   MethodInvokerDecorator makeDecorator(MethodInvoker invoker);
+public interface MethodInvokerDecoratorFactory {
+    MethodInvokerDecorator makeDecorator(MethodInvoker invoker);
 }

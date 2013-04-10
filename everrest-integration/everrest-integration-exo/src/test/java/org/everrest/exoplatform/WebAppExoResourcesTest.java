@@ -20,12 +20,6 @@ package org.everrest.exoplatform;
 
 import org.everrest.core.impl.provider.IOHelper;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -34,78 +28,70 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class WebAppExoResourcesTest extends WebAppBaseTest
-{
-   public static class Message
-   {
-      private String message;
+public class WebAppExoResourcesTest extends WebAppBaseTest {
+    public static class Message {
+        private String message;
 
-      public Message(String message)
-      {
-         this.message = message;
-      }
+        public Message(String message) {
+            this.message = message;
+        }
 
-      public String getMessage()
-      {
-         return message;
-      }
-   }
+        public String getMessage() {
+            return message;
+        }
+    }
 
-   @Provider
-   public static class MessageProvider implements MessageBodyReader<Message>, MessageBodyWriter<Message>
-   {
-      public long getSize(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-      {
-         return -1;
-      }
+    @Provider
+    public static class MessageProvider implements MessageBodyReader<Message>, MessageBodyWriter<Message> {
+        public long getSize(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return -1;
+        }
 
-      public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-      {
-         return Message.class == type;
-      }
+        public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Message.class == type;
+        }
 
-      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-      {
-         return Message.class.isAssignableFrom(type);
-      }
+        public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Message.class.isAssignableFrom(type);
+        }
 
-      public Message readFrom(Class<Message> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
-         WebApplicationException
-      {
-         return new Message(IOHelper.readString(entityStream,
-            mediaType != null ? mediaType.getParameters().get("charset") : null));
-      }
+        public Message readFrom(Class<Message> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                                MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
+                                                                                                             WebApplicationException {
+            return new Message(IOHelper.readString(entityStream,
+                                                   mediaType != null ? mediaType.getParameters().get("charset") : null));
+        }
 
-      public void writeTo(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-         WebApplicationException
-      {
-         IOHelper.writeString(t.getMessage(), entityStream, mediaType.getParameters().get("charset"));
-      }
-   }
+        public void writeTo(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
+                                                                                                          WebApplicationException {
+            IOHelper.writeString(t.getMessage(), entityStream, mediaType.getParameters().get("charset"));
+        }
+    }
 
-   @Path("WebAppExoResourcesTest.Resource1")
-   public static class Resource1
-   {
-      @GET
-      public void m(Message m)
-      {
-         assertEquals(messageBody, m.getMessage());
-      }
-   }
+    @Path("WebAppExoResourcesTest.Resource1")
+    public static class Resource1 {
+        @GET
+        public void m(Message m) {
+            assertEquals(messageBody, m.getMessage());
+        }
+    }
 
-   private static final String messageBody = "EXO RESOURCE TEST";
+    private static final String messageBody = "EXO RESOURCE TEST";
 
-   public void testResource() throws Exception
-   {
-      assertEquals(204,
-         launcher.service("GET", "/WebAppExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null)
-            .getStatus());
-   }
+    public void testResource() throws Exception {
+        assertEquals(204,
+                     launcher.service("GET", "/WebAppExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null)
+                             .getStatus());
+    }
 }

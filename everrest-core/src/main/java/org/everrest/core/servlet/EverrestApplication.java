@@ -24,17 +24,16 @@ import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 
+import javax.ws.rs.core.Application;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import javax.ws.rs.core.Application;
 
 /**
  * Defines the JAX-RS components depending on EverrestConfiguration. It is uses as 'wrapper' for custom instance of
  * Application.
- * <p>
+ * <p/>
  * Usage:
- * 
+ * <p/>
  * <pre>
  * EverrestProcessor processor = ...
  * EverrestConfiguration config = ...
@@ -43,77 +42,64 @@ import javax.ws.rs.core.Application;
  * everrest.addApplication(app);
  * processor.addApplication(everrest);
  * </pre>
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class EverrestApplication extends Application
-{
-   private final Set<Class<?>> classes;
-   private final Set<Object> singletons;
+public final class EverrestApplication extends Application {
+    private final Set<Class<?>> classes;
+    private final Set<Object>   singletons;
 
-   public EverrestApplication(EverrestConfiguration config)
-   {
-      classes = new LinkedHashSet<Class<?>>(1);
-      singletons = new LinkedHashSet<Object>(3);
-      if (config.isAsynchronousSupported())
-      {
-         classes.add(AsynchronousJobService.class);
-         singletons.add(new AsynchronousJobPool(config));
-         singletons.add(new AsynchronousProcessListWriter());
-      }
-      if (config.isCheckSecurity())
-      {
-         singletons.add(new SecurityConstraint());
-      }
-   }
+    public EverrestApplication(EverrestConfiguration config) {
+        classes = new LinkedHashSet<Class<?>>(1);
+        singletons = new LinkedHashSet<Object>(3);
+        if (config.isAsynchronousSupported()) {
+            classes.add(AsynchronousJobService.class);
+            singletons.add(new AsynchronousJobPool(config));
+            singletons.add(new AsynchronousProcessListWriter());
+        }
+        if (config.isCheckSecurity()) {
+            singletons.add(new SecurityConstraint());
+        }
+    }
 
-   /**
-    * @see javax.ws.rs.core.Application#getClasses()
-    */
-   @Override
-   public Set<Class<?>> getClasses()
-   {
-      return classes;
-   }
+    /** @see javax.ws.rs.core.Application#getClasses() */
+    @Override
+    public Set<Class<?>> getClasses() {
+        return classes;
+    }
 
-   /**
-    * @see javax.ws.rs.core.Application#getSingletons()
-    */
-   @Override
-   public Set<Object> getSingletons()
-   {
-      return singletons;
-   }
+    /** @see javax.ws.rs.core.Application#getSingletons() */
+    @Override
+    public Set<Object> getSingletons() {
+        return singletons;
+    }
 
-   /**
-    * Add components defined by <code>application</code> to this instance.
-    * 
-    * @param application application
-    * @see Application
-    */
-   public void addApplication(Application application)
-   {
-      if (application != null)
-      {
-         Set<Object> appSingletons = application.getSingletons();
-         if (appSingletons != null && appSingletons.size() > 0)
-         {
-            Set<Object> tmp = new LinkedHashSet<Object>(getSingletons().size() + appSingletons.size());
-            tmp.addAll(appSingletons);
-            tmp.addAll(getSingletons());
-            getSingletons().clear();
-            getSingletons().addAll(tmp);
-         }
-         Set<Class<?>> appClasses = application.getClasses();
-         if (appClasses != null && appClasses.size() > 0)
-         {
-            Set<Class<?>> tmp = new LinkedHashSet<Class<?>>(getClasses().size() + appClasses.size());
-            tmp.addAll(appClasses);
-            tmp.addAll(getClasses());
-            getClasses().clear();
-            getClasses().addAll(tmp);
-         }
-      }
-   }
+    /**
+     * Add components defined by <code>application</code> to this instance.
+     *
+     * @param application
+     *         application
+     * @see Application
+     */
+    public void addApplication(Application application) {
+        if (application != null) {
+            Set<Object> appSingletons = application.getSingletons();
+            if (appSingletons != null && appSingletons.size() > 0) {
+                Set<Object> tmp = new LinkedHashSet<Object>(getSingletons().size() + appSingletons.size());
+                tmp.addAll(appSingletons);
+                tmp.addAll(getSingletons());
+                getSingletons().clear();
+                getSingletons().addAll(tmp);
+            }
+            Set<Class<?>> appClasses = application.getClasses();
+            if (appClasses != null && appClasses.size() > 0) {
+                Set<Class<?>> tmp = new LinkedHashSet<Class<?>>(getClasses().size() + appClasses.size());
+                tmp.addAll(appClasses);
+                tmp.addAll(getClasses());
+                getClasses().clear();
+                getClasses().addAll(tmp);
+            }
+        }
+    }
 }

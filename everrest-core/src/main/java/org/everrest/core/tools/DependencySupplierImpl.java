@@ -31,28 +31,23 @@ import java.util.Map;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class DependencySupplierImpl extends BaseDependencySupplier
-{
-   private final Map<Class<?>, Object> dependencies = new HashMap<Class<?>, Object>();
+public class DependencySupplierImpl extends BaseDependencySupplier {
+    private final Map<Class<?>, Object> dependencies = new HashMap<Class<?>, Object>();
 
-   public DependencySupplierImpl()
-   {
-   }
+    public DependencySupplierImpl() {
+    }
 
-   public DependencySupplierImpl(Class<? extends Annotation> injectAnnotation)
-   {
-      super(injectAnnotation);
-   }
+    public DependencySupplierImpl(Class<? extends Annotation> injectAnnotation) {
+        super(injectAnnotation);
+    }
 
-   public void addComponent(Class<?> key, Object instance)
-   {
-      dependencies.put(key, instance);
-   }
+    public void addComponent(Class<?> key, Object instance) {
+        dependencies.put(key, instance);
+    }
 
-   /** @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class) */
-   @Override
-   public Object getComponent(Class<?> type)
-   {
-      return dependencies.get(type);
-   }
+    /** @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class) */
+    @Override
+    public Object getComponent(Class<?> type) {
+        return dependencies.get(type);
+    }
 }

@@ -18,12 +18,10 @@
  */
 package org.everrest.core;
 
-/**
- * Object scope identifier.
- */
+/** Object scope identifier. */
 public enum ComponentLifecycleScope {
-   /** New instance of object created for each request. */
-   PER_REQUEST,
-   /** Singleton lifecycle. */
-   SINGLETON
+    /** New instance of object created for each request. */
+    PER_REQUEST,
+    /** Singleton lifecycle. */
+    SINGLETON
 }

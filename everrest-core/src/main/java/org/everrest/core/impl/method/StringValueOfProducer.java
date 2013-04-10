@@ -24,26 +24,25 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class StringValueOfProducer extends BaseTypeProducer
-{
-   /** This method will be used for creation object. */
-   private Method valueOfMethod;
+public final class StringValueOfProducer extends BaseTypeProducer {
+    /** This method will be used for creation object. */
+    private Method valueOfMethod;
 
-   /** @param valueOfMethod static method with single String parameter */
-   StringValueOfProducer(Method valueOfMethod)
-   {
-      this.valueOfMethod = valueOfMethod;
-   }
+    /**
+     * @param valueOfMethod
+     *         static method with single String parameter
+     */
+    StringValueOfProducer(Method valueOfMethod) {
+        this.valueOfMethod = valueOfMethod;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   protected Object createValue(String value) throws Exception
-   {
-      if (value == null)
-      {
-         return null;
-      }
+    /** {@inheritDoc} */
+    @Override
+    protected Object createValue(String value) throws Exception {
+        if (value == null) {
+            return null;
+        }
 
-      return valueOfMethod.invoke(null, value);
-   }
+        return valueOfMethod.invoke(null, value);
+    }
 }

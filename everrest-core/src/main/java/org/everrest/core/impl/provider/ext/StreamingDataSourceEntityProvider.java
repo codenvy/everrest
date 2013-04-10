@@ -21,31 +21,28 @@ package org.everrest.core.impl.provider.ext;
 
 import org.everrest.core.impl.provider.DataSourceEntityProvider;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
 import javax.activation.DataSource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 @Provider
-public class StreamingDataSourceEntityProvider extends DataSourceEntityProvider
-{
-   @Override
-   public DataSource readFrom(Class<DataSource> type,
-                              Type genericType,
-                              Annotation[] annotations,
-                              MediaType mediaType,
-                              MultivaluedMap<String, String> httpHeaders,
-                              InputStream entityStream) throws IOException
-   {
-      return new StreamingDataSource(entityStream, mediaType != null ? mediaType.toString() : null);
-   }
+public class StreamingDataSourceEntityProvider extends DataSourceEntityProvider {
+    @Override
+    public DataSource readFrom(Class<DataSource> type,
+                               Type genericType,
+                               Annotation[] annotations,
+                               MediaType mediaType,
+                               MultivaluedMap<String, String> httpHeaders,
+                               InputStream entityStream) throws IOException {
+        return new StreamingDataSource(entityStream, mediaType != null ? mediaType.toString() : null);
+    }
 }

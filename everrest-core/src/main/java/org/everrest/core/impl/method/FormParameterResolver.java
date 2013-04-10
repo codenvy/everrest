@@ -22,53 +22,51 @@ import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.method.TypeProducer;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class FormParameterResolver extends ParameterResolver<FormParam>
-{
-   /** Form generic type. */
-   private static final Type FORM_TYPE = (ParameterizedType)MultivaluedMapImpl.class.getGenericInterfaces()[0];
+public class FormParameterResolver extends ParameterResolver<FormParam> {
+    /** Form generic type. */
+    private static final Type FORM_TYPE = (ParameterizedType)MultivaluedMapImpl.class.getGenericInterfaces()[0];
 
-   /** See {@link FormParam}. */
-   private final FormParam formParam;
+    /** See {@link FormParam}. */
+    private final FormParam formParam;
 
-   /** @param formParam FormParam */
-   FormParameterResolver(FormParam formParam)
-   {
-      this.formParam = formParam;
-   }
+    /**
+     * @param formParam
+     *         FormParam
+     */
+    FormParameterResolver(FormParam formParam) {
+        this.formParam = formParam;
+    }
 
-   /** {@inheritDoc} */
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
-   {
-      String param = this.formParam.value();
-      TypeProducer typeProducer =
-         ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
+    /** {@inheritDoc} */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+        String param = this.formParam.value();
+        TypeProducer typeProducer =
+                ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
 
-      MediaType contentType = context.getHttpHeaders().getMediaType();
-      MessageBodyReader reader =
-         context.getProviders().getMessageBodyReader(MultivaluedMap.class, FORM_TYPE, null, contentType);
-      if (reader == null)
-      {
-         throw new IllegalStateException("Can't find appropriate entity reader for entity type "
-            + MultivaluedMap.class.getName() + " and content-type " + contentType);
-      }
+        MediaType contentType = context.getHttpHeaders().getMediaType();
+        MessageBodyReader reader =
+                context.getProviders().getMessageBodyReader(MultivaluedMap.class, FORM_TYPE, null, contentType);
+        if (reader == null) {
+            throw new IllegalStateException("Can't find appropriate entity reader for entity type "
+                                            + MultivaluedMap.class.getName() + " and content-type " + contentType);
+        }
 
-      MultivaluedMap<String, String> form =
-         (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, contentType, context
-            .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
-      return typeProducer.createValue(param, form, parameter.getDefaultValue());
-   }
+        MultivaluedMap<String, String> form =
+                (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, contentType, context
+                        .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
+        return typeProducer.createValue(param, form, parameter.getDefaultValue());
+    }
 }

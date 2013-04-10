@@ -28,18 +28,17 @@ import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.provider.MultipartFormDataEntityProvider;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Iterator;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -47,30 +46,25 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 @Consumes({"multipart/*"})
-public class InMemoryMultipartFormDataEntityProvider extends MultipartFormDataEntityProvider
-{
-   @Context
-   private HttpServletRequest httpRequest;
+public class InMemoryMultipartFormDataEntityProvider extends MultipartFormDataEntityProvider {
+    @Context
+    private HttpServletRequest httpRequest;
 
-   /** {@inheritDoc} */
-   @SuppressWarnings("unchecked")
-   @Override
-   public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type, Type genericType, Annotation[] annotations,
-                                      MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
-                                      InputStream entityStream) throws IOException
-   {
-      try
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
-         FileItemFactory factory = new InMemoryItemFactory(bufferSize);
-         FileUpload upload = new FileUpload(factory);
-         return upload.parseRequest(httpRequest).iterator();
-      }
-      catch (FileUploadException e)
-      {
-         throw new IOException("Can't process multipart data item " + e);
-      }
-   }
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type, Type genericType, Annotation[] annotations,
+                                       MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
+                                       InputStream entityStream) throws IOException {
+        try {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
+            FileItemFactory factory = new InMemoryItemFactory(bufferSize);
+            FileUpload upload = new FileUpload(factory);
+            return upload.parseRequest(httpRequest).iterator();
+        } catch (FileUploadException e) {
+            throw new IOException("Can't process multipart data item " + e);
+        }
+    }
 
 }

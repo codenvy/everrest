@@ -18,36 +18,39 @@
  */
 package org.everrest.core;
 
-import java.io.IOException;
-
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.IOException;
 
 /**
  * All implementation of this interface should be able to write data in
  * container response, e. g. servlet response.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface ContainerResponseWriter
-{
+public interface ContainerResponseWriter {
 
-   /**
-    * Write HTTP status and headers in HTTP response.
-    * 
-    * @param response container response
-    * @throws IOException if any i/o error occurs
-    */
-   void writeHeaders(GenericContainerResponse response) throws IOException;
+    /**
+     * Write HTTP status and headers in HTTP response.
+     *
+     * @param response
+     *         container response
+     * @throws IOException
+     *         if any i/o error occurs
+     */
+    void writeHeaders(GenericContainerResponse response) throws IOException;
 
-   /**
-    * Write entity body in output stream.
-    * 
-    * @param response container response
-    * @param entityWriter See {@link MessageBodyWriter}
-    * @throws IOException if any i/o error occurs
-    */
-   void writeBody(GenericContainerResponse response, @SuppressWarnings("rawtypes") MessageBodyWriter entityWriter)
-      throws IOException;
+    /**
+     * Write entity body in output stream.
+     *
+     * @param response
+     *         container response
+     * @param entityWriter
+     *         See {@link MessageBodyWriter}
+     * @throws IOException
+     *         if any i/o error occurs
+     */
+    void writeBody(GenericContainerResponse response, @SuppressWarnings("rawtypes") MessageBodyWriter entityWriter)
+            throws IOException;
 
 }

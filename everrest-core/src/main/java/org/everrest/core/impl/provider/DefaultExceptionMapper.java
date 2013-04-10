@@ -32,23 +32,18 @@ import javax.ws.rs.ext.ExceptionMapper;
  * @version $Id: DefaultExceptionMapper.java 2262 2010-04-09 15:21:21Z aparfonov
  *          $
  */
-public class DefaultExceptionMapper implements ExceptionMapper<Exception>
-{
-   /**
-    * {@inheritDoc}
-    */
-   public Response toResponse(Exception exception)
-   {
-      String message = exception.getMessage();
-      if (message == null)
-      {
-         message = exception.getClass().getName();
-      }
-      return Response //
-         .status(500) //
-         .entity(message) //
-         .type(MediaType.TEXT_PLAIN) //
-         .header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message") //
-         .build();
-   }
+public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
+    /** {@inheritDoc} */
+    public Response toResponse(Exception exception) {
+        String message = exception.getMessage();
+        if (message == null) {
+            message = exception.getClass().getName();
+        }
+        return Response //
+                .status(500) //
+                .entity(message) //
+                .type(MediaType.TEXT_PLAIN) //
+                .header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message") //
+                .build();
+    }
 }

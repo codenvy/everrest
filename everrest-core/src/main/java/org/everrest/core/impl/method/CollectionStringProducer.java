@@ -25,25 +25,23 @@ package org.everrest.core.impl.method;
  * @version $Id: CollectionStringProducer.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public final class CollectionStringProducer extends BaseCollectionProducer
-{
-   /**
-    * Constructs new instance of CollectionStringProducer.
-    *
-    * @param collectionClass class of collection which must be created
-    */
-   CollectionStringProducer(Class<?> collectionClass)
-   {
-      super(collectionClass);
-   }
+public final class CollectionStringProducer extends BaseCollectionProducer {
+    /**
+     * Constructs new instance of CollectionStringProducer.
+     *
+     * @param collectionClass
+     *         class of collection which must be created
+     */
+    CollectionStringProducer(Class<?> collectionClass) {
+        super(collectionClass);
+    }
 
-   /**
-    * Don't need to do anything just return passed in method String as is.
-    * {@inheritDoc}
-    */
-   @Override
-   protected Object createValue(String value) throws Exception
-   {
-      return value;
-   }
+    /**
+     * Don't need to do anything just return passed in method String as is.
+     * {@inheritDoc}
+     */
+    @Override
+    protected Object createValue(String value) throws Exception {
+        return value;
+    }
 }

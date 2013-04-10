@@ -26,12 +26,10 @@ import java.util.TreeMap;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class SubResourceLocatorMap extends TreeMap<UriPattern, SubResourceLocatorDescriptor>
-{
-   private static final long serialVersionUID = 89058515637607594L;
+public class SubResourceLocatorMap extends TreeMap<UriPattern, SubResourceLocatorDescriptor> {
+    private static final long serialVersionUID = 89058515637607594L;
 
-   public SubResourceLocatorMap()
-   {
-      super(UriPattern.URIPATTERN_COMPARATOR);
-   }
+    public SubResourceLocatorMap() {
+        super(UriPattern.URIPATTERN_COMPARATOR);
+    }
 }

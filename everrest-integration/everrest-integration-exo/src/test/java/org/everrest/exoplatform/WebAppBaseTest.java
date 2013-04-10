@@ -37,49 +37,45 @@ import javax.servlet.ServletContextEvent;
  * Emulate start of JAXR-RS application via {@link EverrestExoContextListener}.
  * EverRest itself is not configured as ExoContainer components. Container
  * used for delivering JAXR-RS components only.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class WebAppBaseTest extends BaseTest
-{
-   protected ResourceLauncher launcher;
-   protected ResourceBinder resources;
-   protected DependencySupplier dependencies;
-   protected ApplicationProviderBinder providers;
-   private EverrestExoContextListener listener;
-   private MockServletContext sctx;
+public abstract class WebAppBaseTest extends BaseTest {
+    protected ResourceLauncher           launcher;
+    protected ResourceBinder             resources;
+    protected DependencySupplier         dependencies;
+    protected ApplicationProviderBinder  providers;
+    private   EverrestExoContextListener listener;
+    private   MockServletContext         sctx;
 
-   @Override
-   protected void setUp() throws Exception
-   {
-      super.setUp();
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
-      sctx = new MockServletContext();
-      listener = new EverrestExoContextListener() {
-         @Override
-         protected ExoContainer getContainer(ServletContext servletContext)
-         {
-            return container;
-         }
-      };
+        sctx = new MockServletContext();
+        listener = new EverrestExoContextListener() {
+            @Override
+            protected ExoContainer getContainer(ServletContext servletContext) {
+                return container;
+            }
+        };
 
-      listener.contextInitialized(new ServletContextEvent(sctx));
+        listener.contextInitialized(new ServletContextEvent(sctx));
 
-      dependencies = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
-      resources = (ResourceBinder)sctx.getAttribute(ResourceBinder.class.getName());
-      providers = (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
+        dependencies = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
+        resources = (ResourceBinder)sctx.getAttribute(ResourceBinder.class.getName());
+        providers = (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
 
-      RequestHandler requestHandler =
-         new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
-      launcher = new ResourceLauncher(requestHandler);
-   }
+        RequestHandler requestHandler =
+                new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
+        launcher = new ResourceLauncher(requestHandler);
+    }
 
-   @Override
-   protected void tearDown() throws Exception
-   {
-      listener.contextDestroyed(new ServletContextEvent(sctx));
-      super.tearDown();
-   }
-   
+    @Override
+    protected void tearDown() throws Exception {
+        listener.contextDestroyed(new ServletContextEvent(sctx));
+        super.tearDown();
+    }
+
 }

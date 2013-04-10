@@ -1,4 +1,4 @@
 package a.b
-class GRuntimeException extends RuntimeException
-{
+
+class GRuntimeException extends RuntimeException {
 }

@@ -24,43 +24,39 @@ import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.RuntimeDelegateImpl;
 import org.exoplatform.container.StandaloneContainer;
 
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-
-import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class BaseTest extends TestCase
-{
-   protected StandaloneContainer container;
+public abstract class BaseTest extends TestCase {
+    protected StandaloneContainer container;
 
-   @Override
-   protected void setUp() throws Exception
-   {
-      super.setUp();
-      RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
-      
-      // reset set of providers for each test 
-      Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
-      c.setAccessible(true);
-      ProviderBinder.setInstance(c.newInstance());
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
 
-      String conf = getClass().getResource("/conf/test-configuration.xml").toString();
-      StandaloneContainer.setConfigurationURL(conf);
-      container = StandaloneContainer.getInstance();
-   }
+        // reset set of providers for each test
+        Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
+        c.setAccessible(true);
+        ProviderBinder.setInstance(c.newInstance());
 
-   @Override
-   protected void tearDown() throws Exception
-   {
-      container.stop();
-      Field containerField = StandaloneContainer.class.getDeclaredField("container");
-      containerField.setAccessible(true);
-      containerField.set(null, null);
-      container = null;
-      super.tearDown();
-   }
+        String conf = getClass().getResource("/conf/test-configuration.xml").toString();
+        StandaloneContainer.setConfigurationURL(conf);
+        container = StandaloneContainer.getInstance();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        container.stop();
+        Field containerField = StandaloneContainer.class.getDeclaredField("container");
+        containerField.setAccessible(true);
+        containerField.set(null, null);
+        container = null;
+        super.tearDown();
+    }
 }

@@ -24,58 +24,48 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.IdentityConstants;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
 @Provider
-public class ExoAsynchronousJobPool extends AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
-{
-   public ExoAsynchronousJobPool(EverrestConfiguration config)
-   {
-      super(config);
-   }
+public class ExoAsynchronousJobPool extends AsynchronousJobPool implements ContextResolver<AsynchronousJobPool> {
+    public ExoAsynchronousJobPool(EverrestConfiguration config) {
+        super(config);
+    }
 
-   /**
-    * @see org.everrest.core.impl.async.AsynchronousJobPool#newCallable(java.lang.Object, java.lang.reflect.Method,
-    *      java.lang.Object[])
-    */
-   @Override
-   protected Callable<Object> newCallable(Object resource, Method method, Object[] params)
-   {
-      return new CallableWrapper(super.newCallable(resource, method, params));
-   }
+    /**
+     * @see org.everrest.core.impl.async.AsynchronousJobPool#newCallable(java.lang.Object, java.lang.reflect.Method,
+     *      java.lang.Object[])
+     */
+    @Override
+    protected Callable<Object> newCallable(Object resource, Method method, Object[] params) {
+        return new CallableWrapper(super.newCallable(resource, method, params));
+    }
 
-   private static class CallableWrapper implements Callable<Object>
-   {
-      private final ConversationState state;
-      private final Callable<Object> callable;
+    private static class CallableWrapper implements Callable<Object> {
+        private final ConversationState state;
+        private final Callable<Object>  callable;
 
-      public CallableWrapper(Callable<Object> callable)
-      {
-         this.callable = callable;
-         state = ConversationState.getCurrent();
-      }
+        public CallableWrapper(Callable<Object> callable) {
+            this.callable = callable;
+            state = ConversationState.getCurrent();
+        }
 
-      @Override
-      public Object call() throws Exception
-      {
-         ConversationState.setCurrent(state == null
-            ? new ConversationState(new Identity(IdentityConstants.ANONIM)) : state);
-         try
-         {
-            return callable.call();
-         }
-         finally
-         {
-            ConversationState.setCurrent(null);
-         }
-      }
-   }
+        @Override
+        public Object call() throws Exception {
+            ConversationState.setCurrent(state == null
+                                         ? new ConversationState(new Identity(IdentityConstants.ANONIM)) : state);
+            try {
+                return callable.call();
+            } finally {
+                ConversationState.setCurrent(null);
+            }
+        }
+    }
 }

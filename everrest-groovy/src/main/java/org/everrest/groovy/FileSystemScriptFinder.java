@@ -33,54 +33,40 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class FileSystemScriptFinder implements ScriptFinder
-{
-   /**
-    * {@inheritDoc}
-    */
-   public URL[] find(URLFilter filter, URL root) throws MalformedURLException
-   {
-      // Be sure protocol is supported.
-      if ("file".equals(root.getProtocol()))
-      {
-         File file = new File(URI.create(root.toString()));
-         if (file.isDirectory())
-         {
-            return find(file, filter);
-         }
-      }
-      return new URL[0];
-   }
-
-   private URL[] find(File directory, URLFilter filter) throws MalformedURLException
-   {
-      List<URL> files = new ArrayList<URL>();
-      LinkedList<File> q = new LinkedList<File>();
-      q.add(directory);
-      while (!q.isEmpty())
-      {
-         File current = q.pop();
-         File[] list = current.listFiles();
-         if (list != null)
-         {
-            for (int i = 0; i < list.length; i++)
-            {
-               final File f = list[i];
-               if (f.isDirectory())
-               {
-                  q.push(f);
-               }
-               else
-               {
-                  URL url = f.toURI().toURL();
-                  if (filter.accept(url))
-                  {
-                     files.add(url);
-                  }
-               }
+public class FileSystemScriptFinder implements ScriptFinder {
+    /** {@inheritDoc} */
+    public URL[] find(URLFilter filter, URL root) throws MalformedURLException {
+        // Be sure protocol is supported.
+        if ("file".equals(root.getProtocol())) {
+            File file = new File(URI.create(root.toString()));
+            if (file.isDirectory()) {
+                return find(file, filter);
             }
-         }
-      }
-      return files.toArray(new URL[files.size()]);
-   }
+        }
+        return new URL[0];
+    }
+
+    private URL[] find(File directory, URLFilter filter) throws MalformedURLException {
+        List<URL> files = new ArrayList<URL>();
+        LinkedList<File> q = new LinkedList<File>();
+        q.add(directory);
+        while (!q.isEmpty()) {
+            File current = q.pop();
+            File[] list = current.listFiles();
+            if (list != null) {
+                for (int i = 0; i < list.length; i++) {
+                    final File f = list[i];
+                    if (f.isDirectory()) {
+                        q.push(f);
+                    } else {
+                        URL url = f.toURI().toURL();
+                        if (filter.accept(url)) {
+                            files.add(url);
+                        }
+                    }
+                }
+            }
+        }
+        return files.toArray(new URL[files.size()]);
+    }
 }

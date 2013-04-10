@@ -18,24 +18,17 @@
  */
 package org.everrest.test.mock;
 
-/**
- * @author Mestrallet Benjamin benjmestrallet@users.sourceforge.net
- */
-public class MockPrincipal implements java.security.Principal
-{
+/** @author Mestrallet Benjamin benjmestrallet@users.sourceforge.net */
+public class MockPrincipal implements java.security.Principal {
 
-   private final String username;
+    private final String username;
 
-   public MockPrincipal(String username)
-   {
-      this.username = username;
-   }
+    public MockPrincipal(String username) {
+        this.username = username;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String getName()
-   {
-      return username;
-   }
+    /** {@inheritDoc} */
+    public String getName() {
+        return username;
+    }
 }

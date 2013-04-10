@@ -33,39 +33,29 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  * @version $Id: SpringDependencySupplier.java 88 2010-11-11 11:22:12Z andrew00x
  *          $
  */
-public final class SpringDependencySupplier extends BaseDependencySupplier implements BeanFactoryAware
-{
-   private BeanFactory beanFactory;
+public final class SpringDependencySupplier extends BaseDependencySupplier implements BeanFactoryAware {
+    private BeanFactory beanFactory;
 
-   @Override
-   public Object getComponent(Class<?> type)
-   {
-      try
-      {
-         return beanFactory.getBean(type);
-      }
-      catch (NoSuchBeanDefinitionException be)
-      {
-         return null;
-      }
-   }
+    @Override
+    public Object getComponent(Class<?> type) {
+        try {
+            return beanFactory.getBean(type);
+        } catch (NoSuchBeanDefinitionException be) {
+            return null;
+        }
+    }
 
-   @Override
-   public Object getComponentByName(String name)
-   {
-      try
-      {
-         return beanFactory.getBean(name);
-      }
-      catch (NoSuchBeanDefinitionException be)
-      {
-         return null;
-      }
-   }
+    @Override
+    public Object getComponentByName(String name) {
+        try {
+            return beanFactory.getBean(name);
+        } catch (NoSuchBeanDefinitionException be) {
+            return null;
+        }
+    }
 
-   @Override
-   public void setBeanFactory(BeanFactory beanFactory) throws BeansException
-   {
-      this.beanFactory = beanFactory;
-   }
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }

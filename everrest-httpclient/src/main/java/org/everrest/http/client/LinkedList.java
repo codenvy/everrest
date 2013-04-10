@@ -34,121 +34,114 @@ package org.everrest.http.client;
 
 /**
  * This class implements a singly linked list.
- * 
- * @version 0.3-3 06/05/2001
+ *
  * @author Ronald Tschal�r
+ * @version 0.3-3 06/05/2001
  */
-class LinkedList
-{
-   /** head of list */
-   private LinkElement head = null;
+class LinkedList {
+    /** head of list */
+    private LinkElement head = null;
 
-   /** tail of list (for faster adding) */
-   private LinkElement tail = null;
+    /** tail of list (for faster adding) */
+    private LinkElement tail = null;
 
-   /**
-    * Add the specified element to the head of the list.
-    * 
-    * @param elem the object to add to the list.
-    */
-   public synchronized void addToHead(Object elem)
-   {
-      head = new LinkElement(elem, head);
+    /**
+     * Add the specified element to the head of the list.
+     *
+     * @param elem
+     *         the object to add to the list.
+     */
+    public synchronized void addToHead(Object elem) {
+        head = new LinkElement(elem, head);
 
-      if (head.next == null)
-         tail = head;
-   }
+        if (head.next == null)
+            tail = head;
+    }
 
-   /**
-    * Add the specified element to the end of the list.
-    * 
-    * @param elem the object to add to the list.
-    */
-   public synchronized void addToEnd(Object elem)
-   {
-      if (head == null)
-         head = tail = new LinkElement(elem, null);
-      else
-         tail = (tail.next = new LinkElement(elem, null));
-   }
+    /**
+     * Add the specified element to the end of the list.
+     *
+     * @param elem
+     *         the object to add to the list.
+     */
+    public synchronized void addToEnd(Object elem) {
+        if (head == null)
+            head = tail = new LinkElement(elem, null);
+        else
+            tail = (tail.next = new LinkElement(elem, null));
+    }
 
-   /**
-    * Remove the specified element from the list. Does nothing if the element is
-    * not in the list.
-    * 
-    * @param elem the object to remove from the list.
-    */
-   public synchronized void remove(Object elem)
-   {
-      if (head == null)
-         return;
-
-      if (head.element == elem)
-      {
-         head = head.next;
-         return;
-      }
-
-      LinkElement curr = head;
-      while (curr.next != null)
-      {
-         if (curr.next.element == elem)
-         {
-            if (curr.next == tail)
-               tail = curr;
-            curr.next = curr.next.next;
+    /**
+     * Remove the specified element from the list. Does nothing if the element is
+     * not in the list.
+     *
+     * @param elem
+     *         the object to remove from the list.
+     */
+    public synchronized void remove(Object elem) {
+        if (head == null)
             return;
-         }
-         curr = curr.next;
-      }
-   }
 
-   /**
-    * Return the first element in the list. The list is not modified in any way.
-    * 
-    * @return the first element
-    */
-   public synchronized Object getFirst()
-   {
-      if (head == null)
-         return null;
-      return head.element;
-   }
+        if (head.element == elem) {
+            head = head.next;
+            return;
+        }
 
-   private LinkElement next_enum = null;
+        LinkElement curr = head;
+        while (curr.next != null) {
+            if (curr.next.element == elem) {
+                if (curr.next == tail)
+                    tail = curr;
+                curr.next = curr.next.next;
+                return;
+            }
+            curr = curr.next;
+        }
+    }
 
-   /**
-    * Starts an enumeration of all the elements in this list. Note that only one
-    * enumeration can be active at any time.
-    * 
-    * @return the first element, or null if the list is empty
-    */
-   public synchronized Object enumerate()
-   {
-      if (head == null)
-         return null;
+    /**
+     * Return the first element in the list. The list is not modified in any way.
+     *
+     * @return the first element
+     */
+    public synchronized Object getFirst() {
+        if (head == null)
+            return null;
+        return head.element;
+    }
 
-      next_enum = head.next;
-      return head.element;
-   }
+    private LinkElement next_enum = null;
 
-   /**
-    * Gets the next element in the enumeration. The enumeration must have been
-    * first initalized with a call to <code>enumerate()</code>.
-    * 
-    * @return the next element, or null if none left
-    * @see #enumerate()
-    */
-   public synchronized Object next()
-   {
-      if (next_enum == null)
-         return null;
+    /**
+     * Starts an enumeration of all the elements in this list. Note that only one
+     * enumeration can be active at any time.
+     *
+     * @return the first element, or null if the list is empty
+     */
+    public synchronized Object enumerate() {
+        if (head == null)
+            return null;
 
-      Object elem = next_enum.element;
-      next_enum = next_enum.next;
+        next_enum = head.next;
+        return head.element;
+    }
 
-      return elem;
-   }
+    /**
+     * Gets the next element in the enumeration. The enumeration must have been
+     * first initalized with a call to <code>enumerate()</code>.
+     *
+     * @return the next element, or null if none left
+     * @see #enumerate()
+     */
+    public synchronized Object next() {
+        if (next_enum == null)
+            return null;
+
+        Object elem = next_enum.element;
+        next_enum = next_enum.next;
+
+        return elem;
+    }
 
 /*
    public static void main(String args[]) throws Exception
@@ -220,18 +213,14 @@ class LinkedList
 */
 }
 
-/**
- * The represents a single element in the linked list.
- */
-class LinkElement
-{
-   Object element;
+/** The represents a single element in the linked list. */
+class LinkElement {
+    Object element;
 
-   LinkElement next;
+    LinkElement next;
 
-   LinkElement(Object elem, LinkElement next)
-   {
-      this.element = elem;
-      this.next = next;
-   }
+    LinkElement(Object elem, LinkElement next) {
+        this.element = elem;
+        this.next = next;
+    }
 }

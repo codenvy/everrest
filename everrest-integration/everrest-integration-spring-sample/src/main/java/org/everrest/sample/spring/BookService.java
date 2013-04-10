@@ -21,9 +21,6 @@ package org.everrest.sample.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.URI;
-import java.util.Collection;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -33,41 +30,39 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.Collection;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 @Path("books")
-public class BookService
-{
-   @Autowired
-   private BookStorage bookStorage;
+public class BookService {
+    @Autowired
+    private BookStorage bookStorage;
 
-   @Path("{id}")
-   @GET
-   @Produces("application/json")
-   public Book get(@PathParam("id") String id) throws BookNotFoundException
-   {
-      Book book = bookStorage.getBook(id);
-      if (book == null)
-         throw new BookNotFoundException(id);
-      return book;
-   }
+    @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public Book get(@PathParam("id") String id) throws BookNotFoundException {
+        Book book = bookStorage.getBook(id);
+        if (book == null)
+            throw new BookNotFoundException(id);
+        return book;
+    }
 
-   @GET
-   @Produces("application/json")
-   public Collection<Book> getAll()
-   {
-      return bookStorage.getAll();
-   }
+    @GET
+    @Produces("application/json")
+    public Collection<Book> getAll() {
+        return bookStorage.getAll();
+    }
 
-   @PUT
-   @Consumes("application/json")
-   public Response put(Book book, @Context UriInfo uriInfo)
-   {
-      String id = bookStorage.putBook(book);
-      URI location = uriInfo.getBaseUriBuilder().path(getClass()).path(id).build();
-      return Response.created(location).entity(location.toString()).type("text/plain").build();
-   }
+    @PUT
+    @Consumes("application/json")
+    public Response put(Book book, @Context UriInfo uriInfo) {
+        String id = bookStorage.putBook(book);
+        URI location = uriInfo.getBaseUriBuilder().path(getClass()).path(id).build();
+        return Response.created(location).entity(location.toString()).type("text/plain").build();
+    }
 }

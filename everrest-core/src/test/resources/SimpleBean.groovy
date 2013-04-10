@@ -1,9 +1,7 @@
-public class SimpleBean
-{
-   String value
-   
-   String toString()
-   {
-      value
-   }
+public class SimpleBean {
+    String value
+
+    String toString() {
+        value
+    }
 }

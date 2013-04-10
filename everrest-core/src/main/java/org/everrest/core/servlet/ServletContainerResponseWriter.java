@@ -22,13 +22,12 @@ import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.impl.header.HeaderHelper;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * See {@link ContainerResponseWriter}.
@@ -37,56 +36,49 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * @version $Id: ServletContainerResponseWriter.java 279 2009-10-14 15:58:06Z
  *          aparfonov $
  */
-public class ServletContainerResponseWriter implements ContainerResponseWriter
-{
-   /** See {@link HttpServletResponse}. */
-   private final HttpServletResponse servletResponse;
+public class ServletContainerResponseWriter implements ContainerResponseWriter {
+    /** See {@link HttpServletResponse}. */
+    private final HttpServletResponse servletResponse;
 
-   /** @param response HttpServletResponse */
-   public ServletContainerResponseWriter(HttpServletResponse response)
-   {
-      this.servletResponse = response;
-   }
+    /**
+     * @param response
+     *         HttpServletResponse
+     */
+    public ServletContainerResponseWriter(HttpServletResponse response) {
+        this.servletResponse = response;
+    }
 
-   /** {@inheritDoc} */
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
-   {
-      Object entity = response.getEntity();
-      if (entity != null)
-      {
-         OutputStream out = servletResponse.getOutputStream();
-         entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
-            response.getHttpHeaders(), out);
-         out.flush();
-      }
-   }
+    /** {@inheritDoc} */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
+        Object entity = response.getEntity();
+        if (entity != null) {
+            OutputStream out = servletResponse.getOutputStream();
+            entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
+                                 response.getHttpHeaders(), out);
+            out.flush();
+        }
+    }
 
-   /** {@inheritDoc} */
-   public void writeHeaders(GenericContainerResponse response) throws IOException
-   {
-      if (servletResponse.isCommitted())
-      {
-         return;
-      }
+    /** {@inheritDoc} */
+    public void writeHeaders(GenericContainerResponse response) throws IOException {
+        if (servletResponse.isCommitted()) {
+            return;
+        }
 
-      servletResponse.setStatus(response.getStatus());
+        servletResponse.setStatus(response.getStatus());
 
-      if (response.getHttpHeaders() != null)
-      {
-         // content-type and content-length should be preset in headers
-         for (Map.Entry<String, List<Object>> e : response.getHttpHeaders().entrySet())
-         {
-            String name = e.getKey();
-            for (Object o : e.getValue())
-            {
-               String value;
-               if (o != null && (value = HeaderHelper.getHeaderAsString(o)) != null)
-               {
-                  servletResponse.addHeader(name, value);
-               }
+        if (response.getHttpHeaders() != null) {
+            // content-type and content-length should be preset in headers
+            for (Map.Entry<String, List<Object>> e : response.getHttpHeaders().entrySet()) {
+                String name = e.getKey();
+                for (Object o : e.getValue()) {
+                    String value;
+                    if (o != null && (value = HeaderHelper.getHeaderAsString(o)) != null) {
+                        servletResponse.addHeader(name, value);
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
 }

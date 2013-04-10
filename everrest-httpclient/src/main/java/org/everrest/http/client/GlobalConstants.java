@@ -34,39 +34,38 @@ package org.everrest.http.client;
 
 /**
  * This interface defines various global constants.
- * 
- * @version 0.3-3 06/05/2001
+ *
  * @author Ronald Tschal�r
+ * @version 0.3-3 06/05/2001
  * @since V0.3
  */
-interface GlobalConstants
-{
-   /** possible http protocols we (might) handle */
-   int HTTP = 0; // plain http
+interface GlobalConstants {
+    /** possible http protocols we (might) handle */
+    int HTTP = 0; // plain http
 
-   int HTTPS = 1; // http on top of SSL
+    int HTTPS = 1; // http on top of SSL
 
-   int SHTTP = 2; // secure http
+    int SHTTP = 2; // secure http
 
-   int HTTP_NG = 3; // http next-generation
+    int HTTP_NG = 3; // http next-generation
 
-   /** some known http versions */
-   int HTTP_1_0 = (1 << 16) + 0;
+    /** some known http versions */
+    int HTTP_1_0 = (1 << 16) + 0;
 
-   int HTTP_1_1 = (1 << 16) + 1;
+    int HTTP_1_1 = (1 << 16) + 1;
 
-   /** Content delimiters */
-   int CD_NONE = 0; // raw read from the stream
+    /** Content delimiters */
+    int CD_NONE = 0; // raw read from the stream
 
-   int CD_HDRS = 1; // reading headers/trailers
+    int CD_HDRS = 1; // reading headers/trailers
 
-   int CD_0 = 2; // no body
+    int CD_0 = 2; // no body
 
-   int CD_CLOSE = 3; // by closing connection
+    int CD_CLOSE = 3; // by closing connection
 
-   int CD_CONTLEN = 4; // via the Content-Length header
+    int CD_CONTLEN = 4; // via the Content-Length header
 
-   int CD_CHUNKED = 5; // via chunked transfer encoding
+    int CD_CHUNKED = 5; // via chunked transfer encoding
 
-   int CD_MP_BR = 6; // via multipart/byteranges
+    int CD_MP_BR = 6; // via multipart/byteranges
 }

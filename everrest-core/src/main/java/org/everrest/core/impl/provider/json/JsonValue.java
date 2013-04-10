@@ -25,187 +25,169 @@ import java.util.Iterator;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class JsonValue
-{
+public abstract class JsonValue {
 
-   // Set defaults for specific types.
-   // It will be overridden.
+    // Set defaults for specific types.
+    // It will be overridden.
 
-   /** @return true if value is 'object', false otherwise. Should be overridden. */
-   public boolean isObject()
-   {
-      return false;
-   }
+    /** @return true if value is 'object', false otherwise. Should be overridden. */
+    public boolean isObject() {
+        return false;
+    }
 
-   /** @return true if value is 'array', false otherwise. Should be overridden. */
-   public boolean isArray()
-   {
-      return false;
-   }
+    /** @return true if value is 'array', false otherwise. Should be overridden. */
+    public boolean isArray() {
+        return false;
+    }
 
-   /** @return true if value is 'numeric', false otherwise. Should be overridden. */
-   public boolean isNumeric()
-   {
-      return false;
-   }
+    /** @return true if value is 'numeric', false otherwise. Should be overridden. */
+    public boolean isNumeric() {
+        return false;
+    }
 
-   /** @return true if value is 'long', false otherwise. Should be overridden. */
-   public boolean isLong()
-   {
-      return false;
-   }
+    /** @return true if value is 'long', false otherwise. Should be overridden. */
+    public boolean isLong() {
+        return false;
+    }
 
-   /** @return true if value is 'double', false otherwise. Should be overridden. */
-   public boolean isDouble()
-   {
-      return false;
-   }
+    /** @return true if value is 'double', false otherwise. Should be overridden. */
+    public boolean isDouble() {
+        return false;
+    }
 
-   /** @return true if value is 'String', false otherwise. Should be overridden. */
-   public boolean isString()
-   {
-      return false;
-   }
+    /** @return true if value is 'String', false otherwise. Should be overridden. */
+    public boolean isString() {
+        return false;
+    }
 
-   /** @return true if value is 'boolean', false otherwise. Should be overridden. */
-   public boolean isBoolean()
-   {
-      return false;
-   }
+    /** @return true if value is 'boolean', false otherwise. Should be overridden. */
+    public boolean isBoolean() {
+        return false;
+    }
 
-   /** @return true if value is 'null', false otherwise. Should be overridden. */
-   public boolean isNull()
-   {
-      return false;
-   }
+    /** @return true if value is 'null', false otherwise. Should be overridden. */
+    public boolean isNull() {
+        return false;
+    }
 
-   /**
-    * Add child value. This method must be used if isArray() gives true.
-    *
-    * @param child the child value.
-    */
-   public void addElement(JsonValue child)
-   {
-      throw new UnsupportedOperationException("This type of JsonValue can't have child.");
-   }
+    /**
+     * Add child value. This method must be used if isArray() gives true.
+     *
+     * @param child
+     *         the child value.
+     */
+    public void addElement(JsonValue child) {
+        throw new UnsupportedOperationException("This type of JsonValue can't have child.");
+    }
 
-   /**
-    * Add child value. This method must be used if isObject() gives true.
-    *
-    * @param key the key.
-    * @param child the child value.
-    */
-   public void addElement(String key, JsonValue child)
-   {
-      throw new UnsupportedOperationException("This type of JsonValue can't have child.");
-   }
+    /**
+     * Add child value. This method must be used if isObject() gives true.
+     *
+     * @param key
+     *         the key.
+     * @param child
+     *         the child value.
+     */
+    public void addElement(String key, JsonValue child) {
+        throw new UnsupportedOperationException("This type of JsonValue can't have child.");
+    }
 
-   /**
-    * Get all element of this value.
-    *
-    * @return Iterator.
-    */
-   public Iterator<JsonValue> getElements()
-   {
-      return Collections.<JsonValue>emptyList().iterator();
-   }
+    /**
+     * Get all element of this value.
+     *
+     * @return Iterator.
+     */
+    public Iterator<JsonValue> getElements() {
+        return Collections.<JsonValue>emptyList().iterator();
+    }
 
-   /**
-    * Get all keys for access values.
-    *
-    * @return Iterator.
-    */
-   public Iterator<String> getKeys()
-   {
-      return Collections.<String>emptyList().iterator();
-   }
+    /**
+     * Get all keys for access values.
+     *
+     * @return Iterator.
+     */
+    public Iterator<String> getKeys() {
+        return Collections.<String>emptyList().iterator();
+    }
 
-   /**
-    * Get value by key.
-    *
-    * @param key the key.
-    * @return JsonValue with specified key.
-    */
-   public JsonValue getElement(String key)
-   {
-      return null;
-   }
+    /**
+     * Get value by key.
+     *
+     * @param key
+     *         the key.
+     * @return JsonValue with specified key.
+     */
+    public JsonValue getElement(String key) {
+        return null;
+    }
 
-   /** @return number of child elements. */
-   public int size()
-   {
-      return 0;
-   }
+    /** @return number of child elements. */
+    public int size() {
+        return 0;
+    }
 
-   // Prepared values of know type.
-   // It will be overridden.
+    // Prepared values of know type.
+    // It will be overridden.
 
-   /** @return string value. Should be overridden. */
-   public String getStringValue()
-   {
-      return null;
-   }
+    /** @return string value. Should be overridden. */
+    public String getStringValue() {
+        return null;
+    }
 
-   /** @return boolean value. Should be overridden. */
-   public boolean getBooleanValue()
-   {
-      return false;
-   }
+    /** @return boolean value. Should be overridden. */
+    public boolean getBooleanValue() {
+        return false;
+    }
 
-   /** @return Number value. Should be overridden. */
-   public Number getNumberValue()
-   {
-      return getIntValue();
-   }
+    /** @return Number value. Should be overridden. */
+    public Number getNumberValue() {
+        return getIntValue();
+    }
 
-   /** @return byte value. Should be overridden. */
-   public byte getByteValue()
-   {
-      return 0;
-   }
+    /** @return byte value. Should be overridden. */
+    public byte getByteValue() {
+        return 0;
+    }
 
-   /** @return short Value. Should be overridden. */
-   public short getShortValue()
-   {
-      return 0;
-   }
+    /** @return short Value. Should be overridden. */
+    public short getShortValue() {
+        return 0;
+    }
 
-   /** @return int value. Should be overridden. */
-   public int getIntValue()
-   {
-      return 0;
-   }
+    /** @return int value. Should be overridden. */
+    public int getIntValue() {
+        return 0;
+    }
 
-   /** @return long value. Should be overridden. */
-   public long getLongValue()
-   {
-      return 0L;
-   }
+    /** @return long value. Should be overridden. */
+    public long getLongValue() {
+        return 0L;
+    }
 
-   /** @return float value. Should be overridden. */
-   public float getFloatValue()
-   {
-      return 0.0F;
-   }
+    /** @return float value. Should be overridden. */
+    public float getFloatValue() {
+        return 0.0F;
+    }
 
-   /** @return double value. Should be overridden. */
-   public double getDoubleValue()
-   {
-      return 0.0;
-   }
+    /** @return double value. Should be overridden. */
+    public double getDoubleValue() {
+        return 0.0;
+    }
 
-   //  must be implemented
+    //  must be implemented
 
-   /** {@inheritDoc} */
-   @Override
-   public abstract String toString();
+    /** {@inheritDoc} */
+    @Override
+    public abstract String toString();
 
-   /**
-    * Write value in given writer.
-    *
-    * @param writer Writer.
-    * @throws JsonException if any errors occurs.
-    */
-   public abstract void writeTo(JsonWriter writer) throws JsonException;
+    /**
+     * Write value in given writer.
+     *
+     * @param writer
+     *         Writer.
+     * @throws JsonException
+     *         if any errors occurs.
+     */
+    public abstract void writeTo(JsonWriter writer) throws JsonException;
 
 }

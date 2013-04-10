@@ -34,6 +34,5 @@ import org.everrest.core.servlet.EverrestServlet;
  */
 @SuppressWarnings("serial")
 @Singleton
-public final class GuiceEverrestServlet extends EverrestServlet
-{
+public final class GuiceEverrestServlet extends EverrestServlet {
 }

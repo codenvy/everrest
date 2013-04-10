@@ -35,112 +35,84 @@ import javax.ws.rs.ext.Provider;
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class RestComponentResolver
-{
+public final class RestComponentResolver {
 
-   private ResourceBinder resources;
+    private ResourceBinder resources;
 
-   private ProviderBinder providers;
+    private ProviderBinder providers;
 
-   public RestComponentResolver(ResourceBinder resources, ProviderBinder providers)
-   {
-      this.resources = resources;
-      this.providers = providers;
-   }
+    public RestComponentResolver(ResourceBinder resources, ProviderBinder providers) {
+        this.resources = resources;
+        this.providers = providers;
+    }
 
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   public void addSingleton(Object instance)
-   {
-      Class clazz = instance.getClass();
-      if (clazz.getAnnotation(Provider.class) != null)
-      {
-         // singleton provider
-         if (instance instanceof ContextResolver)
-         {
-            providers.addContextResolver((ContextResolver)instance);
-         }
-         if (instance instanceof ExceptionMapper)
-         {
-            providers.addExceptionMapper((ExceptionMapper)instance);
-         }
-         if (instance instanceof MessageBodyReader)
-         {
-            providers.addMessageBodyReader((MessageBodyReader)instance);
-         }
-         if (instance instanceof MessageBodyWriter)
-         {
-            providers.addMessageBodyWriter((MessageBodyWriter)instance);
-         }
-      }
-      else if (clazz.getAnnotation(Filter.class) != null)
-      {
-         // singleton filter
-         if (instance instanceof MethodInvokerFilter)
-         {
-            providers.addMethodInvokerFilter((MethodInvokerFilter)instance);
-         }
-         if (instance instanceof RequestFilter)
-         {
-            providers.addRequestFilter((RequestFilter)instance);
-         }
-         if (instance instanceof ResponseFilter)
-         {
-            providers.addResponseFilter((ResponseFilter)instance);
-         }
-      }
-      else if (clazz.getAnnotation(Path.class) != null)
-      {
-         // singleton resource
-         resources.addResource(instance, null);
-      }
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void addSingleton(Object instance) {
+        Class clazz = instance.getClass();
+        if (clazz.getAnnotation(Provider.class) != null) {
+            // singleton provider
+            if (instance instanceof ContextResolver) {
+                providers.addContextResolver((ContextResolver)instance);
+            }
+            if (instance instanceof ExceptionMapper) {
+                providers.addExceptionMapper((ExceptionMapper)instance);
+            }
+            if (instance instanceof MessageBodyReader) {
+                providers.addMessageBodyReader((MessageBodyReader)instance);
+            }
+            if (instance instanceof MessageBodyWriter) {
+                providers.addMessageBodyWriter((MessageBodyWriter)instance);
+            }
+        } else if (clazz.getAnnotation(Filter.class) != null) {
+            // singleton filter
+            if (instance instanceof MethodInvokerFilter) {
+                providers.addMethodInvokerFilter((MethodInvokerFilter)instance);
+            }
+            if (instance instanceof RequestFilter) {
+                providers.addRequestFilter((RequestFilter)instance);
+            }
+            if (instance instanceof ResponseFilter) {
+                providers.addResponseFilter((ResponseFilter)instance);
+            }
+        } else if (clazz.getAnnotation(Path.class) != null) {
+            // singleton resource
+            resources.addResource(instance, null);
+        }
 
-   }
+    }
 
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   public void addPerRequest(Class clazz)
-   {
-      if (clazz.getAnnotation(Provider.class) != null)
-      {
-         // per-request provider
-         if (ContextResolver.class.isAssignableFrom(clazz))
-         {
-            providers.addContextResolver(clazz);
-         }
-         if (ExceptionMapper.class.isAssignableFrom(clazz))
-         {
-            providers.addExceptionMapper(clazz);
-         }
-         if (MessageBodyReader.class.isAssignableFrom(clazz))
-         {
-            providers.addMessageBodyReader(clazz);
-         }
-         if (MessageBodyWriter.class.isAssignableFrom(clazz))
-         {
-            providers.addMessageBodyWriter(clazz);
-         }
-      }
-      else if (clazz.getAnnotation(Filter.class) != null)
-      {
-         // per-request filter
-         if (MethodInvokerFilter.class.isAssignableFrom(clazz))
-         {
-            providers.addMethodInvokerFilter(clazz);
-         }
-         if (RequestFilter.class.isAssignableFrom(clazz))
-         {
-            providers.addRequestFilter(clazz);
-         }
-         if (ResponseFilter.class.isAssignableFrom(clazz))
-         {
-            providers.addResponseFilter(clazz);
-         }
-      }
-      else if (clazz.getAnnotation(Path.class) != null)
-      {
-         // per-request resource
-         resources.addResource(clazz, null);
-      }
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void addPerRequest(Class clazz) {
+        if (clazz.getAnnotation(Provider.class) != null) {
+            // per-request provider
+            if (ContextResolver.class.isAssignableFrom(clazz)) {
+                providers.addContextResolver(clazz);
+            }
+            if (ExceptionMapper.class.isAssignableFrom(clazz)) {
+                providers.addExceptionMapper(clazz);
+            }
+            if (MessageBodyReader.class.isAssignableFrom(clazz)) {
+                providers.addMessageBodyReader(clazz);
+            }
+            if (MessageBodyWriter.class.isAssignableFrom(clazz)) {
+                providers.addMessageBodyWriter(clazz);
+            }
+        } else if (clazz.getAnnotation(Filter.class) != null) {
+            // per-request filter
+            if (MethodInvokerFilter.class.isAssignableFrom(clazz)) {
+                providers.addMethodInvokerFilter(clazz);
+            }
+            if (RequestFilter.class.isAssignableFrom(clazz)) {
+                providers.addRequestFilter(clazz);
+            }
+            if (ResponseFilter.class.isAssignableFrom(clazz)) {
+                providers.addResponseFilter(clazz);
+            }
+        } else if (clazz.getAnnotation(Path.class) != null) {
+            // per-request resource
+            resources.addResource(clazz, null);
+        }
 
-   }
+    }
 
 }

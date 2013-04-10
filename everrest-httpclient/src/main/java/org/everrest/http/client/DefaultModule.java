@@ -41,111 +41,85 @@ import java.net.ProtocolException;
  * This is the default module which gets called after all other modules have
  * done their stuff.
  *
- * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
+ * @version 0.3-3 06/05/2001
  */
-class DefaultModule implements HTTPClientModule
-{
-   /** number of times the request will be retried */
-   private int req_timeout_retries;
+class DefaultModule implements HTTPClientModule {
+    /** number of times the request will be retried */
+    private int req_timeout_retries;
 
-   private static final Logger log = Logger.getLogger(DefaultModule.class);
+    private static final Logger log = Logger.getLogger(DefaultModule.class);
 
-   // Constructors
+    // Constructors
 
-   /**
-    * Three retries upon receipt of a 408.
-    */
-   DefaultModule()
-   {
-      req_timeout_retries = 3;
-   }
+    /** Three retries upon receipt of a 408. */
+    DefaultModule() {
+        req_timeout_retries = 3;
+    }
 
-   // Methods
+    // Methods
 
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public int requestHandler(Request req, Response[] resp)
-   {
-      return REQ_CONTINUE;
-   }
+    /** Invoked by the HTTPClient. */
+    public int requestHandler(Request req, Response[] resp) {
+        return REQ_CONTINUE;
+    }
 
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public void responsePhase1Handler(Response resp, RoRequest req)
-   {
-   }
+    /** Invoked by the HTTPClient. */
+    public void responsePhase1Handler(Response resp, RoRequest req) {
+    }
 
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public int responsePhase2Handler(Response resp, Request req) throws IOException
-   {
+    /** Invoked by the HTTPClient. */
+    public int responsePhase2Handler(Response resp, Request req) throws IOException {
       /* handle various response status codes until satisfied */
 
-      int sts = resp.getStatusCode();
-      switch (sts)
-      {
-         case 408 : // Request Timeout
+        int sts = resp.getStatusCode();
+        switch (sts) {
+            case 408: // Request Timeout
 
-            if (req_timeout_retries-- == 0 || req.getStream() != null)
-            {
-               if (log.isDebugEnabled())
-                  log.debug("Status " + sts + " " + resp.getReasonLine()
-                     + " not handled - maximum number of retries exceeded");
+                if (req_timeout_retries-- == 0 || req.getStream() != null) {
+                    if (log.isDebugEnabled())
+                        log.debug("Status " + sts + " " + resp.getReasonLine()
+                                  + " not handled - maximum number of retries exceeded");
 
-               return RSP_CONTINUE;
-            }
-            else
-            {
-               if (log.isDebugEnabled())
-                  log.debug("Handling " + sts + " " + resp.getReasonLine() + " - resending request");
+                    return RSP_CONTINUE;
+                } else {
+                    if (log.isDebugEnabled())
+                        log.debug("Handling " + sts + " " + resp.getReasonLine() + " - resending request");
 
-               return RSP_REQUEST;
-            }
+                    return RSP_REQUEST;
+                }
 
-         case 411 : // Length Required
-            if (req.getStream() != null && req.getStream().getLength() == -1)
-               return RSP_CONTINUE;
+            case 411: // Length Required
+                if (req.getStream() != null && req.getStream().getLength() == -1)
+                    return RSP_CONTINUE;
 
-            try
-            {
-               resp.getInputStream().close();
-            }
-            catch (IOException ioe)
-            {
-            }
-            if (req.getData() != null)
-               throw new ProtocolException("Received status code 411 even" + " though Content-Length was sent");
+                try {
+                    resp.getInputStream().close();
+                } catch (IOException ioe) {
+                }
+                if (req.getData() != null)
+                    throw new ProtocolException("Received status code 411 even" + " though Content-Length was sent");
 
-            if (log.isDebugEnabled())
-               log.debug("Handling " + sts + " " + resp.getReasonLine()
-                  + " - resending request with 'Content-length: 0'");
+                if (log.isDebugEnabled())
+                    log.debug("Handling " + sts + " " + resp.getReasonLine()
+                              + " - resending request with 'Content-length: 0'");
 
-            req.setData(new byte[0]); // will send Content-Length: 0
-            return RSP_REQUEST;
+                req.setData(new byte[0]); // will send Content-Length: 0
+                return RSP_REQUEST;
 
-         case 505 : // HTTP Version not supported
-            return RSP_CONTINUE;
+            case 505: // HTTP Version not supported
+                return RSP_CONTINUE;
 
-         default :
-            return RSP_CONTINUE;
-      }
-   }
+            default:
+                return RSP_CONTINUE;
+        }
+    }
 
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public void responsePhase3Handler(Response resp, RoRequest req)
-   {
-   }
+    /** Invoked by the HTTPClient. */
+    public void responsePhase3Handler(Response resp, RoRequest req) {
+    }
 
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public void trailerHandler(Response resp, RoRequest req)
-   {
-   }
+    /** Invoked by the HTTPClient. */
+    public void trailerHandler(Response resp, RoRequest req) {
+    }
 }

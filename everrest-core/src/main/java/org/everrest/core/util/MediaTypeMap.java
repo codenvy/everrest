@@ -20,59 +20,53 @@ package org.everrest.core.util;
 
 import org.everrest.core.impl.header.MediaTypeHelper;
 
-import java.util.Comparator;
-
 import javax.ws.rs.core.MediaType;
+import java.util.Comparator;
 
 /**
  * Keeps sorted values.
  *
- * @param <T> actual value type
+ * @param <T>
+ *         actual value type
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
-{
-   /** Serial Version UID. */
-   private static final long serialVersionUID = -4713556573521776577L;
+public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T> {
+    /** Serial Version UID. */
+    private static final long serialVersionUID = -4713556573521776577L;
 
-   /** Create new instance of MediaTypeMap with {@link Comparator}. */
-   public MediaTypeMap()
-   {
-      super(COMPARATOR);
-   }
+    /** Create new instance of MediaTypeMap with {@link Comparator}. */
+    public MediaTypeMap() {
+        super(COMPARATOR);
+    }
 
-   /** See {@link Comparator}. */
-   static final Comparator<MediaType> COMPARATOR = new Comparator<MediaType>()
-   {
-      /**
-       * Compare two {@link MediaType}.
-       *
-       * @param o1 first MediaType to be compared
-       * @param o2 second MediaType to be compared
-       * @return result of comparison
-       * @see Comparator#compare(Object, Object)
-       * @see MediaTypeHelper
-       * @see MediaType
-       */
-      @Override
-      public int compare(MediaType o1, MediaType o2)
-      {
-         int r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(o1, o2);
-         // If media type has the same 'weight' (i.e. 'application/xml' and
-         // 'text/xml' has the same 'weight'), then order does not matter but
-         // should e compared lexicographically, otherwise new entry with the
-         // same 'weight' will be not added in map.
-         if (r == 0)
-         {
-            r = toString(o1).compareToIgnoreCase(toString(o2));
-         }
-         return r;
-      }
+    /** See {@link Comparator}. */
+    static final Comparator<MediaType> COMPARATOR = new Comparator<MediaType>() {
+        /**
+         * Compare two {@link MediaType}.
+         *
+         * @param o1 first MediaType to be compared
+         * @param o2 second MediaType to be compared
+         * @return result of comparison
+         * @see Comparator#compare(Object, Object)
+         * @see MediaTypeHelper
+         * @see MediaType
+         */
+        @Override
+        public int compare(MediaType o1, MediaType o2) {
+            int r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(o1, o2);
+            // If media type has the same 'weight' (i.e. 'application/xml' and
+            // 'text/xml' has the same 'weight'), then order does not matter but
+            // should e compared lexicographically, otherwise new entry with the
+            // same 'weight' will be not added in map.
+            if (r == 0) {
+                r = toString(o1).compareToIgnoreCase(toString(o2));
+            }
+            return r;
+        }
 
-      private String toString(MediaType mime)
-      {
-         return mime.getType() + "/" + mime.getSubtype();
-      }
-   };
+        private String toString(MediaType mime) {
+            return mime.getType() + "/" + mime.getSubtype();
+        }
+    };
 }

@@ -27,21 +27,20 @@ package org.everrest.websockets;
  * @see WSConnectionContext#registerConnectionListener(WSConnectionListener)
  * @see WSConnectionContext#removeConnectionListener(WSConnectionListener)
  */
-public interface WSConnectionListener
-{
-   /**
-    * Called when new connection opened.
-    *
-    * @param connection
-    *    new connection
-    */
-   void onOpen(WSConnection connection);
+public interface WSConnectionListener {
+    /**
+     * Called when new connection opened.
+     *
+     * @param connection
+     *         new connection
+     */
+    void onOpen(WSConnection connection);
 
-   /**
-    * Called when connection closed.
-    *
-    * @param connection
-    *    closed connection
-    */
-   void onClose(WSConnection connection);
+    /**
+     * Called when connection closed.
+     *
+     * @param connection
+     *         closed connection
+     */
+    void onClose(WSConnection connection);
 }

@@ -1,4 +1,4 @@
-<container>  
-    <component-implementation class='org.everrest.sample.pico.BookNotFoundExceptionMapper' />
-    <component-implementation class='org.everrest.sample.pico.BookStorage' />
+<container>
+    <component-implementation class='org.everrest.sample.pico.BookNotFoundExceptionMapper'/>
+    <component-implementation class='org.everrest.sample.pico.BookStorage'/>
 </container> 

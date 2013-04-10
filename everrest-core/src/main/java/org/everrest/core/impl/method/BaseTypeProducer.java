@@ -28,34 +28,31 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class BaseTypeProducer implements TypeProducer
-{
-   /**
-    * Create object from given string. In all extends for this class this method
-    * must be specified to produce object of required type. String will be used
-    * as parameter for constructor of object or static valueOf method.
-    *
-    * @param value string value
-    * @return newly created object
-    * @throws Exception if any error occurs
-    */
-   protected abstract Object createValue(String value) throws Exception;
+public abstract class BaseTypeProducer implements TypeProducer {
+    /**
+     * Create object from given string. In all extends for this class this method
+     * must be specified to produce object of required type. String will be used
+     * as parameter for constructor of object or static valueOf method.
+     *
+     * @param value
+     *         string value
+     * @return newly created object
+     * @throws Exception
+     *         if any error occurs
+     */
+    protected abstract Object createValue(String value) throws Exception;
 
-   /** {@inheritDoc} */
-   public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception
-   {
+    /** {@inheritDoc} */
+    public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception {
 
-      String value = values.getFirst(param);
+        String value = values.getFirst(param);
 
-      if (value != null)
-      {
-         return createValue(value);
-      }
-      else if (defaultValue != null)
-      {
-         return createValue(defaultValue);
-      }
+        if (value != null) {
+            return createValue(value);
+        } else if (defaultValue != null) {
+            return createValue(defaultValue);
+        }
 
-      return null;
-   }
+        return null;
+    }
 }

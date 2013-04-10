@@ -32,35 +32,26 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface GenericMethodResource
-{
+public interface GenericMethodResource {
 
-   /**
-    * @return See {@link Method}
-    */
-   Method getMethod();
+    /** @return See {@link Method} */
+    Method getMethod();
 
-   /**
-    * @return List of method parameters
-    */
-   List<MethodParameter> getMethodParameters();
+    /** @return List of method parameters */
+    List<MethodParameter> getMethodParameters();
 
-   /**
-    * @return parent resource descriptor
-    */
-   AbstractResourceDescriptor getParentResource();
+    /** @return parent resource descriptor */
+    AbstractResourceDescriptor getParentResource();
 
-   /**
-    * @return Java type returned by method, see {@link #getMethod()}
-    */
-   Class<?> getResponseType();
+    /** @return Java type returned by method, see {@link #getMethod()} */
+    Class<?> getResponseType();
 
-   /**
-    * Get set or additional (not JAX-RS specific) annotation. Set of annotations
-    * in implementation specific and it is not guaranteed this method will
-    * return all annotations applied to the method.
-    *
-    * @return addition annotation
-    */
-   Annotation[] getAnnotations();
+    /**
+     * Get set or additional (not JAX-RS specific) annotation. Set of annotations
+     * in implementation specific and it is not guaranteed this method will
+     * return all annotations applied to the method.
+     *
+     * @return addition annotation
+     */
+    Annotation[] getAnnotations();
 }

@@ -25,15 +25,12 @@ package org.everrest.websockets.message;
  * @version $Id: $
  */
 @SuppressWarnings("serial")
-public class MessageConversionException extends Exception
-{
-   public MessageConversionException(String message)
-   {
-      super(message);
-   }
+public class MessageConversionException extends Exception {
+    public MessageConversionException(String message) {
+        super(message);
+    }
 
-   public MessageConversionException(String message, Throwable cause)
-   {
-      super(message, cause);
-   }
+    public MessageConversionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

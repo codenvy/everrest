@@ -27,20 +27,22 @@ package org.everrest.core;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class UnhandledException extends RuntimeException
-{
-   /**
-    * @param s message
-    * @param throwable cause
-    */
-   public UnhandledException(String s, Throwable throwable)
-   {
-      super(s, throwable);
-   }
+public class UnhandledException extends RuntimeException {
+    /**
+     * @param s
+     *         message
+     * @param throwable
+     *         cause
+     */
+    public UnhandledException(String s, Throwable throwable) {
+        super(s, throwable);
+    }
 
-   /** @param throwable cause */
-   public UnhandledException(Throwable throwable)
-   {
-      super(throwable);
-   }
+    /**
+     * @param throwable
+     *         cause
+     */
+    public UnhandledException(Throwable throwable) {
+        super(throwable);
+    }
 }

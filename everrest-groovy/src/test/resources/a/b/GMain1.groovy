@@ -1,11 +1,12 @@
 package a.b
-import javax.ws.rs.Path
-import javax.ws.rs.GET
+
 import dependencies.GDependency1
 
+import javax.ws.rs.GET
+import javax.ws.rs.Path
+
 @Path("a")
-class GMain1
-{
-   @GET
-   def m0(){new GDependency1().getName()}
+class GMain1 {
+    @GET
+    def m0() { new GDependency1().getName() }
 }

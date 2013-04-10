@@ -23,14 +23,13 @@ package org.everrest.groovy;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface ResourceId
-{
+public interface ResourceId {
 
-   /**
-    * Gets the id of resource as string
-    *
-    * @return the resource id
-    */
-   String getId();
+    /**
+     * Gets the id of resource as string
+     *
+     * @return the resource id
+     */
+    String getId();
 
 }

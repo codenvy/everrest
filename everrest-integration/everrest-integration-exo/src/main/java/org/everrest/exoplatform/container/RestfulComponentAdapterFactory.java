@@ -29,33 +29,29 @@ import org.picocontainer.defaults.NotConcreteRegistrationException;
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class RestfulComponentAdapterFactory implements ComponentAdapterFactory
-{
-   private final ComponentAdapterFactory delegate;
+public final class RestfulComponentAdapterFactory implements ComponentAdapterFactory {
+    private final ComponentAdapterFactory delegate;
 
-   public RestfulComponentAdapterFactory(ComponentAdapterFactory delegate)
-   {
-      if (delegate == null)
-      {
-         throw new NullPointerException();
-      }
-      this.delegate = delegate;
-   }
+    public RestfulComponentAdapterFactory(ComponentAdapterFactory delegate) {
+        if (delegate == null) {
+            throw new NullPointerException();
+        }
+        this.delegate = delegate;
+    }
 
-   /**
-    * @see org.picocontainer.defaults.ComponentAdapterFactory#createComponentAdapter(java.lang.Object, java.lang.Class,
-    *      org.picocontainer.Parameter[])
-    */
-   @SuppressWarnings("rawtypes")
-   @Override
-   public ComponentAdapter createComponentAdapter(Object componentKey, Class componentImplementation,
-      Parameter[] parameters) throws PicoIntrospectionException, AssignabilityRegistrationException,
-      NotConcreteRegistrationException
-   {
-      if (RestfulComponentAdapter.isRestfulComponent(componentImplementation))
-      {
-         return new RestfulComponentAdapter(componentKey, componentImplementation);
-      }
-      return delegate.createComponentAdapter(componentKey, componentImplementation, parameters);
-   }
+    /**
+     * @see org.picocontainer.defaults.ComponentAdapterFactory#createComponentAdapter(java.lang.Object, java.lang.Class,
+     *      org.picocontainer.Parameter[])
+     */
+    @SuppressWarnings("rawtypes")
+    @Override
+    public ComponentAdapter createComponentAdapter(Object componentKey, Class componentImplementation,
+                                                   Parameter[] parameters)
+            throws PicoIntrospectionException, AssignabilityRegistrationException,
+                   NotConcreteRegistrationException {
+        if (RestfulComponentAdapter.isRestfulComponent(componentImplementation)) {
+            return new RestfulComponentAdapter(componentKey, componentImplementation);
+        }
+        return delegate.createComponentAdapter(componentKey, componentImplementation, parameters);
+    }
 }

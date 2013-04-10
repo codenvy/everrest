@@ -27,29 +27,26 @@ import java.lang.reflect.Constructor;
  * @version $Id: StringConstructorProducer.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public final class StringConstructorProducer extends BaseTypeProducer
-{
-   /** Constructor which must be used for creation object. */
-   private Constructor<?> constructor;
+public final class StringConstructorProducer extends BaseTypeProducer {
+    /** Constructor which must be used for creation object. */
+    private Constructor<?> constructor;
 
-   /**
-    * @param constructor this constructor will be used for creation instance of
-    * object
-    */
-   StringConstructorProducer(Constructor<?> constructor)
-   {
-      this.constructor = constructor;
-   }
+    /**
+     * @param constructor
+     *         this constructor will be used for creation instance of
+     *         object
+     */
+    StringConstructorProducer(Constructor<?> constructor) {
+        this.constructor = constructor;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   protected Object createValue(String value) throws Exception
-   {
-      if (value == null)
-      {
-         return null;
-      }
+    /** {@inheritDoc} */
+    @Override
+    protected Object createValue(String value) throws Exception {
+        if (value == null) {
+            return null;
+        }
 
-      return constructor.newInstance(value);
-   }
+        return constructor.newInstance(value);
+    }
 }

@@ -21,6 +21,7 @@ package org.everrest.core.resource;
 import org.everrest.core.ExtMultivaluedMap;
 import org.everrest.core.impl.header.MediaTypeHelper;
 
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,116 +30,95 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashMap<String, List<T>> implements
-   ExtMultivaluedMap<String, T>
-{
-   private static final long serialVersionUID = 8930689464134153848L;
+                                                                                                    ExtMultivaluedMap<String, T> {
+    private static final long serialVersionUID = 8930689464134153848L;
 
-   /**
-    * Compare list of media types. Each list should be already sorted by
-    * {@link MediaTypeHelper#MEDIA_TYPE_COMPARATOR}. So it is enough to compare
-    * only last media types in the list. Last media types is the least precise.
-    */
-   private static final Comparator<ResourceMethodDescriptor> RESOURCE_METHOD_COMPARATOR =
-      new Comparator<ResourceMethodDescriptor>()
-      {
-         @Override
-         public int compare(ResourceMethodDescriptor o1, ResourceMethodDescriptor o2)
-         {
-            int r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(getLast(o1.consumes()), getLast(o2.consumes()));
-            if (r == 0)
-            {
-               r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(getLast(o1.produces()), getLast(o2.produces()));
+    /**
+     * Compare list of media types. Each list should be already sorted by
+     * {@link MediaTypeHelper#MEDIA_TYPE_COMPARATOR}. So it is enough to compare
+     * only last media types in the list. Last media types is the least precise.
+     */
+    private static final Comparator<ResourceMethodDescriptor> RESOURCE_METHOD_COMPARATOR =
+            new Comparator<ResourceMethodDescriptor>() {
+                @Override
+                public int compare(ResourceMethodDescriptor o1, ResourceMethodDescriptor o2) {
+                    int r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(getLast(o1.consumes()), getLast(o2.consumes()));
+                    if (r == 0) {
+                        r = MediaTypeHelper.MEDIA_TYPE_COMPARATOR.compare(getLast(o1.produces()), getLast(o2.produces()));
+                    }
+                    if (r == 0) {
+                        r = o1.consumes().size() - o2.consumes().size();
+                    }
+                    if (r == 0) {
+                        r = o1.produces().size() - o2.produces().size();
+                    }
+                    return r;
+                }
+
+                private MediaType getLast(List<MediaType> l) {
+                    return l.get(l.size() - 1);
+                }
+            };
+
+    /** {@inheritDoc} */
+    public List<T> getList(String httpMethod) {
+        List<T> l = get(httpMethod);
+        if (l == null) {
+            l = new ArrayList<T>();
+            put(httpMethod, l);
+        }
+        return l;
+    }
+
+    /** {@inheritDoc} */
+    public void add(String httpMethod, T resourceMethod) {
+        if (resourceMethod == null) {
+            return;
+        }
+        List<T> l = getList(httpMethod);
+        l.add(resourceMethod);
+    }
+
+    /** {@inheritDoc} */
+    public T getFirst(String httpMethod) {
+        List<T> l = getList(httpMethod);
+        return l != null && l.size() > 0 ? l.get(0) : null;
+    }
+
+    /** {@inheritDoc} */
+    public void putSingle(String httpMethod, T resourceMethod) {
+        if (resourceMethod == null) {
+            return;
+        }
+        List<T> l = getList(httpMethod);
+        l.clear();
+        l.add(resourceMethod);
+    }
+
+    /** Sort each collections in map. */
+    public void sort() {
+        for (List<T> l : values()) {
+            Collections.sort(l, RESOURCE_METHOD_COMPARATOR);
+        }
+    }
+
+    /**
+     * Get HTTP method names to use it in 'Allow' header.
+     *
+     * @return collection of method names
+     */
+    public Collection<String> getAllow() {
+        List<String> allowed = new ArrayList<String>();
+        for (Map.Entry<String, List<T>> e : entrySet()) {
+            if (!e.getValue().isEmpty()) {
+                allowed.add(e.getKey());
             }
-            if (r == 0)
-            {
-               r = o1.consumes().size() - o2.consumes().size();
-            }
-            if (r == 0)
-            {
-               r = o1.produces().size() - o2.produces().size();
-            }
-            return r;
-         }
-
-         private MediaType getLast(List<MediaType> l)
-         {
-            return l.get(l.size() - 1);
-         }
-      };
-
-   /** {@inheritDoc} */
-   public List<T> getList(String httpMethod)
-   {
-      List<T> l = get(httpMethod);
-      if (l == null)
-      {
-         l = new ArrayList<T>();
-         put(httpMethod, l);
-      }
-      return l;
-   }
-
-   /** {@inheritDoc} */
-   public void add(String httpMethod, T resourceMethod)
-   {
-      if (resourceMethod == null)
-      {
-         return;
-      }
-      List<T> l = getList(httpMethod);
-      l.add(resourceMethod);
-   }
-
-   /** {@inheritDoc} */
-   public T getFirst(String httpMethod)
-   {
-      List<T> l = getList(httpMethod);
-      return l != null && l.size() > 0 ? l.get(0) : null;
-   }
-
-   /** {@inheritDoc} */
-   public void putSingle(String httpMethod, T resourceMethod)
-   {
-      if (resourceMethod == null)
-      {
-         return;
-      }
-      List<T> l = getList(httpMethod);
-      l.clear();
-      l.add(resourceMethod);
-   }
-
-   /** Sort each collections in map. */
-   public void sort()
-   {
-      for (List<T> l : values())
-      {
-         Collections.sort(l, RESOURCE_METHOD_COMPARATOR);
-      }
-   }
-
-   /**
-    * Get HTTP method names to use it in 'Allow' header.
-    *
-    * @return collection of method names
-    */
-   public Collection<String> getAllow()
-   {
-      List<String> allowed = new ArrayList<String>();
-      for (Map.Entry<String, List<T>> e : entrySet())
-      {
-         if (!e.getValue().isEmpty())
-         {
-            allowed.add(e.getKey());
-         }
-      }
-      return allowed;
-   }
+        }
+        return allowed;
+    }
 }

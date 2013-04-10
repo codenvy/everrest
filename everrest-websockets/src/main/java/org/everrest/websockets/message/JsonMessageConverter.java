@@ -34,39 +34,30 @@ import java.io.StringWriter;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class JsonMessageConverter implements MessageConverter
-{
-   @Override
-   public <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException
-   {
-      try
-      {
-         JsonParser parser = new JsonParser();
-         parser.parse(new StringReader(message));
-         JsonValue json = parser.getJsonObject();
-         return ObjectBuilder.createObject(clazz, json);
-      }
-      catch (JsonException e)
-      {
-         throw new MessageConversionException(e.getMessage(), e);
-      }
-   }
+public class JsonMessageConverter implements MessageConverter {
+    @Override
+    public <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException {
+        try {
+            JsonParser parser = new JsonParser();
+            parser.parse(new StringReader(message));
+            JsonValue json = parser.getJsonObject();
+            return ObjectBuilder.createObject(clazz, json);
+        } catch (JsonException e) {
+            throw new MessageConversionException(e.getMessage(), e);
+        }
+    }
 
-   @Override
-   public String toString(Message output) throws MessageConversionException
-   {
-      try
-      {
-         JsonValue jsonOutput = JsonGenerator.createJsonObject(output);
-         StringWriter writer = new StringWriter();
-         JsonWriter jsonWriter = new JsonWriter(writer);
-         jsonOutput.writeTo(jsonWriter);
-         jsonWriter.flush();
-         return writer.toString();
-      }
-      catch (JsonException e)
-      {
-         throw new MessageConversionException(e.getMessage(), e);
-      }
-   }
+    @Override
+    public String toString(Message output) throws MessageConversionException {
+        try {
+            JsonValue jsonOutput = JsonGenerator.createJsonObject(output);
+            StringWriter writer = new StringWriter();
+            JsonWriter jsonWriter = new JsonWriter(writer);
+            jsonOutput.writeTo(jsonWriter);
+            jsonWriter.flush();
+            return writer.toString();
+        } catch (JsonException e) {
+            throw new MessageConversionException(e.getMessage(), e);
+        }
+    }
 }

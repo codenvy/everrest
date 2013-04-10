@@ -28,33 +28,31 @@ import org.everrest.core.Property;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class PropertyResolver extends ParameterResolver<Property>
-{
-   /** See {@link Property} */
-   private final Property property;
+public class PropertyResolver extends ParameterResolver<Property> {
+    /** See {@link Property} */
+    private final Property property;
 
-   /** @param property Property */
-   PropertyResolver(Property property)
-   {
-      this.property = property;
-   }
+    /**
+     * @param property
+     *         Property
+     */
+    PropertyResolver(Property property) {
+        this.property = property;
+    }
 
-   /** {@inheritDoc} */
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
-   {
-      if (parameter.getParameterClass() != String.class)
-      {
-         throw new IllegalArgumentException(
-            "Only parameters and fields with string type may be annotated by @Property.");
-      }
-      String param = this.property.value();
+    /** {@inheritDoc} */
+    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+        if (parameter.getParameterClass() != String.class) {
+            throw new IllegalArgumentException(
+                    "Only parameters and fields with string type may be annotated by @Property.");
+        }
+        String param = this.property.value();
 
-      Object value = context.getInitialProperties().getProperties().get(param);
-      if (value == null)
-      {
-         return parameter.getDefaultValue();
-      }
+        Object value = context.getInitialProperties().getProperties().get(param);
+        if (value == null) {
+            return parameter.getDefaultValue();
+        }
 
-      return value;
-   }
+        return value;
+    }
 }

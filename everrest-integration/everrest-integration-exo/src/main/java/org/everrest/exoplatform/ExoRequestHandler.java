@@ -27,15 +27,12 @@ import org.exoplatform.container.xml.InitParams;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class ExoRequestHandler extends RequestHandlerImpl
-{
-   public ExoRequestHandler(RequestDispatcher dispatcher, DependencySupplier dependencySupplier, InitParams initParams)
-   {
-      super(dispatcher, dependencySupplier, EverrestConfigurationHelper.createEverrestConfiguration(initParams));
-   }
+public final class ExoRequestHandler extends RequestHandlerImpl {
+    public ExoRequestHandler(RequestDispatcher dispatcher, DependencySupplier dependencySupplier, InitParams initParams) {
+        super(dispatcher, dependencySupplier, EverrestConfigurationHelper.createEverrestConfiguration(initParams));
+    }
 
-   public ExoRequestHandler(RequestDispatcher dispatcher, DependencySupplier dependencySupplier)
-   {
-      this(dispatcher, dependencySupplier, null);
-   }
+    public ExoRequestHandler(RequestDispatcher dispatcher, DependencySupplier dependencySupplier) {
+        this(dispatcher, dependencySupplier, null);
+    }
 }

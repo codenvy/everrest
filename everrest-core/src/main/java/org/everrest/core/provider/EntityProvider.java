@@ -22,11 +22,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
- * @param <T> entity type
+ * @param <T>
+ *         entity type
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface EntityProvider<T> extends MessageBodyReader<T>, MessageBodyWriter<T>
-{
+public interface EntityProvider<T> extends MessageBodyReader<T>, MessageBodyWriter<T> {
 
 }

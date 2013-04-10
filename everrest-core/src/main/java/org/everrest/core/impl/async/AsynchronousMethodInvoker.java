@@ -39,37 +39,31 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class AsynchronousMethodInvoker extends DefaultMethodInvoker
-{
-   private final AsynchronousJobPool pool;
+public class AsynchronousMethodInvoker extends DefaultMethodInvoker {
+    private final AsynchronousJobPool pool;
 
-   public AsynchronousMethodInvoker(AsynchronousJobPool pool)
-   {
-      this.pool = pool;
-   }
+    public AsynchronousMethodInvoker(AsynchronousJobPool pool) {
+        this.pool = pool;
+    }
 
-   @Override
-   public Object invokeMethod(Object resource,
-                              GenericMethodResource methodResource,
-                              Object[] params,
-                              ApplicationContext context)
-   {
-      try
-      {
-         // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
-         // Resource locators can't be processed in asynchronous mode since it is not end point of request.
-         AsynchronousJob job = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
-         final String jobUri = context.getBaseUriBuilder().path(AsynchronousJobService.class, "get")
-            .build(job.getJobId()).toString();
+    @Override
+    public Object invokeMethod(Object resource,
+                               GenericMethodResource methodResource,
+                               Object[] params,
+                               ApplicationContext context) {
+        try {
+            // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
+            // Resource locators can't be processed in asynchronous mode since it is not end point of request.
+            AsynchronousJob job = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
+            final String jobUri = context.getBaseUriBuilder().path(AsynchronousJobService.class, "get")
+                                         .build(job.getJobId()).toString();
 
-         return Response.status(Response.Status.ACCEPTED)
-            .header(HttpHeaders.LOCATION, jobUri)
-            .entity(jobUri)
-            .type(MediaType.TEXT_PLAIN).build();
-      }
-      catch (AsynchronousJobRejectedException e)
-      {
-         return Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
-      }
-   }
+            return Response.status(Response.Status.ACCEPTED)
+                           .header(HttpHeaders.LOCATION, jobUri)
+                           .entity(jobUri)
+                           .type(MediaType.TEXT_PLAIN).build();
+        } catch (AsynchronousJobRejectedException e) {
+            return Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        }
+    }
 }

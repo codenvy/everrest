@@ -23,27 +23,22 @@ package org.everrest.core.header;
  * languages by quality factor. For example see
  * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">HTTP/1.1 documentation</a>}
  * .
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface QualityValue
-{
+public interface QualityValue {
 
-   /**
-    * Default quality value. It should be used if quality value is not specified
-    * in accept token.
-    */
-   public static final float DEFAULT_QUALITY_VALUE = 1.0F;
+    /**
+     * Default quality value. It should be used if quality value is not specified
+     * in accept token.
+     */
+    public static final float DEFAULT_QUALITY_VALUE = 1.0F;
 
-   /**
-    * Quality value.
-    */
-   public static final String QVALUE = "q";
+    /** Quality value. */
+    public static final String QVALUE = "q";
 
-   /**
-    * @return value of quality parameter
-    */
-   float getQvalue();
+    /** @return value of quality parameter */
+    float getQvalue();
 
 }

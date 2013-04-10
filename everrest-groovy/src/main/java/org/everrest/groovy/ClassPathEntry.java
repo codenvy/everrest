@@ -22,21 +22,18 @@ import java.net.URL;
 
 /**
  * Item of Groovy class-path.
- *  
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ClassPathEntry
-{
-   private final URL path;
+public class ClassPathEntry {
+    private final URL path;
 
-   public ClassPathEntry(URL path)
-   {
-      this.path = path;
-   }
+    public ClassPathEntry(URL path) {
+        this.path = path;
+    }
 
-   public URL getPath()
-   {
-      return path;
-   }
+    public URL getPath() {
+        return path;
+    }
 }

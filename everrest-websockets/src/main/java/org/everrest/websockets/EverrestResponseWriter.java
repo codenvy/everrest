@@ -23,10 +23,9 @@ import org.everrest.core.GenericContainerResponse;
 import org.everrest.websockets.message.Pair;
 import org.everrest.websockets.message.RESTfulOutputMessage;
 
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * Fill RESTfulOutputMessage by result of calling RESTful method.
@@ -34,41 +33,35 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-class EverrestResponseWriter implements ContainerResponseWriter
-{
-   private final RESTfulOutputMessage output;
+class EverrestResponseWriter implements ContainerResponseWriter {
+    private final RESTfulOutputMessage output;
 
-   private boolean commited;
+    private boolean commited;
 
-   EverrestResponseWriter(RESTfulOutputMessage output)
-   {
-      this.output = output;
-   }
+    EverrestResponseWriter(RESTfulOutputMessage output) {
+        this.output = output;
+    }
 
-   @Override
-   public void writeHeaders(GenericContainerResponse response) throws IOException
-   {
-      if (commited)
-      {
-         throw new IllegalStateException("Response has been commited. Unable write headers. ");
-      }
-      output.setResponseCode(response.getStatus());
-      output.setHeaders(Pair.fromMap(response.getHttpHeaders()));
-      commited = true;
-   }
+    @Override
+    public void writeHeaders(GenericContainerResponse response) throws IOException {
+        if (commited) {
+            throw new IllegalStateException("Response has been commited. Unable write headers. ");
+        }
+        output.setResponseCode(response.getStatus());
+        output.setHeaders(Pair.fromMap(response.getHttpHeaders()));
+        commited = true;
+    }
 
-   @Override
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
-   {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      Object entity = response.getEntity();
-      if (entity != null)
-      {
-         entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
-            response.getHttpHeaders(), out);
-         byte[] body = out.toByteArray();
-         output.setBody(new String(body));
-      }
-   }
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Object entity = response.getEntity();
+        if (entity != null) {
+            entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
+                                 response.getHttpHeaders(), out);
+            byte[] body = out.toByteArray();
+            output.setBody(new String(body));
+        }
+    }
 }

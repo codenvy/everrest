@@ -31,63 +31,55 @@ import javax.ws.rs.Path;
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
  * @version $Id: HeadMethodTest.java
  */
-public class HeadMethodTest extends BaseTest
-{
+public class HeadMethodTest extends BaseTest {
 
-   @Path("/a")
-   public static class Resource1
-   {
+    @Path("/a")
+    public static class Resource1 {
 
-      @GET
-      public String m0()
-      {
-         return "get";
-      }
+        @GET
+        public String m0() {
+            return "get";
+        }
 
-      @HEAD
-      public String m1()
-      {
-         return "head";
-      }
+        @HEAD
+        public String m1() {
+            return "head";
+        }
 
-   }
+    }
 
-   @Path("/b")
-   public static class Resource2
-   {
+    @Path("/b")
+    public static class Resource2 {
 
-      @GET
-      public String m0()
-      {
-         return "get";
-      }
+        @GET
+        public String m0() {
+            return "get";
+        }
 
-   }
+    }
 
-   public void setUp() throws Exception
-   {
-      super.setUp();
-   }
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
-   public void testHeadMethod() throws Exception
-   {
-      Resource1 resource1 = new Resource1();
-      registry(resource1);
+    public void testHeadMethod() throws Exception {
+        Resource1 resource1 = new Resource1();
+        registry(resource1);
 
-      assertEquals("get", launcher.service("GET", "/a", "", null, null, null).getEntity());
-      assertEquals(200, launcher.service("HEAD", "/a", "", null, null, null).getStatus());
+        assertEquals("get", launcher.service("GET", "/a", "", null, null, null).getEntity());
+        assertEquals(200, launcher.service("HEAD", "/a", "", null, null, null).getStatus());
 
-      unregistry(resource1);
+        unregistry(resource1);
 
-      Resource2 resource2 = new Resource2();
+        Resource2 resource2 = new Resource2();
 
-      registry(resource2);
+        registry(resource2);
 
-      assertEquals("get", launcher.service("GET", "/b", "", null, null, null).getEntity());
-      assertEquals(200, launcher.service("HEAD", "/b", "", null, null, null).getStatus());
-      assertNull(launcher.service("HEAD", "/b", "", null, null, null).getEntity());
+        assertEquals("get", launcher.service("GET", "/b", "", null, null, null).getEntity());
+        assertEquals(200, launcher.service("HEAD", "/b", "", null, null, null).getStatus());
+        assertNull(launcher.service("HEAD", "/b", "", null, null, null).getEntity());
 
-      unregistry(resource2);
-   }
+        unregistry(resource2);
+    }
 
 }

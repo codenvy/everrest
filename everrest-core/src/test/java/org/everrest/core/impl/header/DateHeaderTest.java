@@ -24,26 +24,22 @@ import org.everrest.core.impl.BaseTest;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class DateHeaderTest extends BaseTest
-{
-   public void testParseANSI() throws Exception
-   {
-      // EEE MMM d HH:mm:ss yyyy
-      String date = "THU DEC 29 12:03:50 2011";
-      HeaderHelper.parseDateHeader(date);
-   }
+public class DateHeaderTest extends BaseTest {
+    public void testParseANSI() throws Exception {
+        // EEE MMM d HH:mm:ss yyyy
+        String date = "THU DEC 29 12:03:50 2011";
+        HeaderHelper.parseDateHeader(date);
+    }
 
-   public void testParseRFC_1036() throws Exception
-   {
-      // EEEE, dd-MMM-yy HH:mm:ss zzz
-      String date = "Thursday, 29-Dec-11 12:03:50 EST";
-      HeaderHelper.parseDateHeader(date);
-   }
+    public void testParseRFC_1036() throws Exception {
+        // EEEE, dd-MMM-yy HH:mm:ss zzz
+        String date = "Thursday, 29-Dec-11 12:03:50 EST";
+        HeaderHelper.parseDateHeader(date);
+    }
 
-   public void testParseRFC_1123() throws Exception
-   {
-      // EEE, dd MMM yyyy HH:mm:ss zzz
-      String date = "Thu, 29 Dec 2011 12:03:50 GMT";
-      HeaderHelper.parseDateHeader(date);
-   }
+    public void testParseRFC_1123() throws Exception {
+        // EEE, dd MMM yyyy HH:mm:ss zzz
+        String date = "Thu, 29 Dec 2011 12:03:50 GMT";
+        HeaderHelper.parseDateHeader(date);
+    }
 }

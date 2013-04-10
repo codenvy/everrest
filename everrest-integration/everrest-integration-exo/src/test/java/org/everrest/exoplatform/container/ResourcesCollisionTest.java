@@ -27,68 +27,51 @@ import javax.ws.rs.Path;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ResourcesCollisionTest extends StandaloneBaseTest
-{
-   private RestfulContainer restfulContainer;
+public class ResourcesCollisionTest extends StandaloneBaseTest {
+    private RestfulContainer restfulContainer;
 
-   @Override
-   protected void setUp() throws Exception
-   {
-      super.setUp();
-      restfulContainer = new RestfulContainer(container);
-   }
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        restfulContainer = new RestfulContainer(container);
+    }
 
-   /**
-    * @see org.everrest.exoplatform.BaseTest#tearDown()
-    */
-   @Override
-   protected void tearDown() throws Exception
-   {
-      restfulContainer.stop();
-      super.tearDown();
-   }
+    /** @see org.everrest.exoplatform.BaseTest#tearDown() */
+    @Override
+    protected void tearDown() throws Exception {
+        restfulContainer.stop();
+        super.tearDown();
+    }
 
-   public void testSameResource()
-   {
-      restfulContainer.registerComponentImplementation("X", X.class);
-      try
-      {
-         restfulContainer.registerComponentImplementation("X", X.class);
-         fail("PicoRegistrationException must be thrown. ");
-      }
-      catch (org.picocontainer.PicoRegistrationException e)
-      {
-      }
-   }
+    public void testSameResource() {
+        restfulContainer.registerComponentImplementation("X", X.class);
+        try {
+            restfulContainer.registerComponentImplementation("X", X.class);
+            fail("PicoRegistrationException must be thrown. ");
+        } catch (org.picocontainer.PicoRegistrationException e) {
+        }
+    }
 
-   public void testResourcesWithSameURITemplate()
-   {
-      restfulContainer.registerComponentImplementation("X", X.class);
-      try
-      {
-         restfulContainer.registerComponentImplementation("Y", Y.class);
-         fail("PicoRegistrationException must be thrown. ");
-      }
-      catch (org.picocontainer.PicoRegistrationException e)
-      {
-      }
-   }
+    public void testResourcesWithSameURITemplate() {
+        restfulContainer.registerComponentImplementation("X", X.class);
+        try {
+            restfulContainer.registerComponentImplementation("Y", Y.class);
+            fail("PicoRegistrationException must be thrown. ");
+        } catch (org.picocontainer.PicoRegistrationException e) {
+        }
+    }
 
-   @Path("x/{value-x}")
-   public static class X
-   {
-      @GET
-      public void a()
-      {
-      }
-   }
+    @Path("x/{value-x}")
+    public static class X {
+        @GET
+        public void a() {
+        }
+    }
 
-   @Path("x/{value-y}")
-   public static class Y
-   {
-      @GET
-      public void a()
-      {
-      }
-   }
+    @Path("x/{value-y}")
+    public static class Y {
+        @GET
+        public void a() {
+        }
+    }
 }

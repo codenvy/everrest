@@ -22,19 +22,16 @@ package org.everrest.core.impl.provider.json;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BookWrapper2
-{
+public class BookWrapper2 {
 
-   private BookWrapper bookWrapper;
+    private BookWrapper bookWrapper;
 
-   public void setBookWrapper(BookWrapper bw)
-   {
-      bookWrapper = bw;
-   }
+    public void setBookWrapper(BookWrapper bw) {
+        bookWrapper = bw;
+    }
 
-   public BookWrapper getBookWrapper()
-   {
-      return bookWrapper;
-   }
+    public BookWrapper getBookWrapper() {
+        return bookWrapper;
+    }
 
 }

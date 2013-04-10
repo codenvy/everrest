@@ -29,22 +29,17 @@ import javax.ws.rs.Path;
  * annotation and has not {@link javax.ws.rs.HttpMethod} annotation. This method
  * can't handle request by self but produce object and this object can handle
  * request or maybe has other resource locators.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: SubResourceLocatorDescriptor.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public interface SubResourceLocatorDescriptor extends GenericMethodResource, ResourceDescriptor
-{
+public interface SubResourceLocatorDescriptor extends GenericMethodResource, ResourceDescriptor {
 
-   /**
-    * @return See {@link PathValue}
-    */
-   PathValue getPathValue();
+    /** @return See {@link PathValue} */
+    PathValue getPathValue();
 
-   /**
-    * @return See {@link UriPattern}
-    */
-   UriPattern getUriPattern();
+    /** @return See {@link UriPattern} */
+    UriPattern getUriPattern();
 
 }

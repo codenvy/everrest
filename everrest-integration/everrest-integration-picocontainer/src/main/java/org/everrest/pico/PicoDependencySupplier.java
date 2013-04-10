@@ -26,17 +26,14 @@ import org.everrest.pico.servlet.EverrestPicoFilter;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class PicoDependencySupplier extends BaseDependencySupplier
-{
-   @Override
-   public Object getComponent(Class<?> type)
-   {
-      return EverrestPicoFilter.getComponent(type);
-   }
+public class PicoDependencySupplier extends BaseDependencySupplier {
+    @Override
+    public Object getComponent(Class<?> type) {
+        return EverrestPicoFilter.getComponent(type);
+    }
 
-   @Override
-   public Object getComponentByName(String name)
-   {
-      return EverrestPicoFilter.getComponent(name);
-   }
+    @Override
+    public Object getComponentByName(String name) {
+        return EverrestPicoFilter.getComponent(name);
+    }
 }

@@ -34,45 +34,34 @@ import javax.ws.rs.ext.Providers;
  * @version $Id: ContextParameterResolver.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public class ContextParameterResolver extends ParameterResolver<Context>
-{
-   /** @param contextParam {@link Context} */
-   ContextParameterResolver(Context contextParam)
-   {
-      // @Context annotation has not value.
-   }
+public class ContextParameterResolver extends ParameterResolver<Context> {
+    /**
+     * @param contextParam
+     *         {@link Context}
+     */
+    ContextParameterResolver(Context contextParam) {
+        // @Context annotation has not value.
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
-   {
-      Class<?> parameterClass = parameter.getParameterClass();
-      if (parameterClass == HttpHeaders.class)
-      {
-         return context.getHttpHeaders();
-      }
-      else if (parameterClass == SecurityContext.class)
-      {
-         return context.getSecurityContext();
-      }
-      else if (parameterClass == Request.class)
-      {
-         return context.getRequest();
-      }
-      else if (parameterClass == UriInfo.class)
-      {
-         return context.getUriInfo();
-      }
-      else if (parameterClass == Providers.class)
-      {
-         return context.getProviders();
-      }
-      else if (parameterClass == InitialProperties.class)
-      {
-         return context.getInitialProperties();
-      }
-      // For servlet container environment context contains HttpServletRequest, HttpServletResponse, ServletConfig,
-      // ServletContext
-      return EnvironmentContext.getCurrent().get(parameter.getParameterClass());
-   }
+    /** {@inheritDoc} */
+    @Override
+    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+        Class<?> parameterClass = parameter.getParameterClass();
+        if (parameterClass == HttpHeaders.class) {
+            return context.getHttpHeaders();
+        } else if (parameterClass == SecurityContext.class) {
+            return context.getSecurityContext();
+        } else if (parameterClass == Request.class) {
+            return context.getRequest();
+        } else if (parameterClass == UriInfo.class) {
+            return context.getUriInfo();
+        } else if (parameterClass == Providers.class) {
+            return context.getProviders();
+        } else if (parameterClass == InitialProperties.class) {
+            return context.getInitialProperties();
+        }
+        // For servlet container environment context contains HttpServletRequest, HttpServletResponse, ServletConfig,
+        // ServletContext
+        return EnvironmentContext.getCurrent().get(parameter.getParameterClass());
+    }
 }

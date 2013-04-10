@@ -19,24 +19,25 @@
     02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.everrest</groupId>
-    <artifactId>everrest-parent</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.everrest</groupId>
+        <artifactId>everrest-parent</artifactId>
+        <version>1.1.1-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>everrest-test</artifactId>
+    <artifactId>everrest-test</artifactId>
 
-  <name>eXo EverRest :: HTTP :: Test</name>
+    <name>eXo EverRest :: HTTP :: Test</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

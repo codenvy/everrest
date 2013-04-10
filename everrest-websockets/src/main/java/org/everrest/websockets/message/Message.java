@@ -24,50 +24,45 @@ package org.everrest.websockets.message;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public abstract class Message
-{
-   private String uuid;
-   private String body;
+public abstract class Message {
+    private String uuid;
+    private String body;
 
-   /**
-    * Get message UUID. If specified for input message then output message gets the same UUID.
-    *
-    * @return message unique identifier.
-    */
-   public String getUuid()
-   {
-      return uuid;
-   }
+    /**
+     * Get message UUID. If specified for input message then output message gets the same UUID.
+     *
+     * @return message unique identifier.
+     */
+    public String getUuid() {
+        return uuid;
+    }
 
-   /**
-    * Set message UUID. If specified fro input message then output message gets the same UUID.
-    *
-    * @param uuid
-    *    message unique identifier.
-    */
-   public void setUuid(String uuid)
-   {
-      this.uuid = uuid;
-   }
+    /**
+     * Set message UUID. If specified fro input message then output message gets the same UUID.
+     *
+     * @param uuid
+     *         message unique identifier.
+     */
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
-   /**
-    * Get message body.
-    *
-    * @return message body
-    */
-   public String getBody()
-   {
-      return body;
-   }
+    /**
+     * Get message body.
+     *
+     * @return message body
+     */
+    public String getBody() {
+        return body;
+    }
 
-   /**
-    * Set message body.
-    *
-    * @param body
-    *    message body
-    */
-   public void setBody(String body)
-   {
-      this.body = body;
-   }
+    /**
+     * Set message body.
+     *
+     * @param body
+     *         message body
+     */
+    public void setBody(String body) {
+        this.body = body;
+    }
 }

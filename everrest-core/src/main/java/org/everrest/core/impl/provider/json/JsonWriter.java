@@ -23,270 +23,219 @@ import org.everrest.core.impl.provider.json.JsonUtils.JsonToken;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class JsonWriter
-{
+public class JsonWriter {
 
-   /** Stack for control position in document. */
-   private final JsonStack<JsonToken> stack;
+    /** Stack for control position in document. */
+    private final JsonStack<JsonToken> stack;
 
-   /** Writer. */
-   private final Writer writer;
+    /** Writer. */
+    private final Writer writer;
 
-   /** Indicate is comma must be written before next object or value. */
-   private boolean commaFirst;
+    /** Indicate is comma must be written before next object or value. */
+    private boolean commaFirst;
 
-   /**
-    * Constructs JsonWriter.
-    *
-    * @param writer Writer.
-    */
-   public JsonWriter(Writer writer)
-   {
-      this.writer = writer;
-      this.stack = new JsonStack<JsonToken>();
-      this.commaFirst = false;
-   }
+    /**
+     * Constructs JsonWriter.
+     *
+     * @param writer
+     *         Writer.
+     */
+    public JsonWriter(Writer writer) {
+        this.writer = writer;
+        this.stack = new JsonStack<JsonToken>();
+        this.commaFirst = false;
+    }
 
-   /**
-    * Constructs JsonWriter.
-    *
-    * @param out OutputStream.
-    */
-   public JsonWriter(OutputStream out)
-   {
-      this(new OutputStreamWriter(out, JsonUtils.DEFAULT_CHARSET));
-   }
+    /**
+     * Constructs JsonWriter.
+     *
+     * @param out
+     *         OutputStream.
+     */
+    public JsonWriter(OutputStream out) {
+        this(new OutputStreamWriter(out, JsonUtils.DEFAULT_CHARSET));
+    }
 
-   /** {@inheritDoc} */
-   public void writeStartObject() throws JsonException
-   {
-      JsonToken token = stack.peek();
-      // Object can be stated after key with followed ':' or as array item.
-      if (token != null && token != JsonToken.key && token != JsonToken.array)
-      {
-         throw new JsonException("Syntax error. Unexpected element '{'.");
-      }
-      try
-      {
-         if (commaFirst)
-         {
-            // needed ',' before
-            writer.write(',');
-         }
-         writer.write('{');
-         // if at the top of stack is 'key' then remove it.
-         if (token == JsonToken.key)
-         {
-            stack.pop();
-         }
-         // remember new object opened
-         stack.push(JsonToken.object);
-         commaFirst = false;
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
-
-   /** {@inheritDoc} */
-   public void writeEndObject() throws JsonException
-   {
-      try
-      {
-         JsonToken token = stack.pop();
-         if (token != JsonToken.object)
-         {
-            //System.out.println(token);
-            // wrong JSON structure.
-            throw new JsonException("Syntax error. Unexpected element '}'.");
-         }
-         writer.write('}');
-         commaFirst = true;
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
-
-   /** {@inheritDoc} */
-   public void writeStartArray() throws JsonException
-   {
-      JsonToken token = stack.peek();
-      //if (token != JsonToken.key && token != JsonToken.array)
-      if (token != null && token != JsonToken.key && token != JsonToken.array)
-      {
-         throw new JsonException("Syntax error. Unexpected element '['.");
-      }
-      try
-      {
-         if (commaFirst)
-         {
-            // needed ',' before
-            writer.write(',');
-         }
-         writer.write('[');
-         if (token == JsonToken.key)
-         {
+    /** {@inheritDoc} */
+    public void writeStartObject() throws JsonException {
+        JsonToken token = stack.peek();
+        // Object can be stated after key with followed ':' or as array item.
+        if (token != null && token != JsonToken.key && token != JsonToken.array) {
+            throw new JsonException("Syntax error. Unexpected element '{'.");
+        }
+        try {
+            if (commaFirst) {
+                // needed ',' before
+                writer.write(',');
+            }
+            writer.write('{');
             // if at the top of stack is 'key' then remove it.
-            stack.pop();
-         }
-         // remember new array opened
-         stack.push(JsonToken.array);
-         commaFirst = false;
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
+            if (token == JsonToken.key) {
+                stack.pop();
+            }
+            // remember new object opened
+            stack.push(JsonToken.object);
+            commaFirst = false;
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
 
-   /** {@inheritDoc} */
-   public void writeEndArray() throws JsonException
-   {
-      JsonToken token = stack.pop();
-      try
-      {
-         if (token != JsonToken.array)
-         {
-            // wrong JSON structure
-            throw new JsonException("Syntax error. Unexpected element ']'.");
-         }
-         writer.write(']');
-         commaFirst = true;
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
+    /** {@inheritDoc} */
+    public void writeEndObject() throws JsonException {
+        try {
+            JsonToken token = stack.pop();
+            if (token != JsonToken.object) {
+                //System.out.println(token);
+                // wrong JSON structure.
+                throw new JsonException("Syntax error. Unexpected element '}'.");
+            }
+            writer.write('}');
+            commaFirst = true;
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
 
-   /** {@inheritDoc} */
-   public void writeKey(String key) throws JsonException
-   {
-      if (key == null)
-      {
-         throw new JsonException("Key is null.");
-      }
+    /** {@inheritDoc} */
+    public void writeStartArray() throws JsonException {
+        JsonToken token = stack.peek();
+        //if (token != JsonToken.key && token != JsonToken.array)
+        if (token != null && token != JsonToken.key && token != JsonToken.array) {
+            throw new JsonException("Syntax error. Unexpected element '['.");
+        }
+        try {
+            if (commaFirst) {
+                // needed ',' before
+                writer.write(',');
+            }
+            writer.write('[');
+            if (token == JsonToken.key) {
+                // if at the top of stack is 'key' then remove it.
+                stack.pop();
+            }
+            // remember new array opened
+            stack.push(JsonToken.array);
+            commaFirst = false;
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
 
-      JsonToken token = stack.peek();
-      if (token != JsonToken.object)
-      {
-         throw new JsonException("Syntax error. Unexpected characters '" + key + "'.");
-      }
-      try
-      {
-         if (commaFirst)
-         {
-            writer.write(',');
-         }
-         // create JSON representation for given string.
-         writer.write(JsonUtils.getJsonString(key));
-         writer.write(':');
-         commaFirst = false;
-         stack.push(JsonToken.key);
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
+    /** {@inheritDoc} */
+    public void writeEndArray() throws JsonException {
+        JsonToken token = stack.pop();
+        try {
+            if (token != JsonToken.array) {
+                // wrong JSON structure
+                throw new JsonException("Syntax error. Unexpected element ']'.");
+            }
+            writer.write(']');
+            commaFirst = true;
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
 
-   /** {@inheritDoc} */
-   public void writeString(String value) throws JsonException
-   {
-      write(JsonUtils.getJsonString(value));
-   }
+    /** {@inheritDoc} */
+    public void writeKey(String key) throws JsonException {
+        if (key == null) {
+            throw new JsonException("Key is null.");
+        }
 
-   /** {@inheritDoc} */
-   public void writeValue(long value) throws JsonException
-   {
-      write(Long.toString(value));
-   }
+        JsonToken token = stack.peek();
+        if (token != JsonToken.object) {
+            throw new JsonException("Syntax error. Unexpected characters '" + key + "'.");
+        }
+        try {
+            if (commaFirst) {
+                writer.write(',');
+            }
+            // create JSON representation for given string.
+            writer.write(JsonUtils.getJsonString(key));
+            writer.write(':');
+            commaFirst = false;
+            stack.push(JsonToken.key);
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
 
-   /** {@inheritDoc} */
-   public void writeValue(double value) throws JsonException
-   {
-      write(Double.toString(value));
-   }
+    /** {@inheritDoc} */
+    public void writeString(String value) throws JsonException {
+        write(JsonUtils.getJsonString(value));
+    }
 
-   /** {@inheritDoc} */
-   public void writeValue(boolean value) throws JsonException
-   {
-      write(Boolean.toString(value));
-   }
+    /** {@inheritDoc} */
+    public void writeValue(long value) throws JsonException {
+        write(Long.toString(value));
+    }
 
-   /** {@inheritDoc} */
-   public void writeNull() throws JsonException
-   {
-      write("null");
-   }
+    /** {@inheritDoc} */
+    public void writeValue(double value) throws JsonException {
+        write(Double.toString(value));
+    }
 
-   /**
-    * Write single String.
-    *
-    * @param value String.
-    * @throws JsonException if any errors occurs.
-    */
-   private void write(String value) throws JsonException
-   {
-      JsonToken token = stack.peek();
-      try
-      {
-         if (token != JsonToken.key && token != JsonToken.array)
-         {
-            throw new JsonException("Syntax error. Unexpected characters '" + value + "'.");
-         }
-         if (commaFirst)
-         {
-            writer.write(',');
-         }
-         writer.write(value);
-         commaFirst = true;
-         if (token == JsonToken.key)
-         {
-            // if at the top of stack is 'key' then remove it.
-            stack.pop();
-         }
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
+    /** {@inheritDoc} */
+    public void writeValue(boolean value) throws JsonException {
+        write(Boolean.toString(value));
+    }
 
-   /** {@inheritDoc} */
-   public void flush() throws JsonException
-   {
-      try
-      {
-         writer.flush();
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
+    /** {@inheritDoc} */
+    public void writeNull() throws JsonException {
+        write("null");
+    }
 
-   /** {@inheritDoc} */
-   public void close() throws JsonException
-   {
-      try
-      {
-         writer.close();
-      }
-      catch (IOException e)
-      {
-         throw new JsonException(e.getMessage(), e);
-      }
-   }
+    /**
+     * Write single String.
+     *
+     * @param value
+     *         String.
+     * @throws JsonException
+     *         if any errors occurs.
+     */
+    private void write(String value) throws JsonException {
+        JsonToken token = stack.peek();
+        try {
+            if (token != JsonToken.key && token != JsonToken.array) {
+                throw new JsonException("Syntax error. Unexpected characters '" + value + "'.");
+            }
+            if (commaFirst) {
+                writer.write(',');
+            }
+            writer.write(value);
+            commaFirst = true;
+            if (token == JsonToken.key) {
+                // if at the top of stack is 'key' then remove it.
+                stack.pop();
+            }
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void flush() throws JsonException {
+        try {
+            writer.flush();
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void close() throws JsonException {
+        try {
+            writer.close();
+        } catch (IOException e) {
+            throw new JsonException(e.getMessage(), e);
+        }
+    }
 
 }

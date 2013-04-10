@@ -24,28 +24,24 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BookStorage
-{
+public class BookStorage {
 
-   private List<Book> books;
+    private List<Book> books;
 
-   public void setBooks(List<Book> b)
-   {
-      books = b;
-   }
+    public void setBooks(List<Book> b) {
+        books = b;
+    }
 
-   public List<Book> getBooks()
-   {
-      return books;
-   }
+    public List<Book> getBooks() {
+        return books;
+    }
 
-   @Override
-   public String toString()
-   {
-      StringBuilder sb = new StringBuilder();
-      for (Book b : books)
-         sb.append(b.toString());
-      return sb.toString();
-   }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Book b : books)
+            sb.append(b.toString());
+        return sb.toString();
+    }
 
 }

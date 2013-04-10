@@ -24,27 +24,26 @@ package org.everrest.websockets.message;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface MessageConverter
-{
-   /**
-    * Convert raw String to Message.
-    *
-    * @param message
-    *    raw message
-    * @return message
-    * @throws MessageConversionException
-    *    if message conversion failed, e.g. if message malformed of not supported by implementation of this interface
-    */
-   <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException;
+public interface MessageConverter {
+    /**
+     * Convert raw String to Message.
+     *
+     * @param message
+     *         raw message
+     * @return message
+     * @throws MessageConversionException
+     *         if message conversion failed, e.g. if message malformed of not supported by implementation of this interface
+     */
+    <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException;
 
-   /**
-    * Convert Message to String.
-    *
-    * @param output
-    *    output message
-    * @return String that contains serialized OutputMessage
-    * @throws MessageConversionException
-    *    if message conversion failed
-    */
-   String toString(Message output) throws MessageConversionException;
+    /**
+     * Convert Message to String.
+     *
+     * @param output
+     *         output message
+     * @return String that contains serialized OutputMessage
+     * @throws MessageConversionException
+     *         if message conversion failed
+     */
+    String toString(Message output) throws MessageConversionException;
 }

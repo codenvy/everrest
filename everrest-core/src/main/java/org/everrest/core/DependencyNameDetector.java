@@ -26,14 +26,14 @@ package org.everrest.core;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface DependencyNameDetector
-{
-   /**
-    * Get name of parameter.
-    *
-    * @param parameter the Parameter
-    * @return name of <code>parameter</code> or <code>null</code> if name can't be detected by particular
-    *         DependencyNameDetector
-    */
-   String getName(Parameter parameter);
+public interface DependencyNameDetector {
+    /**
+     * Get name of parameter.
+     *
+     * @param parameter
+     *         the Parameter
+     * @return name of <code>parameter</code> or <code>null</code> if name can't be detected by particular
+     *         DependencyNameDetector
+     */
+    String getName(Parameter parameter);
 }

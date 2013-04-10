@@ -43,182 +43,144 @@ import java.util.zip.InflaterInputStream;
  * This module handles the Content-Encoding response header. It currently
  * handles the "gzip", "deflate", "compress" and "identity" tokens.
  *
- * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
+ * @version 0.3-3 06/05/2001
  */
-class ContentEncodingModule implements HTTPClientModule
-{
+class ContentEncodingModule implements HTTPClientModule {
 
-   private static final Logger log = Logger.getLogger(ContentEncodingModule.class);
+    private static final Logger log = Logger.getLogger(ContentEncodingModule.class);
 
-   // Methods
+    // Methods
 
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public int requestHandler(Request req, Response[] resp) throws ModuleException
-   {
-      // parse Accept-Encoding header
+    /** Invoked by the HTTPClient. */
+    public int requestHandler(Request req, Response[] resp) throws ModuleException {
+        // parse Accept-Encoding header
 
-      int idx;
-      NVPair[] hdrs = req.getHeaders();
-      for (idx = 0; idx < hdrs.length; idx++)
-         if (hdrs[idx].getName().equalsIgnoreCase("Accept-Encoding"))
-            break;
+        int idx;
+        NVPair[] hdrs = req.getHeaders();
+        for (idx = 0; idx < hdrs.length; idx++)
+            if (hdrs[idx].getName().equalsIgnoreCase("Accept-Encoding"))
+                break;
 
-      Vector pae;
-      if (idx == hdrs.length)
-      {
-         hdrs = Util.resizeArray(hdrs, idx + 1);
-         req.setHeaders(hdrs);
-         pae = new Vector();
-      }
-      else
-      {
-         try
-         {
-            pae = Util.parseHeader(hdrs[idx].getValue());
-         }
-         catch (ParseException pe)
-         {
+        Vector pae;
+        if (idx == hdrs.length) {
+            hdrs = Util.resizeArray(hdrs, idx + 1);
+            req.setHeaders(hdrs);
+            pae = new Vector();
+        } else {
+            try {
+                pae = Util.parseHeader(hdrs[idx].getValue());
+            } catch (ParseException pe) {
+                throw new ModuleException(pe.toString());
+            }
+        }
+
+        // done if "*;q=1.0" present
+
+        HttpHeaderElement all = Util.getElement(pae, "*");
+        if (all != null) {
+            NVPair[] params = all.getParams();
+            for (idx = 0; idx < params.length; idx++)
+                if (params[idx].getName().equalsIgnoreCase("q"))
+                    break;
+
+            if (idx == params.length) // no qvalue, i.e. q=1.0
+                return REQ_CONTINUE;
+
+            if (params[idx].getValue() == null || params[idx].getValue().length() == 0)
+                throw new ModuleException("Invalid q value for \"*\" in " + "Accept-Encoding header: ");
+
+            try {
+                if (Float.valueOf(params[idx].getValue()).floatValue() > 0.)
+                    return REQ_CONTINUE;
+            } catch (NumberFormatException nfe) {
+                throw new ModuleException("Invalid q value for \"*\" in " + "Accept-Encoding header: " + nfe.getMessage());
+            }
+        }
+
+        // Add gzip, deflate and compress tokens to the Accept-Encoding header
+
+        if (!pae.contains(new HttpHeaderElement("deflate")))
+            pae.addElement(new HttpHeaderElement("deflate"));
+        if (!pae.contains(new HttpHeaderElement("gzip")))
+            pae.addElement(new HttpHeaderElement("gzip"));
+        if (!pae.contains(new HttpHeaderElement("x-gzip")))
+            pae.addElement(new HttpHeaderElement("x-gzip"));
+        if (!pae.contains(new HttpHeaderElement("compress")))
+            pae.addElement(new HttpHeaderElement("compress"));
+        if (!pae.contains(new HttpHeaderElement("x-compress")))
+            pae.addElement(new HttpHeaderElement("x-compress"));
+
+        hdrs[idx] = new NVPair("Accept-Encoding", Util.assembleHeader(pae));
+
+        return REQ_CONTINUE;
+    }
+
+    /** Invoked by the HTTPClient. */
+    public void responsePhase1Handler(Response resp, RoRequest req) {
+    }
+
+    /** Invoked by the HTTPClient. */
+    public int responsePhase2Handler(Response resp, Request req) {
+        return RSP_CONTINUE;
+    }
+
+    /** Invoked by the HTTPClient. */
+    public void responsePhase3Handler(Response resp, RoRequest req) throws IOException, ModuleException {
+        String ce = resp.getHeader("Content-Encoding");
+        if (ce == null || req.getMethod().equals("HEAD") || resp.getStatusCode() == 206)
+            return;
+
+        Vector pce;
+        try {
+            pce = Util.parseHeader(ce);
+        } catch (ParseException pe) {
             throw new ModuleException(pe.toString());
-         }
-      }
+        }
 
-      // done if "*;q=1.0" present
+        if (pce.size() == 0)
+            return;
 
-      HttpHeaderElement all = Util.getElement(pae, "*");
-      if (all != null)
-      {
-         NVPair[] params = all.getParams();
-         for (idx = 0; idx < params.length; idx++)
-            if (params[idx].getName().equalsIgnoreCase("q"))
-               break;
+        String encoding = ((HttpHeaderElement)pce.firstElement()).getName();
+        if (encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("x-gzip")) {
+            if (log.isDebugEnabled())
+                log.debug("Pushing gzip-input-stream");
 
-         if (idx == params.length) // no qvalue, i.e. q=1.0
-            return REQ_CONTINUE;
+            resp.inp_stream = new GZIPInputStream(resp.inp_stream);
+            pce.removeElementAt(pce.size() - 1);
+            resp.deleteHeader("Content-length");
+        } else if (encoding.equalsIgnoreCase("deflate")) {
+            if (log.isDebugEnabled())
+                log.debug("Pushing inflater-input-stream");
 
-         if (params[idx].getValue() == null || params[idx].getValue().length() == 0)
-            throw new ModuleException("Invalid q value for \"*\" in " + "Accept-Encoding header: ");
+            resp.inp_stream = new InflaterInputStream(resp.inp_stream);
+            pce.removeElementAt(pce.size() - 1);
+            resp.deleteHeader("Content-length");
+        } else if (encoding.equalsIgnoreCase("compress") || encoding.equalsIgnoreCase("x-compress")) {
+            if (log.isDebugEnabled())
+                log.debug("Pushing uncompress-input-stream");
 
-         try
-         {
-            if (Float.valueOf(params[idx].getValue()).floatValue() > 0.)
-               return REQ_CONTINUE;
-         }
-         catch (NumberFormatException nfe)
-         {
-            throw new ModuleException("Invalid q value for \"*\" in " + "Accept-Encoding header: " + nfe.getMessage());
-         }
-      }
+            resp.inp_stream = new UncompressInputStream(resp.inp_stream);
+            pce.removeElementAt(pce.size() - 1);
+            resp.deleteHeader("Content-length");
+        } else if (encoding.equalsIgnoreCase("identity")) {
+            if (log.isDebugEnabled())
+                log.debug("Ignoring 'identity' token");
 
-      // Add gzip, deflate and compress tokens to the Accept-Encoding header
+            pce.removeElementAt(pce.size() - 1);
+        } else {
+            if (log.isDebugEnabled())
+                log.debug("Unknown content encoding '" + encoding + "'");
 
-      if (!pae.contains(new HttpHeaderElement("deflate")))
-         pae.addElement(new HttpHeaderElement("deflate"));
-      if (!pae.contains(new HttpHeaderElement("gzip")))
-         pae.addElement(new HttpHeaderElement("gzip"));
-      if (!pae.contains(new HttpHeaderElement("x-gzip")))
-         pae.addElement(new HttpHeaderElement("x-gzip"));
-      if (!pae.contains(new HttpHeaderElement("compress")))
-         pae.addElement(new HttpHeaderElement("compress"));
-      if (!pae.contains(new HttpHeaderElement("x-compress")))
-         pae.addElement(new HttpHeaderElement("x-compress"));
+        }
 
-      hdrs[idx] = new NVPair("Accept-Encoding", Util.assembleHeader(pae));
+        if (pce.size() > 0)
+            resp.setHeader("Content-Encoding", Util.assembleHeader(pce));
+        else
+            resp.deleteHeader("Content-Encoding");
+    }
 
-      return REQ_CONTINUE;
-   }
-
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public void responsePhase1Handler(Response resp, RoRequest req)
-   {
-   }
-
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public int responsePhase2Handler(Response resp, Request req)
-   {
-      return RSP_CONTINUE;
-   }
-
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public void responsePhase3Handler(Response resp, RoRequest req) throws IOException, ModuleException
-   {
-      String ce = resp.getHeader("Content-Encoding");
-      if (ce == null || req.getMethod().equals("HEAD") || resp.getStatusCode() == 206)
-         return;
-
-      Vector pce;
-      try
-      {
-         pce = Util.parseHeader(ce);
-      }
-      catch (ParseException pe)
-      {
-         throw new ModuleException(pe.toString());
-      }
-
-      if (pce.size() == 0)
-         return;
-
-      String encoding = ((HttpHeaderElement)pce.firstElement()).getName();
-      if (encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("x-gzip"))
-      {
-         if (log.isDebugEnabled())
-            log.debug("Pushing gzip-input-stream");
-
-         resp.inp_stream = new GZIPInputStream(resp.inp_stream);
-         pce.removeElementAt(pce.size() - 1);
-         resp.deleteHeader("Content-length");
-      }
-      else if (encoding.equalsIgnoreCase("deflate"))
-      {
-         if (log.isDebugEnabled())
-            log.debug("Pushing inflater-input-stream");
-
-         resp.inp_stream = new InflaterInputStream(resp.inp_stream);
-         pce.removeElementAt(pce.size() - 1);
-         resp.deleteHeader("Content-length");
-      }
-      else if (encoding.equalsIgnoreCase("compress") || encoding.equalsIgnoreCase("x-compress"))
-      {
-         if (log.isDebugEnabled())
-            log.debug("Pushing uncompress-input-stream");
-
-         resp.inp_stream = new UncompressInputStream(resp.inp_stream);
-         pce.removeElementAt(pce.size() - 1);
-         resp.deleteHeader("Content-length");
-      }
-      else if (encoding.equalsIgnoreCase("identity"))
-      {
-         if (log.isDebugEnabled())
-            log.debug("Ignoring 'identity' token");
-
-         pce.removeElementAt(pce.size() - 1);
-      }
-      else
-      {
-         if (log.isDebugEnabled())
-            log.debug("Unknown content encoding '" + encoding + "'");
-
-      }
-
-      if (pce.size() > 0)
-         resp.setHeader("Content-Encoding", Util.assembleHeader(pce));
-      else
-         resp.deleteHeader("Content-Encoding");
-   }
-
-   /**
-    * Invoked by the HTTPClient.
-    */
-   public void trailerHandler(Response resp, RoRequest req)
-   {
-   }
+    /** Invoked by the HTTPClient. */
+    public void trailerHandler(Response resp, RoRequest req) {
+    }
 }

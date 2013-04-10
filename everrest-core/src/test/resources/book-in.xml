@@ -20,8 +20,8 @@
 
 -->
 <book send-by-post="true">
-   <title>Java and XML Data Binding</title>
-   <author>Brett McLaughlin</author>
-   <price>34.95</price>
-   <member-price currency="US">26.56</member-price>
+    <title>Java and XML Data Binding</title>
+    <author>Brett McLaughlin</author>
+    <price>34.95</price>
+    <member-price currency="US">26.56</member-price>
 </book>

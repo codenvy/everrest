@@ -28,23 +28,23 @@ import org.everrest.core.resource.GenericMethodResource;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public abstract class MethodInvokerDecorator implements MethodInvoker
-{
-   protected final MethodInvoker decoratedInvoker;
+public abstract class MethodInvokerDecorator implements MethodInvoker {
+    protected final MethodInvoker decoratedInvoker;
 
-   /** @param decoratedInvoker decorated MethodInvoker */
-   public MethodInvokerDecorator(MethodInvoker decoratedInvoker)
-   {
-      this.decoratedInvoker = decoratedInvoker;
-   }
+    /**
+     * @param decoratedInvoker
+     *         decorated MethodInvoker
+     */
+    public MethodInvokerDecorator(MethodInvoker decoratedInvoker) {
+        this.decoratedInvoker = decoratedInvoker;
+    }
 
-   /**
-    * @see org.everrest.core.method.MethodInvoker#invokeMethod(java.lang.Object,
-    *      org.everrest.core.resource.GenericMethodResource, org.everrest.core.ApplicationContext)
-    */
-   @Override
-   public Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context)
-   {
-      return decoratedInvoker.invokeMethod(resource, genericMethodResource, context);
-   }
+    /**
+     * @see org.everrest.core.method.MethodInvoker#invokeMethod(java.lang.Object,
+     *      org.everrest.core.resource.GenericMethodResource, org.everrest.core.ApplicationContext)
+     */
+    @Override
+    public Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context) {
+        return decoratedInvoker.invokeMethod(resource, genericMethodResource, context);
+    }
 }

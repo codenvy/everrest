@@ -26,15 +26,14 @@ import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.SecurityContext;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.SecurityContext;
 
 /**
  * This class may be useful for running test and should not be used for
@@ -43,110 +42,111 @@ import javax.ws.rs.core.SecurityContext;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ResourceLauncher
-{
+public class ResourceLauncher {
 
-   private final RequestHandler requestHandler;
+    private final RequestHandler requestHandler;
 
-   public ResourceLauncher(RequestHandler requestHandler)
-   {
-      this.requestHandler = requestHandler;
-   }
+    public ResourceLauncher(RequestHandler requestHandler) {
+        this.requestHandler = requestHandler;
+    }
 
-   /**
-    * @param method HTTP method
-    * @param requestURI full requested URI
-    * @param baseURI base requested URI
-    * @param headers HTTP headers
-    * @param data data
-    * @param writer response writer
-    * @param env environment context
-    * @return response
-    * @throws Exception if any error occurs
-    */
-   public ContainerResponse service(String method,
-                                    String requestURI,
-                                    String baseURI,
-                                    Map<String, List<String>> headers,
-                                    byte[] data,
-                                    ContainerResponseWriter writer,
-                                    EnvironmentContext env) throws Exception
-   {
+    /**
+     * @param method
+     *         HTTP method
+     * @param requestURI
+     *         full requested URI
+     * @param baseURI
+     *         base requested URI
+     * @param headers
+     *         HTTP headers
+     * @param data
+     *         data
+     * @param writer
+     *         response writer
+     * @param env
+     *         environment context
+     * @return response
+     * @throws Exception
+     *         if any error occurs
+     */
+    public ContainerResponse service(String method,
+                                     String requestURI,
+                                     String baseURI,
+                                     Map<String, List<String>> headers,
+                                     byte[] data,
+                                     ContainerResponseWriter writer,
+                                     EnvironmentContext env) throws Exception {
 
-      if (baseURI == null)
-      {
-         baseURI = "";
-      }
+        if (baseURI == null) {
+            baseURI = "";
+        }
 
-      if (requestURI == null)
-      {
-         requestURI = "/";
-      }
+        if (requestURI == null) {
+            requestURI = "/";
+        }
 
-      if (baseURI.isEmpty() && !requestURI.startsWith("/"))
-      {
-         requestURI = '/' + requestURI;
-      }
+        if (baseURI.isEmpty() && !requestURI.startsWith("/")) {
+            requestURI = '/' + requestURI;
+        }
 
-      if (headers == null)
-      {
-         headers = new MultivaluedMapImpl();
-      }
+        if (headers == null) {
+            headers = new MultivaluedMapImpl();
+        }
 
-      InputStream in;
-      if (data != null)
-      {
-         in = new ByteArrayInputStream(data);
-         headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList(Integer.toString(data.length)));
-      }
-      else
-      {
-         in = new EmptyInputStream();
-         headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList("0"));
-      }
+        InputStream in;
+        if (data != null) {
+            in = new ByteArrayInputStream(data);
+            headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList(Integer.toString(data.length)));
+        } else {
+            in = new EmptyInputStream();
+            headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList("0"));
+        }
 
-      if (env == null)
-      {
-         env = new EnvironmentContext();
-      }
-      EnvironmentContext.setCurrent(env);
+        if (env == null) {
+            env = new EnvironmentContext();
+        }
+        EnvironmentContext.setCurrent(env);
 
-      if (writer == null)
-      {
-         writer = new DummyContainerResponseWriter();
-      }
+        if (writer == null) {
+            writer = new DummyContainerResponseWriter();
+        }
 
-      SecurityContext securityContext = (SecurityContext)env.get(SecurityContext.class);
+        SecurityContext securityContext = (SecurityContext)env.get(SecurityContext.class);
 
-      if (securityContext == null)
-      {
-         securityContext = new SimpleSecurityContext(false);
-      }
+        if (securityContext == null) {
+            securityContext = new SimpleSecurityContext(false);
+        }
 
-      ContainerRequest request = new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in,
-         new InputHeadersMap(headers), securityContext);
-      ContainerResponse response = new ContainerResponse(writer);
-      requestHandler.handleRequest(request, response);
-      return response;
-   }
+        ContainerRequest request = new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in,
+                                                        new InputHeadersMap(headers), securityContext);
+        ContainerResponse response = new ContainerResponse(writer);
+        requestHandler.handleRequest(request, response);
+        return response;
+    }
 
-   /**
-    * @param method HTTP method
-    * @param requestURI full requested URI
-    * @param baseURI base requested URI
-    * @param headers HTTP headers
-    * @param data data
-    * @param env environment context
-    * @return response
-    * @throws Exception if any error occurs
-    */
-   public ContainerResponse service(String method,
-                                    String requestURI,
-                                    String baseURI,
-                                    Map<String, List<String>> headers,
-                                    byte[] data,
-                                    EnvironmentContext env) throws Exception
-   {
-      return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter(), env);
-   }
+    /**
+     * @param method
+     *         HTTP method
+     * @param requestURI
+     *         full requested URI
+     * @param baseURI
+     *         base requested URI
+     * @param headers
+     *         HTTP headers
+     * @param data
+     *         data
+     * @param env
+     *         environment context
+     * @return response
+     * @throws Exception
+     *         if any error occurs
+     */
+    public ContainerResponse service(String method,
+                                     String requestURI,
+                                     String baseURI,
+                                     Map<String, List<String>> headers,
+                                     byte[] data,
+                                     EnvironmentContext env) throws Exception {
+        return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter(), env);
+    }
 }

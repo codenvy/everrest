@@ -20,11 +20,10 @@ package org.everrest.core;
 
 /**
  * Constructor parameter.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface ConstructorParameter extends Parameter
-{
+public interface ConstructorParameter extends Parameter {
 
 }

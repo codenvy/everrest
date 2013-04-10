@@ -27,25 +27,25 @@ import javax.ws.rs.PathParam;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class PathParameterResolver extends ParameterResolver<PathParam>
-{
-   /** See {@link PathParam}. */
-   private final PathParam pathParam;
+public class PathParameterResolver extends ParameterResolver<PathParam> {
+    /** See {@link PathParam}. */
+    private final PathParam pathParam;
 
-   /** @param pathParam PathParam */
-   PathParameterResolver(PathParam pathParam)
-   {
-      this.pathParam = pathParam;
-   }
+    /**
+     * @param pathParam
+     *         PathParam
+     */
+    PathParameterResolver(PathParam pathParam) {
+        this.pathParam = pathParam;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
-   {
-      String param = this.pathParam.value();
-      TypeProducer typeProducer =
-         ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
-      return typeProducer.createValue(param, context.getPathParameters(!parameter.isEncoded()), parameter
-         .getDefaultValue());
-   }
+    /** {@inheritDoc} */
+    @Override
+    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+        String param = this.pathParam.value();
+        TypeProducer typeProducer =
+                ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
+        return typeProducer.createValue(param, context.getPathParameters(!parameter.isEncoded()), parameter
+                .getDefaultValue());
+    }
 }

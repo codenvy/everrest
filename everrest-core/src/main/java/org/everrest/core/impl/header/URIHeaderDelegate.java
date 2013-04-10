@@ -26,24 +26,20 @@ import java.net.URI;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class URIHeaderDelegate extends AbstractHeaderDelegate<URI>
-{
-   /** {@inheritDoc} */
-   @Override
-   public Class<URI> support()
-   {
-      return URI.class;
-   }
+public class URIHeaderDelegate extends AbstractHeaderDelegate<URI> {
+    /** {@inheritDoc} */
+    @Override
+    public Class<URI> support() {
+        return URI.class;
+    }
 
-   /** {@inheritDoc} */
-   public URI fromString(String header)
-   {
-      return URI.create(header);
-   }
+    /** {@inheritDoc} */
+    public URI fromString(String header) {
+        return URI.create(header);
+    }
 
-   /** {@inheritDoc} */
-   public String toString(URI uri)
-   {
-      return uri.toASCIIString();
-   }
+    /** {@inheritDoc} */
+    public String toString(URI uri) {
+        return uri.toASCIIString();
+    }
 }

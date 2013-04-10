@@ -40,116 +40,93 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class EverrestModule implements Module
-{
-   public static class HttpHeadersProvider implements Provider<HttpHeaders>
-   {
-      public HttpHeaders get()
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         if (context == null)
-         {
-            throw new ProvisionException("EverRest ApplicationContext is not initialized.");
-         }
-         return context.getHttpHeaders();
-      }
-   }
+public class EverrestModule implements Module {
+    public static class HttpHeadersProvider implements Provider<HttpHeaders> {
+        public HttpHeaders get() {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            if (context == null) {
+                throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+            }
+            return context.getHttpHeaders();
+        }
+    }
 
-   public static class InitialPropertiesProvider implements Provider<InitialProperties>
-   {
-      public InitialProperties get()
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         if (context == null)
-         {
-            throw new ProvisionException("EverRest ApplicationContext is not initialized.");
-         }
-         return context.getInitialProperties();
-      }
-   }
+    public static class InitialPropertiesProvider implements Provider<InitialProperties> {
+        public InitialProperties get() {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            if (context == null) {
+                throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+            }
+            return context.getInitialProperties();
+        }
+    }
 
-   public static class ProvidersProvider implements Provider<Providers>
-   {
-      public Providers get()
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         if (context == null)
-         {
-            throw new ProvisionException("EverRest ApplicationContext is not initialized.");
-         }
-         return context.getProviders();
-      }
-   }
+    public static class ProvidersProvider implements Provider<Providers> {
+        public Providers get() {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            if (context == null) {
+                throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+            }
+            return context.getProviders();
+        }
+    }
 
-   public static class RequestProvider implements Provider<Request>
-   {
-      public Request get()
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         if (context == null)
-         {
-            throw new ProvisionException("EverRest ApplicationContext is not initialized.");
-         }
-         return context.getRequest();
-      }
-   }
+    public static class RequestProvider implements Provider<Request> {
+        public Request get() {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            if (context == null) {
+                throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+            }
+            return context.getRequest();
+        }
+    }
 
-   public static class SecurityContextProvider implements Provider<SecurityContext>
-   {
-      public SecurityContext get()
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         if (context == null)
-         {
-            throw new ProvisionException("EverRest ApplicationContext is not initialized.");
-         }
-         return context.getSecurityContext();
-      }
-   }
+    public static class SecurityContextProvider implements Provider<SecurityContext> {
+        public SecurityContext get() {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            if (context == null) {
+                throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+            }
+            return context.getSecurityContext();
+        }
+    }
 
-   public static class ServletConfigProvider implements Provider<ServletConfig>
-   {
-      public ServletConfig get()
-      {
-         EnvironmentContext context = EnvironmentContext.getCurrent();
-         if (context == null)
-         {
-            throw new ProvisionException("EverRest EnvironmentContext is not initialized.");
-         }
-         return (ServletConfig)EnvironmentContext.getCurrent().get(ServletConfig.class);
-      }
-   }
+    public static class ServletConfigProvider implements Provider<ServletConfig> {
+        public ServletConfig get() {
+            EnvironmentContext context = EnvironmentContext.getCurrent();
+            if (context == null) {
+                throw new ProvisionException("EverRest EnvironmentContext is not initialized.");
+            }
+            return (ServletConfig)EnvironmentContext.getCurrent().get(ServletConfig.class);
+        }
+    }
 
-   public static class UriInfoProvider implements Provider<UriInfo>
-   {
-      public UriInfo get()
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         if (context == null)
-         {
-            throw new ProvisionException("EverRest ApplicationContext is not initialized.");
-         }
-         return context.getUriInfo();
-      }
-   }
+    public static class UriInfoProvider implements Provider<UriInfo> {
+        public UriInfo get() {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            if (context == null) {
+                throw new ProvisionException("EverRest ApplicationContext is not initialized.");
+            }
+            return context.getUriInfo();
+        }
+    }
 
-   /**
-    * Add binding for HttpHeaders, InitialProperties, Providers, Request,
-    * SecurityContext, ServletConfig, UriInfo. All this types will be supported
-    * for injection in constructor or fields of component of Guice container.
-    *
-    * @see com.google.inject.Inject
-    */
-   public void configure(Binder binder)
-   {
-      // Override if need other binding.
-      binder.bind(HttpHeaders.class).toProvider(new HttpHeadersProvider());
-      binder.bind(InitialProperties.class).toProvider(new InitialPropertiesProvider());
-      binder.bind(Providers.class).toProvider(new ProvidersProvider());
-      binder.bind(Request.class).toProvider(new RequestProvider());
-      binder.bind(SecurityContext.class).toProvider(new SecurityContextProvider());
-      binder.bind(ServletConfig.class).toProvider(new ServletConfigProvider());
-      binder.bind(UriInfo.class).toProvider(new UriInfoProvider());
-   }
+    /**
+     * Add binding for HttpHeaders, InitialProperties, Providers, Request,
+     * SecurityContext, ServletConfig, UriInfo. All this types will be supported
+     * for injection in constructor or fields of component of Guice container.
+     *
+     * @see com.google.inject.Inject
+     */
+    public void configure(Binder binder) {
+        // Override if need other binding.
+        binder.bind(HttpHeaders.class).toProvider(new HttpHeadersProvider());
+        binder.bind(InitialProperties.class).toProvider(new InitialPropertiesProvider());
+        binder.bind(Providers.class).toProvider(new ProvidersProvider());
+        binder.bind(Request.class).toProvider(new RequestProvider());
+        binder.bind(SecurityContext.class).toProvider(new SecurityContextProvider());
+        binder.bind(ServletConfig.class).toProvider(new ServletConfigProvider());
+        binder.bind(UriInfo.class).toProvider(new UriInfoProvider());
+    }
 
 }

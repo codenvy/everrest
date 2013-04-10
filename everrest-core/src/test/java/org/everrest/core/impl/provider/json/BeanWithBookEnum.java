@@ -25,13 +25,13 @@ package org.everrest.core.impl.provider.json;
  */
 public class BeanWithBookEnum {
 
-   private BookEnum book;
-   public BookEnum getBook()
-   {
-      return book;
-   }
-   public void setBook(BookEnum book)
-   {
-      this.book = book;
-   }
+    private BookEnum book;
+
+    public BookEnum getBook() {
+        return book;
+    }
+
+    public void setBook(BookEnum book) {
+        this.book = book;
+    }
 }

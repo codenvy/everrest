@@ -29,50 +29,42 @@ import java.util.List;
  * @version $Id$
  * @see javax.ws.rs.core.MultivaluedMap
  */
-public class MultivaluedMapImpl extends HashMap<String, List<String>> implements ExtMultivaluedMap<String, String>
-{
-   private static final long serialVersionUID = -6066678602537059655L;
+public class MultivaluedMapImpl extends HashMap<String, List<String>> implements ExtMultivaluedMap<String, String> {
+    private static final long serialVersionUID = -6066678602537059655L;
 
-   /** {@inheritDoc} */
-   public void add(String key, String value)
-   {
-      if (value == null)
-      {
-         return;
-      }
-      List<String> list = getList(key);
-      list.add(value);
-   }
+    /** {@inheritDoc} */
+    public void add(String key, String value) {
+        if (value == null) {
+            return;
+        }
+        List<String> list = getList(key);
+        list.add(value);
+    }
 
-   /** {@inheritDoc} */
-   public String getFirst(String key)
-   {
-      List<String> list = get(key);
-      return list != null && list.size() > 0 ? list.get(0) : null;
-   }
+    /** {@inheritDoc} */
+    public String getFirst(String key) {
+        List<String> list = get(key);
+        return list != null && list.size() > 0 ? list.get(0) : null;
+    }
 
-   /** {@inheritDoc} */
-   public void putSingle(String key, String value)
-   {
-      if (value == null)
-      {
-         remove(key);
-         return;
-      }
-      List<String> list = getList(key);
-      list.clear();
-      list.add(value);
-   }
+    /** {@inheritDoc} */
+    public void putSingle(String key, String value) {
+        if (value == null) {
+            remove(key);
+            return;
+        }
+        List<String> list = getList(key);
+        list.clear();
+        list.add(value);
+    }
 
-   /** {@inheritDoc} */
-   public List<String> getList(String key)
-   {
-      List<String> list = get(key);
-      if (list == null)
-      {
-         list = new ArrayList<String>();
-         put(key, list);
-      }
-      return list;
-   }
+    /** {@inheritDoc} */
+    public List<String> getList(String key) {
+        List<String> list = get(key);
+        if (list == null) {
+            list = new ArrayList<String>();
+            put(key, list);
+        }
+        return list;
+    }
 }

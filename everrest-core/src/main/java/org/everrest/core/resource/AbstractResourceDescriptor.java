@@ -25,46 +25,41 @@ import org.everrest.core.uri.UriPattern;
 /**
  * Describe Resource Class or Root Resource Class. Resource Class is any Java
  * class that uses JAX-RS annotations to implement corresponding Web resource.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: AbstractResourceDescriptor.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public interface AbstractResourceDescriptor extends ResourceDescriptor, ObjectModel
-{
+public interface AbstractResourceDescriptor extends ResourceDescriptor, ObjectModel {
 
-   /**
-    * @return See {@link PathValue}
-    */
-   PathValue getPathValue();
+    /** @return See {@link PathValue} */
+    PathValue getPathValue();
 
-   /**
-    * @see ResourceMethodDescriptor
-    * @return resource methods
-    */
-   ResourceMethodMap<ResourceMethodDescriptor> getResourceMethods();
+    /**
+     * @return resource methods
+     * @see ResourceMethodDescriptor
+     */
+    ResourceMethodMap<ResourceMethodDescriptor> getResourceMethods();
 
-   /**
-    * @see SubResourceLocatorDescriptor
-    * @return sub-resource locators
-    */
-   SubResourceLocatorMap getSubResourceLocators();
+    /**
+     * @return sub-resource locators
+     * @see SubResourceLocatorDescriptor
+     */
+    SubResourceLocatorMap getSubResourceLocators();
 
-   /**
-    * @see SubResourceMethodDescriptor
-    * @return sub-resource methods
-    */
-   SubResourceMethodMap getSubResourceMethods();
+    /**
+     * @return sub-resource methods
+     * @see SubResourceMethodDescriptor
+     */
+    SubResourceMethodMap getSubResourceMethods();
 
-   /**
-    * @return See {@link UriPattern}
-    */
-   UriPattern getUriPattern();
+    /** @return See {@link UriPattern} */
+    UriPattern getUriPattern();
 
-   /**
-    * @return true if resource is root resource false otherwise. Root resource
-    *         is class which has own {@link javax.ws.rs.Path} annotation
-    */
-   boolean isRootResource();
+    /**
+     * @return true if resource is root resource false otherwise. Root resource
+     *         is class which has own {@link javax.ws.rs.Path} annotation
+     */
+    boolean isRootResource();
 
 }

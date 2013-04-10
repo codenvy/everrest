@@ -28,33 +28,31 @@ import java.lang.reflect.Method;
  * @version $Id: CollectionStringValueOfProducer.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public final class CollectionStringValueOfProducer extends BaseCollectionProducer
-{
-   /** This method will be used for creation collection elements. */
-   private Method valueOfMethod;
+public final class CollectionStringValueOfProducer extends BaseCollectionProducer {
+    /** This method will be used for creation collection elements. */
+    private Method valueOfMethod;
 
-   /**
-    * Constructs new instance of CollectionStringValueOfProducer.
-    *
-    * @param collectionClass class of collection which must be created
-    * @param valueOfMethod this method will be used for produce elements of
-    * collection
-    */
-   CollectionStringValueOfProducer(Class<?> collectionClass, Method valueOfMethod)
-   {
-      super(collectionClass);
-      this.valueOfMethod = valueOfMethod;
-   }
+    /**
+     * Constructs new instance of CollectionStringValueOfProducer.
+     *
+     * @param collectionClass
+     *         class of collection which must be created
+     * @param valueOfMethod
+     *         this method will be used for produce elements of
+     *         collection
+     */
+    CollectionStringValueOfProducer(Class<?> collectionClass, Method valueOfMethod) {
+        super(collectionClass);
+        this.valueOfMethod = valueOfMethod;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   protected Object createValue(String value) throws Exception
-   {
-      if (value == null)
-      {
-         return null;
-      }
+    /** {@inheritDoc} */
+    @Override
+    protected Object createValue(String value) throws Exception {
+        if (value == null) {
+            return null;
+        }
 
-      return valueOfMethod.invoke(null, value);
-   }
+        return valueOfMethod.invoke(null, value);
+    }
 }

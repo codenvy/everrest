@@ -28,61 +28,48 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges>
-{
-   /** {@inheritDoc} */
-   @Override
-   public Class<Ranges> support()
-   {
-      return Ranges.class;
-   }
+public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges> {
+    /** {@inheritDoc} */
+    @Override
+    public Class<Ranges> support() {
+        return Ranges.class;
+    }
 
-   /** {@inheritDoc} */
-   public Ranges fromString(String value) throws IllegalArgumentException
-   {
-      if (value == null)
-      {
-         throw new IllegalArgumentException("null");
-      }
-      if (!value.startsWith("bytes"))
-      {
-         throw new IllegalArgumentException("Invalid byte range.");
-      }
-
-      value = value.substring(value.indexOf("=") + 1);
-
-      String[] tokens = value.split(",");
-      List<Ranges.Range> r = new ArrayList<Ranges.Range>();
-      for (String token : tokens)
-      {
-         long start = 0;
-         long end = -1L;
-         token = token.trim();
-         int dash = token.indexOf("-");
-         if (dash == -1)
-         {
+    /** {@inheritDoc} */
+    public Ranges fromString(String value) throws IllegalArgumentException {
+        if (value == null) {
+            throw new IllegalArgumentException("null");
+        }
+        if (!value.startsWith("bytes")) {
             throw new IllegalArgumentException("Invalid byte range.");
-         }
-         else if (dash == 0)
-         {
-            start = Long.parseLong(token);
-         }
-         else if (dash > 0)
-         {
-            start = Long.parseLong(token.substring(0, dash).trim());
-            if (dash < token.length() - 1)
-            {
-               end = Long.parseLong(token.substring(dash + 1, token.length()).trim());
-            }
-         }
-         r.add(new Ranges.Range(start, end));
-      }
-      return new Ranges(r);
-   }
+        }
 
-   /** {@inheritDoc} */
-   public String toString(Ranges value)
-   {
-      throw new UnsupportedOperationException();
-   }
+        value = value.substring(value.indexOf("=") + 1);
+
+        String[] tokens = value.split(",");
+        List<Ranges.Range> r = new ArrayList<Ranges.Range>();
+        for (String token : tokens) {
+            long start = 0;
+            long end = -1L;
+            token = token.trim();
+            int dash = token.indexOf("-");
+            if (dash == -1) {
+                throw new IllegalArgumentException("Invalid byte range.");
+            } else if (dash == 0) {
+                start = Long.parseLong(token);
+            } else if (dash > 0) {
+                start = Long.parseLong(token.substring(0, dash).trim());
+                if (dash < token.length() - 1) {
+                    end = Long.parseLong(token.substring(dash + 1, token.length()).trim());
+                }
+            }
+            r.add(new Ranges.Range(start, end));
+        }
+        return new Ranges(r);
+    }
+
+    /** {@inheritDoc} */
+    public String toString(Ranges value) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -30,74 +30,58 @@ import java.util.Map;
  * @version $Id: AcceptLanguageHeaderDelegate.java 285 2009-10-15 16:21:30Z
  *          aparfonov $
  */
-public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptLanguage>
-{
-   /** {@inheritDoc} */
-   @Override
-   public Class<AcceptLanguage> support()
-   {
-      return AcceptLanguage.class;
-   }
+public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptLanguage> {
+    /** {@inheritDoc} */
+    @Override
+    public Class<AcceptLanguage> support() {
+        return AcceptLanguage.class;
+    }
 
-   /** {@inheritDoc} */
-   public AcceptLanguage fromString(String header)
-   {
-      if (header == null)
-      {
-         throw new IllegalArgumentException();
-      }
+    /** {@inheritDoc} */
+    public AcceptLanguage fromString(String header) {
+        if (header == null) {
+            throw new IllegalArgumentException();
+        }
 
-      try
-      {
-         header = HeaderHelper.removeWhitespaces(header);
-         String tag;
-         Map<String, String> m = null;
+        try {
+            header = HeaderHelper.removeWhitespaces(header);
+            String tag;
+            Map<String, String> m = null;
 
-         int p = header.indexOf(';');
-         if (p != -1 && p < header.length() - 1)
-         { // header has quality value
-            tag = header.substring(0, p);
-            m = new HeaderParameterParser().parse(header);
-         }
-         else
-         { // no quality value
-            tag = header;
-         }
+            int p = header.indexOf(';');
+            if (p != -1 && p < header.length() - 1) { // header has quality value
+                tag = header.substring(0, p);
+                m = new HeaderParameterParser().parse(header);
+            } else { // no quality value
+                tag = header;
+            }
 
-         p = tag.indexOf('-');
-         String primaryTag;
-         String subTag = null;
+            p = tag.indexOf('-');
+            String primaryTag;
+            String subTag = null;
 
-         if (p != -1 && p < tag.length() - 1)
-         { // has sub-tag
-            primaryTag = tag.substring(0, p);
-            subTag = tag.substring(p + 1);
-         }
-         else
-         { // no sub-tag
-            primaryTag = tag;
-         }
+            if (p != -1 && p < tag.length() - 1) { // has sub-tag
+                primaryTag = tag.substring(0, p);
+                subTag = tag.substring(p + 1);
+            } else { // no sub-tag
+                primaryTag = tag;
+            }
 
-         if (m == null) // no quality value
-         {
-            return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""));
-         }
-         else
-         {
-            return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""), HeaderHelper
-               .parseQualityValue(m.get(QualityValue.QVALUE)));
-         }
+            if (m == null) // no quality value
+            {
+                return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""));
+            } else {
+                return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""), HeaderHelper
+                        .parseQualityValue(m.get(QualityValue.QVALUE)));
+            }
 
-      }
-      catch (ParseException e)
-      {
-         throw new IllegalArgumentException("Accept language header malformed");
-      }
-   }
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Accept language header malformed");
+        }
+    }
 
-   /** {@inheritDoc} */
-   public String toString(AcceptLanguage language)
-   {
-      throw new UnsupportedOperationException("Accepted language header used only for request.");
-   }
+    /** {@inheritDoc} */
+    public String toString(AcceptLanguage language) {
+        throw new UnsupportedOperationException("Accepted language header used only for request.");
+    }
 }

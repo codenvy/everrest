@@ -25,10 +25,8 @@ import java.io.InputStream;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class EmptyInputStream extends InputStream
-{
-   public int read() throws IOException
-   {
-      return -1;
-   }
+public final class EmptyInputStream extends InputStream {
+    public int read() throws IOException {
+        return -1;
+    }
 }

@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,154 +35,121 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class DefaultGroovyResourceLoader implements GroovyResourceLoader
-{
-   private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
-   protected URL[] roots;
+public class DefaultGroovyResourceLoader implements GroovyResourceLoader {
+    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
+    protected URL[] roots;
 
-   private final int maxEntries = 200;
+    private final int maxEntries = 200;
 
-   protected final Map<String, URL> resources;
-   final ConcurrentMap<String, FileNameLock> locks;
+    protected final Map<String, URL>                    resources;
+    final           ConcurrentMap<String, FileNameLock> locks;
 
-   @SuppressWarnings("serial")
-   public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
-   {
-      this.roots = new URL[roots.length];
-      for (int i = 0; i < roots.length; i++)
-      {
-         String str = roots[i].toString();
-         if (str.charAt(str.length() - 1) != '/')
-         {
-            this.roots[i] = new URL(str + '/');
-         }
-         else
-         {
-            this.roots[i] = roots[i];
-         }
-      }
-      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>(maxEntries + 1, 1.0f, true)
-      {
-         protected boolean removeEldestEntry(Entry<String, URL> eldest)
-         {
-            if (size() > maxEntries)
-            {
-               locks.remove(eldest.getKey());
-               return true;
+    @SuppressWarnings("serial")
+    public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException {
+        this.roots = new URL[roots.length];
+        for (int i = 0; i < roots.length; i++) {
+            String str = roots[i].toString();
+            if (str.charAt(str.length() - 1) != '/') {
+                this.roots[i] = new URL(str + '/');
+            } else {
+                this.roots[i] = roots[i];
             }
-            return false;
-         }
-      });
-      locks = new ConcurrentHashMap<String, FileNameLock>();
-   }
-
-   public DefaultGroovyResourceLoader(URL root) throws MalformedURLException
-   {
-      this(new URL[]{root});
-   }
-
-   /** {@inheritDoc} */
-   public final URL loadGroovySource(String filename) throws MalformedURLException
-   {
-      String[] sourceFileExtensions = getSourceFileExtensions();
-      URL resource = null;
-      filename = filename.replace('.', '/');
-      for (int i = 0; i < sourceFileExtensions.length && resource == null; i++)
-      {
-         resource = getResource(filename + sourceFileExtensions[i]);
-      }
-      return resource;
-   }
-
-   protected URL getResource(String filename) throws MalformedURLException
-   {
-      FileNameLock lock = locks.get(filename);
-      if (lock == null)
-      {
-         FileNameLock l = new FileNameLock();
-         lock = locks.putIfAbsent(filename, l);
-         if (lock == null)
-         {
-            lock = l;
-         }
-      }
-
-      URL resource;
-      synchronized (lock)
-      {
-         resource = resources.get(filename);
-         final boolean inCache = resource != null;
-         if (inCache && checkResource(resource))
-         {
-            return resource;
-         }
-         resource = null; // Resource in cache is unreachable.
-         for (int i = 0; i < roots.length && resource == null; i++)
-         {
-            URL tmp = createURL(roots[i], filename);
-            if (checkResource(tmp))
-            {
-               resource = tmp;
+        }
+        resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>(maxEntries + 1, 1.0f, true) {
+            protected boolean removeEldestEntry(Map.Entry<String, URL> eldest) {
+                if (size() > maxEntries) {
+                    locks.remove(eldest.getKey());
+                    return true;
+                }
+                return false;
             }
-         }
-         if (resource != null)
-         {
-            resources.put(filename, resource);
-         }
-         else if (inCache)
-         {
-            resources.remove(filename);
-         }
-      }
-      return resource;
-   }
+        });
+        locks = new ConcurrentHashMap<String, FileNameLock>();
+    }
 
-   protected URL createURL(URL root, String filename) throws MalformedURLException
-   {
-      return new URL(root, filename);
-   }
+    public DefaultGroovyResourceLoader(URL root) throws MalformedURLException {
+        this(new URL[]{root});
+    }
 
-   protected boolean checkResource(URL resource)
-   {
-      try
-      {
-         resource.openStream().close();
-         return true;
-      }
-      catch (IOException e)
-      {
-         return false;
-      }
-   }
+    /** {@inheritDoc} */
+    public final URL loadGroovySource(String filename) throws MalformedURLException {
+        String[] sourceFileExtensions = getSourceFileExtensions();
+        URL resource = null;
+        filename = filename.replace('.', '/');
+        for (int i = 0; i < sourceFileExtensions.length && resource == null; i++) {
+            resource = getResource(filename + sourceFileExtensions[i]);
+        }
+        return resource;
+    }
 
-   protected String[] getSourceFileExtensions()
-   {
-      return new String[]{DEFAULT_SOURCE_FILE_EXTENSION};
-   }
+    protected URL getResource(String filename) throws MalformedURLException {
+        FileNameLock lock = locks.get(filename);
+        if (lock == null) {
+            FileNameLock l = new FileNameLock();
+            lock = locks.putIfAbsent(filename, l);
+            if (lock == null) {
+                lock = l;
+            }
+        }
 
-   private static final class FileNameLock
-   {
-      private static final AtomicInteger counter = new AtomicInteger();
-      private final int hash = counter.incrementAndGet();
+        URL resource;
+        synchronized (lock) {
+            resource = resources.get(filename);
+            final boolean inCache = resource != null;
+            if (inCache && checkResource(resource)) {
+                return resource;
+            }
+            resource = null; // Resource in cache is unreachable.
+            for (int i = 0; i < roots.length && resource == null; i++) {
+                URL tmp = createURL(roots[i], filename);
+                if (checkResource(tmp)) {
+                    resource = tmp;
+                }
+            }
+            if (resource != null) {
+                resources.put(filename, resource);
+            } else if (inCache) {
+                resources.remove(filename);
+            }
+        }
+        return resource;
+    }
 
-      @Override
-      public int hashCode()
-      {
-         return hash;
-      }
+    protected URL createURL(URL root, String filename) throws MalformedURLException {
+        return new URL(root, filename);
+    }
 
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (this == obj)
-         {
+    protected boolean checkResource(URL resource) {
+        try {
+            resource.openStream().close();
             return true;
-         }
-         if (obj == null || getClass() != obj.getClass())
-         {
+        } catch (IOException e) {
             return false;
-         }
-         return hash == ((FileNameLock)obj).hash;
-      }
-   }
+        }
+    }
+
+    protected String[] getSourceFileExtensions() {
+        return new String[]{DEFAULT_SOURCE_FILE_EXTENSION};
+    }
+
+    private static final class FileNameLock {
+        private static final AtomicInteger counter = new AtomicInteger();
+        private final        int           hash    = counter.incrementAndGet();
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            return hash == ((FileNameLock)obj).hash;
+        }
+    }
 }

@@ -34,40 +34,34 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory<T>
-{
-   protected final BeanFactory beanFactory;
+public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
+    protected final BeanFactory beanFactory;
 
-   protected final String name;
+    protected final String name;
 
-   protected final T model;
+    protected final T model;
 
-   public SpringObjectFactory(T model, String name, BeanFactory beanFactory)
-   {
-      this.model = model;
-      this.name = name;
-      this.beanFactory = beanFactory;
-   }
+    public SpringObjectFactory(T model, String name, BeanFactory beanFactory) {
+        this.model = model;
+        this.name = name;
+        this.beanFactory = beanFactory;
+    }
 
-   /** {@inheritDoc} */
-   public Object getInstance(ApplicationContext context)
-   {
-      Object bean = beanFactory.getBean(name);
-      List<FieldInjector> fieldInjectors = model.getFieldInjectors();
-      if (fieldInjectors != null && fieldInjectors.size() > 0)
-      {
-         for (FieldInjector injector : fieldInjectors)
-         {
-            injector.inject(bean, context);
-         }
-      }
-      return bean;
-   }
+    /** {@inheritDoc} */
+    public Object getInstance(ApplicationContext context) {
+        Object bean = beanFactory.getBean(name);
+        List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+        if (fieldInjectors != null && fieldInjectors.size() > 0) {
+            for (FieldInjector injector : fieldInjectors) {
+                injector.inject(bean, context);
+            }
+        }
+        return bean;
+    }
 
-   /** {@inheritDoc} */
-   public T getObjectModel()
-   {
-      return model;
-   }
+    /** {@inheritDoc} */
+    public T getObjectModel() {
+        return model;
+    }
 
 }

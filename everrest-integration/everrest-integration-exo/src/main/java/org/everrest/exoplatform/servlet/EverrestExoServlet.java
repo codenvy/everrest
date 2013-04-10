@@ -30,85 +30,70 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
 
-import java.io.IOException;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Use this servlet for integration in eXo environment. If just need to use IoC container then
  * use org.everrest.core.servlet.EverrestServlet. Usage of this servlet assumes that components of EverRest framework
  * registered in ExoContainer. To do so do not use EverrestExoContextListener as bootstrap but use
  * org.everrest.exoplatform.EverrestInitializer instead and provide corresponded configuration for ExoContainer.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 @SuppressWarnings("serial")
-public class EverrestExoServlet extends AbstractHttpServlet
-{
-   private static final Logger log = Logger.getLogger(EverrestExoServlet.class);
-   private WebApplicationDeclaredRoles webApplicationRoles;
+public class EverrestExoServlet extends AbstractHttpServlet {
+    private static final Logger log = Logger.getLogger(EverrestExoServlet.class);
+    private WebApplicationDeclaredRoles webApplicationRoles;
 
-   @Override
-   protected void afterInit(ServletConfig config) throws ServletException
-   {
-      webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
-   }
+    @Override
+    protected void afterInit(ServletConfig config) throws ServletException {
+        webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
+    }
 
-   /**
-    * @see org.exoplatform.container.web.AbstractHttpServlet#onService(org.exoplatform.container.ExoContainer,
-    *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-    */
-   @Override
-   protected void onService(ExoContainer container, HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException
-   {
-      RequestLifeCycle.begin(container);
+    /**
+     * @see org.exoplatform.container.web.AbstractHttpServlet#onService(org.exoplatform.container.ExoContainer,
+     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    @Override
+    protected void onService(ExoContainer container, HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        RequestLifeCycle.begin(container);
 
-      RequestHandler requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
+        RequestHandler requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
 
-      EnvironmentContext env = new EnvironmentContext();
-      env.put(HttpServletRequest.class, req);
-      env.put(HttpServletResponse.class, res);
-      env.put(ServletConfig.class, config);
-      env.put(ServletContext.class, getServletContext());
-      env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
+        EnvironmentContext env = new EnvironmentContext();
+        env.put(HttpServletRequest.class, req);
+        env.put(HttpServletResponse.class, res);
+        env.put(ServletConfig.class, config);
+        env.put(ServletContext.class, getServletContext());
+        env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
 
-      try
-      {
-         EnvironmentContext.setCurrent(env);
-         ServletContainerRequest request = new ServletContainerRequest(req);
-         ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(res));
-         requestHandler.handleRequest(request, response);
-      }
-      catch (IOException ioe)
-      {
-         // Met problem with Acrobat Reader HTTP client when use EverRest for WebDav.
-         // Client close connection before all data transferred and it cause error on server side.
-         if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException"))
-         {
-            if (log.isDebugEnabled())
-            {
-               log.debug(ioe.getMessage(), ioe);
+        try {
+            EnvironmentContext.setCurrent(env);
+            ServletContainerRequest request = new ServletContainerRequest(req);
+            ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(res));
+            requestHandler.handleRequest(request, response);
+        } catch (IOException ioe) {
+            // Met problem with Acrobat Reader HTTP client when use EverRest for WebDav.
+            // Client close connection before all data transferred and it cause error on server side.
+            if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+                if (log.isDebugEnabled()) {
+                    log.debug(ioe.getMessage(), ioe);
+                }
+            } else {
+                throw ioe;
             }
-         }
-         else
-         {
-            throw ioe;
-         }
-      }
-      catch (UnhandledException e)
-      {
-         throw new ServletException(e);
-      }
-      finally
-      {
-         EnvironmentContext.setCurrent(null);
-         RequestLifeCycle.end();
-      }
-   }
+        } catch (UnhandledException e) {
+            throw new ServletException(e);
+        } finally {
+            EnvironmentContext.setCurrent(null);
+            RequestLifeCycle.end();
+        }
+    }
 }

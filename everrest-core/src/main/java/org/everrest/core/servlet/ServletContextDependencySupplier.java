@@ -20,9 +20,8 @@ package org.everrest.core.servlet;
 
 import org.everrest.core.BaseDependencySupplier;
 
-import java.lang.annotation.Annotation;
-
 import javax.servlet.ServletContext;
+import java.lang.annotation.Annotation;
 
 /**
  * Resolve dependency by look up instance of object in {@link ServletContext}.
@@ -35,30 +34,25 @@ import javax.servlet.ServletContext;
  * @version $Id: ServletContextDependencySupplier.java 71 2010-10-25 15:19:37Z
  *          andrew00x $
  */
-public class ServletContextDependencySupplier extends BaseDependencySupplier
-{
-   private final ServletContext ctx;
+public class ServletContextDependencySupplier extends BaseDependencySupplier {
+    private final ServletContext ctx;
 
-   public ServletContextDependencySupplier(ServletContext ctx, Class<? extends Annotation> injectAnnotation)
-   {
-      super(injectAnnotation);
-      this.ctx = ctx;
-   }
+    public ServletContextDependencySupplier(ServletContext ctx, Class<? extends Annotation> injectAnnotation) {
+        super(injectAnnotation);
+        this.ctx = ctx;
+    }
 
-   public ServletContextDependencySupplier(ServletContext ctx)
-   {
-      this.ctx = ctx;
-   }
+    public ServletContextDependencySupplier(ServletContext ctx) {
+        this.ctx = ctx;
+    }
 
-   @Override
-   public Object getComponent(Class<?> type)
-   {
-      return ctx.getAttribute(type.getName());
-   }
+    @Override
+    public Object getComponent(Class<?> type) {
+        return ctx.getAttribute(type.getName());
+    }
 
-   @Override
-   public Object getComponentByName(String name)
-   {
-      return ctx.getAttribute(name);
-   }
+    @Override
+    public Object getComponentByName(String name) {
+        return ctx.getAttribute(name);
+    }
 }

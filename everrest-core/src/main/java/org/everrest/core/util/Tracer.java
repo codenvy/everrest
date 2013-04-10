@@ -39,82 +39,70 @@ import static java.lang.String.format;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class Tracer
-{
-   /**
-    * Check is tracing feature enabled.
-    *
-    * @return <code>true</code> if tracing enabled and <code>false</code> otherwise.
-    */
-   public static boolean isTracingEnabled()
-   {
-      ApplicationContext context = ApplicationContextImpl.getCurrent();
-      if (context == null)
-      {
-         throw new IllegalStateException("ApplicationContext is not initialized yet. ");
-      }
-      return Boolean.parseBoolean(context.getQueryParameters().getFirst("tracing"));
-   }
+public final class Tracer {
+    /**
+     * Check is tracing feature enabled.
+     *
+     * @return <code>true</code> if tracing enabled and <code>false</code> otherwise.
+     */
+    public static boolean isTracingEnabled() {
+        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        if (context == null) {
+            throw new IllegalStateException("ApplicationContext is not initialized yet. ");
+        }
+        return Boolean.parseBoolean(context.getQueryParameters().getFirst("tracing"));
+    }
 
-   /**
-    * Add trace message.
-    *
-    * @param message the trace message
-    */
-   public static void trace(String message)
-   {
-      if (isTracingEnabled())
-      {
-         getTraceHolder().addTrace(message);
-      }
-   }
+    /**
+     * Add trace message.
+     *
+     * @param message
+     *         the trace message
+     */
+    public static void trace(String message) {
+        if (isTracingEnabled()) {
+            getTraceHolder().addTrace(message);
+        }
+    }
 
-   /**
-    * Add all collected trace messages to specified instance of <code>response</code> as HTTP headers.
-    * This method must be invoked at the end of request lifecycle.
-    *
-    * @param response the response for adding headers
-    */
-   public static void addTraceHeaders(GenericContainerResponse response)
-   {
-      if (isTracingEnabled())
-      {
-         getTraceHolder().addTraceHeaders(response);
-      }
-   }
+    /**
+     * Add all collected trace messages to specified instance of <code>response</code> as HTTP headers.
+     * This method must be invoked at the end of request lifecycle.
+     *
+     * @param response
+     *         the response for adding headers
+     */
+    public static void addTraceHeaders(GenericContainerResponse response) {
+        if (isTracingEnabled()) {
+            getTraceHolder().addTraceHeaders(response);
+        }
+    }
 
-   private static TraceHolder getTraceHolder()
-   {
-      ApplicationContext context = ApplicationContextImpl.getCurrent();
-      if (context == null)
-      {
-         throw new IllegalStateException("ApplicationContext is not initialized yet. ");
-      }
-      TraceHolder t = (TraceHolder)context.getAttributes().get("tracer");
-      if (t == null)
-      {
-         t = new TraceHolder();
-         context.getAttributes().put("tracer", t);
-      }
-      return t;
-   }
+    private static TraceHolder getTraceHolder() {
+        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        if (context == null) {
+            throw new IllegalStateException("ApplicationContext is not initialized yet. ");
+        }
+        TraceHolder t = (TraceHolder)context.getAttributes().get("tracer");
+        if (t == null) {
+            t = new TraceHolder();
+            context.getAttributes().put("tracer", t);
+        }
+        return t;
+    }
 
-   private static final class TraceHolder
-   {
-      private final List<String> traces = new ArrayList<String>();
+    private static final class TraceHolder {
+        private final List<String> traces = new ArrayList<String>();
 
-      void addTrace(String message)
-      {
-         traces.add(message);
-      }
+        void addTrace(String message) {
+            traces.add(message);
+        }
 
-      void addTraceHeaders(GenericContainerResponse response)
-      {
-         int i = 1;
-         for (String message : getTraceHolder().traces)
-         {
-            response.getHttpHeaders().add(format("EverRest-Trace-%03d", i++), message);
-         }
-      }
-   }
+        void addTraceHeaders(GenericContainerResponse response) {
+            int i = 1;
+            for (String message : getTraceHolder().traces) {
+                response.getHttpHeaders().add(format("EverRest-Trace-%03d", i++), message);
+            }
+        }
+    }
 }

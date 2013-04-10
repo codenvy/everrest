@@ -22,18 +22,18 @@ package org.everrest.core;
  * Process the original {@link GenericContainerResponse} before pass it for
  * serialization to environment, e. g. servlet container. NOTE this filter must
  * not be used directly, it is part of REST framework.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface ResponseFilter
-{
+public interface ResponseFilter {
 
-   /**
-    * Can modify original response.
-    * 
-    * @param response the response from resource
-    */
-   void doFilter(GenericContainerResponse response);
+    /**
+     * Can modify original response.
+     *
+     * @param response
+     *         the response from resource
+     */
+    void doFilter(GenericContainerResponse response);
 
 }

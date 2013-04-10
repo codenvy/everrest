@@ -22,36 +22,30 @@ package org.everrest.core.impl.provider.json;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class SimpleBean
-{
+public class SimpleBean {
 
-   private String name;
+    private String name;
 
-   private String value;
+    private String value;
 
-   public void setName(String name)
-   {
-      this.name = name;
-   }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-   public void setValue(String value)
-   {
-      this.value = value;
-   }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName() {
+        return name;
+    }
 
-   public String getValue()
-   {
-      return value;
-   }
+    public String getValue() {
+        return value;
+    }
 
-   @Override
-   public String toString()
-   {
-      return "Item:{name=" + name + ",value=" + value + "}";
-   }
+    @Override
+    public String toString() {
+        return "Item:{name=" + name + ",value=" + value + "}";
+    }
 }

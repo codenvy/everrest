@@ -26,57 +26,51 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @param <V> {@link org.everrest.core.RequestFilter} or
- * {@link org.everrest.core.ResponseFilter}
+ * @param <V>
+ *         {@link org.everrest.core.RequestFilter} or
+ *         {@link org.everrest.core.ResponseFilter}
  */
-public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements ExtMultivaluedMap<UriPattern, V>
-{
-   private static final long serialVersionUID = 8248982446381545144L;
+public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements ExtMultivaluedMap<UriPattern, V> {
+    private static final long serialVersionUID = 8248982446381545144L;
 
-   /**
-    * @param uriPattern the key
-    * @return List of Object mapped to specified <tt>uriPattern</tt>. Method
-    *         never return null, empty List instead.
-    */
-   public List<V> getList(UriPattern uriPattern)
-   {
-      List<V> l = get(uriPattern);
-      if (l == null)
-      {
-         l = new ArrayList<V>();
-         put(uriPattern, l);
-      }
-      return l;
-   }
+    /**
+     * @param uriPattern
+     *         the key
+     * @return List of Object mapped to specified <tt>uriPattern</tt>. Method
+     *         never return null, empty List instead.
+     */
+    public List<V> getList(UriPattern uriPattern) {
+        List<V> l = get(uriPattern);
+        if (l == null) {
+            l = new ArrayList<V>();
+            put(uriPattern, l);
+        }
+        return l;
+    }
 
-   /** {@inheritDoc} */
-   public void add(UriPattern uriPattern, V value)
-   {
-      if (value == null)
-      {
-         return;
-      }
-      List<V> list = getList(uriPattern);
-      list.add(value);
-   }
+    /** {@inheritDoc} */
+    public void add(UriPattern uriPattern, V value) {
+        if (value == null) {
+            return;
+        }
+        List<V> list = getList(uriPattern);
+        list.add(value);
+    }
 
-   /** {@inheritDoc} */
-   public V getFirst(UriPattern uriPattern)
-   {
-      List<V> list = getList(uriPattern);
-      return list != null && list.size() > 0 ? list.get(0) : null;
-   }
+    /** {@inheritDoc} */
+    public V getFirst(UriPattern uriPattern) {
+        List<V> list = getList(uriPattern);
+        return list != null && list.size() > 0 ? list.get(0) : null;
+    }
 
-   /** {@inheritDoc} */
-   public void putSingle(UriPattern uriPattern, V value)
-   {
-      if (value == null)
-      {
-         remove(uriPattern);
-         return;
-      }
-      List<V> list = getList(uriPattern);
-      list.clear();
-      list.add(value);
-   }
+    /** {@inheritDoc} */
+    public void putSingle(UriPattern uriPattern, V value) {
+        if (value == null) {
+            remove(uriPattern);
+            return;
+        }
+        List<V> list = getList(uriPattern);
+        list.clear();
+        list.add(value);
+    }
 }

@@ -25,21 +25,18 @@ import java.util.Map;
 
 /**
  * Keeps mapping set of Providers to Application name.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ProvidersRegistry
-{
-   protected final Map<String, ProviderBinder> all = new HashMap<String, ProviderBinder>();
+public class ProvidersRegistry {
+    protected final Map<String, ProviderBinder> all = new HashMap<String, ProviderBinder>();
 
-   public void addProviders(String applicationName, ProviderBinder apb)
-   {
-      all.put(applicationName, apb);
-   }
+    public void addProviders(String applicationName, ProviderBinder apb) {
+        all.put(applicationName, apb);
+    }
 
-   public ProviderBinder getProviders(String applicationName)
-   {
-      return all.get(applicationName);
-   }
+    public ProviderBinder getProviders(String applicationName) {
+        return all.get(applicationName);
+    }
 }

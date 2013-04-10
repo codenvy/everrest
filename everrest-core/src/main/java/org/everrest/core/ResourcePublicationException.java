@@ -27,15 +27,12 @@ package org.everrest.core;
  * @version $Id$
  */
 @SuppressWarnings("serial")
-public class ResourcePublicationException extends RuntimeException
-{
-   public ResourcePublicationException(String message)
-   {
-      super(message);
-   }
+public class ResourcePublicationException extends RuntimeException {
+    public ResourcePublicationException(String message) {
+        super(message);
+    }
 
-   public ResourcePublicationException(String message, Throwable cause)
-   {
-      super(message, cause);
-   }
+    public ResourcePublicationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

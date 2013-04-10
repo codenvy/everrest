@@ -19,64 +19,55 @@
 
 package org.everrest.core.tools;
 
+import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.SecurityContext;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class SimpleSecurityContext implements SecurityContext
-{
-   private final String authenticationScheme;
-   private final Principal principal;
-   private final Set<String> userRoles;
-   private final boolean secure;
+public class SimpleSecurityContext implements SecurityContext {
+    private final String      authenticationScheme;
+    private final Principal   principal;
+    private final Set<String> userRoles;
+    private final boolean     secure;
 
-   public SimpleSecurityContext(Principal principal, Set<String> userRoles, String authenticationScheme, boolean secure)
-   {
-      this.principal = principal;
-      this.authenticationScheme = authenticationScheme;
-      this.secure = secure;
-      this.userRoles = userRoles == null
-         ? Collections.<String>emptySet() : Collections.unmodifiableSet(new HashSet<String>(userRoles));
-   }
+    public SimpleSecurityContext(Principal principal, Set<String> userRoles, String authenticationScheme, boolean secure) {
+        this.principal = principal;
+        this.authenticationScheme = authenticationScheme;
+        this.secure = secure;
+        this.userRoles = userRoles == null
+                         ? Collections.<String>emptySet() : Collections.unmodifiableSet(new HashSet<String>(userRoles));
+    }
 
-   public SimpleSecurityContext(boolean secure)
-   {
-      this(null, null, null, secure);
-   }
+    public SimpleSecurityContext(boolean secure) {
+        this(null, null, null, secure);
+    }
 
-   /** {@inheritDoc} */
-   public String getAuthenticationScheme()
-   {
-      return authenticationScheme;
-   }
+    /** {@inheritDoc} */
+    public String getAuthenticationScheme() {
+        return authenticationScheme;
+    }
 
-   /** {@inheritDoc} */
-   public Principal getUserPrincipal()
-   {
-      return principal;
-   }
+    /** {@inheritDoc} */
+    public Principal getUserPrincipal() {
+        return principal;
+    }
 
-   /** {@inheritDoc} */
-   public boolean isSecure()
-   {
-      return secure;
-   }
+    /** {@inheritDoc} */
+    public boolean isSecure() {
+        return secure;
+    }
 
-   /** {@inheritDoc} */
-   public boolean isUserInRole(String role)
-   {
-      return principal != null && userRoles.contains(role);
-   }
+    /** {@inheritDoc} */
+    public boolean isUserInRole(String role) {
+        return principal != null && userRoles.contains(role);
+    }
 
-   public Set<String> getUserRoles()
-   {
-      return userRoles;
-   }
+    public Set<String> getUserRoles() {
+        return userRoles;
+    }
 }

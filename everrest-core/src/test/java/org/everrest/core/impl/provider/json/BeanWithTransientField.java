@@ -23,32 +23,27 @@ package org.everrest.core.impl.provider.json;
  * @version $Id: BeanWithTransientField.java 34417 2009-07-23 14:42:56Z dkatayev
  *          $
  */
-public class BeanWithTransientField
-{
+public class BeanWithTransientField {
 
-   private String field = "visible";
+    private String field = "visible";
 
-   //@JsonTransient
-   transient private String transientField = "invisible";
+    //@JsonTransient
+    transient private String transientField = "invisible";
 
-   public String getField()
-   {
-      return field;
-   }
+    public String getField() {
+        return field;
+    }
 
-   public void setField(String field)
-   {
-      this.field = field;
-   }
+    public void setField(String field) {
+        this.field = field;
+    }
 
-   public String getTransientField()
-   {
-      return transientField;
-   }
+    public String getTransientField() {
+        return transientField;
+    }
 
-   public void setTransientField(String transientField)
-   {
-      this.transientField = transientField;
-   }
+    public void setTransientField(String transientField) {
+        this.transientField = transientField;
+    }
 
 }

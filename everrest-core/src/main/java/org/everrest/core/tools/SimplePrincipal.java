@@ -24,48 +24,40 @@ import java.security.Principal;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class SimplePrincipal implements Principal
-{
-   private final String identity;
+public class SimplePrincipal implements Principal {
+    private final String identity;
 
-   public SimplePrincipal(String identity)
-   {
-      this.identity = identity;
-   }
+    public SimplePrincipal(String identity) {
+        this.identity = identity;
+    }
 
-   @Override
-   public String getName()
-   {
-      return identity;
-   }
+    @Override
+    public String getName() {
+        return identity;
+    }
 
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (this == obj)
-      {
-         return true;
-      }
-      if (obj == null || getClass() != obj.getClass())
-      {
-         return false;
-      }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
 
-      SimplePrincipal other = (SimplePrincipal)obj;
-      return identity == null ? other.identity == null : identity.equals(other.identity);
-   }
+        SimplePrincipal other = (SimplePrincipal)obj;
+        return identity == null ? other.identity == null : identity.equals(other.identity);
+    }
 
-   @Override
-   public int hashCode()
-   {
-      int hash = 7;
-      hash = hash * 31 + (identity == null ? 0 : identity.hashCode());
-      return hash;
-   }
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = hash * 31 + (identity == null ? 0 : identity.hashCode());
+        return hash;
+    }
 
-   @Override
-   public String toString()
-   {
-      return "SimplePrincipal{identity='" + identity + '\'' + '}';
-   }
+    @Override
+    public String toString() {
+        return "SimplePrincipal{identity='" + identity + '\'' + '}';
+    }
 }

@@ -27,16 +27,13 @@ import javax.servlet.http.HttpSessionListener;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class WSConnectionTracker implements HttpSessionListener
-{
-   @Override
-   public void sessionCreated(HttpSessionEvent se)
-   {
-   }
+public final class WSConnectionTracker implements HttpSessionListener {
+    @Override
+    public void sessionCreated(HttpSessionEvent se) {
+    }
 
-   @Override
-   public void sessionDestroyed(HttpSessionEvent se)
-   {
-      WSConnectionContext.closeAll(se.getSession().getId());
-   }
+    @Override
+    public void sessionDestroyed(HttpSessionEvent se) {
+        WSConnectionContext.closeAll(se.getSession().getId());
+    }
 }

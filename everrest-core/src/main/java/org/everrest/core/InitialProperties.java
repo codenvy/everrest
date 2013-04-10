@@ -23,33 +23,32 @@ import java.util.Map;
 /**
  * Container for properties, that may be injected in resource by &#64Context
  * annotation.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
- * 
  */
-public interface InitialProperties
-{
+public interface InitialProperties {
 
-   /**
-    * @return all properties.
-    */
-   Map<String, String> getProperties();
+    /** @return all properties. */
+    Map<String, String> getProperties();
 
-   /**
-    * Get property.
-    * 
-    * @param name property name
-    * @return value of property with specified name or null
-    */
-   String getProperty(String name);
+    /**
+     * Get property.
+     *
+     * @param name
+     *         property name
+     * @return value of property with specified name or null
+     */
+    String getProperty(String name);
 
-   /**
-    * Set property.
-    * 
-    * @param name property name
-    * @param value property value
-    */
-   void setProperty(String name, String value);
+    /**
+     * Set property.
+     *
+     * @param name
+     *         property name
+     * @param value
+     *         property value
+     */
+    void setProperty(String name, String value);
 
 }

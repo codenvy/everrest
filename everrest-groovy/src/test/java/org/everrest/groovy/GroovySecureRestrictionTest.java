@@ -28,27 +28,24 @@ import java.io.InputStream;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class GroovySecureRestrictionTest extends BaseTest
-{
+public class GroovySecureRestrictionTest extends BaseTest {
 
-   private InputStream script;
+    private InputStream script;
 
-   @Override
-   public void setUp() throws Exception
-   {
-      super.setUp();
-      assertNotNull("SecurityManager not installed", System.getSecurityManager());
-      script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GroovyResource3.groovy");
-      assertNotNull(script);
-   }
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        assertNotNull("SecurityManager not installed", System.getSecurityManager());
+        script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GroovyResource3.groovy");
+        assertNotNull(script);
+    }
 
-   public void testReadSystemPropertyFail() throws Exception
-   {
-      groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null, null, null);
-      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
-      assertEquals(500, resp.getStatus());
-      assertTrue(new String(writer.getBody()).startsWith("access denied"));
-   }
+    public void testReadSystemPropertyFail() throws Exception {
+        groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null, null, null);
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+        ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
+        assertEquals(500, resp.getStatus());
+        assertTrue(new String(writer.getBody()).startsWith("access denied"));
+    }
 
 }

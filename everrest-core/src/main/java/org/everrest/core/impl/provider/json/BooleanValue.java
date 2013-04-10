@@ -22,54 +22,48 @@ package org.everrest.core.impl.provider.json;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BooleanValue extends JsonValue
-{
+public class BooleanValue extends JsonValue {
 
-   /** Value. */
-   private final boolean value;
+    /** Value. */
+    private final boolean value;
 
-   /**
-    * Constructs new BooleanValue.
-    *
-    * @param value value.
-    */
-   public BooleanValue(boolean value)
-   {
-      this.value = value;
-   }
+    /**
+     * Constructs new BooleanValue.
+     *
+     * @param value
+     *         value.
+     */
+    public BooleanValue(boolean value) {
+        this.value = value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean isBoolean()
-   {
-      return true;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isBoolean() {
+        return true;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public String toString()
-   {
-      return getStringValue();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return getStringValue();
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean getBooleanValue()
-   {
-      return value;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean getBooleanValue() {
+        return value;
+    }
 
-   /** {@inheritDoc} */
-   public String getStringValue()
-   {
-      return value ? "true" : "false";
-   }
+    /** {@inheritDoc} */
+    public String getStringValue() {
+        return value ? "true" : "false";
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public void writeTo(JsonWriter writer) throws JsonException
-   {
-      writer.writeValue(value);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public void writeTo(JsonWriter writer) throws JsonException {
+        writer.writeValue(value);
+    }
 
 }

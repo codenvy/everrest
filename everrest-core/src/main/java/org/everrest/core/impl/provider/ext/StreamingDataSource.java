@@ -19,11 +19,10 @@
 
 package org.everrest.core.impl.provider.ext;
 
+import javax.activation.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.activation.DataSource;
 
 /**
  * Implementation of DataSource which simply wrap stream. Note this
@@ -34,47 +33,33 @@ import javax.activation.DataSource;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class StreamingDataSource implements DataSource
-{
-   private final InputStream stream;
+public class StreamingDataSource implements DataSource {
+    private final InputStream stream;
 
-   private final String contentType;
+    private final String contentType;
 
-   public StreamingDataSource(InputStream stream, String contentType)
-   {
-      this.stream = stream;
-      this.contentType = contentType;
-   }
+    public StreamingDataSource(InputStream stream, String contentType) {
+        this.stream = stream;
+        this.contentType = contentType;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String getContentType()
-   {
-      return contentType;
-   }
+    /** {@inheritDoc} */
+    public String getContentType() {
+        return contentType;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public InputStream getInputStream() throws IOException
-   {
-      return stream;
-   }
+    /** {@inheritDoc} */
+    public InputStream getInputStream() throws IOException {
+        return stream;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String getName()
-   {
-      return null;
-   }
+    /** {@inheritDoc} */
+    public String getName() {
+        return null;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public OutputStream getOutputStream() throws IOException
-   {
-      throw new UnsupportedOperationException();
-   }
+    /** {@inheritDoc} */
+    public OutputStream getOutputStream() throws IOException {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -23,18 +23,18 @@ package org.everrest.core;
  * {@link org.everrest.core.impl.RequestDispatcher}. NOTE this method must be not called directly, it
  * is part of REST framework, otherwise {@link ApplicationContext} may contains
  * wrong parameters.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface RequestFilter
-{
+public interface RequestFilter {
 
-   /**
-    * Can modify original request.
-    * 
-    * @param request the request
-    */
-   void doFilter(GenericContainerRequest request);
+    /**
+     * Can modify original request.
+     *
+     * @param request
+     *         the request
+     */
+    void doFilter(GenericContainerRequest request);
 
 }

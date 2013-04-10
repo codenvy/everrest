@@ -30,94 +30,80 @@ import org.everrest.core.tools.WebApplicationDeclaredRoles;
 import org.everrest.websockets.message.JsonMessageConverter;
 import org.everrest.websockets.message.MessageConverter;
 
-import java.security.Principal;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.ContextResolver;
+import java.security.Principal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class EverrestWebSocketServlet extends WebSocketServlet
-{
-   public static final String EVERREST_PROCESSOR_ATTRIBUTE = EverrestProcessor.class.getName();
-   public static final String PROVIDER_BINDER_ATTRIBUTE = ApplicationProviderBinder.class.getName();
-   public static final String MESSAGE_CONVERTER_ATTRIBUTE = MessageConverter.class.getName();
+public class EverrestWebSocketServlet extends WebSocketServlet {
+    public static final String EVERREST_PROCESSOR_ATTRIBUTE = EverrestProcessor.class.getName();
+    public static final String PROVIDER_BINDER_ATTRIBUTE    = ApplicationProviderBinder.class.getName();
+    public static final String MESSAGE_CONVERTER_ATTRIBUTE  = MessageConverter.class.getName();
 
-   private EverrestProcessor processor;
-   private AsynchronousJobPool asynchronousPool;
-   private MessageConverter messageConverter;
-   private WebApplicationDeclaredRoles webApplicationRoles;
+    private EverrestProcessor           processor;
+    private AsynchronousJobPool         asynchronousPool;
+    private MessageConverter            messageConverter;
+    private WebApplicationDeclaredRoles webApplicationRoles;
 
-   @Override
-   public void init() throws ServletException
-   {
-      processor = getEverrestProcessor();
-      asynchronousPool = getAsynchronousJobPool();
-      messageConverter = getMessageConverter();
-      if (messageConverter == null)
-      {
-         messageConverter = new JsonMessageConverter();
-      }
-      webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
-   }
+    @Override
+    public void init() throws ServletException {
+        processor = getEverrestProcessor();
+        asynchronousPool = getAsynchronousJobPool();
+        messageConverter = getMessageConverter();
+        if (messageConverter == null) {
+            messageConverter = new JsonMessageConverter();
+        }
+        webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
+    }
 
-   @Override
-   protected StreamInbound createWebSocketInbound(String s, HttpServletRequest req)
-   {
-      WSConnectionImpl connection = WSConnectionContext.open(req.getSession(), messageConverter);
-      connection.registerMessageReceiver(
-         new WS2RESTAdapter(connection, createSecurityContext(req), processor, asynchronousPool));
-      return connection;
-   }
+    @Override
+    protected StreamInbound createWebSocketInbound(String s, HttpServletRequest req) {
+        WSConnectionImpl connection = WSConnectionContext.open(req.getSession(), messageConverter);
+        connection.registerMessageReceiver(
+                new WS2RESTAdapter(connection, createSecurityContext(req), processor, asynchronousPool));
+        return connection;
+    }
 
-   protected EverrestProcessor getEverrestProcessor()
-   {
-      return (EverrestProcessor)getServletContext().getAttribute(EVERREST_PROCESSOR_ATTRIBUTE);
-   }
+    protected EverrestProcessor getEverrestProcessor() {
+        return (EverrestProcessor)getServletContext().getAttribute(EVERREST_PROCESSOR_ATTRIBUTE);
+    }
 
-   protected MessageConverter getMessageConverter()
-   {
-      return (MessageConverter)getServletContext().getAttribute(MESSAGE_CONVERTER_ATTRIBUTE);
-   }
+    protected MessageConverter getMessageConverter() {
+        return (MessageConverter)getServletContext().getAttribute(MESSAGE_CONVERTER_ATTRIBUTE);
+    }
 
-   protected AsynchronousJobPool getAsynchronousJobPool()
-   {
-      ProviderBinder providers = ((ProviderBinder)getServletContext().getAttribute(PROVIDER_BINDER_ATTRIBUTE));
-      if (providers != null)
-      {
-         ContextResolver<AsynchronousJobPool> asyncJobsResolver =
-            providers.getContextResolver(AsynchronousJobPool.class, null);
-         if (asyncJobsResolver != null)
-         {
-            return asyncJobsResolver.getContext(null);
-         }
-      }
-      throw new IllegalStateException(
-         "Unable get web socket connection. Asynchronous jobs feature is not configured properly. ");
-   }
+    protected AsynchronousJobPool getAsynchronousJobPool() {
+        ProviderBinder providers = ((ProviderBinder)getServletContext().getAttribute(PROVIDER_BINDER_ATTRIBUTE));
+        if (providers != null) {
+            ContextResolver<AsynchronousJobPool> asyncJobsResolver =
+                    providers.getContextResolver(AsynchronousJobPool.class, null);
+            if (asyncJobsResolver != null) {
+                return asyncJobsResolver.getContext(null);
+            }
+        }
+        throw new IllegalStateException(
+                "Unable get web socket connection. Asynchronous jobs feature is not configured properly. ");
+    }
 
-   private SecurityContext createSecurityContext(HttpServletRequest req)
-   {
-      Principal principal = req.getUserPrincipal();
-      if (principal == null)
-      {
-         return new SimpleSecurityContext(req.isSecure());
-      }
-      Set<String> userRoles = new LinkedHashSet<String>();
-      for (String declaredRole : webApplicationRoles.getDeclaredRoles())
-      {
-         if (req.isUserInRole(declaredRole))
-         {
-            userRoles.add(declaredRole);
-         }
-      }
-      return new SimpleSecurityContext(
-         new SimplePrincipal(principal.getName()), userRoles, req.getAuthType(), req.isSecure());
-   }
+    private SecurityContext createSecurityContext(HttpServletRequest req) {
+        Principal principal = req.getUserPrincipal();
+        if (principal == null) {
+            return new SimpleSecurityContext(req.isSecure());
+        }
+        Set<String> userRoles = new LinkedHashSet<String>();
+        for (String declaredRole : webApplicationRoles.getDeclaredRoles()) {
+            if (req.isUserInRole(declaredRole)) {
+                userRoles.add(declaredRole);
+            }
+        }
+        return new SimpleSecurityContext(
+                new SimplePrincipal(principal.getName()), userRoles, req.getAuthType(), req.isSecure());
+    }
 }

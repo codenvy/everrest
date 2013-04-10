@@ -21,38 +21,37 @@ package org.everrest.core.impl.method;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.method.TypeProducer;
 
-import java.util.List;
-
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.core.PathSegment;
+import java.util.List;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: MatrixParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
  *          $
  */
-public class MatrixParameterResolver extends ParameterResolver<MatrixParam>
-{
-   /** See {@link MatrixParam}. */
-   private final MatrixParam matrixParam;
+public class MatrixParameterResolver extends ParameterResolver<MatrixParam> {
+    /** See {@link MatrixParam}. */
+    private final MatrixParam matrixParam;
 
-   /** @param matrixParam MatrixParam */
-   MatrixParameterResolver(MatrixParam matrixParam)
-   {
-      this.matrixParam = matrixParam;
-   }
+    /**
+     * @param matrixParam
+     *         MatrixParam
+     */
+    MatrixParameterResolver(MatrixParam matrixParam) {
+        this.matrixParam = matrixParam;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
-   {
-      String param = matrixParam.value();
-      TypeProducer typeProducer =
-         ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
-      List<PathSegment> pathSegments = context.getUriInfo().getPathSegments(!parameter.isEncoded());
+    /** {@inheritDoc} */
+    @Override
+    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+        String param = matrixParam.value();
+        TypeProducer typeProducer =
+                ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
+        List<PathSegment> pathSegments = context.getUriInfo().getPathSegments(!parameter.isEncoded());
 
-      PathSegment pathSegment = pathSegments.get(pathSegments.size() - 1);
+        PathSegment pathSegment = pathSegments.get(pathSegments.size() - 1);
 
-      return typeProducer.createValue(param, pathSegment.getMatrixParameters(), parameter.getDefaultValue());
-   }
+        return typeProducer.createValue(param, pathSegment.getMatrixParameters(), parameter.getDefaultValue());
+    }
 }

@@ -24,19 +24,17 @@ package org.everrest.core.impl.provider.json;
  * @version $Id$
  */
 public enum StringEnum {
-   ONE("one"), //
-   TWO("two"), //
-   TREE("tree");
-   private final String count;
+    ONE("one"), //
+    TWO("two"), //
+    TREE("tree");
+    private final String count;
 
-   private StringEnum(String count)
-   {
-      this.count = count;
-   }
+    private StringEnum(String count) {
+        this.count = count;
+    }
 
-   @Override
-   public String toString()
-   {
-      return count;
-   }
+    @Override
+    public String toString() {
+        return count;
+    }
 }

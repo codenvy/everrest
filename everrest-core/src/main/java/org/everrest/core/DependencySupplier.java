@@ -25,29 +25,32 @@ package org.everrest.core;
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface DependencySupplier
-{
-   /**
-    * Get object that is approach do description <code>parameter</code>.
-    *
-    * @param parameter required parameter description
-    * @return object of required type or null if instance described by
-    *         <code>parameter</code> may not be produced
-    * @throws RuntimeException if any error occurs while creating instance
-    *         described by <code>parameter</code>
-    * @see Parameter#getParameterClass()
-    * @see Parameter#getGenericType()
-    */
-   Object getComponent(Parameter parameter);
+public interface DependencySupplier {
+    /**
+     * Get object that is approach do description <code>parameter</code>.
+     *
+     * @param parameter
+     *         required parameter description
+     * @return object of required type or null if instance described by
+     *         <code>parameter</code> may not be produced
+     * @throws RuntimeException
+     *         if any error occurs while creating instance
+     *         described by <code>parameter</code>
+     * @see Parameter#getParameterClass()
+     * @see Parameter#getGenericType()
+     */
+    Object getComponent(Parameter parameter);
 
-   /**
-    * Get instance of <code>type</code>.
-    *
-    * @param type required parameter class
-    * @return object of required type or null if instance described by
-    *         <code>type</code> may not be produced
-    * @throws RuntimeException if any error occurs while creating instance
-    *         of <code>type</code>
-    */
-   Object getComponent(Class<?> type);
+    /**
+     * Get instance of <code>type</code>.
+     *
+     * @param type
+     *         required parameter class
+     * @return object of required type or null if instance described by
+     *         <code>type</code> may not be produced
+     * @throws RuntimeException
+     *         if any error occurs while creating instance
+     *         of <code>type</code>
+     */
+    Object getComponent(Class<?> type);
 }

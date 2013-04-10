@@ -24,26 +24,25 @@ package org.everrest.core.impl.resource;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class PathValue
-{
-   /** URI template, see {@link javax.ws.rs.Path#value()} . */
-   private final String path;
+public class PathValue {
+    /** URI template, see {@link javax.ws.rs.Path#value()} . */
+    private final String path;
 
-   /** @param path URI template */
-   public PathValue(String path)
-   {
-      this.path = path;
-   }
+    /**
+     * @param path
+     *         URI template
+     */
+    public PathValue(String path) {
+        this.path = path;
+    }
 
-   /** @return URI template string */
-   public String getPath()
-   {
-      return path;
-   }
+    /** @return URI template string */
+    public String getPath() {
+        return path;
+    }
 
-   /** {@inheritDoc} */
-   public String toString()
-   {
-      return "( " + path + " )";
-   }
+    /** {@inheritDoc} */
+    public String toString() {
+        return "( " + path + " )";
+    }
 }

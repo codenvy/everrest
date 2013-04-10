@@ -25,53 +25,44 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BeanWithSimpleEnum
-{
-   private String name;
+public class BeanWithSimpleEnum {
+    private String name;
 
-   private StringEnum count;
+    private StringEnum count;
 
-   private StringEnum[] counts;
+    private StringEnum[] counts;
 
-   private List<StringEnum> countList;
+    private List<StringEnum> countList;
 
-   public StringEnum getCount()
-   {
-      return count;
-   }
+    public StringEnum getCount() {
+        return count;
+    }
 
-   public List<StringEnum> getCountList()
-   {
-      return countList;
-   }
+    public List<StringEnum> getCountList() {
+        return countList;
+    }
 
-   public StringEnum[] getCounts()
-   {
-      return counts;
-   }
+    public StringEnum[] getCounts() {
+        return counts;
+    }
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName() {
+        return name;
+    }
 
-   public void setCount(StringEnum count)
-   {
-      this.count = count;
-   }
+    public void setCount(StringEnum count) {
+        this.count = count;
+    }
 
-   public void setCountList(List<StringEnum> countList)
-   {
-      this.countList = countList;
-   }
+    public void setCountList(List<StringEnum> countList) {
+        this.countList = countList;
+    }
 
-   public void setCounts(StringEnum[] counts)
-   {
-      this.counts = counts;
-   }
+    public void setCounts(StringEnum[] counts) {
+        this.counts = counts;
+    }
 
-   public void setName(String name)
-   {
-      this.name = name;
-   }
+    public void setName(String name) {
+        this.name = name;
+    }
 }

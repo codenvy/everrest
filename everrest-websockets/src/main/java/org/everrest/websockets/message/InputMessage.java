@@ -24,6 +24,5 @@ package org.everrest.websockets.message;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class InputMessage extends Message
-{
+public class InputMessage extends Message {
 }

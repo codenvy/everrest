@@ -26,92 +26,74 @@ import java.util.Map;
  * @version $Id: $
  */
 /* NOTE: Is not thread safe and required external synchronization. */
-class HelperCache<K, V>
-{
-   private final int cacheSize;
-   private final long expiredAfter;
-   private final int queryCountBeforeCleanup;
-   private final Map<K, MyEntry<V>> map;
+class HelperCache<K, V> {
+    private final int                cacheSize;
+    private final long               expiredAfter;
+    private final int                queryCountBeforeCleanup;
+    private final Map<K, MyEntry<V>> map;
 
-   private int queryCount;
+    private int queryCount;
 
-   HelperCache(long expiredAfter, int cacheSize)
-   {
-      this.expiredAfter = expiredAfter;
-      this.cacheSize = cacheSize;
-      queryCountBeforeCleanup = 500;
-      map = new LinkedHashMap<K, MyEntry<V>>(this.cacheSize + 1, 1.1f, true)
-      {
-         @Override
-         protected boolean removeEldestEntry(Map.Entry<K, MyEntry<V>> eldest)
-         {
-            return size() > HelperCache.this.cacheSize;
-         }
-      };
-   }
-
-   V get(K key)
-   {
-      if (++queryCount >= queryCountBeforeCleanup)
-      {
-         cleanup();
-      }
-      MyEntry<V> myEntry = map.get(key);
-      if (myEntry != null)
-      {
-         myEntry.lastAccess = System.currentTimeMillis();
-         return myEntry.value;
-      }
-      return null;
-   }
-
-   void put(K key, V value)
-   {
-      if (++queryCount >= queryCountBeforeCleanup)
-      {
-         cleanup();
-      }
-      MyEntry<V> myEntry = map.get(key);
-      if (myEntry != null)
-      {
-         myEntry.lastAccess = System.currentTimeMillis();
-         myEntry.value = value;
-      }
-      else
-      {
-         map.put(key, new MyEntry<V>(value, System.currentTimeMillis()));
-      }
-   }
-
-   @SuppressWarnings("unchecked")
-   void cleanup()
-   {
-      Object[] keys = map.keySet().toArray();
-      for (int i = 0; i < keys.length; i++)
-      {
-         K key = (K)keys[i];
-         MyEntry<V> myEntry = map.get(key);
-         if (myEntry != null)
-         {
-            long inCache = System.currentTimeMillis() - myEntry.lastAccess;
-            if (inCache < 0 || inCache > expiredAfter)
-            {
-               map.remove(key);
+    HelperCache(long expiredAfter, int cacheSize) {
+        this.expiredAfter = expiredAfter;
+        this.cacheSize = cacheSize;
+        queryCountBeforeCleanup = 500;
+        map = new LinkedHashMap<K, MyEntry<V>>(this.cacheSize + 1, 1.1f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, MyEntry<V>> eldest) {
+                return size() > HelperCache.this.cacheSize;
             }
-         }
-      }
-      queryCount = 0;
-   }
+        };
+    }
 
-   private static class MyEntry<V>
-   {
-      V value;
-      long lastAccess;
+    V get(K key) {
+        if (++queryCount >= queryCountBeforeCleanup) {
+            cleanup();
+        }
+        MyEntry<V> myEntry = map.get(key);
+        if (myEntry != null) {
+            myEntry.lastAccess = System.currentTimeMillis();
+            return myEntry.value;
+        }
+        return null;
+    }
 
-      MyEntry(V value, long lastAccess)
-      {
-         this.value = value;
-         this.lastAccess = lastAccess;
-      }
-   }
+    void put(K key, V value) {
+        if (++queryCount >= queryCountBeforeCleanup) {
+            cleanup();
+        }
+        MyEntry<V> myEntry = map.get(key);
+        if (myEntry != null) {
+            myEntry.lastAccess = System.currentTimeMillis();
+            myEntry.value = value;
+        } else {
+            map.put(key, new MyEntry<V>(value, System.currentTimeMillis()));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    void cleanup() {
+        Object[] keys = map.keySet().toArray();
+        for (int i = 0; i < keys.length; i++) {
+            K key = (K)keys[i];
+            MyEntry<V> myEntry = map.get(key);
+            if (myEntry != null) {
+                long inCache = System.currentTimeMillis() - myEntry.lastAccess;
+                if (inCache < 0 || inCache > expiredAfter) {
+                    map.remove(key);
+                }
+            }
+        }
+        queryCount = 0;
+    }
+
+    private static class MyEntry<V> {
+        V    value;
+        long lastAccess;
+
+        MyEntry(V value, long lastAccess) {
+            this.value = value;
+            this.lastAccess = lastAccess;
+        }
+    }
 }

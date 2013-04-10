@@ -26,32 +26,31 @@ import java.util.Map;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface AsynchronousJob
-{
-   String getJobId();
+public interface AsynchronousJob {
+    String getJobId();
 
-   long getExpirationDate();
+    long getExpirationDate();
 
-   ResourceMethodDescriptor getResourceMethod();
+    ResourceMethodDescriptor getResourceMethod();
 
-   boolean isDone();
+    boolean isDone();
 
-   boolean cancel();
+    boolean cancel();
 
-   /**
-    * Get result of job. If job is not done yet this method throws IllegalStateException.
-    * Before call this method caller must check is job done or not with method {@link #isDone()} .
-    *
-    * @return result
-    * @throws IllegalStateException
-    *    if job is not done yet
-    */
-   Object getResult() throws IllegalStateException;
+    /**
+     * Get result of job. If job is not done yet this method throws IllegalStateException.
+     * Before call this method caller must check is job done or not with method {@link #isDone()} .
+     *
+     * @return result
+     * @throws IllegalStateException
+     *         if job is not done yet
+     */
+    Object getResult() throws IllegalStateException;
 
-   /**
-    * The storage for context attributes.
-    *
-    * @return map never <code>null</code>
-    */
-   Map<String, Object> getContext();
+    /**
+     * The storage for context attributes.
+     *
+     * @return map never <code>null</code>
+     */
+    Map<String, Object> getContext();
 }

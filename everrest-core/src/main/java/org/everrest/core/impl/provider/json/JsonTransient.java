@@ -19,14 +19,14 @@
 
 package org.everrest.core.impl.provider.json;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import org.everrest.core.impl.provider.JsonEntityProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Prevent processing field/type via Json framework. When applied to class, it
@@ -38,6 +38,5 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target({FIELD, TYPE})
-public @interface JsonTransient
-{
+public @interface JsonTransient {
 }

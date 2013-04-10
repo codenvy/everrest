@@ -20,62 +20,55 @@ package org.everrest.core.impl.provider;
 
 import org.everrest.core.provider.EntityProvider;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
 @Provider
-public class StringEntityProvider implements EntityProvider<String>
-{
-   /** {@inheritDoc} */
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return type == String.class;
-   }
+public class StringEntityProvider implements EntityProvider<String> {
+    /** {@inheritDoc} */
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return type == String.class;
+    }
 
-   /** {@inheritDoc} */
-   public String readFrom(Class<String> type,
-                          Type genericType,
-                          Annotation[] annotations,
-                          MediaType mediaType,
-                          MultivaluedMap<String, String> httpHeaders,
-                          InputStream entityStream) throws IOException
-   {
-      return IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get("charset") : null);
-   }
+    /** {@inheritDoc} */
+    public String readFrom(Class<String> type,
+                           Type genericType,
+                           Annotation[] annotations,
+                           MediaType mediaType,
+                           MultivaluedMap<String, String> httpHeaders,
+                           InputStream entityStream) throws IOException {
+        return IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get("charset") : null);
+    }
 
-   /** {@inheritDoc} */
-   public long getSize(String t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      //    return t.length();
-      return -1;
-   }
+    /** {@inheritDoc} */
+    public long getSize(String t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        //    return t.length();
+        return -1;
+    }
 
-   /** {@inheritDoc} */
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return type == String.class;
-   }
+    /** {@inheritDoc} */
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return type == String.class;
+    }
 
-   /** {@inheritDoc} */
-   public void writeTo(String t,
-                       Class<?> type,
-                       Type genericType,
-                       Annotation[] annotations,
-                       MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders,
-                       OutputStream entityStream) throws IOException
-   {
-      IOHelper.writeString(t, entityStream, mediaType.getParameters().get("charset"));
-   }
+    /** {@inheritDoc} */
+    public void writeTo(String t,
+                        Class<?> type,
+                        Type genericType,
+                        Annotation[] annotations,
+                        MediaType mediaType,
+                        MultivaluedMap<String, Object> httpHeaders,
+                        OutputStream entityStream) throws IOException {
+        IOHelper.writeString(t, entityStream, mediaType.getParameters().get("charset"));
+    }
 }

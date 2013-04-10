@@ -24,19 +24,17 @@ package org.everrest.core.impl.provider.json;
  * @version $Id$
  */
 public enum BookEnum {
-   JUNIT_IN_ACTION(new Book("Vincent Masson", "JUnit in Action", 19.37, 93011099534534L, 386, true, false)), //
-   BEGINNING_C(new Book("Christian Gross", "Beginning C# 2008 from novice to professional", 23.56, 9781590598696L, 511,
-      false, false));
-   private final Book book;
+    JUNIT_IN_ACTION(new Book("Vincent Masson", "JUnit in Action", 19.37, 93011099534534L, 386, true, false)), //
+    BEGINNING_C(new Book("Christian Gross", "Beginning C# 2008 from novice to professional", 23.56, 9781590598696L, 511,
+                         false, false));
+    private final Book book;
 
-   private BookEnum(Book book)
-   {
-      this.book = book;
-   }
+    private BookEnum(Book book) {
+        this.book = book;
+    }
 
-   @Override
-   public String toString()
-   {
-      return book.toString();
-   }
+    @Override
+    public String toString() {
+        return book.toString();
+    }
 }

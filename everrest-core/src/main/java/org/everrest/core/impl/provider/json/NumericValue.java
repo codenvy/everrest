@@ -22,14 +22,12 @@ package org.everrest.core.impl.provider.json;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class NumericValue extends JsonValue
-{
+public abstract class NumericValue extends JsonValue {
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean isNumeric()
-   {
-      return true;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isNumeric() {
+        return true;
+    }
 
 }

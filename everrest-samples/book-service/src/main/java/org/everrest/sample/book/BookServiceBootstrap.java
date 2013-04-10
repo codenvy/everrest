@@ -27,19 +27,16 @@ import javax.servlet.ServletContextListener;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BookServiceBootstrap implements ServletContextListener
-{
-   static final String BOOK_STORAGE_NAME = BookStorage.class.getName();
+public class BookServiceBootstrap implements ServletContextListener {
+    static final String BOOK_STORAGE_NAME = BookStorage.class.getName();
 
-   public void contextDestroyed(ServletContextEvent sce)
-   {
-      ServletContext sctx = sce.getServletContext();
-      sctx.removeAttribute(BOOK_STORAGE_NAME);
-   }
+    public void contextDestroyed(ServletContextEvent sce) {
+        ServletContext sctx = sce.getServletContext();
+        sctx.removeAttribute(BOOK_STORAGE_NAME);
+    }
 
-   public void contextInitialized(ServletContextEvent sce)
-   {
-      ServletContext sctx = sce.getServletContext();
-      sctx.setAttribute(BOOK_STORAGE_NAME, new BookStorage());
-   }
+    public void contextInitialized(ServletContextEvent sce) {
+        ServletContext sctx = sce.getServletContext();
+        sctx.setAttribute(BOOK_STORAGE_NAME, new BookStorage());
+    }
 }

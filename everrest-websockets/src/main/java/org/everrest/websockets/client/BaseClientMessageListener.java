@@ -25,30 +25,24 @@ package org.everrest.websockets.client;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class BaseClientMessageListener implements ClientMessageListener
-{
-   @Override
-   public void onMessage(String data)
-   {
-   }
+public class BaseClientMessageListener implements ClientMessageListener {
+    @Override
+    public void onMessage(String data) {
+    }
 
-   @Override
-   public void onMessage(byte[] data)
-   {
-   }
+    @Override
+    public void onMessage(byte[] data) {
+    }
 
-   @Override
-   public void onPong(byte[] data)
-   {
-   }
+    @Override
+    public void onPong(byte[] data) {
+    }
 
-   @Override
-   public void onOpen(WSClient client)
-   {
-   }
+    @Override
+    public void onOpen(WSClient client) {
+    }
 
-   @Override
-   public void onClose(int status, String message)
-   {
-   }
+    @Override
+    public void onClose(int status, String message) {
+    }
 }

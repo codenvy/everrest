@@ -37,48 +37,42 @@ import javax.ws.rs.core.Application;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class EverrestInitializedListener implements ServletContextListener
-{
-   /** {@inheritDoc} */
-   public void contextDestroyed(ServletContextEvent sce)
-   {
-      makeFileCollectorDestroyer().stopFileCollector();
-      ServletContext ctx = sce.getServletContext();
-      EverrestProcessor processor = (EverrestProcessor)ctx.getAttribute(EverrestProcessor.class.getName());
-      if (processor != null)
-      {
-         processor.stop();
-      }
-   }
+public class EverrestInitializedListener implements ServletContextListener {
+    /** {@inheritDoc} */
+    public void contextDestroyed(ServletContextEvent sce) {
+        makeFileCollectorDestroyer().stopFileCollector();
+        ServletContext ctx = sce.getServletContext();
+        EverrestProcessor processor = (EverrestProcessor)ctx.getAttribute(EverrestProcessor.class.getName());
+        if (processor != null) {
+            processor.stop();
+        }
+    }
 
-   protected FileCollectorDestroyer makeFileCollectorDestroyer()
-   {
-      return new FileCollectorDestroyer();
-   }
+    protected FileCollectorDestroyer makeFileCollectorDestroyer() {
+        return new FileCollectorDestroyer();
+    }
 
-   /** {@inheritDoc} */
-   public void contextInitialized(ServletContextEvent sce)
-   {
-      ServletContext ctx = sce.getServletContext();
-      DependencySupplier dependencySupplier = (DependencySupplier)ctx.getAttribute(DependencySupplier.class.getName());
-      if (dependencySupplier == null)
-      {
-         dependencySupplier = new ServletContextDependencySupplier(ctx);
-      }
-      ResourceBinder resources = new ResourceBinderImpl();
-      ApplicationProviderBinder providers = new ApplicationProviderBinder();
-      EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(ctx);
-      EverrestConfiguration config = initializer.getConfiguration();
-      Application application = initializer.getApplication();
-      EverrestApplication everrest = new EverrestApplication(config);
-      everrest.addApplication(application);
-      EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
-      processor.start();
+    /** {@inheritDoc} */
+    public void contextInitialized(ServletContextEvent sce) {
+        ServletContext ctx = sce.getServletContext();
+        DependencySupplier dependencySupplier = (DependencySupplier)ctx.getAttribute(DependencySupplier.class.getName());
+        if (dependencySupplier == null) {
+            dependencySupplier = new ServletContextDependencySupplier(ctx);
+        }
+        ResourceBinder resources = new ResourceBinderImpl();
+        ApplicationProviderBinder providers = new ApplicationProviderBinder();
+        EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(ctx);
+        EverrestConfiguration config = initializer.getConfiguration();
+        Application application = initializer.getApplication();
+        EverrestApplication everrest = new EverrestApplication(config);
+        everrest.addApplication(application);
+        EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+        processor.start();
 
-      ctx.setAttribute(EverrestConfiguration.class.getName(), config);
-      ctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
-      ctx.setAttribute(ResourceBinder.class.getName(), resources);
-      ctx.setAttribute(ApplicationProviderBinder.class.getName(), providers);
-      ctx.setAttribute(EverrestProcessor.class.getName(), processor);
-   }
+        ctx.setAttribute(EverrestConfiguration.class.getName(), config);
+        ctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
+        ctx.setAttribute(ResourceBinder.class.getName(), resources);
+        ctx.setAttribute(ApplicationProviderBinder.class.getName(), providers);
+        ctx.setAttribute(EverrestProcessor.class.getName(), processor);
+    }
 }

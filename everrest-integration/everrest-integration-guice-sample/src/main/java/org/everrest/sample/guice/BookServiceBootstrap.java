@@ -31,19 +31,17 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BookServiceBootstrap extends EverrestGuiceContextListener
-{
-   @Override
-   protected List<Module> getModules()
-   {
-      List<Module> modules = new ArrayList<Module>();
-      modules.add(new Module() {
-         public void configure(Binder binder) {
-            binder.bind(BookService.class);
-            binder.bind(BookStorage.class);
-            binder.bind(BookNotFoundExceptionMapper.class);
-         }
-      });
-      return modules;
-   }
+public class BookServiceBootstrap extends EverrestGuiceContextListener {
+    @Override
+    protected List<Module> getModules() {
+        List<Module> modules = new ArrayList<Module>();
+        modules.add(new Module() {
+            public void configure(Binder binder) {
+                binder.bind(BookService.class);
+                binder.bind(BookStorage.class);
+                binder.bind(BookNotFoundExceptionMapper.class);
+            }
+        });
+        return modules;
+    }
 }

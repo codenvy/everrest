@@ -22,90 +22,79 @@ package org.everrest.core.impl.provider.json;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class LongValue extends NumericValue
-{
+public class LongValue extends NumericValue {
 
-   /** Value. */
-   private final long value;
+    /** Value. */
+    private final long value;
 
-   /**
-    * Constructs new LongValue.
-    *
-    * @param value the value.
-    */
-   public LongValue(long value)
-   {
-      this.value = value;
-   }
+    /**
+     * Constructs new LongValue.
+     *
+     * @param value
+     *         the value.
+     */
+    public LongValue(long value) {
+        this.value = value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean isLong()
-   {
-      return true;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isLong() {
+        return true;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public String getStringValue()
-   {
-      return Long.toString(value);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public String getStringValue() {
+        return Long.toString(value);
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public byte getByteValue()
-   {
-      return (byte)value;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public byte getByteValue() {
+        return (byte)value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public short getShortValue()
-   {
-      return (short)value;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public short getShortValue() {
+        return (short)value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public int getIntValue()
-   {
-      return (int)value;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public int getIntValue() {
+        return (int)value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public long getLongValue()
-   {
-      return value;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public long getLongValue() {
+        return value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public double getDoubleValue()
-   {
-      return value;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public double getDoubleValue() {
+        return value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public float getFloatValue()
-   {
-      return value;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public float getFloatValue() {
+        return value;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public String toString()
-   {
-      return getStringValue();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return getStringValue();
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public void writeTo(JsonWriter writer) throws JsonException
-   {
-      writer.writeValue(value);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public void writeTo(JsonWriter writer) throws JsonException {
+        writer.writeValue(value);
+    }
 
 }

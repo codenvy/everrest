@@ -29,25 +29,23 @@ import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
 
-public abstract class BaseTest extends TestCase
-{
+public abstract class BaseTest extends TestCase {
 
-   protected ProviderBinder providers;
+    protected ProviderBinder providers;
 
-   protected ResourceBinderImpl resources;
+    protected ResourceBinderImpl resources;
 
-   protected RequestHandlerImpl requestHandler;
+    protected RequestHandlerImpl requestHandler;
 
-   protected ResourceLauncher launcher;
+    protected ResourceLauncher launcher;
 
-   public void setUp() throws Exception
-   {
-      this.resources = new ResourceBinderImpl();
-      this.requestHandler =
-         new RequestHandlerImpl(new RequestDispatcher(resources), new DependencySupplierImpl(),
-            new EverrestConfiguration());
-      this.providers = ProviderBinder.getInstance();
-      this.launcher = new ResourceLauncher(requestHandler);
-   }
+    public void setUp() throws Exception {
+        this.resources = new ResourceBinderImpl();
+        this.requestHandler =
+                new RequestHandlerImpl(new RequestDispatcher(resources), new DependencySupplierImpl(),
+                                       new EverrestConfiguration());
+        this.providers = ProviderBinder.getInstance();
+        this.launcher = new ResourceLauncher(requestHandler);
+    }
 
 }

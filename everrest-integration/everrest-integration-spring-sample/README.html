@@ -1,15 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-   <head>
-      <title>Everrest-Spring Integration Example</title>
-   </head>
-   <body>
-      <h1>EverRest-Spring Integration Example</h1>
-      <p>This is sample of integration EverRest framework with Spring.</p>
-      <p>We will create simple books service. It should be able give access to books by id, get list all available books 
-      and add new book in storage. Service supports JSON format for transfer data to/from client.</p>
-      <ul>
-	      <li>Add configuration of Spring servlet in web.xml.
+<head>
+    <title>Everrest-Spring Integration Example</title>
+</head>
+<body>
+<h1>EverRest-Spring Integration Example</h1>
+
+<p>This is sample of integration EverRest framework with Spring.</p>
+
+<p>We will create simple books service. It should be able give access to books by id, get list all available books
+    and add new book in storage. Service supports JSON format for transfer data to/from client.</p>
+<ul>
+    <li>Add configuration of Spring servlet in web.xml.
 	      <pre>
          &lt;servlet&gt;
             &lt;servlet-name&gt;books&lt;/servlet-name&gt;
@@ -21,9 +23,9 @@
             &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
          &lt;/servlet-mapping&gt;
 	      </pre>
-	      </li>
-	      <li>Create file of spring container configuration with content as bellow. Note: This file must have name
-	      <i>books-servlet.xml</i> and be placed in folder <i>src/main/webapp/WEB-INF</i>.
+    </li>
+    <li>Create file of spring container configuration with content as bellow. Note: This file must have name
+        <i>books-servlet.xml</i> and be placed in folder <i>src/main/webapp/WEB-INF</i>.
 	      <pre>
    &lt;beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
@@ -56,13 +58,15 @@
       &lt;bean class="org.everrest.sample.spring.BookStorage" /&gt;
    &lt;/beans&gt;
 	      </pre>
-	      </li>
-	      <li>EverRest components. Note: By default all components of Spring container are singleton.
-	      <p><i>org.everrest.sample.spring.Book</i> - is simple Java Bean that will be used to transfer data via JSON.</p>
-	      <p><i>org.everrest.sample.spring.BookNotFoundException</i> - exception that will be thrown by
-	      <i>org.everrest.sample.spring.BookService</i> if client requested book that does not exist in storage.</p>
-	      <p><i>org.everrest.sample.spring.BookNotFoundExceptionMapper</i> - JAX-RS component that intercepts
-	      <i>org.everrest.sample.spring.BookNotFoundException</i> and send correct response to client.</p>
+    </li>
+    <li>EverRest components. Note: By default all components of Spring container are singleton.
+        <p><i>org.everrest.sample.spring.Book</i> - is simple Java Bean that will be used to transfer data via JSON.</p>
+
+        <p><i>org.everrest.sample.spring.BookNotFoundException</i> - exception that will be thrown by
+            <i>org.everrest.sample.spring.BookService</i> if client requested book that does not exist in storage.</p>
+
+        <p><i>org.everrest.sample.spring.BookNotFoundExceptionMapper</i> - JAX-RS component that intercepts
+            <i>org.everrest.sample.spring.BookNotFoundException</i> and send correct response to client.</p>
 	      <pre>
          @Provider
          public class BookNotFoundExceptionMapper implements ExceptionMapper&lt;BookNotFoundException&gt;
@@ -73,14 +77,14 @@
             }
          }
 	      </pre>
-	      <p><i>org.everrest.sample.spring.BookService</i> - JAX-RS service that process client's requests.
-	      This is resource which inject BookStorage instance via <i>org.springframework.beans.factory.annotation.Autowired</i>
-	      annotation. This is component has a <i>prototype</i> scope.</p>
+        <p><i>org.everrest.sample.spring.BookService</i> - JAX-RS service that process client's requests.
+            This is resource which inject BookStorage instance via <i>org.springframework.beans.factory.annotation.Autowired</i>
+            annotation. This is component has a <i>prototype</i> scope.</p>
          <pre>
          &lt;bean scope="prototype" class="org.everrest.sample.spring.BookService" /&gt;
          </pre>
-	      <p>It minds new instance of BookService will be created
-	      for each request. This scope SHOULD be default for all resources.</p>
+        <p>It minds new instance of BookService will be created
+            for each request. This scope SHOULD be default for all resources.</p>
 	      <pre>
          @Path("books")
          public class BookService
@@ -89,54 +93,59 @@
             private BookStorage bookStorage;
 	      ...
 	      </pre>
-	      <p><i>org.everrest.sample.spring.BookStorage</i> - storage of Books.</p>
+        <p><i>org.everrest.sample.spring.BookStorage</i> - storage of Books.</p>
 	      <pre>
          public class BookStorage
          {
 	      ...
-	      </pre></li>
-	      <li>Request mapping.
-	      <table border="1"><tbody>
-	      <tr>
-	      <th>Relative Path</th>
-         <th>HTTP Method</th>
-         <th>Description</th>
-	      </tr>
-	      <tr>
-	      <td>spring-book-service/books/{id}</td>
-	      <td>GET</td>
-	      <td>Get books with specified id. Just after server start only one book in storage and it can be accessed via
-	      id <i>101</i></td>
-	      </tr>
-	      <tr>
-	      <td>spring-book-service/books/</td>
-	      <td>GET</td>
-	      <td>Get all books from storage.</td>
-	      </tr>
-	      <tr>
-	      <td>spring-book-service/books/</td>
-	      <td>PUT</td>
-	      <td>Add new book in storage. The body of request must contains book's description in JSON format. The
-	      <i>Content-type</i> header must be set to <i>application/json</i></td>
-	      </tr>
-	      </tbody></table>
-	      </li>
-	      <li>How to try.
-	      <p>Build project.</p>
-	      <pre>mvn clean install</pre>
-	      <p>Run it with Jetty server.</p>
-         <pre>mvn jetty:run</pre>
-         <p>Point you web browser to <a href="http://localhost:8080/spring-book-service/books/101">http://localhost:8080/spring-book-service/books/101</a></p>
-         <p>If you are under linux or other unix like OS the you can use <i>curl</i> utility (often it is already installed).
-         Binary build of this utility available for windows also at <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>.
-         With <i>curl</i> you able to add new book in storage via command</p>
+	      </pre>
+    </li>
+    <li>Request mapping.
+        <table border="1">
+            <tbody>
+            <tr>
+                <th>Relative Path</th>
+                <th>HTTP Method</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>spring-book-service/books/{id}</td>
+                <td>GET</td>
+                <td>Get books with specified id. Just after server start only one book in storage and it can be accessed via
+                    id <i>101</i></td>
+            </tr>
+            <tr>
+                <td>spring-book-service/books/</td>
+                <td>GET</td>
+                <td>Get all books from storage.</td>
+            </tr>
+            <tr>
+                <td>spring-book-service/books/</td>
+                <td>PUT</td>
+                <td>Add new book in storage. The body of request must contains book's description in JSON format. The
+                    <i>Content-type</i> header must be set to <i>application/json</i></td>
+            </tr>
+            </tbody>
+        </table>
+    </li>
+    <li>How to try.
+        <p>Build project.</p>
+        <pre>mvn clean install</pre>
+        <p>Run it with Jetty server.</p>
+        <pre>mvn jetty:run</pre>
+        <p>Point you web browser to <a href="http://localhost:8080/spring-book-service/books/101">http://localhost:8080/spring-book-service/books/101</a>
+        </p>
+
+        <p>If you are under linux or other unix like OS the you can use <i>curl</i> utility (often it is already installed).
+            Binary build of this utility available for windows also at <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>.
+            With <i>curl</i> you able to add new book in storage via command</p>
          <pre>
          curl -X PUT \
          -H "Content-type:application/json" \
          -d '{"author":"My Author","title":"My Title","price":1.00,"pages":100}' \
          http://localhost:8080/spring-book-service/books/ 
          </pre>
-	      </li>
-      </ul>
-   </body>
+    </li>
+</ul>
+</body>
 </html>

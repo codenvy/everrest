@@ -28,10 +28,8 @@ import javax.ws.rs.ext.Provider;
  * @version $Id$
  */
 @Provider
-public class BookNotFoundExceptionMapper implements ExceptionMapper<BookNotFoundException>
-{
-   public Response toResponse(BookNotFoundException exception)
-   {
-      return Response.status(404).entity(exception.getMessage()).type("text/plain").build();
-   }
+public class BookNotFoundExceptionMapper implements ExceptionMapper<BookNotFoundException> {
+    public Response toResponse(BookNotFoundException exception) {
+        return Response.status(404).entity(exception.getMessage()).type("text/plain").build();
+    }
 }

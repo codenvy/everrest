@@ -25,38 +25,32 @@ package org.everrest.core.impl.async;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class AsynchronousProcess
-{
-   private final String owner;
-   private final String id;
-   private final String path;
-   private final String status;
+public final class AsynchronousProcess {
+    private final String owner;
+    private final String id;
+    private final String path;
+    private final String status;
 
-   public AsynchronousProcess(String owner, String id, String path, String status)
-   {
-      this.owner = owner;
-      this.id = id;
-      this.path = path;
-      this.status = status;
-   }
+    public AsynchronousProcess(String owner, String id, String path, String status) {
+        this.owner = owner;
+        this.id = id;
+        this.path = path;
+        this.status = status;
+    }
 
-   public String getOwner()
-   {
-      return owner;
-   }
+    public String getOwner() {
+        return owner;
+    }
 
-   public String getId()
-   {
-      return id;
-   }
+    public String getId() {
+        return id;
+    }
 
-   public String getPath()
-   {
-      return path;
-   }
+    public String getPath() {
+        return path;
+    }
 
-   public String getStatus()
-   {
-      return status;
-   }
+    public String getStatus() {
+        return status;
+    }
 }

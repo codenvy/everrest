@@ -1,25 +1,24 @@
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
-   xsi:schemaLocation="
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
-      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-      ">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
 
-   <context:annotation-config/>
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-   <bean id="everrest.dependencies" class="org.everrest.spring.SpringDependencySupplier" />
-   <bean id="everrest.resources" class="org.everrest.core.impl.ResourceBinderImpl" />
-   <bean id="everrest.providers" class="org.everrest.core.impl.ApplicationProviderBinder" />
-   <bean id="everrest.configuration" class="org.everrest.core.impl.EverrestConfiguration" />
+    <context:annotation-config/>
 
-   <bean class="org.everrest.spring.SpringComponentsLoader">
-      <constructor-arg ref="everrest.resources"></constructor-arg>
-      <constructor-arg ref="everrest.providers"></constructor-arg>
-      <constructor-arg ref="everrest.dependencies" />
-      <constructor-arg ref="everrest.configuration" />
-   </bean>
+    <bean id="everrest.dependencies" class="org.everrest.spring.SpringDependencySupplier"/>
+    <bean id="everrest.resources" class="org.everrest.core.impl.ResourceBinderImpl"/>
+    <bean id="everrest.providers" class="org.everrest.core.impl.ApplicationProviderBinder"/>
+    <bean id="everrest.configuration" class="org.everrest.core.impl.EverrestConfiguration"/>
 
-   <bean scope="prototype" class="org.everrest.spring.SpringResourceTest$Resource" />
-   <bean class="org.everrest.spring.SpringResourceTest$MessageProvider" />
+    <bean class="org.everrest.spring.SpringComponentsLoader">
+        <constructor-arg ref="everrest.resources"></constructor-arg>
+        <constructor-arg ref="everrest.providers"></constructor-arg>
+        <constructor-arg ref="everrest.dependencies"/>
+        <constructor-arg ref="everrest.configuration"/>
+    </bean>
+
+    <bean scope="prototype" class="org.everrest.spring.SpringResourceTest$Resource"/>
+    <bean class="org.everrest.spring.SpringResourceTest$MessageProvider"/>
 
 </beans>

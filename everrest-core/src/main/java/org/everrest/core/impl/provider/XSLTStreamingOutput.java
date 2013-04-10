@@ -18,9 +18,6 @@
  */
 package org.everrest.core.impl.provider;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -28,6 +25,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * This type should be used by resource methods when need to apply XSLT
@@ -37,39 +36,33 @@ import javax.xml.transform.stream.StreamResult;
  * @version $Id: XLSTStreamingOutPut.java
  * @see StreamingOutput
  */
-public class XSLTStreamingOutput implements StreamingOutput
-{
-   private Source source;
+public class XSLTStreamingOutput implements StreamingOutput {
+    private Source source;
 
-   private Templates templates;
+    private Templates templates;
 
-   /**
-    * XSLTStreamingOutput constructor.
-    *
-    * @param source entity to write into output stream.
-    * @param templates transformation templates
-    */
-   public XSLTStreamingOutput(Source source, Templates templates)
-   {
-      this.source = source;
-      this.templates = templates;
-   }
+    /**
+     * XSLTStreamingOutput constructor.
+     *
+     * @param source
+     *         entity to write into output stream.
+     * @param templates
+     *         transformation templates
+     */
+    public XSLTStreamingOutput(Source source, Templates templates) {
+        this.source = source;
+        this.templates = templates;
+    }
 
-   /** {@inheritDoc} . */
-   public void write(OutputStream output) throws IOException
-   {
-      try
-      {
-         Transformer transformer = templates.newTransformer();
-         transformer.transform(source, new StreamResult(output));
-      }
-      catch (TransformerConfigurationException tce)
-      {
-         throw new IOException(tce.getMessage(), tce);
-      }
-      catch (TransformerException tre)
-      {
-         throw new IOException(tre.getMessage(), tre);
-      }
-   }
+    /** {@inheritDoc} . */
+    public void write(OutputStream output) throws IOException {
+        try {
+            Transformer transformer = templates.newTransformer();
+            transformer.transform(source, new StreamResult(output));
+        } catch (TransformerConfigurationException tce) {
+            throw new IOException(tce.getMessage(), tce);
+        } catch (TransformerException tre) {
+            throw new IOException(tre.getMessage(), tre);
+        }
+    }
 }

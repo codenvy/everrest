@@ -31,67 +31,60 @@ import javax.ws.rs.Path;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescriptor
-{
-   /** @see PathValue */
-   private final PathValue path;
+public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescriptor {
+    /** @see PathValue */
+    private final PathValue path;
 
-   /** @see UriPattern */
-   private final UriPattern uriPattern;
+    /** @see UriPattern */
+    private final UriPattern uriPattern;
 
-   /**
-    * @param filterClass filter class
-    * @param scope filter scope
-    * @see ComponentLifecycleScope
-    */
-   public FilterDescriptorImpl(Class<?> filterClass, ComponentLifecycleScope scope)
-   {
-      super(filterClass, scope);
-      final Path p = filterClass.getAnnotation(Path.class);
-      if (p != null)
-      {
-         this.path = new PathValue(p.value());
-         this.uriPattern = new UriPattern(p.value());
-      }
-      else
-      {
-         this.path = null;
-         this.uriPattern = null;
-      }
-   }
+    /**
+     * @param filterClass
+     *         filter class
+     * @param scope
+     *         filter scope
+     * @see ComponentLifecycleScope
+     */
+    public FilterDescriptorImpl(Class<?> filterClass, ComponentLifecycleScope scope) {
+        super(filterClass, scope);
+        final Path p = filterClass.getAnnotation(Path.class);
+        if (p != null) {
+            this.path = new PathValue(p.value());
+            this.uriPattern = new UriPattern(p.value());
+        } else {
+            this.path = null;
+            this.uriPattern = null;
+        }
+    }
 
-   /** {@inheritDoc} */
-   public void accept(ResourceDescriptorVisitor visitor)
-   {
-      visitor.visitFilterDescriptor(this);
-   }
+    /** {@inheritDoc} */
+    public void accept(ResourceDescriptorVisitor visitor) {
+        visitor.visitFilterDescriptor(this);
+    }
 
-   /** {@inheritDoc} */
-   public PathValue getPathValue()
-   {
-      return path;
-   }
+    /** {@inheritDoc} */
+    public PathValue getPathValue() {
+        return path;
+    }
 
-   /** {@inheritDoc} */
-   public UriPattern getUriPattern()
-   {
-      return uriPattern;
-   }
+    /** {@inheritDoc} */
+    public UriPattern getUriPattern() {
+        return uriPattern;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public String toString()
-   {
-      StringBuilder sb = new StringBuilder("[ FilterDescriptorImpl: ");
-      sb.append("path: ");
-      sb.append(getPathValue());
-      sb.append("; filter class: ");
-      sb.append(getObjectClass());
-      sb.append("; ");
-      sb.append(getConstructorDescriptors());
-      sb.append("; ");
-      sb.append(getFieldInjectors());
-      sb.append(" ]");
-      return sb.toString();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[ FilterDescriptorImpl: ");
+        sb.append("path: ");
+        sb.append(getPathValue());
+        sb.append("; filter class: ");
+        sb.append(getObjectClass());
+        sb.append("; ");
+        sb.append(getConstructorDescriptors());
+        sb.append("; ");
+        sb.append(getFieldInjectors());
+        sb.append(" ]");
+        return sb.toString();
+    }
 }

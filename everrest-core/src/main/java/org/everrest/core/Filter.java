@@ -31,12 +31,12 @@ import java.lang.annotation.Target;
  * &#64;Path is not specified then filter will be applied for all requests
  * (RequestFilter), responses (ResponseFilter) or all resource methods
  * (MethodInvokerFilter).
- * 
+ *
+ * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
+ * @version $Id$
  * @see RequestFilter
  * @see ResponseFilter
  * @see MethodInvokerFilter
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

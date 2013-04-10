@@ -20,10 +20,9 @@ package org.everrest.core.impl;
 
 import org.everrest.core.util.CaselessUnmodifiableMultivaluedMap;
 
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Read only case insensitive {@link MultivaluedMap}.
@@ -31,16 +30,13 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class InputHeadersMap extends CaselessUnmodifiableMultivaluedMap<String>
-{
-   private static final long serialVersionUID = -96963220577144285L;
+public final class InputHeadersMap extends CaselessUnmodifiableMultivaluedMap<String> {
+    private static final long serialVersionUID = -96963220577144285L;
 
-   public InputHeadersMap()
-   {
-   }
+    public InputHeadersMap() {
+    }
 
-   public InputHeadersMap(Map<String, List<String>> m)
-   {
-      super(m);
-   }
+    public InputHeadersMap(Map<String, List<String>> m) {
+        super(m);
+    }
 }

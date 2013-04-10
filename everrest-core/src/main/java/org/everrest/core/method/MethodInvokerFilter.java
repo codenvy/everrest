@@ -31,20 +31,21 @@ import javax.ws.rs.WebApplicationException;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface MethodInvokerFilter
-{
+public interface MethodInvokerFilter {
 
-   /**
-    * Check does supplied method can be invoked.
-    *
-    * @param genericMethodResource See {@link GenericMethodResource}
-    * @throws WebApplicationException if method can not be invoked cause current
-    *         environment context, e.g. for current user, with current request
-    *         attributes, etc. Actual context can be obtained as next
-    *         {@link ApplicationContextImpl#getCurrent()}.
-    *         WebApplicationException should contain Response with corresponded
-    *         status and message.
-    */
-   void accept(GenericMethodResource genericMethodResource) throws WebApplicationException;
+    /**
+     * Check does supplied method can be invoked.
+     *
+     * @param genericMethodResource
+     *         See {@link GenericMethodResource}
+     * @throws WebApplicationException
+     *         if method can not be invoked cause current
+     *         environment context, e.g. for current user, with current request
+     *         attributes, etc. Actual context can be obtained as next
+     *         {@link ApplicationContextImpl#getCurrent()}.
+     *         WebApplicationException should contain Response with corresponded
+     *         status and message.
+     */
+    void accept(GenericMethodResource genericMethodResource) throws WebApplicationException;
 
 }

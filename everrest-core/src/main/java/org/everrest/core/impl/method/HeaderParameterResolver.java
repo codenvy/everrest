@@ -28,24 +28,24 @@ import javax.ws.rs.HeaderParam;
  * @version $Id: HeaderParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
  *          $
  */
-public class HeaderParameterResolver extends ParameterResolver<HeaderParam>
-{
-   /** See {@link HeaderParam}. */
-   private final HeaderParam headerParam;
+public class HeaderParameterResolver extends ParameterResolver<HeaderParam> {
+    /** See {@link HeaderParam}. */
+    private final HeaderParam headerParam;
 
-   /** @param headerParam HeaderParam */
-   HeaderParameterResolver(HeaderParam headerParam)
-   {
-      this.headerParam = headerParam;
-   }
+    /**
+     * @param headerParam
+     *         HeaderParam
+     */
+    HeaderParameterResolver(HeaderParam headerParam) {
+        this.headerParam = headerParam;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception
-   {
-      String param = this.headerParam.value();
-      TypeProducer typeProducer =
-         ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
-      return typeProducer.createValue(param, context.getHttpHeaders().getRequestHeaders(), parameter.getDefaultValue());
-   }
+    /** {@inheritDoc} */
+    @Override
+    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+        String param = this.headerParam.value();
+        TypeProducer typeProducer =
+                ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
+        return typeProducer.createValue(param, context.getHttpHeaders().getRequestHeaders(), parameter.getDefaultValue());
+    }
 }

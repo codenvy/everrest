@@ -26,26 +26,23 @@ import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
  * Need to know that to be able use specified set of Providers. Provides delivered via JAX-RS Application
  * always has an advantage over embedded Providers ({@link javax.ws.rs.ext.MessageBodyReader},
  * {@link javax.ws.rs.ext.MessageBodyWriter}, {@link javax.ws.rs.ext.ExceptionMapper}, etc).
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class ApplicationResource extends AbstractResourceDescriptorImpl
-{
-   private final String applicationName;
+public final class ApplicationResource extends AbstractResourceDescriptorImpl {
+    private final String applicationName;
 
-   public ApplicationResource(String applicationName, Class<?> resourceClass, ComponentLifecycleScope scope)
-   {
-      super(resourceClass, scope);
-      this.applicationName = applicationName;
-   }
+    public ApplicationResource(String applicationName, Class<?> resourceClass, ComponentLifecycleScope scope) {
+        super(resourceClass, scope);
+        this.applicationName = applicationName;
+    }
 
-   /**
-    * @return identifier of application-supplied subclass of {@link javax.ws.rs.core.Application}
-    *         via this component was delivered
-    */
-   public String getApplicationName()
-   {
-      return applicationName;
-   }
+    /**
+     * @return identifier of application-supplied subclass of {@link javax.ws.rs.core.Application}
+     *         via this component was delivered
+     */
+    public String getApplicationName() {
+        return applicationName;
+    }
 }

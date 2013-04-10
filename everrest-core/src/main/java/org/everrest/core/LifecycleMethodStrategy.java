@@ -19,25 +19,28 @@
 package org.everrest.core;
 
 /** Call "initialize" and "destroy" methods of object. */
-public interface LifecycleMethodStrategy
-{
-   /**
-    * Call "initialize" method on the specified object. It is up to the implementation how to find "initialize"
-    * method. It is possible to have more than one initialize method but any particular order of methods invocation
-    * is not guaranteed.
-    *
-    * @param o the object
-    * @throws org.everrest.core.impl.InternalException if initialize method throws any exception
-    */
-   void invokeInitializeMethods(Object o);
+public interface LifecycleMethodStrategy {
+    /**
+     * Call "initialize" method on the specified object. It is up to the implementation how to find "initialize"
+     * method. It is possible to have more than one initialize method but any particular order of methods invocation
+     * is not guaranteed.
+     *
+     * @param o
+     *         the object
+     * @throws org.everrest.core.impl.InternalException
+     *         if initialize method throws any exception
+     */
+    void invokeInitializeMethods(Object o);
 
-   /**
-    * Call "destroy" method on the specified object. It is up to the implementation how to find "destroy" method. It
-    * is possible to have more than one destroy method but any particular order of methods invocation is not
-    * guaranteed.
-    *
-    * @param o the object
-    * @throws org.everrest.core.impl.InternalException if destroy method throws any exception
-    */
-   void invokeDestroyMethods(Object o);
+    /**
+     * Call "destroy" method on the specified object. It is up to the implementation how to find "destroy" method. It
+     * is possible to have more than one destroy method but any particular order of methods invocation is not
+     * guaranteed.
+     *
+     * @param o
+     *         the object
+     * @throws org.everrest.core.impl.InternalException
+     *         if destroy method throws any exception
+     */
+    void invokeDestroyMethods(Object o);
 }

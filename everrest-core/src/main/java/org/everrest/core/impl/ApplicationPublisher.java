@@ -20,40 +20,32 @@ package org.everrest.core.impl;
 
 import org.everrest.core.ResourceBinder;
 
-import java.util.Set;
-
 import javax.ws.rs.core.Application;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ApplicationPublisher
-{
-   protected RestComponentResolver resolver;
+public class ApplicationPublisher {
+    protected RestComponentResolver resolver;
 
-   public ApplicationPublisher(ResourceBinder resources, ProviderBinder providers)
-   {
-      resolver = new RestComponentResolver(resources, providers);
-   }
+    public ApplicationPublisher(ResourceBinder resources, ProviderBinder providers) {
+        resolver = new RestComponentResolver(resources, providers);
+    }
 
-   public void publish(Application application)
-   {
-      Set<Object> singletons = application.getSingletons();
-      if (singletons != null)
-      {
-         for (Object instance : singletons)
-         {
-            resolver.addSingleton(instance);
-         }
-      }
-      Set<Class<?>> perRequests = application.getClasses();
-      if (perRequests != null)
-      {
-         for (Class<?> clazz : perRequests)
-         {
-            resolver.addPerRequest(clazz);
-         }
-      }
-   }
+    public void publish(Application application) {
+        Set<Object> singletons = application.getSingletons();
+        if (singletons != null) {
+            for (Object instance : singletons) {
+                resolver.addSingleton(instance);
+            }
+        }
+        Set<Class<?>> perRequests = application.getClasses();
+        if (perRequests != null) {
+            for (Class<?> clazz : perRequests) {
+                resolver.addPerRequest(clazz);
+            }
+        }
+    }
 }

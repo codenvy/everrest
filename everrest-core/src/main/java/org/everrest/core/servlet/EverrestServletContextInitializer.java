@@ -25,6 +25,10 @@ import org.everrest.core.util.Logger;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -34,218 +38,173 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class EverrestServletContextInitializer
-{
-   public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
+public class EverrestServletContextInitializer {
+    public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
 
-   public static final String EVERREST_SCAN_SKIP_PACKAGES = "org.everrest.scan.skip.packages";
+    public static final String EVERREST_SCAN_SKIP_PACKAGES = "org.everrest.scan.skip.packages";
 
-   public static final String JAXRS_APPLICATION = "javax.ws.rs.Application";
+    public static final String JAXRS_APPLICATION = "javax.ws.rs.Application";
 
-   private static final Logger LOG = Logger.getLogger(EverrestServletContextInitializer.class);
+    private static final Logger LOG = Logger.getLogger(EverrestServletContextInitializer.class);
 
-   protected final ServletContext ctx;
+    protected final ServletContext ctx;
 
-   public EverrestServletContextInitializer(ServletContext ctx)
-   {
-      this.ctx = ctx;
-   }
+    public EverrestServletContextInitializer(ServletContext ctx) {
+        this.ctx = ctx;
+    }
 
-   /**
-    * Try get application's FQN from context-param javax.ws.rs.Application and instantiate it. If such parameter is not
-    * specified then scan web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS
-    * annotations. Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter} .
-    *
-    * @return instance of javax.ws.rs.core.Application
-    */
-   public Application getApplication()
-   {
-      Application application = null;
-      String applicationFQN = getParameter(JAXRS_APPLICATION);
-      boolean scan = getBoolean(EVERREST_SCAN_COMPONENTS, false);
-      if (applicationFQN != null)
-      {
-         if (scan)
-         {
-            String msg = "Scan of JAX-RS components is disabled cause to specified 'javax.ws.rs.Application'.";
-            LOG.warn(msg);
-         }
-         try
-         {
-            Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN);
-            application = (Application)cl.newInstance();
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (InstantiationException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      else if (scan)
-      {
-         try
-         {
-            URL classes = WarUrlFinder.findWebInfClassesPath(ctx);
-            URL[] libs = WarUrlFinder.findWebInfLibClasspaths(ctx);
-            AnnotationDB annotationDB = new AnnotationDB();
-            List<String> skip = new ArrayList<String>();
-            String skipParameter = ctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
-            if (skipParameter != null)
-            {
-               for (String s : skipParameter.split(","))
-               {
-                  skip.add(s.trim());
-               }
+    /**
+     * Try get application's FQN from context-param javax.ws.rs.Application and instantiate it. If such parameter is not
+     * specified then scan web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS
+     * annotations. Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter} .
+     *
+     * @return instance of javax.ws.rs.core.Application
+     */
+    public Application getApplication() {
+        Application application = null;
+        String applicationFQN = getParameter(JAXRS_APPLICATION);
+        boolean scan = getBoolean(EVERREST_SCAN_COMPONENTS, false);
+        if (applicationFQN != null) {
+            if (scan) {
+                String msg = "Scan of JAX-RS components is disabled cause to specified 'javax.ws.rs.Application'.";
+                LOG.warn(msg);
             }
-            // Disable processing of API, implementation and JAX-RS packages
-            skip.add("org.everrest.core");
-            skip.add("javax.ws.rs");
-            annotationDB.setIgnoredPackages(skip.toArray(new String[skip.size()]));
-            annotationDB.setScanFieldAnnotations(false);
-            annotationDB.setScanMethodAnnotations(false);
-            annotationDB.setScanParameterAnnotations(false);
-            if (classes != null)
-            {
-               annotationDB.scanArchives(classes);
+            try {
+                Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN);
+                application = (Application)cl.newInstance();
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
-            annotationDB.scanArchives(libs);
-            final Set<Class<?>> scanned = new HashSet<Class<?>>();
-            Map<String, Set<String>> results = annotationDB.getAnnotationIndex();
-            for (String annotation : new String[]{Path.class.getName(), Provider.class.getName(),
-               Filter.class.getName()})
-            {
-               if (results.get(annotation) != null)
-               {
-                  for (String fqn : results.get(annotation))
-                  {
-                     try
-                     {
-                        Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(fqn);
-                        if (cl.isInterface() || Modifier.isAbstract(cl.getModifiers()))
-                        {
-                           LOG.info("Skip abstract class or interface " + fqn);
+        } else if (scan) {
+            try {
+                URL classes = WarUrlFinder.findWebInfClassesPath(ctx);
+                URL[] libs = WarUrlFinder.findWebInfLibClasspaths(ctx);
+                AnnotationDB annotationDB = new AnnotationDB();
+                List<String> skip = new ArrayList<String>();
+                String skipParameter = ctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
+                if (skipParameter != null) {
+                    for (String s : skipParameter.split(",")) {
+                        skip.add(s.trim());
+                    }
+                }
+                // Disable processing of API, implementation and JAX-RS packages
+                skip.add("org.everrest.core");
+                skip.add("javax.ws.rs");
+                annotationDB.setIgnoredPackages(skip.toArray(new String[skip.size()]));
+                annotationDB.setScanFieldAnnotations(false);
+                annotationDB.setScanMethodAnnotations(false);
+                annotationDB.setScanParameterAnnotations(false);
+                if (classes != null) {
+                    annotationDB.scanArchives(classes);
+                }
+                annotationDB.scanArchives(libs);
+                final Set<Class<?>> scanned = new HashSet<Class<?>>();
+                Map<String, Set<String>> results = annotationDB.getAnnotationIndex();
+                for (String annotation : new String[]{Path.class.getName(), Provider.class.getName(),
+                                                      Filter.class.getName()}) {
+                    if (results.get(annotation) != null) {
+                        for (String fqn : results.get(annotation)) {
+                            try {
+                                Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(fqn);
+                                if (cl.isInterface() || Modifier.isAbstract(cl.getModifiers())) {
+                                    LOG.info("Skip abstract class or interface " + fqn);
+                                } else {
+                                    scanned.add(cl);
+                                }
+                            } catch (ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
-                        else
-                        {
-                           scanned.add(cl);
-                        }
-                     }
-                     catch (ClassNotFoundException e)
-                     {
-                        throw new RuntimeException(e);
-                     }
-                  }
-               }
+                    }
+                }
+                application = new Application() {
+                    public Set<Class<?>> getClasses() {
+                        return scanned;
+                    }
+                };
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            application = new Application()
-            {
-               public Set<Class<?>> getClasses()
-               {
-                  return scanned;
-               }
-            };
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      return application;
-   }
+        }
+        return application;
+    }
 
-   public EverrestConfiguration getConfiguration()
-   {
-      EverrestConfiguration config = new EverrestConfiguration();
+    public EverrestConfiguration getConfiguration() {
+        EverrestConfiguration config = new EverrestConfiguration();
 
-      config.setHttpMethodOverride(getBoolean(EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE,
-         EverrestConfiguration.defaultHttpMethodOverride));
+        config.setHttpMethodOverride(getBoolean(EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE,
+                                                EverrestConfiguration.defaultHttpMethodOverride));
 
-      config.setNormalizeUri(getBoolean(EverrestConfiguration.EVERREST_NORMALIZE_URI,
-         EverrestConfiguration.defaultNormalizeUri));
+        config.setNormalizeUri(getBoolean(EverrestConfiguration.EVERREST_NORMALIZE_URI,
+                                          EverrestConfiguration.defaultNormalizeUri));
 
-      config.setCheckSecurity(getBoolean(EverrestConfiguration.EVERREST_CHECK_SECURITY,
-         EverrestConfiguration.defaultCheckSecurity));
+        config.setCheckSecurity(getBoolean(EverrestConfiguration.EVERREST_CHECK_SECURITY,
+                                           EverrestConfiguration.defaultCheckSecurity));
 
-      config.setAsynchronousSupported(getBoolean(EverrestConfiguration.EVERREST_ASYNCHRONOUS,
-         EverrestConfiguration.defaultAsynchronousSupported));
+        config.setAsynchronousSupported(getBoolean(EverrestConfiguration.EVERREST_ASYNCHRONOUS,
+                                                   EverrestConfiguration.defaultAsynchronousSupported));
 
-      config.setAsynchronousPoolSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_POOL_SIZE,
-         EverrestConfiguration.defaultAsynchronousPoolSize).intValue());
+        config.setAsynchronousPoolSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_POOL_SIZE,
+                                                 EverrestConfiguration.defaultAsynchronousPoolSize).intValue());
 
-      config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
-         EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
+        config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
+                                                  EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
 
-      config.setAsynchronousCacheSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE,
-         EverrestConfiguration.defaultAsynchronousCacheSize).intValue());
+        config.setAsynchronousCacheSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE,
+                                                  EverrestConfiguration.defaultAsynchronousCacheSize).intValue());
 
-      config.setAsynchronousJobTimeout(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT,
-         EverrestConfiguration.defaultAsynchronousJobTimeout).intValue());
+        config.setAsynchronousJobTimeout(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT,
+                                                   EverrestConfiguration.defaultAsynchronousJobTimeout).intValue());
 
-      config.setMaxBufferSize(getNumber(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE,
-         EverrestConfiguration.defaultMaxBufferSize).intValue());
+        config.setMaxBufferSize(getNumber(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE,
+                                          EverrestConfiguration.defaultMaxBufferSize).intValue());
 
-      config.setProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY,
-         getParameter(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY));
+        config.setProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY,
+                           getParameter(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY));
 
-      return config;
-   }
+        return config;
+    }
 
-   /**
-    * Get parameter with specified name from servlet context initial parameters.
-    *
-    * @param name parameter name
-    * @return value of parameter with specified name
-    */
-   public String getParameter(String name)
-   {
-      String str = ctx.getInitParameter(name);
-      if (str != null)
-      {
-         return str.trim();
-      }
-      return null;
-   }
+    /**
+     * Get parameter with specified name from servlet context initial parameters.
+     *
+     * @param name
+     *         parameter name
+     * @return value of parameter with specified name
+     */
+    public String getParameter(String name) {
+        String str = ctx.getInitParameter(name);
+        if (str != null) {
+            return str.trim();
+        }
+        return null;
+    }
 
-   public boolean getBoolean(String name, boolean def)
-   {
-      String str = getParameter(name);
-      if (str != null)
-      {
-         return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str)
-            || "1".equals(str);
-      }
-      return def;
-   }
+    public boolean getBoolean(String name, boolean def) {
+        String str = getParameter(name);
+        if (str != null) {
+            return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str)
+                   || "1".equals(str);
+        }
+        return def;
+    }
 
-   public Double getNumber(String name, double def)
-   {
-      String str = getParameter(name);
-      if (str != null)
-      {
-         try
-         {
-            return Double.parseDouble(str);
-         }
-         catch (NumberFormatException ignored)
-         {
-         }
-      }
-      return def;
-   }
+    public Double getNumber(String name, double def) {
+        String str = getParameter(name);
+        if (str != null) {
+            try {
+                return Double.parseDouble(str);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return def;
+    }
 }

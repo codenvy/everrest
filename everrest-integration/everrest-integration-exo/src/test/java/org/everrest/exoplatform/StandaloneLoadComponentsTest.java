@@ -22,14 +22,12 @@ package org.everrest.exoplatform;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class StandaloneLoadComponentsTest extends StandaloneBaseTest
-{
-   public void testLoadComponents()
-   {
-      assertNotNull(dependencies);
-      assertNotNull(resources);
-      assertNotNull(providersRegistry);
-      assertNotNull(requestHandler);
-   }
+public class StandaloneLoadComponentsTest extends StandaloneBaseTest {
+    public void testLoadComponents() {
+        assertNotNull(dependencies);
+        assertNotNull(resources);
+        assertNotNull(providersRegistry);
+        assertNotNull(requestHandler);
+    }
 
 }

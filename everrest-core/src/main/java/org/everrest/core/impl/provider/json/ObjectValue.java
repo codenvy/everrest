@@ -27,69 +27,58 @@ import java.util.Map;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ObjectValue extends JsonValue
-{
+public class ObjectValue extends JsonValue {
 
-   /** Children. */
-   private final Map<String, JsonValue> children = new LinkedHashMap<String, JsonValue>();
+    /** Children. */
+    private final Map<String, JsonValue> children = new LinkedHashMap<String, JsonValue>();
 
-   /** {@inheritDoc} */
-   @Override
-   public void addElement(String key, JsonValue child)
-   {
-      children.put(key, child);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public void addElement(String key, JsonValue child) {
+        children.put(key, child);
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean isObject()
-   {
-      return true;
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isObject() {
+        return true;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public Iterator<String> getKeys()
-   {
-      return children.keySet().iterator();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<String> getKeys() {
+        return children.keySet().iterator();
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public JsonValue getElement(String key)
-   {
-      return children.get(key);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public JsonValue getElement(String key) {
+        return children.get(key);
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public String toString()
-   {
-      StringWriter w = new StringWriter();
-      JsonWriter jw = new JsonWriter(w);
-      try
-      {
-         writeTo(jw);
-      }
-      catch (JsonException e)
-      {
-         throw new RuntimeException(e.getMessage(), e);
-      }
-      return w.toString();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        StringWriter w = new StringWriter();
+        JsonWriter jw = new JsonWriter(w);
+        try {
+            writeTo(jw);
+        } catch (JsonException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        return w.toString();
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public void writeTo(JsonWriter writer) throws JsonException
-   {
-      writer.writeStartObject();
-      for (String key : children.keySet())
-      {
-         writer.writeKey(key);
-         JsonValue v = children.get(key);
-         v.writeTo(writer);
-      }
-      writer.writeEndObject();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public void writeTo(JsonWriter writer) throws JsonException {
+        writer.writeStartObject();
+        for (String key : children.keySet()) {
+            writer.writeKey(key);
+            JsonValue v = children.get(key);
+            v.writeTo(writer);
+        }
+        writer.writeEndObject();
+    }
 
 }

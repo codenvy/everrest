@@ -28,10 +28,9 @@ package org.everrest.core;
  * "REST connectors provide a generic interface for accessing and manipulating
  * the value set of a resource, regardless of how the membership function is
  * defined or the type of software that is handling the request."
- * 
+ *
  * @author Gennady Azarenkov
  * @version $Id$
  */
-public interface Connector
-{
+public interface Connector {
 }

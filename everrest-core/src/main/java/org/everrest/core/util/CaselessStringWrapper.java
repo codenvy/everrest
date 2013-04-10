@@ -19,55 +19,47 @@
 package org.everrest.core.util;
 
 /** Caseless wrapper for strings. */
-public final class CaselessStringWrapper
-{
-   private final String string;
+public final class CaselessStringWrapper {
+    private final String string;
 
-   private final String caselessString;
+    private final String caselessString;
 
-   public CaselessStringWrapper(String string)
-   {
-      this.string = string;
-      this.caselessString = string != null ? string.toLowerCase() : null;
-   }
+    public CaselessStringWrapper(String string) {
+        this.string = string;
+        this.caselessString = string != null ? string.toLowerCase() : null;
+    }
 
-   /**
-    * Get original string value.
-    *
-    * @return original string
-    */
-   public String getString()
-   {
-      return string;
-   }
+    /**
+     * Get original string value.
+     *
+     * @return original string
+     */
+    public String getString() {
+        return string;
+    }
 
-   /** {@inheritDoc} */
-   public String toString()
-   {
-      return string == null ? "null" : string;
-   }
+    /** {@inheritDoc} */
+    public String toString() {
+        return string == null ? "null" : string;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == null)
-      {
-         return false;
-      }
-      if (obj.getClass() != getClass())
-      {
-         return false;
-      }
-      CaselessStringWrapper other = (CaselessStringWrapper)obj;
-      return caselessString == null && other.caselessString == null
-         || caselessString != null && caselessString.equals(other.caselessString);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        CaselessStringWrapper other = (CaselessStringWrapper)obj;
+        return caselessString == null && other.caselessString == null
+               || caselessString != null && caselessString.equals(other.caselessString);
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public int hashCode()
-   {
-      return caselessString == null ? 0 : caselessString.hashCode();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return caselessString == null ? 0 : caselessString.hashCode();
+    }
 }

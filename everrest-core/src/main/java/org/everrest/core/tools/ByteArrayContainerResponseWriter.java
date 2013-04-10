@@ -22,11 +22,10 @@ import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.impl.OutputHeadersMap;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Mock object that can be used for any tests.
@@ -35,58 +34,50 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * @version $Id$
  * @see ContainerResponseWriter
  */
-public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
-{
-   /** Message body. */
-   private byte[] body;
+public class ByteArrayContainerResponseWriter implements ContainerResponseWriter {
+    /** Message body. */
+    private byte[] body;
 
-   /** HTTP headers. */
-   private MultivaluedMap<String, Object> headers;
+    /** HTTP headers. */
+    private MultivaluedMap<String, Object> headers;
 
-   private boolean commited;
+    private boolean commited;
 
-   /** {@inheritDoc} */
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException
-   {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      Object entity = response.getEntity();
-      if (entity != null)
-      {
-         entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
-            response.getHttpHeaders(), out);
-         body = out.toByteArray();
-      }
-   }
+    /** {@inheritDoc} */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Object entity = response.getEntity();
+        if (entity != null) {
+            entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
+                                 response.getHttpHeaders(), out);
+            body = out.toByteArray();
+        }
+    }
 
-   /** {@inheritDoc} */
-   public void writeHeaders(GenericContainerResponse response) throws IOException
-   {
-      if (commited)
-      {
-         throw new IllegalStateException("Response has been commited. Unable write headers. ");
-      }
-      headers = new OutputHeadersMap(response.getHttpHeaders());
-      commited = true;
-   }
+    /** {@inheritDoc} */
+    public void writeHeaders(GenericContainerResponse response) throws IOException {
+        if (commited) {
+            throw new IllegalStateException("Response has been commited. Unable write headers. ");
+        }
+        headers = new OutputHeadersMap(response.getHttpHeaders());
+        commited = true;
+    }
 
-   /** @return message body */
-   public byte[] getBody()
-   {
-      return body;
-   }
+    /** @return message body */
+    public byte[] getBody() {
+        return body;
+    }
 
-   /** @return HTTP headers */
-   public MultivaluedMap<String, Object> getHeaders()
-   {
-      return headers;
-   }
+    /** @return HTTP headers */
+    public MultivaluedMap<String, Object> getHeaders() {
+        return headers;
+    }
 
-   /** Clear message body and HTTP headers map. */
-   public void reset()
-   {
-      body = null;
-      headers = null;
-      commited = false;
-   }
+    /** Clear message body and HTTP headers map. */
+    public void reset() {
+        body = null;
+        headers = null;
+        commited = false;
+    }
 }

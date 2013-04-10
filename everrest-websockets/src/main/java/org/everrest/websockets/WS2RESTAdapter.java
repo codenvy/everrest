@@ -37,268 +37,227 @@ import org.everrest.websockets.message.Pair;
 import org.everrest.websockets.message.RESTfulInputMessage;
 import org.everrest.websockets.message.RESTfulOutputMessage;
 
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.UUID;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-class WS2RESTAdapter implements WSMessageReceiver
-{
-   private static final Logger LOG = Logger.getLogger(WS2RESTAdapter.class);
+class WS2RESTAdapter implements WSMessageReceiver {
+    private static final Logger LOG = Logger.getLogger(WS2RESTAdapter.class);
 
-   private final WSConnection connection;
-   private final SecurityContext securityContext;
-   private final EverrestProcessor everrestProcessor;
-   private final AsynchronousJobPool asynchronousPool;
+    private final WSConnection        connection;
+    private final SecurityContext     securityContext;
+    private final EverrestProcessor   everrestProcessor;
+    private final AsynchronousJobPool asynchronousPool;
 
-   WS2RESTAdapter(WSConnection connection,
-                  SecurityContext securityContext,
-                  EverrestProcessor everrestProcessor,
-                  AsynchronousJobPool asynchronousPool)
-   {
-      if (connection == null)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (everrestProcessor == null)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (asynchronousPool == null)
-      {
-         throw new IllegalArgumentException();
-      }
-      this.connection = connection;
-      this.securityContext = securityContext;
-      this.everrestProcessor = everrestProcessor;
-      this.asynchronousPool = asynchronousPool;
-   }
+    WS2RESTAdapter(WSConnection connection,
+                   SecurityContext securityContext,
+                   EverrestProcessor everrestProcessor,
+                   AsynchronousJobPool asynchronousPool) {
+        if (connection == null) {
+            throw new IllegalArgumentException();
+        }
+        if (everrestProcessor == null) {
+            throw new IllegalArgumentException();
+        }
+        if (asynchronousPool == null) {
+            throw new IllegalArgumentException();
+        }
+        this.connection = connection;
+        this.securityContext = securityContext;
+        this.everrestProcessor = everrestProcessor;
+        this.asynchronousPool = asynchronousPool;
+    }
 
-   @Override
-   public void onMessage(InputMessage input)
-   {
-      // See method onTextMessage(CharBuffer) in class WSConnectionImpl.
-      if (!(input instanceof RESTfulInputMessage))
-      {
-         throw new IllegalArgumentException("Invalid input message. ");
-      }
+    @Override
+    public void onMessage(InputMessage input) {
+        // See method onTextMessage(CharBuffer) in class WSConnectionImpl.
+        if (!(input instanceof RESTfulInputMessage)) {
+            throw new IllegalArgumentException("Invalid input message. ");
+        }
 
-      final RESTfulInputMessage restInputMessage = (RESTfulInputMessage)input;
+        final RESTfulInputMessage restInputMessage = (RESTfulInputMessage)input;
 
-      MultivaluedMap<String, String> headers = Pair.toMap(restInputMessage.getHeaders());
+        MultivaluedMap<String, String> headers = Pair.toMap(restInputMessage.getHeaders());
 
-      final String messageType = headers.getFirst("x-everrest-websocket-message-type");
+        final String messageType = headers.getFirst("x-everrest-websocket-message-type");
 
-      if ("ping".equalsIgnoreCase(messageType))
-      {
-         // At the moment is no JavaScript API to send ping message from client side.
-         RESTfulOutputMessage pong = newOutputMessage(restInputMessage);
-         // Copy body from ping request.
-         pong.setBody(restInputMessage.getBody());
-         pong.setResponseCode(200);
-         pong.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "pong")});
-         doSendMessage(pong);
-         return;
-      }
-      else if ("subscribe-channel".equalsIgnoreCase(messageType) || "unsubscribe-channel".equalsIgnoreCase(messageType))
-      {
-         final String channel = parseSubscriptionMessage(input);
-         RESTfulOutputMessage response = newOutputMessage(restInputMessage);
-         // Send the same body as in request.
-         response.setBody(restInputMessage.getBody());
-         response.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", messageType)});
-         if (channel != null)
-         {
-            if ("subscribe-channel".equalsIgnoreCase(messageType))
-            {
-               connection.subscribeToChannel(channel);
+        if ("ping".equalsIgnoreCase(messageType)) {
+            // At the moment is no JavaScript API to send ping message from client side.
+            RESTfulOutputMessage pong = newOutputMessage(restInputMessage);
+            // Copy body from ping request.
+            pong.setBody(restInputMessage.getBody());
+            pong.setResponseCode(200);
+            pong.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "pong")});
+            doSendMessage(pong);
+            return;
+        } else if ("subscribe-channel".equalsIgnoreCase(messageType) || "unsubscribe-channel".equalsIgnoreCase(messageType)) {
+            final String channel = parseSubscriptionMessage(input);
+            RESTfulOutputMessage response = newOutputMessage(restInputMessage);
+            // Send the same body as in request.
+            response.setBody(restInputMessage.getBody());
+            response.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", messageType)});
+            if (channel != null) {
+                if ("subscribe-channel".equalsIgnoreCase(messageType)) {
+                    connection.subscribeToChannel(channel);
+                } else {
+                    connection.unsubscribeFromChannel(channel);
+                }
+                response.setResponseCode(200);
+            } else {
+                LOG.error("Invalid message: {} ", input.getBody());
+                // If cannot get channel name from input message consider it is client error.
+                response.setResponseCode(400);
             }
-            else
-            {
-               connection.unsubscribeFromChannel(channel);
+            doSendMessage(response);
+            return;
+        }
+
+        final String uuid = restInputMessage.getUuid();
+        RESTfulOutputMessage output = (RESTfulOutputMessage)connection.getHttpSession().getAttribute(uuid);
+        if (output != null) {
+            // Message with specified id in progress.
+            // Probably client did not get 'accepted' response, try resend it to client.
+            doSendMessage(output);
+            return;
+        }
+
+        // This listener called when asynchronous task is done.
+        asynchronousPool.registerListener(new AsynchronousJobListener() {
+            @Override
+            public void done(AsynchronousJob job) {
+                try {
+                    if (connection.isConnected()) {
+                        MultivaluedMap<String, String> requestHeaders =
+                                ((ContainerRequest)job.getContext().get("org.everrest.async.request")).getRequestHeaders();
+
+                        if ("websocket".equals(requestHeaders.getFirst("x-everrest-protocol"))
+                            && uuid.equals(requestHeaders.getFirst("x-everrest-websocket-tracker-id"))) {
+                            URI requestUri = UriBuilder.fromPath("/async/" + job.getJobId()).build();
+                            ContainerRequest req = new ContainerRequest("GET", requestUri, URI.create(""), null,
+                                                                        new InputHeadersMap(), securityContext);
+
+                            RESTfulOutputMessage output = newOutputMessage(restInputMessage);
+                            ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
+
+                            try {
+                                EnvironmentContext env = new EnvironmentContext();
+                                env.put(WSConnection.class, connection);
+                                everrestProcessor.process(req, resp, env);
+                            } catch (Exception e) {
+                                LOG.error(e.getMessage(), e);
+                            }
+
+                            doSendMessage(output);
+                        }
+                    } else {
+                        // If the connection is already closed while the task was done do not get result. Lets user get result
+                        // manually after restoring of connection.
+                        LOG.debug("Connection already closed skip getting result of job: {}. ", job.getJobId());
+                    }
+                } finally {
+                    // Not need this listener any more.
+                    asynchronousPool.unregisterListener(this);
+                    connection.getHttpSession().removeAttribute(uuid);
+                }
             }
-            response.setResponseCode(200);
-         }
-         else
-         {
-            LOG.error("Invalid message: {} ", input.getBody());
-            // If cannot get channel name from input message consider it is client error.
-            response.setResponseCode(400);
-         }
-         doSendMessage(response);
-         return;
-      }
+        });
 
-      final String internalUuid = UUID.randomUUID().toString();
-
-      // This listener called when asynchronous task is done.
-      asynchronousPool.registerListener(new AsynchronousJobListener()
-      {
-         @Override
-         public void done(AsynchronousJob job)
-         {
-            if (connection.isConnected())
-            {
-               MultivaluedMap<String, String> requestHeaders = ((ContainerRequest)job.getContext()
-                  .get("org.everrest.async.request")).getRequestHeaders();
-
-               if ("websocket".equals(requestHeaders.getFirst("x-everrest-protocol"))
-                  && internalUuid.equals(requestHeaders.getFirst("x-everrest-websocket-tracker-id")))
-               {
-                  URI requestUri = UriBuilder.fromPath("/async/" + job.getJobId()).build();
-                  ContainerRequest req = new ContainerRequest("GET", requestUri, URI.create(""), null,
-                     new InputHeadersMap(), securityContext);
-
-                  RESTfulOutputMessage output = newOutputMessage(restInputMessage);
-                  ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
-
-                  try
-                  {
-                     EnvironmentContext env = new EnvironmentContext();
-                     env.put(WSConnection.class, connection);
-                     everrestProcessor.process(req, resp, env);
-                  }
-                  catch (Exception e)
-                  {
-                     LOG.error(e.getMessage(), e);
-                  }
-                  finally
-                  {
-                     // Not need this listener any more.
-                     asynchronousPool.unregisterListener(this);
-                  }
-
-                  doSendMessage(output);
-               }
+        ByteArrayInputStream data = null;
+        String body = input.getBody();
+        if (body != null) {
+            try {
+                data = new ByteArrayInputStream(body.getBytes("UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen since UTF-8 is supported.
+                throw new IllegalStateException(e.getMessage(), e);
             }
-            else
-            {
-               // If the connection is already closed while the task was done do not get result. Lets user get result
-               // manually after restoring of connection.
-               LOG.debug("Connection already closed skip getting result of job: {}. ", job.getJobId());
-               // Not need this listener any more.
-               asynchronousPool.unregisterListener(this);
-            }
-         }
-      });
+        }
 
-      ByteArrayInputStream data = null;
-      String body = input.getBody();
-      if (body != null)
-      {
-         try
-         {
-            data = new ByteArrayInputStream(body.getBytes("UTF-8"));
-         }
-         catch (UnsupportedEncodingException e)
-         {
-            // Should never happen since UTF-8 is supported.
-            throw new IllegalStateException(e.getMessage(), e);
-         }
-      }
+        String requestPath = restInputMessage.getPath();
+        if (!requestPath.startsWith("/")) {
+            requestPath = '/' + requestPath;
+        }
+        URI requestUri = UriBuilder.fromUri(requestPath).build();
 
-      String requestPath = restInputMessage.getPath();
-      if (!requestPath.startsWith("/"))
-      {
-         requestPath = '/' + requestPath;
-      }
-      URI requestUri = UriBuilder.fromUri(requestPath).build();
+        if (data != null) {
+            // Always know content length since we use ByteArrayInputStream.
+            headers.putSingle("content-length", Integer.toString(data.available()));
+        }
 
-      if (data != null)
-      {
-         // Always know content length since we use ByteArrayInputStream.
-         headers.putSingle("content-length", Integer.toString(data.available()));
-      }
+        // Put some additional 'helper' headers.
+        headers.putSingle("x-everrest-async", "true");
+        headers.putSingle("x-everrest-protocol", "websocket");
+        headers.putSingle("x-everrest-websocket-tracker-id", uuid);
 
-      // Put some additional 'helper' headers.
-      headers.putSingle("x-everrest-async", "true");
-      headers.putSingle("x-everrest-protocol", "websocket");
-      headers.putSingle("x-everrest-websocket-tracker-id", internalUuid);
+        ContainerRequest req = new ContainerRequest(restInputMessage.getMethod(), requestUri, URI.create(""), data,
+                                                    new InputHeadersMap(headers), securityContext);
 
-      ContainerRequest req = new ContainerRequest(restInputMessage.getMethod(), requestUri, URI.create(""), data,
-         new InputHeadersMap(headers), securityContext);
+        output = newOutputMessage(restInputMessage);
+        ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
 
-      RESTfulOutputMessage output = newOutputMessage(restInputMessage);
-      ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
-
-      try
-      {
-         EnvironmentContext env = new EnvironmentContext();
-         env.put(WSConnection.class, connection);
-         everrestProcessor.process(req, resp, env);
-      }
-      catch (Exception e)
-      {
-         LOG.error(e.getMessage(), e);
-      }
-
-      doSendMessage(output);
-   }
-
-   @Override
-   public void onError(Exception error)
-   {
-      LOG.error(error.getMessage(), error);
-   }
-
-   private RESTfulOutputMessage newOutputMessage(RESTfulInputMessage input)
-   {
-      RESTfulOutputMessage output = new RESTfulOutputMessage();
-      output.setUuid(input.getUuid());
-      output.setMethod(input.getMethod());
-      output.setPath(input.getPath());
-      return output;
-   }
-
-   private void doSendMessage(OutputMessage output)
-   {
-      if (connection.isConnected())
-      {
-         try
-         {
-            connection.sendMessage(output);
-         }
-         catch (MessageConversionException e)
-         {
+        try {
+            EnvironmentContext env = new EnvironmentContext();
+            env.put(WSConnection.class, connection);
+            everrestProcessor.process(req, resp, env);
+        } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-         }
-         catch (IOException e)
-         {
-            LOG.error(e.getMessage(), e);
-         }
-      }
-      else
-      {
-         LOG.warn("Connection is already closed. ");
-      }
-   }
+        }
 
-   /**
-    * Get name of channel from input message. Expected format of message: {"channel":"my_channel"}. Method return
-    * <code>null</code> if message is invalid.
-    */
-   private String parseSubscriptionMessage(InputMessage input)
-   {
-      JsonParser p = new JsonParser();
-      try
-      {
-         p.parse(new StringReader(input.getBody()));
-      }
-      catch (JsonException e)
-      {
-         return null;
-      }
-      JsonValue jv = p.getJsonObject().getElement("channel");
-      return jv != null ? jv.getStringValue() : null;
-   }
+        // Save 'accepted' response in session. If we fail to send accepted response to client it may try to resend request.
+        // In this case we do not start the same job twice (use message uuid), instead take this response from session and try send it again.
+        connection.getHttpSession().setAttribute(uuid, output);
+
+        doSendMessage(output);
+    }
+
+    @Override
+    public void onError(Exception error) {
+        LOG.error(error.getMessage(), error);
+    }
+
+    private RESTfulOutputMessage newOutputMessage(RESTfulInputMessage input) {
+        RESTfulOutputMessage output = new RESTfulOutputMessage();
+        output.setUuid(input.getUuid());
+        output.setMethod(input.getMethod());
+        output.setPath(input.getPath());
+        return output;
+    }
+
+    private void doSendMessage(OutputMessage output) {
+        if (connection.isConnected()) {
+            try {
+                connection.sendMessage(output);
+            } catch (MessageConversionException e) {
+                LOG.error(e.getMessage(), e);
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        } else {
+            LOG.warn("Connection is already closed. ");
+        }
+    }
+
+    /**
+     * Get name of channel from input message. Expected format of message: {"channel":"my_channel"}. Method return
+     * <code>null</code> if message is invalid.
+     */
+    private String parseSubscriptionMessage(InputMessage input) {
+        JsonParser p = new JsonParser();
+        try {
+            p.parse(new StringReader(input.getBody()));
+        } catch (JsonException e) {
+            return null;
+        }
+        JsonValue jv = p.getJsonObject().getElement("channel");
+        return jv != null ? jv.getStringValue() : null;
+    }
 }

@@ -28,16 +28,19 @@ import java.io.IOException;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface RequestHandler
-{
-   /**
-    * Handle the HTTP request by dispatching request to appropriate resource. If
-    * no one appropriate resource found then error response will be produced.
-    *
-    * @param request HTTP request
-    * @param response HTTP response
-    * @throws java.io.IOException if any i/o exceptions occurs
-    * @throws UnhandledException if any other errors occurs
-    */
-   void handleRequest(GenericContainerRequest request, GenericContainerResponse response) throws UnhandledException, IOException;
+public interface RequestHandler {
+    /**
+     * Handle the HTTP request by dispatching request to appropriate resource. If
+     * no one appropriate resource found then error response will be produced.
+     *
+     * @param request
+     *         HTTP request
+     * @param response
+     *         HTTP response
+     * @throws java.io.IOException
+     *         if any i/o exceptions occurs
+     * @throws UnhandledException
+     *         if any other errors occurs
+     */
+    void handleRequest(GenericContainerRequest request, GenericContainerResponse response) throws UnhandledException, IOException;
 }

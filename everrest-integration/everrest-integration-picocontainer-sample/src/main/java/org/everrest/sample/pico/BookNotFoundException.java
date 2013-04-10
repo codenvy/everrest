@@ -24,10 +24,8 @@ package org.everrest.sample.pico;
  * @version $Id$
  */
 @SuppressWarnings("serial")
-public class BookNotFoundException extends Exception
-{
-   public BookNotFoundException(String id)
-   {
-      super("Book with id " + id + " not found.");
-   }
+public class BookNotFoundException extends Exception {
+    public BookNotFoundException(String id) {
+        super("Book with id " + id + " not found.");
+    }
 }

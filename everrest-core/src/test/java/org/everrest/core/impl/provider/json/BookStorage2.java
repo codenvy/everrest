@@ -22,19 +22,16 @@ package org.everrest.core.impl.provider.json;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BookStorage2
-{
+public class BookStorage2 {
 
-   private Book[][][] book;
+    private Book[][][] book;
 
-   public Book[][][] getBooks()
-   {
-      return book;
-   }
+    public Book[][][] getBooks() {
+        return book;
+    }
 
-   public void setBooks(Book[][][] book)
-   {
-      this.book = book;
-   }
+    public void setBooks(Book[][][] book) {
+        this.book = book;
+    }
 
 }

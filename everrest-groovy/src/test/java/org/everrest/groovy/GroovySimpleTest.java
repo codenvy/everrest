@@ -28,61 +28,56 @@ import java.util.ArrayList;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class GroovySimpleTest extends BaseTest
-{
+public class GroovySimpleTest extends BaseTest {
 
-   @Override
-   public void tearDown() throws Exception
-   {
-      groovyPublisher.resources.clear();
-      super.tearDown();
-   }
+    @Override
+    public void tearDown() throws Exception {
+        groovyPublisher.resources.clear();
+        super.tearDown();
+    }
 
-   public void testPerRequest() throws Exception
-   {
-      publicationTest(false, new BaseResourceId("g1"));
-   }
+    public void testPerRequest() throws Exception {
+        publicationTest(false, new BaseResourceId("g1"));
+    }
 
-   public void testSingleton() throws Exception
-   {
-      publicationTest(true, new BaseResourceId("g2"));
-   }
+    public void testSingleton() throws Exception {
+        publicationTest(true, new BaseResourceId("g2"));
+    }
 
-   private void publicationTest(boolean singleton, ResourceId resourceId) throws Exception
-   {
-      String script = //
-         "@javax.ws.rs.Path(\"a\")" //
-            + "class GroovyResource {" //
-            + "@javax.ws.rs.GET @javax.ws.rs.Path(\"{who}\")" //
-            + "def m0(@javax.ws.rs.PathParam(\"who\") String who) { return (\"hello \" + who)}" //
-            + "}";
+    private void publicationTest(boolean singleton, ResourceId resourceId) throws Exception {
+        String script = //
+                "@javax.ws.rs.Path(\"a\")" //
+                + "class GroovyResource {" //
+                + "@javax.ws.rs.GET @javax.ws.rs.Path(\"{who}\")" //
+                + "def m0(@javax.ws.rs.PathParam(\"who\") String who) { return (\"hello \" + who)}" //
+                + "}";
 
-      int initSize = resources.getSize();
-      assertEquals(0, groovyPublisher.resources.size());
+        int initSize = resources.getSize();
+        assertEquals(0, groovyPublisher.resources.size());
 
-      if (singleton)
-         groovyPublisher.publishSingleton(script, resourceId, null, null, null);
-      else
-         groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
+        if (singleton)
+            groovyPublisher.publishSingleton(script, resourceId, null, null, null);
+        else
+            groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
 
-      assertEquals(initSize + 1, resources.getSize());
-      assertEquals(1, groovyPublisher.resources.size());
-      assertTrue(groovyPublisher.isPublished(resourceId));
+        assertEquals(initSize + 1, resources.getSize());
+        assertEquals(1, groovyPublisher.resources.size());
+        assertTrue(groovyPublisher.isPublished(resourceId));
 
-      String cs =
-         resources.getMatchedResource("/a", new ArrayList<String>()).getObjectModel().getObjectClass()
-            .getProtectionDomain().getCodeSource().getLocation().toString();
-      assertEquals("file:/groovy/script/jaxrs", cs);
+        String cs =
+                resources.getMatchedResource("/a", new ArrayList<String>()).getObjectModel().getObjectClass()
+                         .getProtectionDomain().getCodeSource().getLocation().toString();
+        assertEquals("file:/groovy/script/jaxrs", cs);
 
-      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse resp = launcher.service("GET", "/a/groovy", "", null, null, writer, null);
-      assertEquals(200, resp.getStatus());
-      assertEquals("hello groovy", new String(writer.getBody()));
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+        ContainerResponse resp = launcher.service("GET", "/a/groovy", "", null, null, writer, null);
+        assertEquals(200, resp.getStatus());
+        assertEquals("hello groovy", new String(writer.getBody()));
 
-      groovyPublisher.unpublishResource(resourceId);
+        groovyPublisher.unpublishResource(resourceId);
 
-      assertEquals(initSize, resources.getSize());
-      assertEquals(0, groovyPublisher.resources.size());
-   }
+        assertEquals(initSize, resources.getSize());
+        assertEquals(0, groovyPublisher.resources.size());
+    }
 
 }

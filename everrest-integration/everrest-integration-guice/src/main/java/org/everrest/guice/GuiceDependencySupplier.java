@@ -27,20 +27,15 @@ import org.everrest.core.BaseDependencySupplier;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class GuiceDependencySupplier extends BaseDependencySupplier
-{
-   private final Injector injector;
+public class GuiceDependencySupplier extends BaseDependencySupplier {
+    private final Injector injector;
 
-   public GuiceDependencySupplier(Injector injector)
-   {
-      this.injector = injector;
-   }
+    public GuiceDependencySupplier(Injector injector) {
+        this.injector = injector;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public Object getComponent(Class<?> type)
-   {
-      return injector.getInstance(type);
-   }
+    /** {@inheritDoc} */
+    public Object getComponent(Class<?> type) {
+        return injector.getInstance(type);
+    }
 }

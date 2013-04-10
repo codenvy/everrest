@@ -21,17 +21,15 @@ package org.everrest.core.header;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
+ * @param <T>
+ *         Java type for representing HTTP header
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: AbstractHeaderDelegate.java 285 2009-10-15 16:21:30Z aparfonov
  *          $
- * @param <T> Java type for representing HTTP header
  */
-public abstract class AbstractHeaderDelegate<T> implements HeaderDelegate<T>
-{
+public abstract class AbstractHeaderDelegate<T> implements HeaderDelegate<T> {
 
-   /**
-    * @return the class which is supported by HeaderDelegate instance.
-    */
-   public abstract Class<T> support();
+    /** @return the class which is supported by HeaderDelegate instance. */
+    public abstract Class<T> support();
 
 }

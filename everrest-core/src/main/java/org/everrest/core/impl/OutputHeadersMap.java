@@ -29,16 +29,13 @@ import java.util.Map;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public final class OutputHeadersMap extends CaselessMultivaluedMap<Object>
-{
-   private static final long serialVersionUID = -8663077335341263345L;
+public final class OutputHeadersMap extends CaselessMultivaluedMap<Object> {
+    private static final long serialVersionUID = -8663077335341263345L;
 
-   public OutputHeadersMap()
-   {
-   }
+    public OutputHeadersMap() {
+    }
 
-   public OutputHeadersMap(Map<String, List<Object>> m)
-   {
-      super(m);
-   }
+    public OutputHeadersMap(Map<String, List<Object>> m) {
+        super(m);
+    }
 }

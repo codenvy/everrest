@@ -25,34 +25,32 @@ package org.everrest.core;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFactory<T>
-{
-   /** @see ObjectModel */
-   protected final T model;
+public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
+    /** @see ObjectModel */
+    protected final T model;
 
-   /** Component instance. */
-   protected final Object object;
+    /** Component instance. */
+    protected final Object object;
 
-   /**
-    * @param model ObjectMode
-    * @param object component instance
-    */
-   public SingletonObjectFactory(T model, Object object)
-   {
-      this.model = model;
-      this.object = object;
-   }
+    /**
+     * @param model
+     *         ObjectMode
+     * @param object
+     *         component instance
+     */
+    public SingletonObjectFactory(T model, Object object) {
+        this.model = model;
+        this.object = object;
+    }
 
-   /** {@inheritDoc} */
-   public Object getInstance(ApplicationContext context)
-   {
-      // prepared object instance
-      return object;
-   }
+    /** {@inheritDoc} */
+    public Object getInstance(ApplicationContext context) {
+        // prepared object instance
+        return object;
+    }
 
-   /** {@inheritDoc} */
-   public T getObjectModel()
-   {
-      return model;
-   }
+    /** {@inheritDoc} */
+    public T getObjectModel() {
+        return model;
+    }
 }

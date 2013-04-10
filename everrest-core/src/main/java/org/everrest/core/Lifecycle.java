@@ -20,21 +20,20 @@ package org.everrest.core;
 
 /**
  * Interface provides methods lifecycle control.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface Lifecycle
-{
-   /**
-    * Star Lifecycle. If this interface implemented by container it must notify all its components. If Lifecycle already
-    * started repeated calling of this method has no effect.
-    */
-   void start();
+public interface Lifecycle {
+    /**
+     * Star Lifecycle. If this interface implemented by container it must notify all its components. If Lifecycle already
+     * started repeated calling of this method has no effect.
+     */
+    void start();
 
-   /**
-    * Stop Lifecycle. If this interface implemented by container it must notify all its components. If Lifecycle already
-    * stopped repeated calling of this method has no effect.
-    */
-   void stop();
+    /**
+     * Stop Lifecycle. If this interface implemented by container it must notify all its components. If Lifecycle already
+     * stopped repeated calling of this method has no effect.
+     */
+    void stop();
 }

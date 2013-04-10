@@ -28,110 +28,93 @@ import java.util.Map;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class JavaMapBean
-{
-   // interface
-   private Map<String, Book> map_items;
+public class JavaMapBean {
+    // interface
+    private Map<String, Book> map_items;
 
-   private HashMap<String, Book> hashMap_items;
+    private HashMap<String, Book> hashMap_items;
 
-   private Hashtable<String, Book> hashtable_items;
+    private Hashtable<String, Book> hashtable_items;
 
-   private LinkedHashMap<String, Book> linkedHashMap_items;
+    private LinkedHashMap<String, Book> linkedHashMap_items;
 
-   // --------------------------
-   private Map<String, List<Book>> map_list;
+    // --------------------------
+    private Map<String, List<Book>> map_list;
 
-   public void setMapList(Map<String, List<Book>> hu)
-   {
-      this.map_list = hu;
-   }
+    public void setMapList(Map<String, List<Book>> hu) {
+        this.map_list = hu;
+    }
 
-   public Map<String, List<Book>> getMapList()
-   {
-      return map_list;
-   }
+    public Map<String, List<Book>> getMapList() {
+        return map_list;
+    }
 
-   // --------------------------
+    // --------------------------
 
-   private Map<String, String> map_strings;
+    private Map<String, String> map_strings;
 
-   private Map<String, Integer> map_integers;
+    private Map<String, Integer> map_integers;
 
-   private Map<String, Boolean> map_booleans;
+    private Map<String, Boolean> map_booleans;
 
-   // set methods
-   public void setStrings(Map<String, String> m)
-   {
-      map_strings = m;
-   }
+    // set methods
+    public void setStrings(Map<String, String> m) {
+        map_strings = m;
+    }
 
-   public void setIntegers(Map<String, Integer> m)
-   {
-      map_integers = m;
-   }
+    public void setIntegers(Map<String, Integer> m) {
+        map_integers = m;
+    }
 
-   public void setBooleans(Map<String, Boolean> m)
-   {
-      map_booleans = m;
-   }
+    public void setBooleans(Map<String, Boolean> m) {
+        map_booleans = m;
+    }
 
-   ///////////////////////
-   public void setMap(Map<String, Book> m)
-   {
-      map_items = m;
-   }
+    ///////////////////////
+    public void setMap(Map<String, Book> m) {
+        map_items = m;
+    }
 
-   public void setHashMap(HashMap<String, Book> m)
-   {
-      hashMap_items = m;
-   }
+    public void setHashMap(HashMap<String, Book> m) {
+        hashMap_items = m;
+    }
 
-   public void setHashtable(Hashtable<String, Book> m)
-   {
-      hashtable_items = m;
-   }
+    public void setHashtable(Hashtable<String, Book> m) {
+        hashtable_items = m;
+    }
 
-   public void setLinkedHashMap(LinkedHashMap<String, Book> m)
-   {
-      linkedHashMap_items = m;
-   }
+    public void setLinkedHashMap(LinkedHashMap<String, Book> m) {
+        linkedHashMap_items = m;
+    }
 
-   // get methods
-   public Map<String, String> getStrings()
-   {
-      return map_strings;
-   }
+    // get methods
+    public Map<String, String> getStrings() {
+        return map_strings;
+    }
 
-   public Map<String, Integer> getIntegers()
-   {
-      return map_integers;
-   }
+    public Map<String, Integer> getIntegers() {
+        return map_integers;
+    }
 
-   public Map<String, Boolean> getBooleans()
-   {
-      return map_booleans;
-   }
+    public Map<String, Boolean> getBooleans() {
+        return map_booleans;
+    }
 
-   ///////////////////////
-   public Map<String, Book> getMap()
-   {
-      return map_items;
-   }
+    ///////////////////////
+    public Map<String, Book> getMap() {
+        return map_items;
+    }
 
-   public HashMap<String, Book> getHashMap()
-   {
-      return hashMap_items;
-   }
+    public HashMap<String, Book> getHashMap() {
+        return hashMap_items;
+    }
 
-   public Hashtable<String, Book> getHashtable()
-   {
-      return hashtable_items;
-   }
+    public Hashtable<String, Book> getHashtable() {
+        return hashtable_items;
+    }
 
-   public LinkedHashMap<String, Book> getLinkedHashMap()
-   {
-      return linkedHashMap_items;
-   }
+    public LinkedHashMap<String, Book> getLinkedHashMap() {
+        return linkedHashMap_items;
+    }
 
 }

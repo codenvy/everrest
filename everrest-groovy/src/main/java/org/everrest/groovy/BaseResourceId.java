@@ -25,42 +25,35 @@ package org.everrest.groovy;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BaseResourceId implements ResourceId
-{
-   private final String id;
+public class BaseResourceId implements ResourceId {
+    private final String id;
 
-   public BaseResourceId(String id)
-   {
-      if (id == null)
-      {
-         throw new IllegalArgumentException("Id may not be null. ");
-      }
-      this.id = id;
-   }
+    public BaseResourceId(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id may not be null. ");
+        }
+        this.id = id;
+    }
 
-   /** {@inheritDoc} */
-   public String getId()
-   {
-      return id;
-   }
+    /** {@inheritDoc} */
+    public String getId() {
+        return id;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public boolean equals(Object obj)
-   {
-      return obj != null && getClass() == obj.getClass() && id.equals(((BaseResourceId)obj).id);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && getClass() == obj.getClass() && id.equals(((BaseResourceId)obj).id);
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   public int hashCode()
-   {
-      return id.hashCode();
-   }
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 
-   /** {@inheritDoc} */
-   public String toString()
-   {
-      return getClass().getSimpleName() + '(' + id + ')';
-   }
+    /** {@inheritDoc} */
+    public String toString() {
+        return getClass().getSimpleName() + '(' + id + ')';
+    }
 }

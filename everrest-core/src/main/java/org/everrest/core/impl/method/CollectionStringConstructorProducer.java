@@ -28,35 +28,33 @@ import java.lang.reflect.Constructor;
  * @version $Id: CollectionStringConstructorProducer.java 285 2009-10-15
  *          16:21:30Z aparfonov $
  */
-public final class CollectionStringConstructorProducer extends BaseCollectionProducer
-{
+public final class CollectionStringConstructorProducer extends BaseCollectionProducer {
 
-   /** This constructor will be used for creation collection elements. */
-   private Constructor<?> constructor;
+    /** This constructor will be used for creation collection elements. */
+    private Constructor<?> constructor;
 
-   /**
-    * Constructs new instance of CollectionStringConstructorProducer.
-    *
-    * @param collectionClass class of collection which must be created
-    * @param constructor this constructor will be used for produce elements of
-    * collection
-    */
-   CollectionStringConstructorProducer(Class<?> collectionClass, Constructor<?> constructor)
-   {
-      super(collectionClass);
-      this.constructor = constructor;
-   }
+    /**
+     * Constructs new instance of CollectionStringConstructorProducer.
+     *
+     * @param collectionClass
+     *         class of collection which must be created
+     * @param constructor
+     *         this constructor will be used for produce elements of
+     *         collection
+     */
+    CollectionStringConstructorProducer(Class<?> collectionClass, Constructor<?> constructor) {
+        super(collectionClass);
+        this.constructor = constructor;
+    }
 
-   /** {@inheritDoc} */
-   @Override
-   protected Object createValue(String value) throws Exception
-   {
-      if (value == null)
-      {
-         return null;
-      }
+    /** {@inheritDoc} */
+    @Override
+    protected Object createValue(String value) throws Exception {
+        if (value == null) {
+            return null;
+        }
 
-      return constructor.newInstance(value);
-   }
+        return constructor.newInstance(value);
+    }
 
 }

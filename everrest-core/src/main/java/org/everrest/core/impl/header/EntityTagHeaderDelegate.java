@@ -27,55 +27,46 @@ import javax.ws.rs.core.EntityTag;
  * @version $Id: EntityTagHeaderDelegate.java 285 2009-10-15 16:21:30Z aparfonov
  *          $
  */
-public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag>
-{
-   /** {@inheritDoc} */
-   @Override
-   public Class<EntityTag> support()
-   {
-      return EntityTag.class;
-   }
+public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag> {
+    /** {@inheritDoc} */
+    @Override
+    public Class<EntityTag> support() {
+        return EntityTag.class;
+    }
 
-   /** {@inheritDoc} */
-   public EntityTag fromString(String header)
-   {
-      if (header == null)
-      {
-         throw new IllegalArgumentException();
-      }
+    /** {@inheritDoc} */
+    public EntityTag fromString(String header) {
+        if (header == null) {
+            throw new IllegalArgumentException();
+        }
 
-      boolean isWeak = header.startsWith("W/");
+        boolean isWeak = header.startsWith("W/");
 
-      String value;
-      // cut 'W/' prefix if exists
-      if (isWeak)
-      {
-         value = header.substring(2);
-      }
-      else
-      {
-         value = header;
-      }
-      // remove quotes
-      value = value.substring(1, value.length() - 1);
-      value = HeaderHelper.filterEscape(value);
+        String value;
+        // cut 'W/' prefix if exists
+        if (isWeak) {
+            value = header.substring(2);
+        } else {
+            value = header;
+        }
+        // remove quotes
+        value = value.substring(1, value.length() - 1);
+        value = HeaderHelper.filterEscape(value);
 
-      return new EntityTag(value, isWeak);
-   }
+        return new EntityTag(value, isWeak);
+    }
 
-   /** {@inheritDoc} */
-   public String toString(EntityTag entityTag)
-   {
-      StringBuilder sb = new StringBuilder();
-      if (entityTag.isWeak())
-      {
-         sb.append('W').append('/');
-      }
+    /** {@inheritDoc} */
+    public String toString(EntityTag entityTag) {
+        StringBuilder sb = new StringBuilder();
+        if (entityTag.isWeak()) {
+            sb.append('W').append('/');
+        }
 
-      sb.append('"');
-      HeaderHelper.appendEscapeQuote(sb, entityTag.getValue());
-      sb.append('"');
+        sb.append('"');
+        HeaderHelper.appendEscapeQuote(sb, entityTag.getValue());
+        sb.append('"');
 
-      return sb.toString();
-   }
+        return sb.toString();
+    }
 }

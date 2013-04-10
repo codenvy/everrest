@@ -27,23 +27,19 @@ import javax.servlet.ServletContext;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class BookApplicationComposer extends EverrestComposer
-{
-   @Override
-   protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext)
-   {
-      container.addComponent(BookNotFoundExceptionMapper.class);
-      container.addComponent(BookStorage.class);
-   }
+public class BookApplicationComposer extends EverrestComposer {
+    @Override
+    protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext) {
+        container.addComponent(BookNotFoundExceptionMapper.class);
+        container.addComponent(BookStorage.class);
+    }
 
-   @Override
-   protected void doComposeRequest(MutablePicoContainer container)
-   {
-      container.addComponent(BookService.class);
-   }
+    @Override
+    protected void doComposeRequest(MutablePicoContainer container) {
+        container.addComponent(BookService.class);
+    }
 
-   @Override
-   protected void doComposeSession(MutablePicoContainer container)
-   {
-   }
+    @Override
+    protected void doComposeSession(MutablePicoContainer container) {
+    }
 }

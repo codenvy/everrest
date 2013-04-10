@@ -24,7 +24,6 @@ import org.everrest.core.Parameter;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public interface MethodParameter extends Parameter
-{
+public interface MethodParameter extends Parameter {
 
 }

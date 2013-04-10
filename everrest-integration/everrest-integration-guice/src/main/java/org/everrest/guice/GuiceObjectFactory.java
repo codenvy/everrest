@@ -32,36 +32,30 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<T>
-{
-   protected final T model;
+public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
+    protected final T model;
 
-   protected final Provider<?> provider;
+    protected final Provider<?> provider;
 
-   public GuiceObjectFactory(T model, Provider<?> provider)
-   {
-      this.model = model;
-      this.provider = provider;
-   }
+    public GuiceObjectFactory(T model, Provider<?> provider) {
+        this.model = model;
+        this.provider = provider;
+    }
 
-   /** {@inheritDoc} */
-   public Object getInstance(ApplicationContext context)
-   {
-      Object object = provider.get();
-      List<FieldInjector> fieldInjectors = model.getFieldInjectors();
-      if (fieldInjectors != null && fieldInjectors.size() > 0)
-      {
-         for (FieldInjector injector : fieldInjectors)
-         {
-            injector.inject(object, context);
-         }
-      }
-      return object;
-   }
+    /** {@inheritDoc} */
+    public Object getInstance(ApplicationContext context) {
+        Object object = provider.get();
+        List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+        if (fieldInjectors != null && fieldInjectors.size() > 0) {
+            for (FieldInjector injector : fieldInjectors) {
+                injector.inject(object, context);
+            }
+        }
+        return object;
+    }
 
-   /** {@inheritDoc} */
-   public T getObjectModel()
-   {
-      return model;
-   }
+    /** {@inheritDoc} */
+    public T getObjectModel() {
+        return model;
+    }
 }

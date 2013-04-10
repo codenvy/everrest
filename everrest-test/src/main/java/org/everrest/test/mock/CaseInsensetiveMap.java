@@ -24,54 +24,39 @@ package org.everrest.test.mock;
  * @version $Id: CaseInsensetiveMap.java 167 2009-09-10 13:14:45Z max_shaposhnik
  *          $
  */
-public class CaseInsensetiveMap<T> extends java.util.HashMap<String, T>
-{
+public class CaseInsensetiveMap<T> extends java.util.HashMap<String, T> {
 
-   private static final long serialVersionUID = -8562529039657285360L;
+    private static final long serialVersionUID = -8562529039657285360L;
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public boolean containsKey(Object key)
-   {
-      return super.containsKey(getKey(key));
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean containsKey(Object key) {
+        return super.containsKey(getKey(key));
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public T get(Object key)
-   {
-      return super.get(getKey(key));
-   }
+    /** {@inheritDoc} */
+    @Override
+    public T get(Object key) {
+        return super.get(getKey(key));
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public T put(String key, T value)
-   {
-      return super.put(getKey(key), value);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public T put(String key, T value) {
+        return super.put(getKey(key), value);
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public T remove(Object key)
-   {
-      return super.remove(getKey(key));
-   }
+    /** {@inheritDoc} */
+    @Override
+    public T remove(Object key) {
+        return super.remove(getKey(key));
+    }
 
-   private String getKey(Object key)
-   {
-      if (key == null)
-      {
-         return null;
-      }
-      return key.toString().toLowerCase();
-   }
+    private String getKey(Object key) {
+        if (key == null) {
+            return null;
+        }
+        return key.toString().toLowerCase();
+    }
 
 }

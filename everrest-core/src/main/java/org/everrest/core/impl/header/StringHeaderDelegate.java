@@ -24,30 +24,20 @@ import org.everrest.core.header.AbstractHeaderDelegate;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class StringHeaderDelegate extends AbstractHeaderDelegate<String>
-{
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public Class<String> support()
-   {
-      return String.class;
-   }
+public class StringHeaderDelegate extends AbstractHeaderDelegate<String> {
+    /** {@inheritDoc} */
+    @Override
+    public Class<String> support() {
+        return String.class;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String fromString(String value)
-   {
-      return value;
-   }
+    /** {@inheritDoc} */
+    public String fromString(String value) {
+        return value;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String toString(String value)
-   {
-      return value;
-   }
+    /** {@inheritDoc} */
+    public String toString(String value) {
+        return value;
+    }
 }

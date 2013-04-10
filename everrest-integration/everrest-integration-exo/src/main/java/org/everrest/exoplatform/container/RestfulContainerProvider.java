@@ -19,6 +19,7 @@
 package org.everrest.exoplatform.container;
 
 import org.exoplatform.container.ExoContainerContext;
+
 import javax.inject.Provider;
 
 /**
@@ -31,11 +32,9 @@ import javax.inject.Provider;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class RestfulContainerProvider implements Provider<RestfulContainer>
-{
-   @Override
-   public RestfulContainer get()
-   {
-      return (RestfulContainer)ExoContainerContext.getCurrentContainer().getComponentInstance("everrest");
-   }
+public class RestfulContainerProvider implements Provider<RestfulContainer> {
+    @Override
+    public RestfulContainer get() {
+        return (RestfulContainer)ExoContainerContext.getCurrentContainer().getComponentInstance("everrest");
+    }
 }

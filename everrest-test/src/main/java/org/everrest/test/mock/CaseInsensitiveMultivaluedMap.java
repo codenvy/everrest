@@ -26,71 +26,54 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>>
-{
+public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>> {
 
-   private static final long serialVersionUID = 6637313979061607685L;
+    private static final long serialVersionUID = 6637313979061607685L;
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public boolean containsKey(Object key)
-   {
-      return super.containsKey(getKey(key));
-   }
+    /** {@inheritDoc} */
+    @Override
+    public boolean containsKey(Object key) {
+        return super.containsKey(getKey(key));
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public List<T> get(Object key)
-   {
-      return getList(getKey(key));
-   }
+    /** {@inheritDoc} */
+    @Override
+    public List<T> get(Object key) {
+        return getList(getKey(key));
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public List<T> put(String key, List<T> value)
-   {
-      return super.put(getKey(key), value);
-   }
+    /** {@inheritDoc} */
+    @Override
+    public List<T> put(String key, List<T> value) {
+        return super.put(getKey(key), value);
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public List<T> remove(Object key)
-   {
-      return super.remove(getKey(key));
-   }
+    /** {@inheritDoc} */
+    @Override
+    public List<T> remove(Object key) {
+        return super.remove(getKey(key));
+    }
 
-   public T getFirst(String key)
-   {
-      List<T> l = getList(key);
-      if (l.size() == 0)
-         return null;
-      return l.get(0);
-   }
+    public T getFirst(String key) {
+        List<T> l = getList(key);
+        if (l.size() == 0)
+            return null;
+        return l.get(0);
+    }
 
-   private List<T> getList(String key)
-   {
-      List<T> l = super.get(getKey(key));
-      if (l == null)
-         l = new ArrayList<T>();
-      put(key, l);
-      return l;
-   }
+    private List<T> getList(String key) {
+        List<T> l = super.get(getKey(key));
+        if (l == null)
+            l = new ArrayList<T>();
+        put(key, l);
+        return l;
+    }
 
-   private String getKey(Object key)
-   {
-      if (key == null)
-      {
-         return null;
-      }
-      return key.toString().toLowerCase();
-   }
+    private String getKey(Object key) {
+        if (key == null) {
+            return null;
+        }
+        return key.toString().toLowerCase();
+    }
 
 }

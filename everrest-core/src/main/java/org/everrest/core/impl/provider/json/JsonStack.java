@@ -26,38 +26,31 @@ import java.util.List;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-class JsonStack<T>
-{
+class JsonStack<T> {
 
-   private final List<T> elements;
+    private final List<T> elements;
 
-   JsonStack()
-   {
-      elements = new ArrayList<T>(16);
-   }
+    JsonStack() {
+        elements = new ArrayList<T>(16);
+    }
 
-   boolean isEmpty()
-   {
-      return elements.isEmpty();
-   }
+    boolean isEmpty() {
+        return elements.isEmpty();
+    }
 
-   T peek()
-   {
-      return isEmpty() ? null : elements.get(elements.size() - 1);
-   }
+    T peek() {
+        return isEmpty() ? null : elements.get(elements.size() - 1);
+    }
 
-   T pop()
-   {
-      return isEmpty() ? null : elements.remove(elements.size() - 1);
-   }
+    T pop() {
+        return isEmpty() ? null : elements.remove(elements.size() - 1);
+    }
 
-   void push(T token)
-   {
-      elements.add(token);
-   }
+    void push(T token) {
+        elements.add(token);
+    }
 
-   void clear()
-   {
-      elements.clear();
-   }
+    void clear() {
+        elements.clear();
+    }
 }
