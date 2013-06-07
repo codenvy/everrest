@@ -141,9 +141,13 @@ class WS2RESTAdapter implements WSMessageReceiver {
 
                         if ("websocket".equals(requestHeaders.getFirst("x-everrest-protocol"))
                             && uuid.equals(requestHeaders.getFirst("x-everrest-websocket-tracker-id"))) {
-                            URI requestUri = UriBuilder.fromPath("/async/" + job.getJobId()).build();
-                            ContainerRequest req = new ContainerRequest("GET", requestUri, URI.create(""), null,
-                                                                        new InputHeadersMap(), securityContext);
+                            //URI requestUri = UriBuilder.fromPath("/async/" + job.getJobId()).build();
+                            ContainerRequest req = new ContainerRequest("GET",
+                                                                        URI.create((String)job.getContext().get("internal-uri")),
+                                                                        URI.create(""),
+                                                                        null,
+                                                                        new InputHeadersMap(),
+                                                                        securityContext);
 
                             RESTfulOutputMessage output = newOutputMessage(restInputMessage);
                             ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));

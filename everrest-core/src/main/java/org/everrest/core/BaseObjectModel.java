@@ -24,7 +24,6 @@ import org.everrest.core.impl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,26 +60,13 @@ public abstract class BaseObjectModel implements ObjectModel {
             for (java.lang.reflect.Field jField : clazz.getDeclaredFields()) {
                 fields.add(new FieldInjectorImpl(clazz, jField));
             }
-            Package clazzPackage = clazz.getPackage();
-            String resourcePackageName = clazzPackage != null ? clazzPackage.getName() : null;
             Class<?> sc = clazz.getSuperclass();
             while (sc != null && sc != Object.class) {
                 for (java.lang.reflect.Field jField : sc.getDeclaredFields()) {
-                    int modifiers = jField.getModifiers();
-                    Package package1 = clazz.getPackage();
-                    String scPackageName = package1 != null ? package1.getName() : null;
-                    if (!Modifier.isPrivate(modifiers)) {
-                        if (Modifier.isPublic(modifiers)
-                            || Modifier.isProtected(modifiers)
-                            || (!Modifier.isPrivate(modifiers) && ((resourcePackageName == null && scPackageName == null)
-                                                                   || (resourcePackageName != null &&
-                                                                       resourcePackageName.equals(scPackageName))))) {
-                            FieldInjector inj = new FieldInjectorImpl(clazz, jField);
-                            // Skip not annotated field. They will be not injected from container.
-                            if (inj.getAnnotation() != null) {
-                                fields.add(new FieldInjectorImpl(clazz, jField));
-                            }
-                        }
+                    FieldInjector inj = new FieldInjectorImpl(clazz, jField);
+                    // Skip not annotated field. They will be not injected from container.
+                    if (inj.getAnnotation() != null) {
+                        fields.add(inj);
                     }
                 }
                 sc = sc.getSuperclass();
