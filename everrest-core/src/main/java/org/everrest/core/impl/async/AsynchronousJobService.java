@@ -60,8 +60,7 @@ public class AsynchronousJobService {
         AsynchronousJobPool pool = getJobPool();
         final AsynchronousJob job = pool.getJob(jobId);
         if (job == null) {
-            throw new WebApplicationException(Response
-                                                      .status(Response.Status.NOT_FOUND)
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                                                       .entity("Job " + jobId + " not found. ")
                                                       .type(MediaType.TEXT_PLAIN).build());
         }
@@ -77,8 +76,7 @@ public class AsynchronousJobService {
                 } finally {
                     pool.removeJob(jobId);
                     // Restore resource specific set of providers.
-                    ApplicationContextImpl.getCurrent().setProviders(
-                            (ProviderBinder)job.getContext().get("org.everrest.async.providers"));
+                    ApplicationContextImpl.getCurrent().setProviders((ProviderBinder)job.getContext().get("org.everrest.async.providers"));
                 }
 
                 // This response will be sent to client side.
@@ -104,15 +102,13 @@ public class AsynchronousJobService {
                 return null;
             } else {
                 final String jobUri = uriInfo.getRequestUri().toString();
-                return Response
-                        .status(Response.Status.ACCEPTED)
-                        .header(HttpHeaders.LOCATION, jobUri)
-                        .entity(jobUri)
-                        .type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.ACCEPTED)
+                               .header(HttpHeaders.LOCATION, jobUri)
+                               .entity(jobUri)
+                               .type(MediaType.TEXT_PLAIN).build();
             }
         } else {
-            throw new WebApplicationException(Response
-                                                      .status(Response.Status.FORBIDDEN)
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN)
                                                       .entity("GET: (" + jobId + ") - Operation not permitted. ")
                                                       .type(MediaType.TEXT_PLAIN).build());
         }

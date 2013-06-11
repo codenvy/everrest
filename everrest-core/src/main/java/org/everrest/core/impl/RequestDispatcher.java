@@ -26,6 +26,7 @@ import org.everrest.core.Lifecycle;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.SingletonObjectFactory;
+import org.everrest.core.impl.async.AsynchronousJob;
 import org.everrest.core.impl.header.HeaderHelper;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
@@ -296,7 +297,7 @@ public class RequestDispatcher {
                                   GenericContainerResponse response) {
         MethodInvoker invoker = context.getMethodInvoker(method);
         Object o = invoker.invokeMethod(resource, method, context);
-        processResponse(o, request, response, method.produces());
+        processResponse(o, request, response, method.produces(), context);
     }
 
     /**
@@ -396,6 +397,7 @@ public class RequestDispatcher {
      * Process result of invoked method, and set {@link javax.ws.rs.core.Response} parameters dependent of returned
      * object.
      *
+     *
      * @param o
      *         result of invoked method
      * @param request
@@ -404,6 +406,7 @@ public class RequestDispatcher {
      *         See {@link org.everrest.core.GenericContainerResponse}
      * @param produces
      *         list of method produces media types
+     * @param context
      * @see org.everrest.core.resource.ResourceMethodDescriptor
      * @see org.everrest.core.resource.SubResourceMethodDescriptor
      * @see org.everrest.core.resource.SubResourceLocatorDescriptor
@@ -411,13 +414,21 @@ public class RequestDispatcher {
     private void processResponse(Object o,
                                  GenericContainerRequest request,
                                  GenericContainerResponse response,
-                                 List<MediaType> produces) {
+                                 List<MediaType> produces,
+                                 ApplicationContext context) {
         if (response.getResponse() != null) {
             // Response may be set for asynchronous jobs.
             return;
         }
         if (o == null || o.getClass() == void.class || o.getClass() == Void.class) {
             response.setResponse(Response.noContent().build());
+        } else if (o instanceof AsynchronousJob) {
+            final String internalJobUri  = (String)((AsynchronousJob)o).getContext().get("internal-uri");
+            final String externalJobUri = context.getBaseUriBuilder().path(internalJobUri).build().toString();
+            response.setResponse(Response.status(Response.Status.ACCEPTED)
+                                         .header(HttpHeaders.LOCATION, externalJobUri)
+                                         .entity(externalJobUri)
+                                         .type(MediaType.TEXT_PLAIN).build());
         } else {
             // get most acceptable media type for response
             MediaType contentType = request.getAcceptableMediaType(produces);

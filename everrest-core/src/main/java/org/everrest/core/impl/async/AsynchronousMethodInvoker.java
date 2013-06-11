@@ -23,7 +23,7 @@ import org.everrest.core.impl.method.DefaultMethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 
-import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -53,25 +53,15 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker {
                                Object[] params,
                                ApplicationContext context) {
         try {
-            final AsynchronousJob job = runAsyncJob(resource, methodResource, params);
+            // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
+            // Resource locators can't be processed in asynchronous mode since it is not end point of request.
+            final AsynchronousJob job = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
             final String internalJobUri =
                     UriBuilder.fromPath("/").path(AsynchronousJobService.class, "get").build(job.getJobId()).toString();
             job.getContext().put("internal-uri", internalJobUri);
-            final String externalJobUri = context.getBaseUriBuilder().path(internalJobUri).build().toString();
-
-            return Response.status(Response.Status.ACCEPTED)
-                           .header(HttpHeaders.LOCATION, externalJobUri)
-                           .entity(externalJobUri)
-                           .type(MediaType.TEXT_PLAIN).build();
+            return job;
         } catch (AsynchronousJobRejectedException e) {
-            return Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build());
         }
-    }
-
-    public AsynchronousJob runAsyncJob(Object resource, GenericMethodResource methodResource, Object[] params)
-            throws AsynchronousJobRejectedException {
-        // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
-        // Resource locators can't be processed in asynchronous mode since it is not end point of request.
-        return pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
     }
 }
