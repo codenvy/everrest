@@ -26,7 +26,6 @@ import org.everrest.core.resource.ResourceMethodDescriptor;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  * Invoker for Resource and Sub-Resource methods. This invoker does not process methods by oneself but post
@@ -55,11 +54,7 @@ public class AsynchronousMethodInvoker extends DefaultMethodInvoker {
         try {
             // NOTE. Parameter methodResource never is SubResourceLocatorDescriptor.
             // Resource locators can't be processed in asynchronous mode since it is not end point of request.
-            final AsynchronousJob job = pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
-            final String internalJobUri =
-                    UriBuilder.fromPath("/").path(AsynchronousJobService.class, "get").build(job.getJobId()).toString();
-            job.getContext().put("internal-uri", internalJobUri);
-            return job;
+            return pool.addJob(resource, (ResourceMethodDescriptor)methodResource, params);
         } catch (AsynchronousJobRejectedException e) {
             throw new WebApplicationException(Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build());
         }

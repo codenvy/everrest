@@ -30,6 +30,7 @@ import org.everrest.core.util.Logger;
 
 import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.InvocationTargetException;
@@ -208,6 +209,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
      * This implementation does nothing, but may be customized in subclasses.
      */
     protected void initAsynchronousJobContext(AsynchronousJob job) {
+        final String internalJobUri =
+                UriBuilder.fromPath("/").path(AsynchronousJobService.class, "get").build(job.getJobId()).toString();
+        job.getContext().put("internal-uri", internalJobUri);
     }
 
     protected Callable<Object> newCallable(Object resource, Method method, Object[] params) {
