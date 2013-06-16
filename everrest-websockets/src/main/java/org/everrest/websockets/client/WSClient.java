@@ -215,7 +215,6 @@ public class WSClient {
                 try {
                     read();
                 } catch (ConnectionException e) {
-                    // All unexpected errors represents as protocol error, status: 1002.
                     LOG.error(e.getMessage(), e);
                     onClose(e.status, e.getMessage());
                 } catch (IOException e) {
@@ -521,17 +520,17 @@ public class WSClient {
                     } else {
                         status = 0; // No status.
                     }
-                    // Do not send body to the listeners here even if server provide it.
-                    // Specification says: body is not guaranteed to be human readable.
-                    onClose(status, null);
+                    String message = null;
                     if (!(status == 0 || status == 1000)) {
                         // Two bytes contains status code. The rest of bytes is message.
-                        String message = null;
                         if (payload.length > 2) {
                             message = new String(payload, 2, payload.length - 2, UTF8_CS);
                         }
                         LOG.warn("Close status: {}, message: {} ", status, message);
                     }
+                    // Specification says: body is not guaranteed to be human readable.
+                    // Send body to the listeners here if server provides it and lets listeners decide what to do.
+                    onClose(status, message);
                     break;
                 case 9:
                     payload = readFrame();
@@ -567,7 +566,7 @@ public class WSClient {
             throw new EOFException("Failed read next websocket frame, end of the stream was reached. ");
         }
 
-        boolean masked = (secondByte & 0x80) > 0;
+        final boolean masked = (secondByte & 0x80) > 0;
 
         long length = (secondByte & 0x7F);
         if (length == 126) {
@@ -649,7 +648,7 @@ public class WSClient {
         int r;
         while (offset < buff.length) {
             r = in.read(buff, offset, length - offset);
-            if (offset < 0) {
+            if (r < 0) {
                 throw new EOFException("Failed read next websocket frame, end of the stream was reached. ");
             }
             offset += r;

@@ -92,12 +92,24 @@ public interface WSConnection {
     int getCloseStatus();
 
     /**
-     * Close this connection.
+     * Close this connection with 1000 status which indicates a normal closure.
      *
      * @throws IOException
      *         if any i/o error occurs
      */
     void close() throws IOException;
+
+    /**
+     * Close this connection with specified status and message.
+     *
+     * @param status
+     *         connection close status
+     * @param message
+     *         optional message
+     * @throws IOException
+     *         if any i/o error occurs
+     */
+    void close(int status, String message) throws IOException;
 
     /**
      * Send message to client.

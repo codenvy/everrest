@@ -92,7 +92,7 @@ public class WSConnectionContext {
     }
 
     private static RESTfulOutputMessage newRESTfulOutputMessage(ChannelBroadcastMessage message) {
-        RESTfulOutputMessage transport = new RESTfulOutputMessage();
+        final RESTfulOutputMessage transport = new RESTfulOutputMessage();
         transport.setUuid(message.getUuid());
         transport.setHeaders(new Pair[]{new Pair("x-everrest-websocket-channel", message.getChannel()),
                                         new Pair("x-everrest-websocket-message-type", message.getType().toString())});
@@ -137,7 +137,7 @@ public class WSConnectionContext {
         if (messageConverter == null) {
             throw new IllegalArgumentException("MessageConverter required. ");
         }
-        WSConnectionImpl newConnection = new WSConnectionImpl(httpSession, messageConverter);
+        final WSConnectionImpl newConnection = new WSConnectionImpl(httpSession, messageConverter);
         connections.put(newConnection.getId(), newConnection);
         return newConnection;
     }
@@ -153,7 +153,7 @@ public class WSConnectionContext {
         if (httpSessionId == null) {
             throw new IllegalArgumentException("HTTP session may not be null. ");
         }
-        List<WSConnectionImpl> result = new ArrayList<WSConnectionImpl>();
+        final List<WSConnectionImpl> result = new ArrayList<WSConnectionImpl>();
         for (WSConnectionImpl connection : connections.values()) {
             if (httpSessionId.equals(connection.getHttpSession().getId())) {
                 result.add(connection);
@@ -169,7 +169,7 @@ public class WSConnectionContext {
      *         HTTP session Id
      */
     static void closeAll(String httpSessionId) {
-        Collection<WSConnectionImpl> toRemove = getAll(httpSessionId);
+        final Collection<WSConnectionImpl> toRemove = getAll(httpSessionId);
         for (WSConnectionImpl connection : toRemove) {
             try {
                 connection.close();

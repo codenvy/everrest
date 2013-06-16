@@ -31,7 +31,7 @@ import java.util.List;
  */
 public final class Pair {
     public static MultivaluedMap<String, String> toMap(Pair[] pairs) {
-        MultivaluedMap<String, String> result = new MultivaluedMapImpl();
+        final MultivaluedMap<String, String> result = new MultivaluedMapImpl();
         if (!(pairs == null || pairs.length == 0)) {
             for (Pair p : pairs) {
                 result.add(p.getName(), p.getValue());
@@ -42,7 +42,7 @@ public final class Pair {
 
     public static Pair[] fromMap(MultivaluedMap<String, Object> source) {
         if (!(source == null || source.isEmpty())) {
-            List<Pair> list = new ArrayList<Pair>();
+            final List<Pair> list = new ArrayList<Pair>();
             for (String key : source.keySet()) {
                 List<Object> values = source.get(key);
                 if (!(values == null || values.isEmpty())) {

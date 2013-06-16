@@ -169,9 +169,16 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
     }
 
     @Override
+    public void close(int status, String message) throws IOException {
+        if (connected.compareAndSet(true, false)) {
+            getWsOutbound().close(status, message == null ? null : UTF8_CS.encode(message));
+        }
+    }
+
+    @Override
     public void sendMessage(OutputMessage output) throws MessageConversionException, IOException {
-        CharBuffer message = CharBuffer.wrap(messageConverter.toString(output));
-        WsOutbound out = getWsOutbound();
+        final CharBuffer message = CharBuffer.wrap(messageConverter.toString(output));
+        final WsOutbound out = getWsOutbound();
         out.writeTextMessage(message);
         out.flush();
     }

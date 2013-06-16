@@ -36,7 +36,7 @@ import java.io.IOException;
 class EverrestResponseWriter implements ContainerResponseWriter {
     private final RESTfulOutputMessage output;
 
-    private boolean commited;
+    private boolean committed;
 
     EverrestResponseWriter(RESTfulOutputMessage output) {
         this.output = output;
@@ -44,19 +44,19 @@ class EverrestResponseWriter implements ContainerResponseWriter {
 
     @Override
     public void writeHeaders(GenericContainerResponse response) throws IOException {
-        if (commited) {
-            throw new IllegalStateException("Response has been commited. Unable write headers. ");
+        if (committed) {
+            throw new IllegalStateException("Response has been committed. Unable write headers. ");
         }
         output.setResponseCode(response.getStatus());
         output.setHeaders(Pair.fromMap(response.getHttpHeaders()));
-        commited = true;
+        committed = true;
     }
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Object entity = response.getEntity();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final Object entity = response.getEntity();
         if (entity != null) {
             entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
                                  response.getHttpHeaders(), out);
