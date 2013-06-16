@@ -27,7 +27,7 @@ import java.util.Map;
  * @version $Id: $
  */
 public interface AsynchronousJob {
-    String getJobId();
+    Long getJobId();
 
     long getExpirationDate();
 

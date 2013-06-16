@@ -13,12 +13,23 @@
     <listener>
         <listener-class>org.everrest.core.servlet.EverrestInitializedListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>org.everrest.websockets.WSConnectionTracker</listener-class>
+    </listener>
     <servlet>
         <servlet-name>EverrestServlet</servlet-name>
         <servlet-class>org.everrest.core.servlet.EverrestServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EverrestWebSocketServlet</servlet-name>
+        <servlet-class>org.everrest.websockets.EverrestWebSocketServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>EverrestServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EverrestWebSocketServlet</servlet-name>
+        <url-pattern>/ws/*</url-pattern>
     </servlet-mapping>
 </web-app>

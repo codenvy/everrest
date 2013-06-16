@@ -27,11 +27,11 @@ package org.everrest.core.impl.async;
  */
 public final class AsynchronousProcess {
     private final String owner;
-    private final String id;
+    private final Long   id;
     private final String path;
     private final String status;
 
-    public AsynchronousProcess(String owner, String id, String path, String status) {
+    public AsynchronousProcess(String owner, Long id, String path, String status) {
         this.owner = owner;
         this.id = id;
         this.path = path;
@@ -42,7 +42,7 @@ public final class AsynchronousProcess {
         return owner;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 

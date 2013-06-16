@@ -41,7 +41,7 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
     /** HTTP headers. */
     private MultivaluedMap<String, Object> headers;
 
-    private boolean commited;
+    private boolean committed;
 
     /** {@inheritDoc} */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -57,11 +57,11 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
 
     /** {@inheritDoc} */
     public void writeHeaders(GenericContainerResponse response) throws IOException {
-        if (commited) {
-            throw new IllegalStateException("Response has been commited. Unable write headers. ");
+        if (committed) {
+            throw new IllegalStateException("Response has been committed. Unable write headers. ");
         }
         headers = new OutputHeadersMap(response.getHttpHeaders());
-        commited = true;
+        committed = true;
     }
 
     /** @return message body */
@@ -78,6 +78,6 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
     public void reset() {
         body = null;
         headers = null;
-        commited = false;
+        committed = false;
     }
 }

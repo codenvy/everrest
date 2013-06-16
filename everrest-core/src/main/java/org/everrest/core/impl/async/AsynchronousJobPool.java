@@ -84,8 +84,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     /** Generator for unique job ID . */
     private static final AtomicLong jobIdGenerator = new AtomicLong(1);
 
-    private static String nextJobId() {
-        return Long.toString(jobIdGenerator.getAndIncrement());
+    private static Long nextJobId() {
+        return jobIdGenerator.getAndIncrement();
     }
 
     /** When timeout (in minutes) reached then an asynchronous job may be removed from the pool. */
@@ -97,7 +97,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     private final ExecutorService pool;
 
     /** Asynchronous jobs cache. */
-    private final Map<String, AsynchronousJob> jobs;
+    private final Map<Long, AsynchronousJob> jobs;
 
     private final CopyOnWriteArrayList<AsynchronousJobListener> jobListeners;
 
@@ -113,9 +113,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
         this.pool = makeExecutorService(config);
 
         // TODO Use something more flexible (cache strategy) for setup cache behavior.
-        this.jobs = Collections.synchronizedMap(new LinkedHashMap<String, AsynchronousJob>() {
+        this.jobs = Collections.synchronizedMap(new LinkedHashMap<Long, AsynchronousJob>() {
             @Override
-            protected boolean removeEldestEntry(Map.Entry<String, AsynchronousJob> eldest) {
+            protected boolean removeEldestEntry(Map.Entry<Long, AsynchronousJob> eldest) {
                 AsynchronousJob job = eldest.getValue();
                 if (size() > maxCacheSize || job.getExpirationDate() < System.currentTimeMillis()) {
                     job.cancel();
@@ -184,7 +184,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
         initAsynchronousJobContext(job);
 
-        String jobId = job.getJobId();
+        final Long jobId = job.getJobId();
         jobs.put(jobId, job);
 
         try {
@@ -218,11 +218,11 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
         return new MyCallable(resource, method, params);
     }
 
-    public AsynchronousJob getJob(String jobId) {
+    public AsynchronousJob getJob(Long jobId) {
         return jobs.get(jobId);
     }
 
-    public AsynchronousJob removeJob(String jobId) {
+    public AsynchronousJob removeJob(Long jobId) {
         AsynchronousJob job = jobs.remove(jobId);
         if (!(job == null || job.isDone())) {
             job.cancel();
@@ -289,12 +289,12 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     }
 
     private class AsynchronousFuture extends FutureTask<Object> implements AsynchronousJob {
-        private final String                   jobId;
+        private final Long                     jobId;
         private final long                     expirationDate;
         private final ResourceMethodDescriptor method;
         private final Map<String, Object>      context;
 
-        private AsynchronousFuture(String jobId,
+        private AsynchronousFuture(Long jobId,
                                    Callable<Object> callable,
                                    long expirationDate,
                                    ResourceMethodDescriptor method) {
@@ -308,12 +308,16 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
         @Override
         protected void done() {
             for (AsynchronousJobListener l : jobListeners) {
-                l.done(this);
+                try {
+                    l.done(this);
+                } catch (Exception e) {
+                    LOG.error(e.getMessage(), e);
+                }
             }
         }
 
         @Override
-        public String getJobId() {
+        public Long getJobId() {
             return jobId;
         }
 

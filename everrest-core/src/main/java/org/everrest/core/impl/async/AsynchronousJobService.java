@@ -56,7 +56,7 @@ public class AsynchronousJobService {
 
     @GET
     @Path("{job}")
-    public Object get(@PathParam("job") String jobId, @Context UriInfo uriInfo, @Context SecurityContext securityContext) {
+    public Object get(@PathParam("job") Long jobId, @Context UriInfo uriInfo, @Context SecurityContext securityContext) {
         AsynchronousJobPool pool = getJobPool();
         final AsynchronousJob job = pool.getJob(jobId);
         if (job == null) {
@@ -137,7 +137,7 @@ public class AsynchronousJobService {
 
     @DELETE
     @Path("{job}")
-    public void remove(@PathParam("job") String jobId, @Context SecurityContext securityContext) {
+    public void remove(@PathParam("job") Long jobId, @Context SecurityContext securityContext) {
         AsynchronousJobPool pool = getJobPool();
         AsynchronousJob job = pool.getJob(jobId);
         if (job == null) {

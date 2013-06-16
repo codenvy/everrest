@@ -133,8 +133,8 @@
         <module>everrest-integration/everrest-integration-picocontainer-sample</module>
         <module>everrest-integration/everrest-integration-guice-sample</module>
         <module>everrest-integration/everrest-integration-spring-sample</module>
-        <module>everrest-project-template-war</module>
         <module>everrest-websockets</module>
+        <module>everrest-project-template-war</module>
     </modules>
 
     <repositories>
