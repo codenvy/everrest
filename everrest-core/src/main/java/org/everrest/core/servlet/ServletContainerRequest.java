@@ -103,10 +103,11 @@ public final class ServletContainerRequest extends ContainerRequest {
      * @return newly created URI
      */
     private static URI getBaseUri(HttpServletRequest servletRequest) {
-        String server = servletRequest.getScheme() + "://" + servletRequest.getServerName();
+        String scheme = servletRequest.getScheme();
+        String server = scheme + "://" + servletRequest.getServerName();
         UriBuilder builder = UriBuilder.fromUri(server);
         int port = servletRequest.getServerPort();
-        if (port != 80) {
+        if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
             builder.port(port);
         }
         builder.path(servletRequest.getContextPath() + servletRequest.getServletPath());
