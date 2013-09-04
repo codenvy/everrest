@@ -460,18 +460,18 @@ public class UriBuilderTest extends BaseTest {
     }
 
     public void testResourceAndMethodAppendPath1() {
-        URI u = UriBuilder.fromUri("http://localhost:8080/base").path(R.class, "get").build();
+        URI u = UriBuilder.fromUri("http://localhost:8080/base").path(R.class).path(R.class, "get").build();
         assertEquals(URI.create("http://localhost:8080/base/resource/method1"), u);
     }
 
     public void testResourceAndMethodAppendPath2() {
-        URI u = UriBuilder.fromUri("http://localhost:8080/base").path(R.class, "post").build();
+        URI u = UriBuilder.fromUri("http://localhost:8080/base").path(R.class).path(R.class, "post").build();
         assertEquals(URI.create("http://localhost:8080/base/resource"), u);
     }
 
     public void testResourceAndMethodAppendPathFail() {
         try {
-            UriBuilder.fromUri("http://localhost:8080/base").path(R.class, "wrong").build();
+            UriBuilder.fromUri("http://localhost:8080/base").path(R.class).path(R.class, "wrong").build();
             fail("IllegalArgumentException should be thrown.");
         } catch (IllegalArgumentException e) {
         }
@@ -480,7 +480,7 @@ public class UriBuilderTest extends BaseTest {
     public void testResourceAndMethodAppendPathConflict() {
         // There are two methods with name 'get' in class R2.
         try {
-            UriBuilder.fromUri("http://localhost:8080/base").path(R2.class, "get").build();
+            UriBuilder.fromUri("http://localhost:8080/base").path(R.class).path(R2.class, "get").build();
             fail("IllegalArgumentException should be thrown.");
         } catch (IllegalArgumentException e) {
         }

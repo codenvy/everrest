@@ -210,7 +210,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
      */
     protected void initAsynchronousJobContext(AsynchronousJob job) {
         final String internalJobUri =
-                UriBuilder.fromPath("/").path(AsynchronousJobService.class, "get").build(job.getJobId()).toString();
+                UriBuilder.fromPath("/").path(AsynchronousJobService.class).path(AsynchronousJobService.class, "get")
+                          .build(job.getJobId()).toString();
         job.getContext().put("internal-uri", internalJobUri);
     }
 

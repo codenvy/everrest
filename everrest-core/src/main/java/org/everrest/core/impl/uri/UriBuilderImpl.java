@@ -364,7 +364,6 @@ public class UriBuilderImpl extends UriBuilder {
             throw new IllegalArgumentException("Method " + method + " not found at resource class " + resource.getName());
         }
 
-        path(resource);
         path(matched);
 
         return this;
