@@ -35,9 +35,9 @@ import javax.ws.rs.core.MediaType;
  */
 public class AnnotationInheritanceTest extends BaseTest {
 
+    @Produces(MediaType.TEXT_XML)
     public static interface ResourceInterface {
         @GET
-        @Produces(MediaType.TEXT_XML)
         String m0(String type);
     }
 

@@ -39,22 +39,14 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,7 +95,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
      *         resource class
      * @param scope
      *         resource scope
-     * @see ComponentLifecycleScope
+     * @see org.everrest.core.ComponentLifecycleScope
      */
     private AbstractResourceDescriptorImpl(Path path, Class<?> resourceClass, ComponentLifecycleScope scope) {
         super(resourceClass, scope);
@@ -162,20 +154,6 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     protected void processMethods() {
         Class<?> resourceClass = getObjectClass();
 
-        for (Method method : resourceClass.getDeclaredMethods()) {
-            for (Annotation a : method.getAnnotations()) {
-                Class<?> aClass = a.annotationType();
-                if (!Modifier.isPublic(method.getModifiers())
-                    && (aClass == CookieParam.class || aClass == Consumes.class || aClass == Context.class
-                        || aClass == DefaultValue.class || aClass == Encoded.class || aClass == FormParam.class
-                        || aClass == HeaderParam.class || aClass == MatrixParam.class || aClass == Path.class
-                        || aClass == PathParam.class || aClass == Produces.class || aClass == QueryParam.class
-                        || aClass.getAnnotation(HttpMethod.class) != null)) {
-                    LOG.warn("Non-public method at resource " + toString() + " annotated with JAX-RS annotation: " + a);
-                }
-            }
-        }
-
         for (Method method : resourceClass.getMethods()) {
             Path subPath = getMethodAnnotation(method, resourceClass, Path.class, false);
             HttpMethod httpMethod = getMethodAnnotation(method, resourceClass, HttpMethod.class, true);
@@ -190,13 +168,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                 if (httpMethod != null) {
                     Produces p = getMethodAnnotation(method, resourceClass, Produces.class, false);
                     if (p == null) {
-                        p = resourceClass.getAnnotation(Produces.class); // from resource class
+                        p = getClassAnnotation(resourceClass, Produces.class); // from resource class
                     }
                     List<MediaType> produces = MediaTypeHelper.createProducesList(p);
 
                     Consumes c = getMethodAnnotation(method, resourceClass, Consumes.class, false);
                     if (c == null) {
-                        c = resourceClass.getAnnotation(Consumes.class); // from resource class
+                        c = getClassAnnotation(resourceClass, Consumes.class); // from resource class
                     }
                     List<MediaType> consumes = MediaTypeHelper.createConsumesList(c);
 
@@ -220,8 +198,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                                                                                                  method, httpMethod.value(), params, this,
                                                                                                  consumes, produces, additional);
 
-                        ResourceMethodMap<SubResourceMethodDescriptor> map =
-                                subResourceMethods.getMethodMap(subRes.getUriPattern());
+                        ResourceMethodMap<SubResourceMethodDescriptor> map = subResourceMethods.getMethodMap(subRes.getUriPattern());
 
                         SubResourceMethodDescriptor exist = (SubResourceMethodDescriptor)findMethodResourceMediaType(
                                 map.getList(httpMethod.value()), subRes.consumes(), subRes.produces());
@@ -266,13 +243,13 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     }
 
     /**
-     * Create list of {@link MethodParameter} .
+     * Create list of {@link org.everrest.core.method.MethodParameter} .
      *
      * @param resourceClass
      *         class
      * @param method
-     *         See {@link Method}
-     * @return list of {@link MethodParameter}
+     *         See {@link java.lang.reflect.Method}
+     * @return list of {@link org.everrest.core.method.MethodParameter}
      */
     protected List<MethodParameter> createMethodParametersList(Class<?> resourceClass, Method method) {
         Class<?>[] parameterClasses = method.getParameterTypes();
@@ -281,8 +258,8 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             Annotation[][] annotations = method.getParameterAnnotations();
 
             List<MethodParameter> params = new ArrayList<MethodParameter>(parameterClasses.length);
-            boolean classEncoded = resourceClass.getAnnotation(Encoded.class) != null;
-            boolean methodEncoded = method.getAnnotation(Encoded.class) != null;
+            boolean classEncoded = getClassAnnotation(resourceClass, Encoded.class) != null;
+            boolean methodEncoded = getMethodAnnotation(method, resourceClass, Encoded.class, false) != null;
             for (int i = 0; i < parameterClasses.length; i++) {
                 String defaultValue = null;
                 Annotation annotation = null;
@@ -293,10 +270,9 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                     Class<?> aClass = a.annotationType();
                     if (ParameterHelper.RESOURCE_METHOD_PARAMETER_ANNOTATIONS.contains(aClass.getName())) {
                         if (annotation != null) {
-                            String msg =
-                                    "JAX-RS annotations on one of method parameters of resource " + toString() + ", method "
-                                    + method.getName() + " are equivocality. " + "Annotations: " + annotation + " and " + a
-                                    + " can't be applied to one parameter. ";
+                            String msg = "JAX-RS annotations on one of method parameters of resource " + toString() + ", method "
+                                         + method.getName() + " are equivocality. " + "Annotations: " + annotation + " and " + a
+                                         + " can't be applied to one parameter. ";
                             throw new RuntimeException(msg);
                         }
                         annotation = a;
@@ -344,8 +320,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                             new ResourceMethodDescriptorImpl(resourceMethod.getMethod(), HttpMethod.HEAD,
                                                              resourceMethod.getMethodParameters(), this, resourceMethod.consumes(),
                                                              resourceMethod.produces(),
-                                                             resourceMethod.getAnnotations())
-                                     );
+                                                             resourceMethod.getAnnotations()));
                 }
             }
         }
@@ -360,8 +335,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                                 new SubResourceMethodDescriptorImpl(subResourceMethod.getPathValue(), subResourceMethod.getMethod(),
                                                                     HttpMethod.HEAD, subResourceMethod.getMethodParameters(), this,
                                                                     subResourceMethod.consumes(),
-                                                                    subResourceMethod.produces(), subResourceMethod.getAnnotations())
-                                            );
+                                                                    subResourceMethod.produces(), subResourceMethod.getAnnotations()));
                     }
                 }
             }
@@ -389,20 +363,20 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
 
     /**
      * Get all method with at least one annotation which has annotation <i>annotation</i>. It is useful for annotation
-     * {@link javax.ws.rs.GET}, etc. All HTTP method annotations has annotation {@link HttpMethod}.
+     * {@link javax.ws.rs.GET}, etc. All HTTP method annotations has annotation {@link javax.ws.rs.HttpMethod}.
      *
      * @param <T>
      *         annotation type
      * @param m
      *         method
-     * @param annotation
+     * @param annotationClass
      *         annotation class
      * @return list of annotation
      */
-    protected <T extends Annotation> T getMetaAnnotation(Method m, Class<T> annotation) {
+    protected <T extends Annotation> T getMetaAnnotation(Method m, Class<T> annotationClass) {
         for (Annotation a : m.getAnnotations()) {
             T endPoint;
-            if ((endPoint = a.annotationType().getAnnotation(annotation)) != null) {
+            if ((endPoint = a.annotationType().getAnnotation(annotationClass)) != null) {
                 return endPoint;
             }
         }
@@ -410,7 +384,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     }
 
     /**
-     * Tries to get JAX-RS annotation on method from the root resource class's superclass or implemented interfaces.
+     * Tries to get JAX-RS annotation on method from the resource class's superclasses or implemented interfaces.
      *
      * @param <T>
      *         annotation type
@@ -432,47 +406,75 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
         T annotation = metaAnnotation ? getMetaAnnotation(method, annotationClass) : method.getAnnotation(annotationClass);
 
         if (annotation == null) {
-            Method inhMethod = null;
-
-            try {
-                Class<?> superclass = resourceClass.getSuperclass();
-                if (superclass != null && superclass != Object.class) {
-                    inhMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
-                }
-            } catch (NoSuchMethodException ignored) {
-            }
-            if (inhMethod == null) {
-                for (Class<?> interf : resourceClass.getInterfaces()) {
+            Method myMethod;
+            Class<?> myClass = resourceClass;
+            while (annotation == null && myClass != null && myClass != Object.class) {
+                Class<?>[] interfaces = myClass.getInterfaces();
+                for (int i = 0; i < interfaces.length; i++) {
                     try {
-
-                        Method tmp = interf.getMethod(method.getName(), method.getParameterTypes());
-                        if (inhMethod == null) {
-                            inhMethod = tmp;
+                        myMethod = interfaces[i].getDeclaredMethod(method.getName(), method.getParameterTypes());
+                        T tmp = metaAnnotation ? getMetaAnnotation(myMethod, annotationClass) : myMethod.getAnnotation(annotationClass);
+                        if (annotation == null) {
+                            annotation = tmp;
                         } else {
-                            throw new RuntimeException("JAX-RS annotation on method " + inhMethod.getName() + " of resource "
-                                                       + toString() + " is equivocality.");
+                            throw new RuntimeException("JAX-RS annotation on method " + myMethod.getName() + " of resource "
+                                                       + toString() + " is equivocating.");
                         }
                     } catch (NoSuchMethodException ignored) {
                     }
                 }
-            }
-
-            if (inhMethod != null) {
-                annotation = metaAnnotation
-                             ? getMetaAnnotation(inhMethod, annotationClass)
-                             : inhMethod.getAnnotation(annotationClass);
+                if (annotation == null) {
+                    myClass = myClass.getSuperclass();
+                    if (myClass != null && myClass != Object.class) {
+                        try {
+                            myMethod = myClass.getDeclaredMethod(method.getName(), method.getParameterTypes());
+                            annotation =
+                                    metaAnnotation ? getMetaAnnotation(myMethod, annotationClass) : myMethod.getAnnotation(annotationClass);
+                        } catch (NoSuchMethodException ignored) {
+                        }
+                    }
+                }
             }
         }
 
         return annotation;
     }
 
+    /** Tries to get JAX-RS annotation on class, superclasses or implemented interfaces. */
+    protected <T extends Annotation> T getClassAnnotation(Class<?> resourceClass, Class<T> annotationClass) {
+        T annotation = resourceClass.getAnnotation(annotationClass);
+        if (annotation == null) {
+            Class<?> myClass = resourceClass;
+            while (annotation == null && myClass != null && myClass != Object.class) {
+                Class<?>[] interfaces = myClass.getInterfaces();
+                for (int i = 0; i < interfaces.length; i++) {
+                    T tmp = interfaces[i].getAnnotation(annotationClass);
+                    if (annotation == null) {
+                        annotation = tmp;
+                    } else {
+                        throw new RuntimeException("JAX-RS annotation on class " + resourceClass.getName() + " of resource "
+                                                   + toString() + " is equivocating.");
+                    }
+                }
+                if (annotation == null) {
+                    myClass = myClass.getSuperclass();
+                    if (myClass != null && myClass != Object.class) {
+                        annotation = myClass.getAnnotation(annotationClass);
+                    }
+                }
+            }
+        }
+        return annotation;
+    }
+
     /**
-     * Check is collection of {@link ResourceMethodDescriptor} already contains ResourceMethodDescriptor with the same
+     * Check is collection of {@link org.everrest.core.resource.ResourceMethodDescriptor} already contains ResourceMethodDescriptor with
+     * the
+     * same
      * media types.
      *
      * @param resourceMethods
-     *         {@link java.util.Set} of {@link ResourceMethodDescriptor}
+     *         {@link java.util.Set} of {@link org.everrest.core.resource.ResourceMethodDescriptor}
      * @param consumes
      *         resource method consumed media type
      * @param produces
@@ -508,61 +510,62 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
      * @param clazz
      *         class which contains <code>method</code>
      * @return one of security annotation or <code>null</code> is no such annotation found
-     * @see DenyAll
-     * @see RolesAllowed
-     * @see PermitAll
+     * @see javax.annotation.security.DenyAll
+     * @see javax.annotation.security.RolesAllowed
+     * @see javax.annotation.security.PermitAll
      */
     @SuppressWarnings("unchecked")
-    private <T extends Annotation> T getSecurityAnnotation(java.lang.reflect.Method method, Class<?> clazz) {
+    private <T extends Annotation> T getSecurityAnnotation(Method method, Class<?> clazz) {
         Class<T>[] aClasses = new Class[]{DenyAll.class, RolesAllowed.class, PermitAll.class};
-        T a = getAnnotation(method, aClasses);
-        if (a == null) {
-            a = getAnnotation(clazz, aClasses);
-            if (a == null) {
-                java.lang.reflect.Method inheritedMethod;
-                Class<?> superclass = clazz.getSuperclass();
-                try {
-                    if (superclass != null && superclass != Object.class) {
-                        inheritedMethod = superclass.getMethod(method.getName(), method.getParameterTypes());
-                        a = getAnnotation(inheritedMethod, aClasses);
+        T annotation = getAnnotation(method, aClasses);
+        if (annotation == null) {
+            annotation = getAnnotation(clazz, aClasses);
+            if (annotation == null) {
+                Method myMethod;
+                Class<?> myClass = clazz;
+                while (annotation == null && myClass != null && myClass != Object.class) {
+                    Class<?>[] interfaces = myClass.getInterfaces();
+                    for (int i = 0; annotation == null && i < interfaces.length; i++) {
+                        try {
+                            myMethod = interfaces[i].getDeclaredMethod(method.getName(), method.getParameterTypes());
+                            annotation = getAnnotation(myMethod, aClasses);
+                        } catch (NoSuchMethodException ignored) {
+                        }
+                        if (annotation == null) {
+                            annotation = getAnnotation(interfaces[i], aClasses);
+                        }
                     }
-                } catch (NoSuchMethodException ignored) {
-                }
-                if (a == null) {
-                    if (superclass != null && superclass != Object.class) {
-                        a = getAnnotation(superclass, aClasses);
-                    }
-                    if (a == null) {
-                        Class<?>[] interfaces = clazz.getInterfaces();
-                        for (int k = 0; a == null && k < interfaces.length; k++) {
+                    if (annotation == null) {
+                        myClass = myClass.getSuperclass();
+                        if (myClass != null && myClass != Object.class) {
                             try {
-                                inheritedMethod = interfaces[k].getMethod(method.getName(), method.getParameterTypes());
-                                a = getAnnotation(inheritedMethod, aClasses);
+                                myMethod = myClass.getDeclaredMethod(method.getName(), method.getParameterTypes());
+                                annotation = getAnnotation(myMethod, aClasses);
                             } catch (NoSuchMethodException ignored) {
                             }
-                            if (a == null) {
-                                a = getAnnotation(interfaces[k], aClasses);
+                            if (annotation == null) {
+                                annotation = getAnnotation(myClass, aClasses);
                             }
                         }
                     }
                 }
             }
         }
-        return a;
+        return annotation;
     }
 
-    private <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T>[] aClasses) {
+    private <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T>[] annotationClasses) {
         T a = null;
-        for (int i = 0; a == null && i < aClasses.length; i++) {
-            a = clazz.getAnnotation(aClasses[i]);
+        for (int i = 0; a == null && i < annotationClasses.length; i++) {
+            a = clazz.getAnnotation(annotationClasses[i]);
         }
         return a;
     }
 
-    private <T extends Annotation> T getAnnotation(java.lang.reflect.Method method, Class<T>[] aClasses) {
+    private <T extends Annotation> T getAnnotation(Method method, Class<T>[] annotationClasses) {
         T a = null;
-        for (int i = 0; a == null && i < aClasses.length; i++) {
-            a = method.getAnnotation(aClasses[i]);
+        for (int i = 0; a == null && i < annotationClasses.length; i++) {
+            a = method.getAnnotation(annotationClasses[i]);
         }
         return a;
     }
