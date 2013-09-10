@@ -228,7 +228,10 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         T object = null;
         object = getAppContainer().getComponent(type);
         if (object == null) {
-            object = getSessionContainer().getComponent(type);
+            final MutablePicoContainer sessionContainer = getSessionContainer();
+            if (sessionContainer != null) {
+                object = sessionContainer.getComponent(type);
+            }
         }
         if (object == null) {
             object = getRequestContainer().getComponent(type);
@@ -245,7 +248,10 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         Object object = null;
         object = getAppContainer().getComponent(key);
         if (object == null) {
-            object = getSessionContainer().getComponent(key);
+            final MutablePicoContainer sessionContainer = getSessionContainer();
+            if (sessionContainer != null) {
+                object = sessionContainer.getComponent(key);
+            }
         }
         if (object == null) {
             object = getRequestContainer().getComponent(key);
@@ -273,11 +279,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
     }
 
     static MutablePicoContainer getSessionContainer() {
-        MutablePicoContainer container = currentSessionContainer.get();
-        if (container == null) {
-            throw new IllegalStateException("No container was found in session scope. ");
-        }
-        return container;
+        return currentSessionContainer.get();
     }
 
     @Override
