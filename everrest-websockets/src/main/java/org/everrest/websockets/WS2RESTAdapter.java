@@ -169,7 +169,11 @@ class WS2RESTAdapter implements WSMessageReceiver {
                     // Lets user get result manually after restoring of connection.
                     LOG.debug("Connection already closed skip getting result of job: {}. ", job.getJobId());
                     asynchronousPool.unregisterListener(this);
-                    connection.getHttpSession().removeAttribute(uuid);
+                    try {
+                        connection.getHttpSession().removeAttribute(uuid);
+                    } catch (IllegalStateException ignored) {
+                        // May be thrown if HTTP session already invalidated
+                    }
                 }
             }
         });
