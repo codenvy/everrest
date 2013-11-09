@@ -51,6 +51,9 @@ public class ServletContainerResponseWriter implements ContainerResponseWriter {
     /** {@inheritDoc} */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
+        if (servletResponse.isCommitted()) {
+            return;
+        }
         Object entity = response.getEntity();
         if (entity != null) {
             OutputStream out = servletResponse.getOutputStream();

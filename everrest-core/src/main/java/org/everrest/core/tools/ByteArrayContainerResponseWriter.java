@@ -46,6 +46,9 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
     /** {@inheritDoc} */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
+        if (committed) {
+            return;
+        }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Object entity = response.getEntity();
         if (entity != null) {
@@ -58,7 +61,7 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
     /** {@inheritDoc} */
     public void writeHeaders(GenericContainerResponse response) throws IOException {
         if (committed) {
-            throw new IllegalStateException("Response has been committed. Unable write headers. ");
+            return;
         }
         headers = new OutputHeadersMap(response.getHttpHeaders());
         committed = true;

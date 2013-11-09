@@ -45,7 +45,7 @@ class EverrestResponseWriter implements ContainerResponseWriter {
     @Override
     public void writeHeaders(GenericContainerResponse response) throws IOException {
         if (committed) {
-            throw new IllegalStateException("Response has been committed. Unable write headers. ");
+            return;
         }
         output.setResponseCode(response.getStatus());
         output.setHeaders(Pair.fromMap(response.getHttpHeaders()));
@@ -55,6 +55,9 @@ class EverrestResponseWriter implements ContainerResponseWriter {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
+        if (committed) {
+            return;
+        }
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final Object entity = response.getEntity();
         if (entity != null) {
