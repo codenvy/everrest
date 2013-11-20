@@ -136,19 +136,6 @@
         <module>everrest-project-template-war</module>
     </modules>
 
-    <!--repositories>
-        <repository>
-            <id>repository.exoplatform.org</id>
-            <url>http://repository.exoplatform.org/public</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repository.exoplatform.org</id>
-            <url>http://repository.exoplatform.org/public</url>
-        </pluginRepository>
-    </pluginRepositories-->
-
     <dependencyManagement>
         <dependencies>
             <dependency>
