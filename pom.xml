@@ -30,11 +30,12 @@
     <version>1.1.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <description>everREST is a project which provides a way to build RESTful applications using own complete implementation of JAX-RS
-        specification (a.k.a JSR-311)
+    <description>
+        everREST is a project which provides a way to build RESTful applications
+        using own complete implementation of JAX-RS specification (a.k.a JSR-311)
     </description>
 
-    <url>http://code.google.com/p/everrest/</url>
+    <url>https://github.com/codenvy/everrest</url>
 
     <developers>
         <developer>
@@ -49,8 +50,8 @@
     </developers>
 
     <organization>
-        <name>eXo Platform SAS</name>
-        <url>http://www.exoplatform.com</url>
+        <name>Codenvy</name>
+        <url>https://codenvy.com</url>
     </organization>
 
     <licenses>
@@ -61,19 +62,19 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://code.google.com/p/everrest/</connection>
-        <developerConnection>scm:git:https://code.google.com/p/everrest/</developerConnection>
-        <url>http://code.google.com/p/everrest/source/browse/</url>
+        <connection>scm:git:git@github.com:codenvy/everrest.git</connection>
+        <developerConnection>scm:git:git@github.com:codenvy/everrest.git</developerConnection>
+        <url>https://github.com/codenvy/everrest/</url>
     </scm>
 
     <distributionManagement>
         <repository>
-            <id>repository.exoplatform.org</id>
-            <url>${everrest.releases.repo.url}</url>
+            <id>repo.codenvy.private</id>
+            <url>${maven.releases.repo.url}</url>
         </repository>
         <snapshotRepository>
-            <id>repository.exoplatform.org</id>
-            <url>${everrest.snapshots.repo.url}</url>
+            <id>repo.codenvy.private</id>
+            <url>${maven.snapshots.repo.url}</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -107,9 +108,8 @@
         <version.release.plugin>2.2.1</version.release.plugin>
 
         <!-- Repositories URLs -->
-        <everrest.releases.repo.url>http://repository.exoplatform.org/service/local/staging/deploy/maven2/</everrest.releases.repo.url>
-        <everrest.snapshots.repo.url>http://repository.exoplatform.org/content/repositories/everrest-snapshots/
-        </everrest.snapshots.repo.url>
+        <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-private-releases/</maven.releases.repo.url>
+        <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
     </properties>
 
     <prerequisites>
@@ -136,7 +136,7 @@
         <module>everrest-project-template-war</module>
     </modules>
 
-    <repositories>
+    <!--repositories>
         <repository>
             <id>repository.exoplatform.org</id>
             <url>http://repository.exoplatform.org/public</url>
@@ -147,7 +147,7 @@
             <id>repository.exoplatform.org</id>
             <url>http://repository.exoplatform.org/public</url>
         </pluginRepository>
-    </pluginRepositories>
+    </pluginRepositories-->
 
     <dependencyManagement>
         <dependencies>
