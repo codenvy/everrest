@@ -79,41 +79,86 @@
     </distributionManagement>
 
     <properties>
-        <exo.product.name>everrest</exo.product.name>
-        <exo.product.specification>1.0</exo.product.specification>
-
-        <javax.ws.rs.version>1.0</javax.ws.rs.version>
-        <javax.servlet.version>2.4</javax.servlet.version>
-
-        <!-- Default tests settings -->
-        <maven.test.skip>false</maven.test.skip>
-        <forkMode>once</forkMode>
-        <maven.test.failure.ignore>false</maven.test.failure.ignore>
-        <surefire.useFile>true</surefire.useFile>
-        <exo.test.includes>Test*</exo.test.includes>
-        <exo.test.classesdirectory>target/classes</exo.test.classesdirectory>
-
-        <!-- Defaut compiler settings -->
-        <maven.compiler.optimize>true</maven.compiler.optimize>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-
-        <!-- Default release Settings -->
-        <useReleaseProfile>false</useReleaseProfile>
-        <arguments>-Prelease -Dmaven.test.skip=true</arguments>
-        <autoVersionSubmodules>true</autoVersionSubmodules>
-
-        <!-- Maven plugin versions -->
-        <version.buildnumber.plugin>1.0</version.buildnumber.plugin>
-        <version.release.plugin>2.2.1</version.release.plugin>
-
         <!-- Repositories URLs -->
         <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-private-releases/</maven.releases.repo.url>
         <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
+
+        <product.name>${project.name}</product.name>
+
+
+        <javax.ws.rs.version>1.0</javax.ws.rs.version>
+        <javax.servlet-api.version>2.4</javax.servlet-api.version>
+
+        <!-- Defaut compiler settings -->
+        <maven.compiler.optimize>true</maven.compiler.optimize>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+
+        <!-- Maven plugin versions -->
+        <version.assembly.plugin>2.4</version.assembly.plugin>
+        <version.buildhelper.plugin>1.7</version.buildhelper.plugin>
+        <version.buildnumber.plugin>1.2</version.buildnumber.plugin>
+        <version.checkstyle.plugin>2.9.1</version.checkstyle.plugin>
+        <version.failsafe.plugin>${version.surefire.plugin}</version.failsafe.plugin>
+        <version.surefire.plugin>2.13</version.surefire.plugin>
+        <version.javadoc.plugin>2.9</version.javadoc.plugin>
+        <version.jaxb2.plugin>0.8.3</version.jaxb2.plugin>
+        <version.release.plugin>2.4</version.release.plugin>
+        <version.source.plugin>2.2.1</version.source.plugin>
+        <version.war.plugin>2.3</version.war.plugin>
+
+        <!-- ************** -->
+        <!-- Build settings -->
+        <!-- ************** -->
+        <!-- Cross plugins settings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- maven-clirr-plugin -->
+        <textOutputFile>${project.build.directory}/clirr-report.txt</textOutputFile>
+        <!-- maven-compiler-plugin -->
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+        <maven.compiler.optimize>true</maven.compiler.optimize>
+        <!-- maven-dependency-plugin -->
+        <repoUrl>${maven.releases.repo.url}</repoUrl>
+        <!-- maven-enforcer-plugin -->
+        <maven.min.version>3.0.4</maven.min.version>
+        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
+        <!-- To configure animal-sniffer to check API compat -->
+        <animal-sniffer.signature.groupId>org.codehaus.mojo.signature</animal-sniffer.signature.groupId>
+        <animal-sniffer.signature.artifactId>java16</animal-sniffer.signature.artifactId>
+        <animal-sniffer.signature.version>1.0</animal-sniffer.signature.version>
+        <!-- The version of maven-scm-provider-svnjava to use -->
+        <maven-scm-provider-svnjava.version>2.0.5</maven-scm-provider-svnjava.version>
+        <!-- maven-gpg-plugin -->
+        <gpg.useagent>true</gpg.useagent>
+        <!-- maven-idea-plugin & maven-eclipse-plugin -->
+        <downloadSources>true</downloadSources>
+        <!--  maven-javadoc-plugin -->
+        <detectOfflineLinks>false</detectOfflineLinks>
+        <!-- too slow : http://jira.codehaus.org/browse/MJAVADOC-268 -->
+        <quiet>true</quiet>
+        <!-- maven-pmd-plugin -->
+        <targetJdk>${maven.compiler.target}</targetJdk>
+        <!-- These properties are automatically computed during the build -->
+        <parsedVersion.majorVersion>N/A</parsedVersion.majorVersion>
+        <!-- maven-war-plugin -->
+        <useCache>true</useCache>
+        <archiveClasses>false</archiveClasses>
+        <maven.war.attachClasses>false</maven.war.attachClasses>
+        <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
+        <maven.assembly.recompressZippedFiles>false</maven.assembly.recompressZippedFiles>
+        <maven.war.recompressZippedFiles>false</maven.war.recompressZippedFiles>
+
+
+
+
     </properties>
 
     <prerequisites>
-        <maven>2.2.0</maven>
+        <maven>${maven.min.version}</maven>
     </prerequisites>
 
     <modules>
@@ -174,11 +219,7 @@
                 <artifactId>junit</artifactId>
                 <version>3.8.2</version>
             </dependency>
-            <dependency>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.4</version>
-            </dependency>
+
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
@@ -200,11 +241,6 @@
                         <artifactId>activation</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>${javax.servlet.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.ws.rs</groupId>
@@ -265,96 +301,110 @@
     </dependencyManagement>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.xsl</include>
-                    <include>**/*.xsd</include>
-                    <include>**/*.properties</include>
-                    <include>**/*.conf</include>
-                    <include>**/*.config</include>
-                    <include>**/*.groovy</include>
-                    <include>**/*.policy</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.xsl</include>
-                    <include>**/*.xsd</include>
-                    <include>**/*.properties</include>
-                    <include>**/*.conf</include>
-                    <include>**/*.config</include>
-                    <include>**/*.groovy</include>
-                    <include>**/*.policy</include>
-                    <include>META-INF/**</include>
-                </includes>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                    <include>**/*.xsl</include>
-                    <include>**/*.xsd</include>
-                    <include>**/*.txt</include>
-                    <include>**/*.conf</include>
-                    <include>**/*.config</include>
-                    <include>**/*.groovy</include>
-                    <include>**/*.policy</include>
-                </includes>
-            </testResource>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                    <include>**/*.xsl</include>
-                    <include>**/*.xsd</include>
-                    <include>**/*.txt</include>
-                    <include>**/*.conf</include>
-                    <include>**/*.config</include>
-                    <include>**/*.groovy</include>
-                    <include>**/*.policy</include>
-                </includes>
-            </testResource>
-        </testResources>
-
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.cxf</groupId>
-                    <artifactId>cxf-codegen-plugin</artifactId>
-                    <version>2.1.4</version>
-                </plugin>
-                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.1</version>
+                    <version>${version.assembly.plugin}</version>
+                    <configuration>
+                        <!-- Perfs improvements - PAR-191 -->
+                        <useJvmChmod>true</useJvmChmod>
+                        <!-- Allow to activate/deactivate the recompression of zip files -->
+                        <recompressZippedFiles>${maven.assembly.recompressZippedFiles}</recompressZippedFiles>
+                    </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>com.mycila.maven-license-plugin</groupId>
-                    <artifactId>maven-license-plugin</artifactId>
-                    <version>1.5.0</version>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${version.buildhelper.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>${version.buildnumber.plugin}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.3</version>
+                    <version>${version.checkstyle.plugin}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>${version.javadoc.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Date>${maven.build.timestamp}</Date>
+                                <Implementation-URL>${project.url}</Implementation-URL>
+                                <SCM-URL>${project.scm.connection}</SCM-URL>
+                                <SCM-Revision>${buildNumber}</SCM-Revision>
+                                <Specification-Title>${product.name}</Specification-Title>
+                                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
+                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1</version>
+                    <version>${version.source.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Date>${maven.build.timestamp}</Date>
+                                <Implementation-URL>${project.url}</Implementation-URL>
+                                <SCM-URL>${project.scm.connection}</SCM-URL>
+                                <SCM-Revision>${buildNumber}</SCM-Revision>
+                                <Specification-Title>${product.name}</Specification-Title>
+                                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
+                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jvnet.jaxb2.maven2</groupId>
+                    <artifactId>maven-jaxb2-plugin</artifactId>
+                    <version>${version.jaxb2.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${version.failsafe.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.surefire.plugin}</version>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <!-- To avoid conflicts on CI server - PAR-192 -->
+                            <!-- There is an incompatibility with Byteman - used in social -->
+                            <!-- <java.io.tmpdir>${project.build.directory}</java.io.tmpdir> -->
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${version.surefire.plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -375,6 +425,37 @@
                     <includePom>true</includePom>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.war.plugin}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Date>${maven.build.timestamp}</Date>
+                            <Implementation-URL>${project.url}</Implementation-URL>
+                            <SCM-URL>${project.scm.connection}</SCM-URL>
+                            <SCM-Revision>${buildNumber}</SCM-Revision>
+                            <Specification-Title>${product.name}</Specification-Title>
+                            <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
+                            <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                            <Implementation-Title>${project.name}</Implementation-Title>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                        </manifestEntries>
+                    </archive>
+                    <!-- PAR-145 : Be sure that all product package all their classes in JAR (No stand alone classes in WEB-INF/classes) -->
+                    <archiveClasses>${archiveClasses}</archiveClasses>
+                    <attachClasses>${maven.war.attachClasses}</attachClasses>
+                    <useCache>${useCache}</useCache>
+                    <!-- Allow to activate/deactivate the recompression of zip files -->
+                    <recompressZippedFiles>${maven.war.recompressZippedFiles}</recompressZippedFiles>
+                </configuration>
+            </plugin>
         </plugins>
 
     </build>
@@ -383,15 +464,16 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <configuration>
-                    <configLocation>${project.parent.basedir}/checkstyle-checker.xml</configLocation>
-                    <suppressionsLocation>${project.parent.basedir}/checkstyle-suppressions.xml</suppressionsLocation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${version.javadoc.plugin}</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
                 <configuration>
                     <aggregate>true</aggregate>
                     <reportOutputDirectory>${project.build.directory}/javadoc</reportOutputDirectory>

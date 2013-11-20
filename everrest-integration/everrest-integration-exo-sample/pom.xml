@@ -25,8 +25,10 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
@@ -76,7 +78,7 @@
                 <version>6.1.10</version>
                 <configuration>
                     <contextPath>/exo-book-service</contextPath>
-                    <tmpDir>target/exo-book-service-work</tmpDir>
+                    <tmpDir>${project.build.directory}/exo-book-service-work</tmpDir>
                 </configuration>
             </plugin>
         </plugins>
