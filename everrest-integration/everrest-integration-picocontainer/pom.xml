@@ -32,7 +32,7 @@
 
     <artifactId>everrest-integration-picocontainer</artifactId>
 
-    <name>eXo EverRest :: Picocontainer</name>
+    <name>EverRest :: Picocontainer</name>
 
     <dependencies>
         <dependency>

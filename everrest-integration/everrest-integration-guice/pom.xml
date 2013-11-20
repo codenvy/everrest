@@ -32,7 +32,7 @@
 
     <artifactId>everrest-integration-guice</artifactId>
 
-    <name>eXo EverRest :: Guice</name>
+    <name>EverRest :: Guice</name>
 
     <dependencies>
         <dependency>

@@ -31,7 +31,7 @@
     <artifactId>everrest-project-template-war</artifactId>
     <packaging>war</packaging>
 
-    <name>eXo EverRest :: WAR</name>
+    <name>EverRest :: WAR</name>
 
     <dependencies>
         <dependency>

@@ -32,7 +32,7 @@
 
     <artifactId>everrest-core</artifactId>
 
-    <name>eXo EverRest :: Core</name>
+    <name>EverRest :: Core</name>
 
     <dependencies>
         <dependency>

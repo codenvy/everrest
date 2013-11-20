@@ -32,7 +32,7 @@
 
     <artifactId>everrest-integration-exo</artifactId>
 
-    <name>eXo EverRest :: eXoPlatform</name>
+    <name>EverRest :: eXoPlatform</name>
 
     <dependencies>
         <dependency>

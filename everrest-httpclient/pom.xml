@@ -31,7 +31,7 @@
 
     <artifactId>everrest-httpclient</artifactId>
 
-    <name>eXo EverRest :: HTTP :: Client</name>
+    <name>EverRest :: HTTP :: Client</name>
 
     <dependencies>
         <dependency>

@@ -31,7 +31,7 @@
 
     <artifactId>everrest-groovy</artifactId>
 
-    <name>eXo EverRest :: Groovy</name>
+    <name>EverRest :: Groovy</name>
 
     <dependencies>
         <dependency>

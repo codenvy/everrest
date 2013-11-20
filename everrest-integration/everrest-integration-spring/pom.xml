@@ -33,7 +33,7 @@
 
     <artifactId>everrest-integration-spring</artifactId>
 
-    <name>eXo EverRest :: Spring</name>
+    <name>EverRest :: Spring</name>
 
     <dependencies>
         <dependency>

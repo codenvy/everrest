@@ -32,7 +32,7 @@
     <artifactId>groovy-book-service</artifactId>
     <packaging>war</packaging>
 
-    <name>eXo EverRest :: Groovy Book Service</name>
+    <name>EverRest :: Groovy Book Service</name>
 
     <dependencies>
         <dependency>

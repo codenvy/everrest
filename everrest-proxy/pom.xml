@@ -32,7 +32,7 @@
 
     <artifactId>everrest-proxy</artifactId>
 
-    <name>eXo EverRest :: Proxy</name>
+    <name>EverRest :: Proxy</name>
 
     <dependencies>
         <dependency>

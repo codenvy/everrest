@@ -32,7 +32,7 @@
     <artifactId>everrest-integration-spring-sample</artifactId>
     <packaging>war</packaging>
 
-    <name>eXo EverRest :: Spring Integration Sample</name>
+    <name>EverRest :: Spring Integration Sample</name>
 
     <dependencies>
         <dependency>

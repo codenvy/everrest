@@ -11,7 +11,7 @@
     <artifactId>everrest-integration-exo-sample</artifactId>
     <packaging>war</packaging>
 
-    <name>eXo EverRest :: eXoPlatform Sample</name>
+    <name>EverRest :: eXoPlatform Sample</name>
 
     <dependencies>
         <dependency>

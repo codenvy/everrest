@@ -32,7 +32,7 @@
     <artifactId>everrest-integration-guice-sample</artifactId>
     <packaging>war</packaging>
 
-    <name>eXo EverRest :: Guice Integration Sample</name>
+    <name>EverRest :: Guice Integration Sample</name>
 
     <dependencies>
         <dependency>

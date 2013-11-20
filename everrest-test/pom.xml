@@ -31,7 +31,7 @@
 
     <artifactId>everrest-test</artifactId>
 
-    <name>eXo EverRest :: HTTP :: Test</name>
+    <name>EverRest :: HTTP :: Test</name>
 
     <dependencies>
         <dependency>
