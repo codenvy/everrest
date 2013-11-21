@@ -80,7 +80,7 @@
 
     <properties>
         <!-- Repositories URLs -->
-        <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-private-releases/</maven.releases.repo.url>
+        <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-releases/</maven.releases.repo.url>
         <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
 
         <product.name>${project.name}</product.name>
