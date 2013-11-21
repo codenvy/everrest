@@ -93,7 +93,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
 
     /** {@inheritDoc} */
     @Override
-    public final void contextInitialized(ServletContextEvent sce) {
+    public void contextInitialized(ServletContextEvent sce) {
         super.contextInitialized(sce);
         ServletContext servletContext = sce.getServletContext();
         EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);

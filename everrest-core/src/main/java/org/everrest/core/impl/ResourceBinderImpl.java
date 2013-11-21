@@ -144,8 +144,8 @@ public class ResourceBinderImpl implements ResourceBinder {
             for (ObjectFactory<AbstractResourceDescriptor> resource : snapshot) {
                 if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern())) {
                     if (resource.getObjectModel().getObjectClass() == resourceFactory.getObjectModel().getObjectClass()) {
-                        //LOG.warn("Resource " + resourceFactory.getObjectModel().getObjectClass().getName()
-                        //   + " already registered.");
+                        LOG.debug("Resource " + resourceFactory.getObjectModel().getObjectClass().getName()
+                           + " already registered.");
 
                         return;
                     }

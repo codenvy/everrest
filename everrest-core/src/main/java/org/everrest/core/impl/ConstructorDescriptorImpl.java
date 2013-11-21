@@ -63,7 +63,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor {
         public int compare(ConstructorDescriptor o1, ConstructorDescriptor o2) {
             int r = o2.getParameters().size() - o1.getParameters().size();
             if (r == 0) {
-                LOG.warn("Two constructors with the same number of parameter found " + o1 + " and " + o2);
+                LOG.debug("Two constructors with the same number of parameter found " + o1 + " and " + o2);
             }
             return r;
         }
@@ -127,7 +127,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor {
                         // parameters
                         defaultValue = ((DefaultValue)a).value();
                     } else {
-                        LOG.warn("Constructor parameter contains unknown or not valid JAX-RS annotation " + a
+                        LOG.debug("Constructor parameter contains unknown or not valid JAX-RS annotation " + a
                                  + ". It will be ignored. ");
                     }
                 }
