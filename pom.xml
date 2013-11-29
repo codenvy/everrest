@@ -75,7 +75,7 @@
     <scm>
         <connection>scm:git:git@github.com:codenvy/everrest.git</connection>
         <developerConnection>scm:git:git@github.com:codenvy/everrest.git</developerConnection>
-        <url>https://code.google.com/p/everrest/</url>
+        <url>https://github.com/codenvy/everrest/</url>
     </scm>
     <distributionManagement>
         <repository>
