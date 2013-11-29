@@ -126,10 +126,6 @@
         <!-- maven-enforcer-plugin -->
         <maven.min.version>3.0.4</maven.min.version>
         <jdk.min.version>${maven.compiler.source}</jdk.min.version>
-        <!-- To configure animal-sniffer to check API compat -->
-        <animal-sniffer.signature.groupId>org.codehaus.mojo.signature</animal-sniffer.signature.groupId>
-        <animal-sniffer.signature.artifactId>java16</animal-sniffer.signature.artifactId>
-        <animal-sniffer.signature.version>1.0</animal-sniffer.signature.version>
         <!-- The version of maven-scm-provider-svnjava to use -->
         <maven-scm-provider-svnjava.version>2.0.5</maven-scm-provider-svnjava.version>
         <!-- maven-gpg-plugin -->
