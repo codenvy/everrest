@@ -233,7 +233,7 @@
             <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
-                <version>1.4</version>
+                <version>1.4.2</version>
                 <!-- Java6 has it -->
                 <exclusions>
                     <exclusion>
