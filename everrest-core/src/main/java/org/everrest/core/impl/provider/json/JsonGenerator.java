@@ -18,6 +18,7 @@
  */
 package org.everrest.core.impl.provider.json;
 
+import org.everrest.core.impl.HelperCache;
 import org.everrest.core.impl.provider.json.JsonUtils.Types;
 
 import java.io.StringReader;
@@ -31,13 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class JsonGenerator {
 
-    static final Collection<String> SKIP_METHODS = new HashSet<String>();
+    static final   Collection<String>                  SKIP_METHODS = new HashSet<String>();
+    private static HelperCache<Class<?>, JsonMethod[]> methodsCache = new HelperCache<Class<?>, JsonMethod[]>(60 * 1000, 1000);
 
     static {
         // Prevent discovering of Java class.
@@ -127,11 +126,29 @@ public class JsonGenerator {
      */
     public static JsonValue createJsonObject(Object object) throws JsonException {
         Class<?> clazz = object.getClass();
-        Method[] methods = clazz.getMethods();
-        Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
         JsonValue jsonRootValue = new ObjectValue();
-        for (Method method : methods) {
-            String methodName = method.getName();
+        JsonMethod[] jsonMethods = getJsonMethods(clazz);
+        if (jsonMethods != null && jsonMethods.length > 0) {
+            for (JsonMethod getMethod : jsonMethods) {
+                try {
+                    // Get result of invoke method get...
+                    Object invokeResult = getMethod.method.invoke(object);
+                    if (JsonUtils.getType(invokeResult) != null) {
+                        jsonRootValue.addElement(getMethod.field, createJsonValue(invokeResult));
+                    } else {
+                        jsonRootValue.addElement(getMethod.field, createJsonObject(invokeResult));
+                    }
+                } catch (InvocationTargetException e) {
+                    throw new JsonException(e.getMessage(), e);
+                } catch (IllegalAccessException e) {
+                    throw new JsonException(e.getMessage(), e);
+                }
+            }
+        }
+        return jsonRootValue;
+    }
+
+    private synchronized static JsonMethod[] getJsonMethods(Class<?> clazz) {
          /*
           * Method must be as follow:
           * 1. Name starts from "get" plus at least one character or
@@ -139,37 +156,33 @@ public class JsonGenerator {
           * 2. Must be without parameters;
           * 3. Not be in SKIP_METHODS set.
           */
-            String key = null;
-            if (!SKIP_METHODS.contains(methodName) && method.getParameterTypes().length == 0) {
-                if (methodName.startsWith("get") && methodName.length() > 3) {
-                    key = methodName.substring(3);
-                } else if (methodName.startsWith("is") && methodName.length() > 2
-                           && (method.getReturnType() == Boolean.class || method.getReturnType() == boolean.class)) {
-                    key = methodName.substring(2);
-                }
-            }
-            if (key != null) {
-                // First letter of key to lower case.
-                key = (key.length() > 1) ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
-                // Check is this field in list of transient field.
-                if (!transientFieldNames.contains(key)) {
-                    try {
-                        // Get result of invoke method get...
-                        Object invokeResult = method.invoke(object);
-                        if (JsonUtils.getType(invokeResult) != null) {
-                            jsonRootValue.addElement(key, createJsonValue(invokeResult));
-                        } else {
-                            jsonRootValue.addElement(key, createJsonObject(invokeResult));
+        JsonMethod[] methods = methodsCache.get(clazz);
+        if (methods == null) {
+            Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
+            List<JsonMethod> result = new ArrayList<JsonMethod>();
+            for (Method method : clazz.getMethods()) {
+                String methodName = method.getName();
+                if (!SKIP_METHODS.contains(methodName) && method.getParameterTypes().length == 0) {
+                    Class<?> returnType = method.getReturnType();
+                    String field = null;
+                    if (methodName.startsWith("get") && methodName.length() > 3) {
+                        field = methodName.substring(3);
+                    } else if (methodName.startsWith("is") && methodName.length() > 2
+                               && (returnType == Boolean.class || returnType == boolean.class)) {
+                        field = methodName.substring(2);
+                    }
+                    if (field != null) {
+                        field = (field.length() > 1) ? Character.toLowerCase(field.charAt(0)) + field.substring(1)
+                                                     : field.toLowerCase();
+                        if (!transientFieldNames.contains(field)) {
+                            result.add(new JsonMethod(method, field));
                         }
-                    } catch (InvocationTargetException e) {
-                        throw new JsonException(e.getMessage(), e);
-                    } catch (IllegalAccessException e) {
-                        throw new JsonException(e.getMessage(), e);
                     }
                 }
             }
+            methodsCache.put(clazz, methods = result.toArray(new JsonMethod[result.size()]));
         }
-        return jsonRootValue;
+        return methods;
     }
 
     /**

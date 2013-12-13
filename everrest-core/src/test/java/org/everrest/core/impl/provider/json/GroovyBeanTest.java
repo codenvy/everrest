@@ -26,10 +26,7 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class GroovyBeanTest extends JsonTest {
 
     public void testRestoreGroovyBean() throws Exception {
@@ -74,7 +71,7 @@ public class GroovyBeanTest extends JsonTest {
         Class c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("BookStorage.groovy"));
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                "BookStorage.txt")));
+                "BookStorage.json")));
         JsonValue jv = jsonParser.getJsonObject();
         GroovyObject o = (GroovyObject)ObjectBuilder.createObject(c, jv);
         //System.out.println(o);

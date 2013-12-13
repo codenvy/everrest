@@ -18,6 +18,7 @@
  */
 package org.everrest.core.impl.provider.json;
 
+import org.everrest.core.impl.HelperCache;
 import org.everrest.core.impl.provider.json.JsonUtils.Types;
 
 import java.lang.reflect.Array;
@@ -34,15 +35,16 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class ObjectBuilder {
     static final Collection<String> SKIP_METHODS = new HashSet<String>();
+
+    private static HelperCache<Class<?>, Constructor<?>> constructorsCache = new HelperCache<Class<?>, Constructor<?>>(60 * 1000, 1000);
+    private static HelperCache<Class<?>, JsonMethod[]>   methodsCache      = new HelperCache<Class<?>, JsonMethod[]>(60 * 1000, 1000);
 
     static {
         // Since we need support for Groovy must skip this.
@@ -115,47 +117,48 @@ public class ObjectBuilder {
      * @throws JsonException
      *         if any errors occurs
      */
-    public static <T extends Collection<?>> T createCollection(Class<T> collectionClass, Type genericType,
-                                                               JsonValue jsonArray) throws JsonException {
+    @SuppressWarnings("unchecked")
+    public static <T extends Collection<?>> T createCollection(Class<T> collectionClass, Type genericType, JsonValue jsonArray)
+            throws JsonException {
         T collection = null;
         if (jsonArray != null && !jsonArray.isNull()) {
-            Class<?> actualType;
+            Class elementClass;
+            Type elementType;
             if (genericType instanceof ParameterizedType) {
-                // Collection can't be parameterized by other Collection, Array, etc.
                 ParameterizedType parameterizedType = (ParameterizedType)genericType;
-                try {
-                    actualType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
-                } catch (ClassCastException e) {
+                elementType = parameterizedType.getActualTypeArguments()[0];
+                if (elementType instanceof Class) {
+                    elementClass = (Class)elementType;
+                } else if (elementType instanceof ParameterizedType) {
+                    elementClass = (Class)((ParameterizedType)elementType).getRawType();
+                } else {
                     throw new JsonException("This type of Collection can't be restored from JSON source. "
                                             + "\nCollection is parameterized by wrong Type: " + parameterizedType + ".");
                 }
             } else {
-                throw new JsonException("Collection is not parameterized. Collection<?> is not supported. "
-                                        + "\nCollection must be parameterized by any types, or by JavaBean with 'get' and 'set' methods.");
+                throw new JsonException("Collection is not parameterized. Collection<?> is not supported. ");
             }
 
             Constructor<? extends T> constructor = null;
             if (collectionClass.isInterface() || Modifier.isAbstract(collectionClass.getModifiers())) {
+                Class impl = null;
                 try {
-                    constructor = ArrayList.class.asSubclass(collectionClass).getConstructor(new Class[]{Collection.class});
-                } catch (Exception e) {
+                    impl = ArrayList.class.asSubclass(collectionClass);
+                } catch (ClassCastException e1) {
                     try {
-                        constructor = HashSet.class.asSubclass(collectionClass).getConstructor(new Class[]{Collection.class});
-                    } catch (Exception e1) {
+                        impl = HashSet.class.asSubclass(collectionClass);
+                    } catch (ClassCastException e2) {
                         try {
-                            constructor =
-                                    LinkedList.class.asSubclass(collectionClass).getConstructor(new Class[]{Collection.class});
-                        } catch (Exception e2) {
-                            // ignore exception here
+                            impl = LinkedList.class.asSubclass(collectionClass);
+                        } catch (ClassCastException ignored) {
                         }
                     }
                 }
-            } else {
-                try {
-                    constructor = collectionClass.getConstructor(new Class[]{Collection.class});
-                } catch (Exception e) {
-                    throw new JsonException(e.getMessage(), e);
+                if (impl != null) {
+                    constructor = getConstructor(impl, Collection.class);
                 }
+            } else {
+                constructor = getConstructor(collectionClass, Collection.class);
             }
 
             if (constructor == null) {
@@ -164,12 +167,46 @@ public class ObjectBuilder {
 
             ArrayList<Object> sourceCollection = new ArrayList<Object>(jsonArray.size());
             Iterator<JsonValue> values = jsonArray.getElements();
+            Types jsonValueType = JsonUtils.getType(elementClass);
             while (values.hasNext()) {
                 JsonValue v = values.next();
-                if (!JsonUtils.isKnownType(actualType)) {
-                    sourceCollection.add(createObject(actualType, v));
+                if (jsonValueType == null) {
+                    sourceCollection.add(createObject(elementClass, v));
                 } else {
-                    sourceCollection.add(createObjectKnownTypes(actualType, v));
+                    switch (jsonValueType) {
+                        case BYTE:
+                        case SHORT:
+                        case INT:
+                        case LONG:
+                        case FLOAT:
+                        case DOUBLE:
+                        case BOOLEAN:
+                        case CHAR:
+                        case STRING:
+                        case NULL:
+                        case ARRAY_BYTE:
+                        case ARRAY_SHORT:
+                        case ARRAY_INT:
+                        case ARRAY_LONG:
+                        case ARRAY_FLOAT:
+                        case ARRAY_DOUBLE:
+                        case ARRAY_BOOLEAN:
+                        case ARRAY_CHAR:
+                        case ARRAY_STRING:
+                        case ARRAY_OBJECT:
+                        case CLASS:
+                            sourceCollection.add(createObjectKnownTypes(elementClass, v));
+                            break;
+                        case COLLECTION:
+                            sourceCollection.add(createCollection(elementClass, elementType, v));
+                            break;
+                        case MAP:
+                            sourceCollection.add(createObject(elementClass, elementType, v));
+                            break;
+                        case ENUM:
+                            sourceCollection.add(createEnum(elementClass, v));
+                            break;
+                    }
                 }
             }
             try {
@@ -196,62 +233,99 @@ public class ObjectBuilder {
      * @throws JsonException
      *         if any errors occurs
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Map<String, ?>> T createObject(Class<T> mapClass, Type genericType, JsonValue jsonObject)
             throws JsonException {
         T map = null;
         if (jsonObject != null && !jsonObject.isNull()) {
-            Class<?> valueActualType;
+            Class valueClass;
+            Type valueType;
             if (genericType instanceof ParameterizedType) {
                 ParameterizedType parameterizedType = (ParameterizedType)genericType;
-                if (!String.class.isAssignableFrom((Class<?>)parameterizedType.getActualTypeArguments()[0])) {
+                if (!String.class.isAssignableFrom((Class)parameterizedType.getActualTypeArguments()[0])) {
                     throw new JsonException("Key of Map must be String. ");
                 }
-                try {
-                    valueActualType = (Class<?>)parameterizedType.getActualTypeArguments()[1];
-                } catch (ClassCastException e) {
+                valueType = parameterizedType.getActualTypeArguments()[1];
+                if (valueType instanceof Class) {
+                    valueClass = (Class)valueType;
+                } else if (valueType instanceof ParameterizedType) {
+                    valueClass = (Class)((ParameterizedType)valueType).getRawType();
+                } else {
                     throw new JsonException("This type of Map can't be restored from JSON source."
                                             + "\nMap is parameterized by wrong Type: " + parameterizedType + ".");
                 }
             } else {
-                throw new JsonException("Map is not parameterized. Map<Sting, ?> is not supported."
-                                        + "\nMap must be parameterized by String and any types or JavaBean with 'get' and 'set' methods.");
+                throw new JsonException("Map is not parameterized. Map<Sting, ?> is not supported.");
             }
             Constructor<? extends T> constructor = null;
             if (mapClass.isInterface() || Modifier.isAbstract(mapClass.getModifiers())) {
+                Class impl = null;
                 try {
-                    constructor = HashMap.class.asSubclass(mapClass).getConstructor(new Class[]{Map.class});
-                } catch (Exception e) {
+                    impl = HashMap.class.asSubclass(mapClass);
+                } catch (ClassCastException e1) {
                     try {
-                        constructor = Hashtable.class.asSubclass(mapClass).getConstructor(new Class[]{Map.class});
-                    } catch (Exception e1) {
+                        impl = LinkedHashMap.class.asSubclass(mapClass);
+                    } catch (ClassCastException e2) {
                         try {
-                            constructor = LinkedHashMap.class.asSubclass(mapClass).getConstructor(new Class[]{Map.class});
-                        } catch (Exception e2) {
-                            // ignore exception here
+                            impl = Hashtable.class.asSubclass(mapClass);
+                        } catch (ClassCastException ignored) {
                         }
                     }
                 }
-            } else {
-                try {
-                    constructor = mapClass.getConstructor(new Class[]{Map.class});
-                } catch (Exception e) {
-                    throw new JsonException(e.getMessage(), e);
+                if (impl != null) {
+                    constructor = getConstructor(impl, Map.class);
                 }
+            } else {
+                constructor = getConstructor(mapClass, Map.class);
             }
 
             if (constructor == null) {
                 throw new JsonException("Can't find satisfied constructor for : " + mapClass);
             }
 
+            Types jsonValueType = JsonUtils.getType(valueClass);
             HashMap<String, Object> sourceMap = new HashMap<String, Object>(jsonObject.size());
             Iterator<String> keys = jsonObject.getKeys();
             while (keys.hasNext()) {
                 String k = keys.next();
                 JsonValue v = jsonObject.getElement(k);
-                if (!JsonUtils.isKnownType(valueActualType)) {
-                    sourceMap.put(k, createObject(valueActualType, v));
+                if (jsonValueType == null) {
+                    sourceMap.put(k, createObject(valueClass, v));
                 } else {
-                    sourceMap.put(k, createObjectKnownTypes(valueActualType, v));
+                    switch (jsonValueType) {
+                        case BYTE:
+                        case SHORT:
+                        case INT:
+                        case LONG:
+                        case FLOAT:
+                        case DOUBLE:
+                        case BOOLEAN:
+                        case CHAR:
+                        case STRING:
+                        case NULL:
+                        case ARRAY_BYTE:
+                        case ARRAY_SHORT:
+                        case ARRAY_INT:
+                        case ARRAY_LONG:
+                        case ARRAY_FLOAT:
+                        case ARRAY_DOUBLE:
+                        case ARRAY_BOOLEAN:
+                        case ARRAY_CHAR:
+                        case ARRAY_STRING:
+                        case ARRAY_OBJECT:
+                        case CLASS:
+                            sourceMap.put(k, createObjectKnownTypes(valueClass, v));
+                            break;
+                        case COLLECTION:
+                            sourceMap.put(k, createCollection(valueClass, valueType, v));
+                            break;
+                        case MAP:
+                            sourceMap.put(k, createObject(valueClass, valueType, v));
+                            break;
+                        case ENUM:
+                            sourceMap.put(k, createEnum(valueClass, v));
+                            break;
+                    }
                 }
             }
             try {
@@ -284,7 +358,7 @@ public class ObjectBuilder {
         if (type == Types.ENUM) {
             // Enum is not instantiable via CLass.getInstance().
             // This is used when enum is member of array or collection.
-            return (T)createEnum(clazz, jsonValue.getStringValue());
+            return (T)createEnum(clazz, jsonValue);
         }
 
         if (!jsonValue.isObject()) {
@@ -295,67 +369,53 @@ public class ObjectBuilder {
         if (clazz.isInterface()) {
             object = JsonUtils.createProxy(clazz);
         } else {
+            final Constructor<T> constructor = getConstructor(clazz);
+            if (constructor == null) {
+                throw new JsonException("Can't find satisfied constructor for : " + clazz);
+            }
             try {
-                object = clazz.newInstance();
+                object = constructor.newInstance();
             } catch (Exception e) {
                 throw new JsonException("Unable instantiate object. " + e.getMessage(), e);
             }
         }
 
-        Method[] methods = clazz.getMethods();
-        Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
-
-        for (Method method : methods) {
-            String methodName = method.getName();
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            // 3 is length of prefix 'set'
-            if (!SKIP_METHODS.contains(methodName) && methodName.startsWith("set") && parameterTypes.length == 1
-                && methodName.length() > 3) {
-                Class<?> methodParameterClass = parameterTypes[0];
-                // 3 is length of prefix 'set'
-                String key = methodName.substring(3);
-                // first letter to lower case
-                key = (key.length() > 1) ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
-
-                if (!transientFieldNames.contains(key)) {
-                    JsonValue childJsonValue = jsonValue.getElement(key);
-                    if (childJsonValue == null) {
-                        continue;
-                    }
-                    // if one of known primitive type or array of primitive type
+        JsonMethod[] methods = getJsonMethods(clazz);
+        if (methods != null && methods.length > 0) {
+            for (JsonMethod setMethod : methods) {
+                JsonValue childJsonValue = jsonValue.getElement(setMethod.field);
+                if (childJsonValue != null) {
                     try {
-
-                        if (JsonUtils.isKnownType(methodParameterClass)) {
-                            method.invoke(object, createObjectKnownTypes(methodParameterClass, childJsonValue));
+                        final Class paramClass = setMethod.method.getParameterTypes()[0];
+                        if (JsonUtils.isKnownType(paramClass)) {
+                            setMethod.method.invoke(object, createObjectKnownTypes(paramClass, childJsonValue));
                         } else {
-                            Types parameterType = JsonUtils.getType(methodParameterClass);
+                            Types parameterType = JsonUtils.getType(paramClass);
                             // other type Collection, Map or Object[].
                             if (parameterType != null) {
                                 if (parameterType == Types.ENUM) {
-                                    Enum<?> en = createEnum(methodParameterClass, childJsonValue.getStringValue());
-                                    method.invoke(object, en);
+                                    setMethod.method.invoke(object, createEnum(paramClass, childJsonValue));
                                 } else if (parameterType == Types.ARRAY_OBJECT) {
-                                    Object array = createArray(methodParameterClass, childJsonValue);
-                                    method.invoke(object, array);
+                                    setMethod.method.invoke(object, createArray(paramClass, childJsonValue));
                                 } else if (parameterType == Types.COLLECTION) {
-                                    Class c = methodParameterClass;
-                                    method.invoke(object, createCollection(c, method.getGenericParameterTypes()[0],
-                                                                           childJsonValue));
+                                    setMethod.method.invoke(object, createCollection(paramClass,
+                                                                                     setMethod.method.getGenericParameterTypes()[0],
+                                                                                     childJsonValue));
                                 } else if (parameterType == Types.MAP) {
-                                    Class c = methodParameterClass;
-                                    method.invoke(object, createObject(c, method.getGenericParameterTypes()[0], childJsonValue));
+                                    setMethod.method.invoke(object, createObject(paramClass,
+                                                                                 setMethod.method.getGenericParameterTypes()[0],
+                                                                                 childJsonValue));
                                 } else {
-                                    // it must never happen!
                                     throw new JsonException("Can't restore parameter of method : " + clazz.getName() + "#"
-                                                            + method.getName() + " from JSON source.");
+                                                            + setMethod.method.getName() + " from JSON source.");
                                 }
                             } else {
-                                method.invoke(object, createObject(methodParameterClass, childJsonValue));
+                                setMethod.method.invoke(object, createObject(paramClass, childJsonValue));
                             }
                         }
                     } catch (Exception e) {
                         throw new JsonException("Unable restore parameter via method " + clazz.getName() + "#"
-                                                + method.getName() + ". " + e.getMessage(), e);
+                                                + setMethod.method.getName() + ". " + e.getMessage(), e);
                     }
                 }
             }
@@ -363,8 +423,44 @@ public class ObjectBuilder {
         return object;
     }
 
+    private synchronized static JsonMethod[] getJsonMethods(Class<?> clazz) {
+        JsonMethod[] f = methodsCache.get(clazz);
+        if (f == null) {
+            Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
+            List<JsonMethod> result = new ArrayList<JsonMethod>();
+            for (Method method : clazz.getMethods()) {
+                String methodName = method.getName();
+                String field;
+                if (!SKIP_METHODS.contains(methodName)
+                    && methodName.startsWith("set")
+                    && methodName.length() > 3
+                    && !transientFieldNames.contains(field = methodName.length() > 4 ? Character.toLowerCase(methodName.charAt(3)) +
+                                                                                       methodName.substring(4)
+                                                                                     : methodName.substring(3).toLowerCase())
+                    && method.getParameterTypes().length == 1) {
+                    result.add(new JsonMethod(method, field));
+                }
+            }
+            methodsCache.put(clazz, f = result.toArray(new JsonMethod[result.size()]));
+        }
+        return f;
+    }
+
     @SuppressWarnings("unchecked")
-    private static Enum<?> createEnum(Class c, String json) {
+    private synchronized static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameters) {
+        Constructor<?> f = constructorsCache.get(clazz);
+        if (f == null) {
+            try {
+                constructorsCache.put(clazz, f = clazz.getConstructor(parameters));
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+        return (Constructor<T>)f;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Enum<?> createEnum(Class c, JsonValue v) {
+        String json = v.getStringValue();
         if (json == null || json.isEmpty()) {
             return null;
         }
@@ -382,6 +478,7 @@ public class ObjectBuilder {
      * @throws JsonException
      *         if type is unknown.
      */
+
     private static Object createObjectKnownTypes(Class<?> clazz, JsonValue jsonValue) throws JsonException {
         Types t = JsonUtils.getType(clazz);
         switch (t) {

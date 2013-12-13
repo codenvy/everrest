@@ -22,11 +22,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * NOTE: Is not thread safe and required external synchronization.
+ *
+ * @author andrew00x
  */
-/* NOTE: Is not thread safe and required external synchronization. */
-class HelperCache<K, V> {
+public class HelperCache<K, V> {
     private final int                cacheSize;
     private final long               expiredAfter;
     private final int                queryCountBeforeCleanup;
@@ -34,7 +34,7 @@ class HelperCache<K, V> {
 
     private int queryCount;
 
-    HelperCache(long expiredAfter, int cacheSize) {
+    public HelperCache(long expiredAfter, int cacheSize) {
         this.expiredAfter = expiredAfter;
         this.cacheSize = cacheSize;
         queryCountBeforeCleanup = 500;
@@ -46,7 +46,7 @@ class HelperCache<K, V> {
         };
     }
 
-    V get(K key) {
+    public V get(K key) {
         if (++queryCount >= queryCountBeforeCleanup) {
             cleanup();
         }
@@ -58,7 +58,7 @@ class HelperCache<K, V> {
         return null;
     }
 
-    void put(K key, V value) {
+    public void put(K key, V value) {
         if (++queryCount >= queryCountBeforeCleanup) {
             cleanup();
         }
@@ -72,7 +72,7 @@ class HelperCache<K, V> {
     }
 
     @SuppressWarnings("unchecked")
-    void cleanup() {
+    private void cleanup() {
         Object[] keys = map.keySet().toArray();
         for (int i = 0; i < keys.length; i++) {
             K key = (K)keys[i];

@@ -24,14 +24,12 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Vector;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class JavaCollectionBean {
     // interfaces
     private List<Book> list_items;
@@ -59,6 +57,10 @@ public class JavaCollectionBean {
     private List<Integer> list_integers;
 
     private List<Character> list_chars;
+
+    private List<List<Book>> list_list;
+
+    private List<Map<String, Book>> list_map;
 
     // set methods
     public void setStrings(List<String> i) {
@@ -168,4 +170,19 @@ public class JavaCollectionBean {
         return queue_items;
     }
 
+    public List<List<Book>> getListList() {
+        return list_list;
+    }
+
+    public void setListList(List<List<Book>> list_list) {
+        this.list_list = list_list;
+    }
+
+    public List<Map<String, Book>> getListMap() {
+        return list_map;
+    }
+
+    public void setListMap(List<Map<String, Book>> list_map) {
+        this.list_map = list_map;
+    }
 }

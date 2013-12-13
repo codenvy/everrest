@@ -24,12 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class JavaMapBean {
-    // interface
     private Map<String, Book> map_items;
 
     private HashMap<String, Book> hashMap_items;
@@ -41,6 +37,8 @@ public class JavaMapBean {
     // --------------------------
     private Map<String, List<Book>> map_list;
 
+    private Map<String, Map<String, Book>> map_map;
+
     public void setMapList(Map<String, List<Book>> hu) {
         this.map_list = hu;
     }
@@ -51,6 +49,15 @@ public class JavaMapBean {
 
     // --------------------------
 
+    public void setMapMap(Map<String, Map<String, Book>> hu) {
+        this.map_map = hu;
+    }
+
+    public Map<String, Map<String, Book>> getMapMap() {
+        return map_map;
+    }
+
+    // --------------------------
     private Map<String, String> map_strings;
 
     private Map<String, Integer> map_integers;

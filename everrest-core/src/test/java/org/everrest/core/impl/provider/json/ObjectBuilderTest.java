@@ -24,10 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class ObjectBuilderTest extends JsonTest {
     private ArrayList<Book> sourceCollection;
 
@@ -44,7 +41,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -59,7 +56,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -74,7 +71,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -89,7 +86,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -104,7 +101,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -119,7 +116,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -130,11 +127,41 @@ public class ObjectBuilderTest extends JsonTest {
         assertTrue(o.getList().get(2).equals(sourceCollection.get(2)));
     }
 
+    public void testCollectionListList() throws Exception {
+        JsonParser jsonParser = new JsonParser();
+        // check restore different type of Collection
+        jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
+                                                     .getResourceAsStream("CollectionTest.json")));
+        JsonValue jsonValue = jsonParser.getJsonObject();
+
+        JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
+
+        assertEquals(3, o.getListList().size());
+        assertTrue(o.getListList().get(0).equals(Arrays.asList(sourceCollection.get(0))));
+        assertTrue(o.getListList().get(1).equals(Arrays.asList(sourceCollection.get(1))));
+        assertTrue(o.getListList().get(2).equals(Arrays.asList(sourceCollection.get(2))));
+    }
+
+    public void testCollectionListMap() throws Exception {
+        JsonParser jsonParser = new JsonParser();
+        // check restore different type of Collection
+        jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
+                                                     .getResourceAsStream("CollectionTest.json")));
+        JsonValue jsonValue = jsonParser.getJsonObject();
+
+        JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
+
+        assertEquals(1, o.getListMap().size());
+        assertTrue(o.getListMap().get(0).get("JUnit").equals(sourceCollection.get(0)));
+        assertTrue(o.getListMap().get(0).get("C#").equals(sourceCollection.get(1)));
+        assertTrue(o.getListMap().get(0).get("JavaScript").equals(sourceCollection.get(2)));
+    }
+
     public void testCollectionSet() throws Exception {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -149,7 +176,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -164,7 +191,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -179,7 +206,7 @@ public class ObjectBuilderTest extends JsonTest {
         JsonParser jsonParser = new JsonParser();
         // check restore different type of Collection
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("CollectionTest.txt")));
+                                                     .getResourceAsStream("CollectionTest.json")));
         JsonValue jsonValue = jsonParser.getJsonObject();
 
         JavaCollectionBean o = ObjectBuilder.createObject(JavaCollectionBean.class, jsonValue);
@@ -193,7 +220,7 @@ public class ObjectBuilderTest extends JsonTest {
     public void testMap2() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("MapTest.txt")));
+                                                     .getResourceAsStream("MapTest.json")));
         JsonValue jv = jsonParser.getJsonObject();
         JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
 
@@ -218,7 +245,7 @@ public class ObjectBuilderTest extends JsonTest {
     public void testMapMap() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("MapTest.txt")));
+                                                     .getResourceAsStream("MapTest.json")));
         JsonValue jv = jsonParser.getJsonObject();
         JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
 
@@ -230,7 +257,7 @@ public class ObjectBuilderTest extends JsonTest {
     public void testMapHashMap() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("MapTest.txt")));
+                                                     .getResourceAsStream("MapTest.json")));
         JsonValue jv = jsonParser.getJsonObject();
         JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
 
@@ -242,7 +269,7 @@ public class ObjectBuilderTest extends JsonTest {
     public void testMapHashtable() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("MapTest.txt")));
+                                                     .getResourceAsStream("MapTest.json")));
         JsonValue jv = jsonParser.getJsonObject();
         JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
 
@@ -254,7 +281,7 @@ public class ObjectBuilderTest extends JsonTest {
     public void testMapLinkedHashMap() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("MapTest.txt")));
+                                                     .getResourceAsStream("MapTest.json")));
         JsonValue jv = jsonParser.getJsonObject();
         JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
 
@@ -266,12 +293,36 @@ public class ObjectBuilderTest extends JsonTest {
     public void testBean() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("BookStorage.txt")));
+                                                     .getResourceAsStream("BookStorage.json")));
         JsonValue jv = jsonParser.getJsonObject();
         BookStorage o = ObjectBuilder.createObject(BookStorage.class, jv);
         assertTrue(o.getBooks().get(0).equals(sourceCollection.get(0)));
         assertTrue(o.getBooks().get(1).equals(sourceCollection.get(1)));
         assertTrue(o.getBooks().get(2).equals(sourceCollection.get(2)));
+    }
+
+    public void testMapMapList() throws Exception {
+        JsonParser jsonParser = new JsonParser();
+        jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
+                                                     .getResourceAsStream("MapTest.json")));
+        JsonValue jv = jsonParser.getJsonObject();
+        JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
+
+        assertTrue(o.getMapList().get("JUnit").equals(Arrays.asList(sourceCollection.get(0))));
+        assertTrue(o.getMapList().get("C#").equals(Arrays.asList(sourceCollection.get(1))));
+        assertTrue(o.getMapList().get("JavaScript").equals(Arrays.asList(sourceCollection.get(2))));
+    }
+
+    public void testMapMapMap() throws Exception {
+        JsonParser jsonParser = new JsonParser();
+        jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
+                                                     .getResourceAsStream("MapTest.json")));
+        JsonValue jv = jsonParser.getJsonObject();
+        JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
+
+        assertTrue(o.getMapMap().get("JUnit").get("_").equals(sourceCollection.get(0)));
+        assertTrue(o.getMapMap().get("C#").get("_").equals(sourceCollection.get(1)));
+        assertTrue(o.getMapMap().get("JavaScript").get("_").equals(sourceCollection.get(2)));
     }
 
     public void testEnumSerialization() throws Exception {
@@ -345,7 +396,7 @@ public class ObjectBuilderTest extends JsonTest {
     public void testInterfaces() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
-                                                     .getResourceAsStream("BookStorage.txt")));
+                                                     .getResourceAsStream("BookStorage.json")));
         JsonValue jv = jsonParser.getJsonObject();
         IBookStorage o = ObjectBuilder.createObject(IBookStorage.class, jv);
         assertEquals(3, o.getBooks().size());

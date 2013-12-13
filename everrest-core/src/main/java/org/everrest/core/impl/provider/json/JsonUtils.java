@@ -30,10 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public final class JsonUtils {
 
     static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
@@ -318,11 +315,14 @@ public final class JsonUtils {
      */
     public static Set<String> getTransientFields(Class<?> clazz) {
         Set<String> set = new HashSet<String>();
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field f : fields) {
-            if (Modifier.isTransient(f.getModifiers()) || f.getAnnotation(JsonTransient.class) != null) {
-                set.add(f.getName());
+        Class<?> myClazz = clazz;
+        while (myClazz != null && myClazz != Object.class) {
+            for (Field f : myClazz.getDeclaredFields()) {
+                if (Modifier.isTransient(f.getModifiers()) || f.getAnnotation(JsonTransient.class) != null) {
+                    set.add(f.getName());
+                }
             }
+            myClazz = myClazz.getSuperclass();
         }
         return set;
     }
@@ -413,8 +413,8 @@ public final class JsonUtils {
         private String key(Method method) {
             String name = method.getName();
             Class<?>[] parameters = method.getParameterTypes();
-            if ("getClass".equals(name) || "getMetaClass".equals(name) || "setMetaClass".equals(name)
-                || parameters.length > 1 /* Neither getter nor setter if has more then one argument. */) {
+            if (parameters.length > 1 || "getClass".equals(name) || "getMetaClass".equals(name) || "setMetaClass".equals(name)) {
+                /* Neither getter nor setter if has more then one argument. */
                 return null;
             }
 
@@ -426,7 +426,8 @@ public final class JsonUtils {
             } else {
                 if (name.startsWith("get") && name.length() > 3) {
                     key = name.substring(3);
-                } else if (name.startsWith("is") && name.length() > 2 && method.getReturnType() == boolean.class) {
+                } else if (name.startsWith("is") && name.length() > 2
+                           && (method.getReturnType() == boolean.class || method.getReturnType() == Boolean.class)) {
                     key = name.substring(2);
                 }
             }
