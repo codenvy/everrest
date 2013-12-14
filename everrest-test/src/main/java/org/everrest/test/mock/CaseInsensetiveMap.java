@@ -19,11 +19,7 @@
 
 package org.everrest.test.mock;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: CaseInsensetiveMap.java 167 2009-09-10 13:14:45Z max_shaposhnik
- *          $
- */
+/** @author andrew00x */
 public class CaseInsensetiveMap<T> extends java.util.HashMap<String, T> {
 
     private static final long serialVersionUID = -8562529039657285360L;

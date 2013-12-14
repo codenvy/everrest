@@ -26,9 +26,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -36,10 +35,8 @@ import java.util.TimeZone;
 /**
  * The Class MockHttpServletResponse.
  *
- * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
- * @version $Id: $
+ * @author Max Shaposhnik
  */
-
 public class MockHttpServletResponse implements HttpServletResponse {
 
     /** The writer. */
@@ -61,7 +58,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
     private List<Cookie> cookies = new ArrayList<Cookie>();
 
     /** The headers. */
-    private HashMap<String, List<String>> headers = new CaseInsensitiveMultivaluedMap<String>();
+    private CaseInsensitiveMultivaluedMap<String> headers = new CaseInsensitiveMultivaluedMap<String>();
 
     /** The status. */
     private int status = HttpServletResponse.SC_OK;
@@ -88,8 +85,6 @@ public class MockHttpServletResponse implements HttpServletResponse {
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    ;
-
     /** Instantiates a new mock http servlet response. */
     public MockHttpServletResponse() {
         stream = new ByteArrayOutputStream();
@@ -115,7 +110,6 @@ public class MockHttpServletResponse implements HttpServletResponse {
                 bufferCount = 0;
             }
         }
-
     }
 
     /** {@inheritDoc} */
@@ -141,7 +135,6 @@ public class MockHttpServletResponse implements HttpServletResponse {
     /** {@inheritDoc} */
     public void reset() {
         bufferCount = 0;
-
     }
 
     /** {@inheritDoc} */
@@ -161,18 +154,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
 
     /** {@inheritDoc} */
     public void addHeader(String name, String value) {
-        Iterator it = headers.keySet().iterator();
-        while (it.hasNext()) {
-            String key = (String)it.next();
-            if (key.equals(name)) {
-                List<String> values = headers.get(key);
-                if (values != null) {
-                    values = new ArrayList<String>();
-                    headers.put(name, values);
-                }
-                values.add(value);
-            }
-        }
+        headers.get(name).add(value);
     }
 
     /** {@inheritDoc} */
@@ -215,11 +197,6 @@ public class MockHttpServletResponse implements HttpServletResponse {
         this.status = status;
         this.message = message;
         resetBuffer();
-        try {
-            flushBuffer();
-        } catch (IOException e) {
-
-        }
     }
 
     /** {@inheritDoc} */
@@ -239,17 +216,15 @@ public class MockHttpServletResponse implements HttpServletResponse {
         List<String> values = new ArrayList<String>();
         values.add(value);
         headers.put(name, values);
-
-        String match = name.toLowerCase();
-        if (match.equals("content-length")) {
-            int contentLength = -1;
-            contentLength = Integer.parseInt(value);
-            if (contentLength >= 0)
+        String lowerCaseName = name.toLowerCase();
+        if (lowerCaseName.equals("content-length")) {
+            int contentLength = Integer.parseInt(value);
+            if (contentLength >= 0) {
                 setContentLength(contentLength);
-        } else if (match.equals("content-type")) {
+            }
+        } else if (lowerCaseName.equals("content-type")) {
             setContentType(value);
         }
-
     }
 
     /** {@inheritDoc} */
@@ -260,22 +235,37 @@ public class MockHttpServletResponse implements HttpServletResponse {
     /** {@inheritDoc} */
     public void setStatus(int status) {
         this.status = status;
-
     }
 
     /** {@inheritDoc} */
     public void setStatus(int status, String message) {
         this.status = status;
         this.message = message;
+    }
 
+    @Override
+    public int getStatus() {
+        return status;
+    }
+
+    @Override
+    public String getHeader(String name) {
+        return headers.getFirst(name);
+    }
+
+    @Override
+    public Collection<String> getHeaders(String name) {
+        return new ArrayList<String>(headers.get(name));
+    }
+
+    @Override
+    public Collection<String> getHeaderNames() {
+        return new ArrayList<String>(headers.keySet());
     }
 
     /** {@inheritDoc} */
     public String getCharacterEncoding() {
-        if (encoding == null)
-            return ("UTF-8");
-        else
-            return (encoding);
+        return encoding == null ? "UTF-8" : encoding;
     }
 
     /** {@inheritDoc} */
@@ -285,8 +275,9 @@ public class MockHttpServletResponse implements HttpServletResponse {
 
     /** {@inheritDoc} */
     public void setBufferSize(int size) {
-        if (buffer.length >= size)
+        if (buffer.length >= size) {
             return;
+        }
         buffer = new byte[size];
     }
 
@@ -335,5 +326,4 @@ public class MockHttpServletResponse implements HttpServletResponse {
     public void setCharacterEncoding(String encoding) {
         this.encoding = encoding;
     }
-
 }

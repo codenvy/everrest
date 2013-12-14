@@ -18,7 +18,7 @@
  */
 package org.everrest.test.mock;
 
-/** @author Mestrallet Benjamin benjmestrallet@users.sourceforge.net */
+/** @author Mestrallet Benjamin */
 public class MockPrincipal implements java.security.Principal {
 
     private final String username;

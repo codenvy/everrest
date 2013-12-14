@@ -29,8 +29,7 @@ import java.util.Vector;
 /**
  * The Class MockHttpSession.
  *
- * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
- * @version $Id: $
+ * @author Max Shaposhnik
  */
 public class MockHttpSession implements HttpSession {
 

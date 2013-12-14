@@ -87,7 +87,7 @@
 
 
         <javax.ws.rs.version>1.0</javax.ws.rs.version>
-        <javax.servlet-api.version>2.4</javax.servlet-api.version>
+        <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
 
         <!-- Defaut compiler settings -->
         <maven.compiler.optimize>true</maven.compiler.optimize>

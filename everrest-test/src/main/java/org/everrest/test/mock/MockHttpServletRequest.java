@@ -19,17 +19,26 @@
 
 package org.everrest.test.mock;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -43,10 +52,8 @@ import java.util.regex.Pattern;
 /**
  * The Class MockHttpServletRequest.
  *
- * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
- * @version $Id: $
+ * @author Max Shaposhnik
  */
-
 @SuppressWarnings("unchecked")
 public class MockHttpServletRequest implements HttpServletRequest {
 
@@ -127,7 +134,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     /** {@inheritDoc} */
     public Enumeration getAttributeNames() {
-        return new EnumerationImpl(attributes.keySet().iterator());
+        return Collections.enumeration(attributes.keySet());
     }
 
     /** {@inheritDoc} */
@@ -177,16 +184,12 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     /** {@inheritDoc} */
     public Enumeration getHeaderNames() {
-        return new EnumerationImpl(headers.keySet().iterator());
+        return Collections.enumeration(headers.keySet());
     }
 
     /** {@inheritDoc} */
     public Enumeration getHeaders(String name) {
-        ArrayList values = (ArrayList)headers.get(name);
-        if (values.size() > 0)
-            return new EnumerationImpl(values.iterator());
-
-        return new EnumerationImpl(Collections.EMPTY_LIST.iterator());
+        return Collections.enumeration(headers.get(name));
     }
 
     /** {@inheritDoc} */
@@ -238,6 +241,41 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return 80;
     }
 
+    @Override
+    public ServletContext getServletContext() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public AsyncContext startAsync() throws IllegalStateException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isAsyncStarted() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isAsyncSupported() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public AsyncContext getAsyncContext() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public DispatcherType getDispatcherType() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /** {@inheritDoc} */
     public String getMethod() {
         return method;
@@ -264,17 +302,14 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     /** {@inheritDoc} */
     public Enumeration getParameterNames() {
-        return new EnumerationImpl(parameters.keySet().iterator());
+        return Collections.enumeration(parameters.keySet());
     }
 
     /** {@inheritDoc} */
     public String[] getParameterValues(String name) {
         ArrayList<String> arr = new ArrayList<String>();
-        Iterator it = parameters.keySet().iterator();
-        while (it.hasNext()) {
-
-            String pname = (String)it.next();
-            if (pname.equalsIgnoreCase(name))
+        for (String paramName : parameters.keySet()) {
+            if (paramName.equalsIgnoreCase(name))
                 arr.add(parameters.get(name).get(0));
         }
         return arr.toArray(new String[arr.size()]);
@@ -421,6 +456,31 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return false;
     }
 
+    @Override
+    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public void login(String username, String password) throws ServletException {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public void logout() throws ServletException {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public Collection<Part> getParts() throws IOException, ServletException {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Part getPart(String name) throws IOException, ServletException {
+        return null;
+    }
+
     /** {@inheritDoc} */
     public boolean isRequestedSessionIdFromURL() {
         return false;
@@ -506,36 +566,18 @@ public class MockHttpServletRequest implements HttpServletRequest {
         }
         return m;
     }
-}
 
-@SuppressWarnings("unchecked")
-class EnumerationImpl implements Enumeration {
+    class MockServletInputStream extends ServletInputStream {
 
-    private final Iterator iter;
+        private final InputStream data;
 
-    public EnumerationImpl(Iterator iter) {
-        this.iter = iter;
-    }
+        public MockServletInputStream(InputStream data) {
+            this.data = data;
+        }
 
-    public boolean hasMoreElements() {
-        return iter.hasNext();
-    }
-
-    public Object nextElement() {
-        return iter.next();
-    }
-}
-
-class MockServletInputStream extends ServletInputStream {
-
-    private final InputStream data;
-
-    public MockServletInputStream(InputStream data) {
-        this.data = data;
-    }
-
-    @Override
-    public int read() throws IOException {
-        return data.read();
+        @Override
+        public int read() throws IOException {
+            return data.read();
+        }
     }
 }

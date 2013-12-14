@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <version>${javax.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -74,11 +74,12 @@
             </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>6.1.10</version>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.13.v20130916</version>
                 <configuration>
-                    <contextPath>/exo-book-service</contextPath>
-                    <tmpDir>${project.build.directory}/exo-book-service-work</tmpDir>
+                    <webApp>
+                        <contextPath>/exo-book-service</contextPath>
+                    </webApp>
                 </configuration>
             </plugin>
         </plugins>

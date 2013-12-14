@@ -22,10 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>> {
 
     private static final long serialVersionUID = 6637313979061607685L;

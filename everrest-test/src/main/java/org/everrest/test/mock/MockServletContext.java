@@ -18,26 +18,33 @@
  */
 package org.everrest.test.mock;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterRegistration;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
+import javax.servlet.descriptor.JspConfigDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * The Class MockServletContext.
  *
- * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
- * @version $Id: $
+ * @author Max Shaposhnik
  */
 public class MockServletContext implements ServletContext {
 
@@ -110,181 +117,297 @@ public class MockServletContext implements ServletContext {
         }
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    @Override
     public ServletContext getContext(String s) {
         return null;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public int getMajorVersion() {
-        return 2;
+        return 3;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public int getMinorVersion() {
-        return 4;
+        return 0;
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public int getEffectiveMajorVersion() {
+        return 3;
+    }
+
+    @Override
+    public int getEffectiveMinorVersion() {
+        return 0;
+    }
+
+    @Override
     public String getMimeType(String s) {
         return "text/html";
     }
 
-    /** {@inheritDoc} */
-    public Set getResourcePaths(String s) {
-
-        if (!s.endsWith("/"))
+    @Override
+    public Set<String> getResourcePaths(String s) {
+        if (!s.endsWith("/")) {
             s = s + "/";
-
+        }
         Set<String> set = new HashSet<String>();
-
         try {
             URL url = getResource(s);
             if (url != null) {
                 File dir = new File(url.getPath());
                 if (dir.isDirectory()) {
                     File[] arr = dir.listFiles();
-                    for (int i = 0; i < arr.length; i++) {
-                        File tmp = arr[i];
-                        if (tmp.isDirectory())
-                            set.add(s + "/" + tmp.getName() + "/");
-                        else
-                            set.add(s + "/" + tmp.getName());
+                    if (arr!=null) {
+                        for (int i = 0; i < arr.length; i++) {
+                            File tmp = arr[i];
+                            if (!tmp.isDirectory()) {
+                                set.add(s + "/" + tmp.getName());
+                            } else {
+                                set.add(s + "/" + tmp.getName() + "/");
+                            }
+                        }
                     }
                 }
             }
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException ignored) {
         }
         return set;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public URL getResource(String s) throws MalformedURLException {
         String path = "file:" + contextPath + s;
-        URL url = new URL(path);
-        return url;
+        return new URL(path);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public InputStream getResourceAsStream(String s) {
         try {
             return getResource(s).openStream();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         return null;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public RequestDispatcher getRequestDispatcher(String s) {
         return null;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public RequestDispatcher getNamedDispatcher(String s) {
         return null;
     }
 
-    /** {@inheritDoc} */
-    @Deprecated
+    @Override
     public Servlet getServlet(String s) throws ServletException {
         return null;
     }
 
-    /** {@inheritDoc} */
-    @Deprecated
-    public Enumeration getServlets() {
+    @Override
+    public Enumeration<Servlet> getServlets() {
         return null;
     }
 
-    /** {@inheritDoc} */
-    @Deprecated
-    public Enumeration getServletNames() {
+    @Override
+    public Enumeration<String> getServletNames() {
         return null;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void log(String s) {
         logBuffer.append(s);
     }
 
-    /** {@inheritDoc} */
-    @Deprecated
+    @Override
     public void log(Exception e, String s) {
         logBuffer.append(s).append(e.getMessage());
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void log(String s, Throwable throwable) {
         logBuffer.append(s).append(throwable.getMessage());
     }
 
-    /**
-     * Sets the context path.
-     *
-     * @param s
-     *         the new context path
-     */
     public void setContextPath(String s) {
         contextPath = s;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public String getRealPath(String s) {
         return contextPath + s;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public String getServerInfo() {
         return null;
     }
 
-    /**
-     * Sets the init parameter.
-     *
-     * @param name
-     *         the name
-     * @param value
-     *         the value
-     */
-    public void setInitParameter(String name, String value) {
-        initParams.put(name, value);
+    @Override
+    public boolean setInitParameter(String name, String value) {
+        if (initParams.get(name) == null) {
+            initParams.put(name, value);
+            return true;
+        }
+        return false;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public String getInitParameter(String name) {
         return initParams.get(name);
     }
 
-    /** {@inheritDoc} */
-    public Enumeration getInitParameterNames() {
-        Vector<String> keys = new Vector<String>(initParams.keySet());
-        return keys.elements();
+    @Override
+    public Enumeration<String> getInitParameterNames() {
+        return Collections.enumeration(initParams.keySet());
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Object getAttribute(String name) {
         return attributes.get(name);
     }
 
-    /** {@inheritDoc} */
-    public Enumeration getAttributeNames() {
-        Vector<String> keys = new Vector<String>(attributes.keySet());
-        return keys.elements();
+    @Override
+    public Enumeration<String> getAttributeNames() {
+        return Collections.enumeration(attributes.keySet());
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void setAttribute(String name, Object value) {
         attributes.put(name, value);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void removeAttribute(String name) {
         attributes.remove(name);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public String getServletContextName() {
         return name;
     }
 
+    @Override
+    public ClassLoader getClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
+
+    // Methods bellow are not implemented for this mock.
+
+    @Override
+    public ServletRegistration.Dynamic addServlet(String servletName, String className) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public ServletRegistration.Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public ServletRegistration getServletRegistration(String servletName) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public Map<String, ? extends ServletRegistration> getServletRegistrations() {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public FilterRegistration.Dynamic addFilter(String filterName, String className) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public FilterRegistration.Dynamic addFilter(String filterName, Class<? extends Filter> filterClass) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public <T extends Filter> T createFilter(Class<T> clazz) throws ServletException {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public FilterRegistration getFilterRegistration(String filterName) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public SessionCookieConfig getSessionCookieConfig() {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public void addListener(String className) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public <T extends EventListener> void addListener(T t) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public void addListener(Class<? extends EventListener> listenerClass) {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public <T extends EventListener> T createListener(Class<T> clazz) throws ServletException {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public JspConfigDescriptor getJspConfigDescriptor() {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public void declareRoles(String... roleNames) {
+        throw new UnsupportedOperationException("not supported");
+    }
 }
