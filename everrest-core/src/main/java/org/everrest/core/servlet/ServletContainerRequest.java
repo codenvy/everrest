@@ -25,18 +25,13 @@ import org.everrest.core.impl.MultivaluedMapImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ServletContainerRequest.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
- */
+/** @author andrew00x */
 public final class ServletContainerRequest extends ContainerRequest {
     /**
      * @param req
@@ -89,10 +84,24 @@ public final class ServletContainerRequest extends ContainerRequest {
      * @return newly created URI
      */
     private static URI getRequestUri(HttpServletRequest servletRequest) {
-        // servletRequest.getQueryString() return part of URI after '?', so it return fragment component also
-        UriBuilder baseBuilder = UriBuilder.fromUri(getBaseUri(servletRequest));
-        return baseBuilder.replacePath(servletRequest.getRequestURI()).replaceQuery(servletRequest.getQueryString())
-                          .build();
+        StringBuilder uri = new StringBuilder();
+        String scheme = servletRequest.getScheme();
+        uri.append(scheme);
+        uri.append("://");
+        uri.append(servletRequest.getServerName());
+        int port = servletRequest.getServerPort();
+        if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
+            uri.append(':');
+            uri.append(port);
+        }
+        uri.append(servletRequest.getRequestURI());
+        String queryString = servletRequest.getQueryString();
+        if (queryString != null) {
+            uri.append('?');
+            uri.append(queryString);
+        }
+        //System.out.println("REQ URI :  " + uri);
+        return URI.create(uri.toString());
     }
 
     /**
@@ -103,15 +112,20 @@ public final class ServletContainerRequest extends ContainerRequest {
      * @return newly created URI
      */
     private static URI getBaseUri(HttpServletRequest servletRequest) {
+        StringBuilder uri = new StringBuilder();
         String scheme = servletRequest.getScheme();
-        String server = scheme + "://" + servletRequest.getServerName();
-        UriBuilder builder = UriBuilder.fromUri(server);
+        uri.append(scheme);
+        uri.append("://");
+        uri.append(servletRequest.getServerName());
         int port = servletRequest.getServerPort();
         if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
-            builder.port(port);
+            uri.append(':');
+            uri.append(port);
         }
-        builder.path(servletRequest.getContextPath() + servletRequest.getServletPath());
-        return builder.build();
+        uri.append(servletRequest.getContextPath());
+        uri.append(servletRequest.getServletPath());
+        //System.out.println("BASE URI : " + uri);
+        return URI.create(uri.toString());
     }
 
     /**
@@ -123,12 +137,12 @@ public final class ServletContainerRequest extends ContainerRequest {
      */
     private static MultivaluedMap<String, String> getHeader(HttpServletRequest servletRequest) {
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
-        Enumeration<?> headerNames = servletRequest.getHeaderNames();
+        Enumeration<String> headerNames = servletRequest.getHeaderNames();
         while (headerNames.hasMoreElements()) {
-            String name = (String)headerNames.nextElement();
-            Enumeration<?> e = servletRequest.getHeaders(name);
+            String name = headerNames.nextElement();
+            Enumeration<String> e = servletRequest.getHeaders(name);
             while (e.hasMoreElements()) {
-                h.add(name, (String)e.nextElement());
+                h.add(name, e.nextElement());
             }
         }
         return new InputHeadersMap(h);
