@@ -34,17 +34,21 @@ import java.util.Set;
 
 /** @author andrew00x */
 public class JsonGenerator {
+    private static final Collection<String> SKIP_METHODS = new HashSet<String>();
 
-    static final   Collection<String>                  SKIP_METHODS = new HashSet<String>();
-    private static HelperCache<Class<?>, JsonMethod[]> methodsCache = new HelperCache<Class<?>, JsonMethod[]>(60 * 1000, 1000);
+    private static final int CACHE_NUM  = 1 << 3;
+    private static final int CACHE_MASK = CACHE_NUM - 1;
+
+    @SuppressWarnings("unchecked")
+    private static HelperCache<Class<?>, JsonMethod[]>[] methodsCache = new HelperCache[CACHE_NUM];
 
     static {
         // Prevent discovering of Java class.
         SKIP_METHODS.add("getClass");
-        // Since we need support for Groovy must skip this.
-        // All "Groovy Objects" implements interface groovy.lang.GroovyObject
-        // and has method getMetaClass. Not need to discover it.
-        SKIP_METHODS.add("getMetaClass");
+        SKIP_METHODS.add("getMetaClass"); // for groovy
+        for (int i = 0; i < CACHE_NUM; i++) {
+            methodsCache[i] = new HelperCache<Class<?>, JsonMethod[]>(60 * 1000, 50);
+        }
     }
 
     /**
@@ -148,7 +152,7 @@ public class JsonGenerator {
         return jsonRootValue;
     }
 
-    private synchronized static JsonMethod[] getJsonMethods(Class<?> clazz) {
+    private static JsonMethod[] getJsonMethods(Class<?> clazz) {
          /*
           * Method must be as follow:
           * 1. Name starts from "get" plus at least one character or
@@ -156,33 +160,36 @@ public class JsonGenerator {
           * 2. Must be without parameters;
           * 3. Not be in SKIP_METHODS set.
           */
-        JsonMethod[] methods = methodsCache.get(clazz);
-        if (methods == null) {
-            Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
-            List<JsonMethod> result = new ArrayList<JsonMethod>();
-            for (Method method : clazz.getMethods()) {
-                String methodName = method.getName();
-                if (!SKIP_METHODS.contains(methodName) && method.getParameterTypes().length == 0) {
-                    Class<?> returnType = method.getReturnType();
-                    String field = null;
-                    if (methodName.startsWith("get") && methodName.length() > 3) {
-                        field = methodName.substring(3);
-                    } else if (methodName.startsWith("is") && methodName.length() > 2
-                               && (returnType == Boolean.class || returnType == boolean.class)) {
-                        field = methodName.substring(2);
-                    }
-                    if (field != null) {
-                        field = (field.length() > 1) ? Character.toLowerCase(field.charAt(0)) + field.substring(1)
-                                                     : field.toLowerCase();
-                        if (!transientFieldNames.contains(field)) {
-                            result.add(new JsonMethod(method, field));
+        HelperCache<Class<?>, JsonMethod[]> partition = methodsCache[clazz.hashCode() & CACHE_MASK];
+        synchronized (partition) {
+            JsonMethod[] methods = partition.get(clazz);
+            if (methods == null) {
+                Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
+                List<JsonMethod> result = new ArrayList<JsonMethod>();
+                for (Method method : clazz.getMethods()) {
+                    String methodName = method.getName();
+                    if (!SKIP_METHODS.contains(methodName) && method.getParameterTypes().length == 0) {
+                        Class<?> returnType = method.getReturnType();
+                        String field = null;
+                        if (methodName.startsWith("get") && methodName.length() > 3) {
+                            field = methodName.substring(3);
+                        } else if (methodName.startsWith("is") && methodName.length() > 2
+                                   && (returnType == Boolean.class || returnType == boolean.class)) {
+                            field = methodName.substring(2);
+                        }
+                        if (field != null) {
+                            field = (field.length() > 1) ? Character.toLowerCase(field.charAt(0)) + field.substring(1)
+                                                         : field.toLowerCase();
+                            if (!transientFieldNames.contains(field)) {
+                                result.add(new JsonMethod(method, field));
+                            }
                         }
                     }
                 }
+                partition.put(clazz, methods = result.toArray(new JsonMethod[result.size()]));
             }
-            methodsCache.put(clazz, methods = result.toArray(new JsonMethod[result.size()]));
+            return methods;
         }
-        return methods;
     }
 
     /**

@@ -41,16 +41,22 @@ import java.util.Set;
 
 /** @author andrew00x */
 public class ObjectBuilder {
-    static final Collection<String> SKIP_METHODS = new HashSet<String>();
+    private static final Collection<String> SKIP_METHODS = new HashSet<String>();
 
-    private static HelperCache<Class<?>, Constructor<?>> constructorsCache = new HelperCache<Class<?>, Constructor<?>>(60 * 1000, 1000);
-    private static HelperCache<Class<?>, JsonMethod[]>   methodsCache      = new HelperCache<Class<?>, JsonMethod[]>(60 * 1000, 1000);
+    private static final int CACHE_NUM  = 1 << 3;
+    private static final int CACHE_MASK = CACHE_NUM - 1;
+
+    @SuppressWarnings("unchecked")
+    private static HelperCache<Class<?>, Constructor<?>>[] constructorsCache = new HelperCache[CACHE_NUM];
+    @SuppressWarnings("unchecked")
+    private static HelperCache<Class<?>, JsonMethod[]>[]   methodsCache      = new HelperCache[CACHE_NUM];
 
     static {
-        // Since we need support for Groovy must skip this.
-        // All "Groovy Objects" implements interface groovy.lang.GroovyObject
-        // and has method setMetaClass. Not need to process it.
-        SKIP_METHODS.add("setMetaClass");
+        SKIP_METHODS.add("setMetaClass"); // for groovy
+        for (int i = 0; i < CACHE_NUM; i++) {
+            methodsCache[i] = new HelperCache<Class<?>, JsonMethod[]>(60 * 1000, 50);
+            constructorsCache[i] = new HelperCache<Class<?>, Constructor<?>>(60 * 1000, 50);
+        }
     }
 
     /**
@@ -423,39 +429,45 @@ public class ObjectBuilder {
         return object;
     }
 
-    private synchronized static JsonMethod[] getJsonMethods(Class<?> clazz) {
-        JsonMethod[] f = methodsCache.get(clazz);
-        if (f == null) {
-            Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
-            List<JsonMethod> result = new ArrayList<JsonMethod>();
-            for (Method method : clazz.getMethods()) {
-                String methodName = method.getName();
-                String field;
-                if (!SKIP_METHODS.contains(methodName)
-                    && methodName.startsWith("set")
-                    && methodName.length() > 3
-                    && !transientFieldNames.contains(field = methodName.length() > 4 ? Character.toLowerCase(methodName.charAt(3)) +
-                                                                                       methodName.substring(4)
-                                                                                     : methodName.substring(3).toLowerCase())
-                    && method.getParameterTypes().length == 1) {
-                    result.add(new JsonMethod(method, field));
+    private static JsonMethod[] getJsonMethods(Class<?> clazz) {
+        HelperCache<Class<?>, JsonMethod[]> partition = methodsCache[clazz.hashCode() & CACHE_MASK];
+        synchronized (partition) {
+            JsonMethod[] methods = partition.get(clazz);
+            if (methods == null) {
+                Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
+                List<JsonMethod> result = new ArrayList<JsonMethod>();
+                for (Method method : clazz.getMethods()) {
+                    String methodName = method.getName();
+                    String field;
+                    if (!SKIP_METHODS.contains(methodName)
+                        && methodName.startsWith("set")
+                        && methodName.length() > 3
+                        && !transientFieldNames.contains(field = methodName.length() > 4 ? Character.toLowerCase(methodName.charAt(3)) +
+                                                                                           methodName.substring(4)
+                                                                                         : methodName.substring(3).toLowerCase())
+                        && method.getParameterTypes().length == 1) {
+                        result.add(new JsonMethod(method, field));
+                    }
                 }
+                partition.put(clazz, methods = result.toArray(new JsonMethod[result.size()]));
             }
-            methodsCache.put(clazz, f = result.toArray(new JsonMethod[result.size()]));
+            return methods;
         }
-        return f;
     }
 
     @SuppressWarnings("unchecked")
-    private synchronized static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameters) {
-        Constructor<?> f = constructorsCache.get(clazz);
-        if (f == null) {
-            try {
-                constructorsCache.put(clazz, f = clazz.getConstructor(parameters));
-            } catch (NoSuchMethodException ignored) {
+    private static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameters) {
+        HelperCache<Class<?>, Constructor<?>> partition = constructorsCache[clazz.hashCode() & CACHE_MASK];
+        synchronized (partition) {
+            Constructor<?> constructor = partition.get(clazz);
+            if (constructor == null) {
+                try {
+                    partition.put(clazz, constructor = clazz.getConstructor(parameters));
+                } catch (NoSuchMethodException ignored) {
+                }
             }
+            return (Constructor<T>)constructor;
         }
-        return (Constructor<T>)f;
     }
 
     @SuppressWarnings("unchecked")
