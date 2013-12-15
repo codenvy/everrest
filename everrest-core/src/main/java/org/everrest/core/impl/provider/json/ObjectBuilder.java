@@ -442,9 +442,9 @@ public class ObjectBuilder {
                     if (!SKIP_METHODS.contains(methodName)
                         && methodName.startsWith("set")
                         && methodName.length() > 3
-                        && !transientFieldNames.contains(field = methodName.length() > 4 ? Character.toLowerCase(methodName.charAt(3)) +
-                                                                                           methodName.substring(4)
-                                                                                         : methodName.substring(3).toLowerCase())
+                        && !transientFieldNames.contains(field = methodName.length() > 4
+                                                                 ? Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4)
+                                                                 : methodName.substring(3).toLowerCase())
                         && method.getParameterTypes().length == 1) {
                         result.add(new JsonMethod(method, field));
                     }
