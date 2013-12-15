@@ -22,26 +22,15 @@ package org.everrest.core.servlet;
 import org.everrest.core.Filter;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.util.Logger;
-import org.scannotation.AnnotationDB;
-import org.scannotation.WarUrlFinder;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** @author andrew00x */
 public class EverrestServletContextInitializer {
     public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
 
@@ -84,55 +73,11 @@ public class EverrestServletContextInitializer {
                 throw new RuntimeException(e);
             }
         } else if (scan) {
-            try {
-                URL classes = WarUrlFinder.findWebInfClassesPath(ctx);
-                URL[] libs = WarUrlFinder.findWebInfLibClasspaths(ctx);
-                AnnotationDB annotationDB = new AnnotationDB();
-                List<String> skip = new ArrayList<String>();
-                String skipParameter = ctx.getInitParameter(EVERREST_SCAN_SKIP_PACKAGES);
-                if (skipParameter != null) {
-                    for (String s : skipParameter.split(",")) {
-                        skip.add(s.trim());
-                    }
+            application = new Application() {
+                public Set<Class<?>> getClasses() {
+                    return new LinkedHashSet<Class<?>>(ComponentFinder.findComponents());
                 }
-                // Disable processing of API, implementation and JAX-RS packages
-                skip.add("org.everrest.core");
-                skip.add("javax.ws.rs");
-                annotationDB.setIgnoredPackages(skip.toArray(new String[skip.size()]));
-                annotationDB.setScanFieldAnnotations(false);
-                annotationDB.setScanMethodAnnotations(false);
-                annotationDB.setScanParameterAnnotations(false);
-                if (classes != null) {
-                    annotationDB.scanArchives(classes);
-                }
-                annotationDB.scanArchives(libs);
-                final Set<Class<?>> scanned = new HashSet<Class<?>>();
-                Map<String, Set<String>> results = annotationDB.getAnnotationIndex();
-                for (String annotation : new String[]{Path.class.getName(), Provider.class.getName(),
-                                                      Filter.class.getName()}) {
-                    if (results.get(annotation) != null) {
-                        for (String fqn : results.get(annotation)) {
-                            try {
-                                Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(fqn);
-                                if (cl.isInterface() || Modifier.isAbstract(cl.getModifiers())) {
-                                    LOG.info("Skip abstract class or interface " + fqn);
-                                } else {
-                                    scanned.add(cl);
-                                }
-                            } catch (ClassNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-                application = new Application() {
-                    public Set<Class<?>> getClasses() {
-                        return scanned;
-                    }
-                };
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            };
         }
         return application;
     }
