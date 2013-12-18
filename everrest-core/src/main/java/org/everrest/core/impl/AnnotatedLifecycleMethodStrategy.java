@@ -27,7 +27,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of LifecycleComponent.LifecycleMethodStrategy that uses {@link PostConstruct} and {@link PreDestroy}
@@ -126,12 +129,13 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodSt
 
     private Method[] getLifecycleMethods(Class<?> cl, MethodFilter filter) {
         try {
-            List<Method> result = new ArrayList<Method>(2);
+            LinkedList<Method> result = new LinkedList<Method>();
+            Set<String> names = new HashSet<String>();
             for (; cl != Object.class; cl = cl.getSuperclass()) {
                 Method[] methods = cl.getDeclaredMethods();
                 for (int i = 0; i < methods.length; i++) {
                     Method method = methods[i];
-                    if (filter.accept(method)) {
+                    if (filter.accept(method) && names.add(method.getName())) {
                         if (!Modifier.isPublic(method.getModifiers())) {
                             method.setAccessible(true);
                         }
