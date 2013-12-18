@@ -23,6 +23,8 @@ import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Scopes;
+import com.google.inject.Stage;
 import com.google.inject.internal.BindingImpl;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
@@ -134,7 +136,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     /** {@inheritDoc} */
     @Override
     protected final Injector getInjector() {
-        return Guice.createInjector(createModules());
+        return Guice.createInjector(Stage.PRODUCTION, createModules());
     }
 
     private List<Module> createModules() {
