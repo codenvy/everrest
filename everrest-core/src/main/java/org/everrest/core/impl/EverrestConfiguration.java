@@ -92,7 +92,15 @@ public class EverrestConfiguration {
 
     protected int maxBufferSize = defaultMaxBufferSize;
 
-    protected final Map<String, Object> properties = new HashMap<String, Object>();
+    protected final Map<String, Object> properties;
+
+    public EverrestConfiguration() {
+        properties = new HashMap<String, Object>();
+    }
+
+    public EverrestConfiguration(EverrestConfiguration other) {
+        properties = new HashMap<String, Object>(other.properties);
+    }
 
     public boolean isCheckSecurity() {
         return checkSecurity;
