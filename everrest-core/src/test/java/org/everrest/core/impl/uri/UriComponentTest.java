@@ -78,6 +78,21 @@ public class UriComponentTest extends BaseTest {
         assertEquals("\u041f\u0440\u0438\u0432\u0456\u0442", m.get("q2").get(1));
     }
 
+    public void test_EVERREST_58() {
+        String str = "q1=bar&&q2=foo&q2=test";
+        MultivaluedMap<String, String> m = UriComponent.parseQueryString(str, false);
+        assertEquals(2, m.size());
+        assertEquals(1, m.get("q1").size());
+        assertEquals(2, m.get("q2").size());
+        m = UriComponent.parseQueryString(str, true);
+        assertEquals(2, m.size());
+        assertEquals(1, m.get("q1").size());
+        assertEquals(2, m.get("q2").size());
+        assertEquals("bar", m.get("q1").get(0));
+        assertEquals("foo", m.get("q2").get(0));
+        assertEquals("test", m.get("q2").get(1));
+    }
+
     public void testParsePathSegment() {
         String path = "/to/be/or%20not/to/be;a=foo;b=b%20a%23r";
         List<PathSegment> segms = UriComponent.parsePathSegments(path, true);

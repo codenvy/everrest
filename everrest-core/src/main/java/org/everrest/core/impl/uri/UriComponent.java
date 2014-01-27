@@ -649,9 +649,8 @@ public final class UriComponent {
                     }
 
                     result.add(decode ? decode(name, QUERY) : name, decode ? decode(value, QUERY) : value);
-
-                    p = n + 1;
                 }
+                p = n + 1;
             }
         }
         return result;
