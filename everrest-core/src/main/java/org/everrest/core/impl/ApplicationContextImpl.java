@@ -57,8 +57,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
     private static final Logger LOG = Logger.getLogger(ApplicationContextImpl.class);
@@ -445,7 +444,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
     @Override
     public SecurityContext getSecurityContext() {
         // We get security information from HttpServletRequest but we may be not able to do this is asynchronous mode.
-        // In asynchronous mode resource method processed when HTTP request ended already and we cannot use it any more.
+        // In asynchronous mode resource method processed when HTTP request ended already and we cannot use it anymore.
         // Do some workaround to keep security info even after request ends.
         if (isAsynchronous() && (request instanceof ServletContainerRequest)) {
             if (asynchronousSecurityContext == null) {

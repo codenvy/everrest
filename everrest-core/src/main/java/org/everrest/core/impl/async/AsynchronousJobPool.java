@@ -56,8 +56,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Pool of asynchronous jobs.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 @Provider
 public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool> {
@@ -88,11 +87,13 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
         return jobIdGenerator.getAndIncrement();
     }
 
+    protected final String asynchronousServicePath;
+
     /** When timeout (in minutes) reached then an asynchronous job may be removed from the pool. */
-    private final int jobTimeout;
+    protected final int jobTimeout;
 
     /** Max cache size. */
-    private final int maxCacheSize;
+    protected final int maxCacheSize;
 
     private final ExecutorService pool;
 
@@ -101,12 +102,12 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
     private final CopyOnWriteArrayList<AsynchronousJobListener> jobListeners;
 
-    @SuppressWarnings("serial")
     public AsynchronousJobPool(EverrestConfiguration config) {
         if (config == null) {
             config = new EverrestConfiguration();
         }
 
+        this.asynchronousServicePath = config.getAsynchronousServicePath();
         this.maxCacheSize = config.getAsynchronousCacheSize();
         this.jobTimeout = config.getAsynchronousJobTimeout();
 
@@ -209,10 +210,10 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
      * This implementation does nothing, but may be customized in subclasses.
      */
     protected void initAsynchronousJobContext(AsynchronousJob job) {
-        final String internalJobUri =
-                UriBuilder.fromPath("/").path(AsynchronousJobService.class).path(AsynchronousJobService.class, "get")
-                          .build(job.getJobId()).toString();
-        job.getContext().put("internal-uri", internalJobUri);
+    }
+
+    protected UriBuilder getAsynchronousJobUriBuilder(AsynchronousJob job) {
+        return UriBuilder.fromPath(asynchronousServicePath).path(Long.toString(job.getJobId()));
     }
 
     protected Callable<Object> newCallable(Object resource, Method method, Object[] params) {
@@ -320,6 +321,11 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
         @Override
         public Long getJobId() {
             return jobId;
+        }
+
+        @Override
+        public String getJobURI() {
+            return getAsynchronousJobUriBuilder(this).build().toString();
         }
 
         @Override

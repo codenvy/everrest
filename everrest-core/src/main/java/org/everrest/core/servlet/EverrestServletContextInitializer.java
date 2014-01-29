@@ -100,6 +100,9 @@ public class EverrestServletContextInitializer {
         config.setAsynchronousPoolSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_POOL_SIZE,
                                                  EverrestConfiguration.defaultAsynchronousPoolSize).intValue());
 
+        config.setAsynchronousServicePath(getParameter(EverrestConfiguration.EVERREST_ASYNCHRONOUS_SERVICE_PATH,
+                                                       EverrestConfiguration.defaultAsynchronousSericePath));
+
         config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
                                                   EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
 
@@ -133,11 +136,18 @@ public class EverrestServletContextInitializer {
         return null;
     }
 
+    public String getParameter(String name, String def) {
+        String value = getParameter(name);
+        if (value == null) {
+            return def;
+        }
+        return value;
+    }
+
     public boolean getBoolean(String name, boolean def) {
         String str = getParameter(name);
         if (str != null) {
-            return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str)
-                   || "1".equals(str);
+            return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str) || "1".equals(str);
         }
         return def;
     }

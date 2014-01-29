@@ -43,8 +43,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class ResourceBinderImpl implements ResourceBinder {
     /** Logger. */
@@ -65,14 +64,13 @@ public class ResourceBinderImpl implements ResourceBinder {
                  * @see UriPattern#URIPATTERN_COMPARATOR
                  */
                 public int compare(ObjectFactory<AbstractResourceDescriptor> o1, ObjectFactory<AbstractResourceDescriptor> o2) {
-                    return UriPattern.URIPATTERN_COMPARATOR.compare(o1.getObjectModel().getUriPattern(), o2.getObjectModel()
-                                                                                                           .getUriPattern());
+                    return UriPattern.URIPATTERN_COMPARATOR
+                                     .compare(o1.getObjectModel().getUriPattern(), o2.getObjectModel().getUriPattern());
                 }
             };
 
     /** Root resource descriptors. */
-    private volatile List<ObjectFactory<AbstractResourceDescriptor>> resources =
-            new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
+    private volatile List<ObjectFactory<AbstractResourceDescriptor>> resources = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
 
     /** Validator. */
     private final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
@@ -89,19 +87,12 @@ public class ResourceBinderImpl implements ResourceBinder {
     public void addResource(Class<?> resourceClass, MultivaluedMap<String, String> properties) {
         Path path = resourceClass.getAnnotation(Path.class);
         if (path == null) {
-            throw new ResourcePublicationException("Resource class " + resourceClass.getName()
-                                                   + " it is not root resource. " +
-                                                   "Path annotation javax.ws.rs.Path is not specified for this class.");
+            throw new ResourcePublicationException(String.format(
+                    "Resource class %s it is not root resource. Path annotation javax.ws.rs.Path is not specified for this class.",
+                    resourceClass.getName()));
         }
         try {
-            AbstractResourceDescriptor descriptor =
-                    new AbstractResourceDescriptorImpl(resourceClass, ComponentLifecycleScope.PER_REQUEST);
-            // validate AbstractResourceDescriptor
-            descriptor.accept(rdv);
-            if (properties != null) {
-                descriptor.getProperties().putAll(properties);
-            }
-            addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(descriptor));
+            addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(null, resourceClass, properties)));
         } catch (Exception e) {
             if (e instanceof ResourcePublicationException) {
                 throw (ResourcePublicationException)e;
@@ -110,43 +101,87 @@ public class ResourceBinderImpl implements ResourceBinder {
         }
     }
 
-    public void addResource(Object resource, MultivaluedMap<String, String> properties) {
-        Path path = resource.getClass().getAnnotation(Path.class);
-        if (path == null) {
-            throw new ResourcePublicationException("Resource class " + resource.getClass().getName()
-                                                   + " it is not root resource. " +
-                                                   "Path annotation javax.ws.rs.Path is not specified for this class.");
-        }
+    @Override
+    public void addResource(String uriPattern, Class<?> resourceClass, MultivaluedMap<String, String> properties) {
         try {
-            AbstractResourceDescriptor descriptor =
-                    new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON);
-            // validate AbstractResourceDescriptor
-            descriptor.accept(rdv);
-            if (properties != null) {
-                descriptor.getProperties().putAll(properties);
-            }
-            addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, resource));
+            addResource(
+                    new PerRequestObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(uriPattern, resourceClass, properties)));
         } catch (Exception e) {
             if (e instanceof ResourcePublicationException) {
                 throw (ResourcePublicationException)e;
             }
             throw new ResourcePublicationException(e.getMessage(), e);
         }
+    }
+
+    private AbstractResourceDescriptor newResourceDescriptor(String path,
+                                                             Class<?> resourceClass,
+                                                             MultivaluedMap<String, String> properties) throws Exception {
+        AbstractResourceDescriptor descriptor =
+                path == null ? new AbstractResourceDescriptorImpl(resourceClass, ComponentLifecycleScope.PER_REQUEST)
+                             : new AbstractResourceDescriptorImpl(path, resourceClass, ComponentLifecycleScope.PER_REQUEST);
+        descriptor.accept(rdv);
+        if (properties != null) {
+            descriptor.getProperties().putAll(properties);
+        }
+        return descriptor;
+    }
+
+    public void addResource(Object resource, MultivaluedMap<String, String> properties) {
+        Path path = resource.getClass().getAnnotation(Path.class);
+        if (path == null) {
+            throw new ResourcePublicationException(String.format(
+                    "Resource class %s it is not root resource. Path annotation javax.ws.rs.Path is not specified for this class.",
+                    resource.getClass().getName()));
+        }
+        try {
+            addResource(
+                    new SingletonObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(null, resource, properties), resource));
+        } catch (Exception e) {
+            if (e instanceof ResourcePublicationException) {
+                throw (ResourcePublicationException)e;
+            }
+            throw new ResourcePublicationException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void addResource(String uriPattern, Object resource, MultivaluedMap<String, String> properties) {
+        try {
+            addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(uriPattern, resource, properties),
+                                                                               resource));
+        } catch (Exception e) {
+            if (e instanceof ResourcePublicationException) {
+                throw (ResourcePublicationException)e;
+            }
+            throw new ResourcePublicationException(e.getMessage(), e);
+        }
+    }
+
+    private AbstractResourceDescriptor newResourceDescriptor(String path,
+                                                             Object resource,
+                                                             MultivaluedMap<String, String> properties) throws Exception {
+        AbstractResourceDescriptor descriptor = path == null
+                                                ? new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON)
+                                                : new AbstractResourceDescriptorImpl(path, resource.getClass(),
+                                                                                     ComponentLifecycleScope.SINGLETON);
+        descriptor.accept(rdv);
+        if (properties != null) {
+            descriptor.getProperties().putAll(properties);
+        }
+        return descriptor;
     }
 
     public void addResource(ObjectFactory<AbstractResourceDescriptor> resourceFactory) {
         UriPattern pattern = resourceFactory.getObjectModel().getUriPattern();
         lock.lock();
         try {
-            List<ObjectFactory<AbstractResourceDescriptor>> snapshot =
-                    new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
-
+            List<ObjectFactory<AbstractResourceDescriptor>> snapshot = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
             for (ObjectFactory<AbstractResourceDescriptor> resource : snapshot) {
                 if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern())) {
                     if (resource.getObjectModel().getObjectClass() == resourceFactory.getObjectModel().getObjectClass()) {
-                        LOG.debug("Resource " + resourceFactory.getObjectModel().getObjectClass().getName()
-                           + " already registered.");
-
+                        LOG.debug(String.format("Resource %s already registered.",
+                                                resourceFactory.getObjectModel().getObjectClass().getName()));
                         return;
                     }
                     throw new ResourcePublicationException("Resource class "
@@ -185,7 +220,7 @@ public class ResourceBinderImpl implements ResourceBinder {
      * @param parameterValues
      *         see {@link ApplicationContext#getParameterValues()}
      * @return root resource matched to <code>requestPath</code> or
-     *         <code>null</code>
+     * <code>null</code>
      */
     public ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues) {
         ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;

@@ -48,8 +48,7 @@ import java.net.URI;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 class WS2RESTAdapter implements WSMessageReceiver {
     private static final Logger LOG = Logger.getLogger(WS2RESTAdapter.class);
@@ -144,7 +143,7 @@ class WS2RESTAdapter implements WSMessageReceiver {
                         final RESTfulOutputMessage output = newOutputMessage(restInputMessage);
                         try {
                             final ContainerRequest req = new ContainerRequest("GET",
-                                                                              URI.create((String)job.getContext().get("internal-uri")),
+                                                                              URI.create(job.getJobURI()),
                                                                               URI.create(""),
                                                                               null,
                                                                               new InputHeadersMap(),

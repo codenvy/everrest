@@ -54,8 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class AbstractResourceDescriptorImpl extends BaseObjectModel implements AbstractResourceDescriptor {
     /** Logger. */
@@ -98,13 +97,17 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
      * @see org.everrest.core.ComponentLifecycleScope
      */
     private AbstractResourceDescriptorImpl(Path path, Class<?> resourceClass, ComponentLifecycleScope scope) {
+        this(path == null ? null : path.value(), resourceClass, scope);
+    }
+
+    public AbstractResourceDescriptorImpl(String path, Class<?> resourceClass, ComponentLifecycleScope scope) {
         super(resourceClass, scope);
         if (path == null) {
             this.path = null;
             this.uriPattern = null;
         } else {
-            this.path = new PathValue(path.value());
-            this.uriPattern = new UriPattern(path.value());
+            this.path = new PathValue(path);
+            this.uriPattern = new UriPattern(path);
         }
         this.resourceMethods = new ResourceMethodMap<ResourceMethodDescriptor>();
         this.subResourceMethods = new SubResourceMethodMap();

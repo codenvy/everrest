@@ -25,8 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class EverrestConfiguration {
     public static final String EVERREST_HTTP_METHOD_OVERRIDE = "org.everrest.http.method.override";
@@ -36,6 +35,8 @@ public class EverrestConfiguration {
     public static final String EVERREST_CHECK_SECURITY = "org.everrest.security";
 
     public static final String EVERREST_ASYNCHRONOUS = "org.everrest.asynchronous";
+
+    public static final String EVERREST_ASYNCHRONOUS_SERVICE_PATH = "org.everrest.asynchronous.service.path";
 
     public static final String EVERREST_ASYNCHRONOUS_POOL_SIZE = "org.everrest.asynchronous.pool.size";
 
@@ -62,6 +63,8 @@ public class EverrestConfiguration {
     public static final boolean defaultAsynchronousSupported = true;
 
     public static final int defaultAsynchronousPoolSize = 10;
+
+    public static final String defaultAsynchronousSericePath = "/async";
 
     public static final int defaultAsynchronousQueueSize = 100;
 
@@ -91,6 +94,8 @@ public class EverrestConfiguration {
     protected int asynchronousJobTimeout = defaultAsynchronousJobTimeout;
 
     protected int maxBufferSize = defaultMaxBufferSize;
+
+    protected String asynchronousServicePath = defaultAsynchronousSericePath;
 
     protected final Map<String, Object> properties;
 
@@ -132,6 +137,14 @@ public class EverrestConfiguration {
 
     public void setAsynchronousSupported(boolean asynchronousSupported) {
         this.asynchronousSupported = asynchronousSupported;
+    }
+
+    public String getAsynchronousServicePath() {
+        return asynchronousServicePath;
+    }
+
+    public void setAsynchronousServicePath(String servicePath) {
+        this.asynchronousServicePath = servicePath;
     }
 
     public int getAsynchronousPoolSize() {

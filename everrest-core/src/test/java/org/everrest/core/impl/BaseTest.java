@@ -34,8 +34,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public abstract class BaseTest extends TestCase {
     private static class EmptyStream extends InputStream {
@@ -63,7 +62,7 @@ public abstract class BaseTest extends TestCase {
         asynchronousPool = new AsynchronousJobPool(new EverrestConfiguration());
         providers.addContextResolver(asynchronousPool);
         providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
-        resources.addResource(AsynchronousJobService.class, null);
+        resources.addResource("/async", AsynchronousJobService.class, null);
         requestHandler =
                 new RequestHandlerImpl(new RequestDispatcher(resources), providers, new DependencySupplierImpl(),
                                        new EverrestConfiguration());

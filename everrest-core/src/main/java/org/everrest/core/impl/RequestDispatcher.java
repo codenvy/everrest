@@ -57,8 +57,7 @@ import java.util.Map.Entry;
 /**
  * Lookup resource which can serve request.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class RequestDispatcher {
     /** Logger. */
@@ -423,7 +422,7 @@ public class RequestDispatcher {
         if (o == null || o.getClass() == void.class || o.getClass() == Void.class) {
             response.setResponse(Response.noContent().build());
         } else if (o instanceof AsynchronousJob) {
-            final String internalJobUri  = (String)((AsynchronousJob)o).getContext().get("internal-uri");
+            final String internalJobUri  = ((AsynchronousJob)o).getJobURI();
             final String externalJobUri = context.getBaseUriBuilder().path(internalJobUri).build().toString();
             response.setResponse(Response.status(Response.Status.ACCEPTED)
                                          .header(HttpHeaders.LOCATION, externalJobUri)

@@ -23,11 +23,13 @@ import org.everrest.core.resource.ResourceMethodDescriptor;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public interface AsynchronousJob {
     Long getJobId();
+
+    /** Get relative URI of this asynchronous job. */
+    String getJobURI();
 
     long getExpirationDate();
 

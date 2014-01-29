@@ -25,7 +25,9 @@ import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 
 import javax.ws.rs.core.Application;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,24 +45,48 @@ import java.util.Set;
  * processor.addApplication(everrest);
  * </pre>
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class EverrestApplication extends Application {
     private final Set<Class<?>> classes;
     private final Set<Object>   singletons;
 
+    private Map<String, Class<?>> mappedPerRequestResources;
+    private Map<String, Object> mappedSingletonResources;
+
     public EverrestApplication(EverrestConfiguration config) {
         classes = new LinkedHashSet<Class<?>>(1);
         singletons = new LinkedHashSet<Object>(3);
         if (config.isAsynchronousSupported()) {
-            classes.add(AsynchronousJobService.class);
+            addResource(config.getAsynchronousServicePath(), AsynchronousJobService.class);
             singletons.add(new AsynchronousJobPool(config));
             singletons.add(new AsynchronousProcessListWriter());
         }
         if (config.isCheckSecurity()) {
             singletons.add(new SecurityConstraint());
         }
+    }
+
+    public void addResource(String uriPattern, Class<?> resourceClass) {
+        if (mappedPerRequestResources == null) {
+            mappedPerRequestResources = new LinkedHashMap<String, Class<?>>();
+        }
+        mappedPerRequestResources.put(uriPattern, resourceClass);
+    }
+
+    public void addResource(String uriPattern, Object resource) {
+        if (mappedSingletonResources == null) {
+            mappedSingletonResources = new LinkedHashMap<String, Object>();
+        }
+        mappedSingletonResources.put(uriPattern, resource);
+    }
+
+    public Map<String, Class<?>> getPerRequestResources() {
+        return mappedPerRequestResources;
+    }
+
+    public Map<String, Object> getSingletonResources() {
+        return mappedSingletonResources;
     }
 
     /** @see javax.ws.rs.core.Application#getClasses() */
