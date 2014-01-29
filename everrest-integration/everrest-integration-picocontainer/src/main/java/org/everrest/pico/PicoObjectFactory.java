@@ -47,7 +47,9 @@ public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T
             List<FieldInjector> fieldInjectors = model.getFieldInjectors();
             if (fieldInjectors != null && fieldInjectors.size() > 0) {
                 for (FieldInjector injector : fieldInjectors) {
-                    injector.inject(component, context);
+                    if (injector.getAnnotation() != null) {
+                        injector.inject(component, context);
+                    }
                 }
             }
         }

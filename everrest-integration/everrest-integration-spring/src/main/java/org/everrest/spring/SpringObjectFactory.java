@@ -53,7 +53,9 @@ public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory
         List<FieldInjector> fieldInjectors = model.getFieldInjectors();
         if (fieldInjectors != null && fieldInjectors.size() > 0) {
             for (FieldInjector injector : fieldInjectors) {
-                injector.inject(bean, context);
+                if (injector.getAnnotation() != null) {
+                    injector.inject(bean, context);
+                }
             }
         }
         return bean;

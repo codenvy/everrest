@@ -48,7 +48,9 @@ public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<
         List<FieldInjector> fieldInjectors = model.getFieldInjectors();
         if (fieldInjectors != null && fieldInjectors.size() > 0) {
             for (FieldInjector injector : fieldInjectors) {
-                injector.inject(object, context);
+                if (injector.getAnnotation() != null) {
+                    injector.inject(object, context);
+                }
             }
         }
         return object;
