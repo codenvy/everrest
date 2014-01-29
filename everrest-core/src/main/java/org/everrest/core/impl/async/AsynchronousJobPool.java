@@ -163,8 +163,9 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
                 nextJobId(),
                 newCallable(resource, resourceMethod.getMethod(), params),
                 System.currentTimeMillis() + jobTimeout * 60 * 1000,
-                resourceMethod
-        );
+                resourceMethod);
+
+        job.jobUri = getAsynchronousJobUriBuilder(job).build().toString();
 
         ApplicationContext context = ApplicationContextImpl.getCurrent();
         GenericContainerRequest request = context.getContainerRequest();
@@ -296,6 +297,8 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
         private final ResourceMethodDescriptor method;
         private final Map<String, Object>      context;
 
+        private String jobUri;
+
         private AsynchronousFuture(Long jobId,
                                    Callable<Object> callable,
                                    long expirationDate,
@@ -325,7 +328,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
 
         @Override
         public String getJobURI() {
-            return getAsynchronousJobUriBuilder(this).build().toString();
+            return jobUri;
         }
 
         @Override
