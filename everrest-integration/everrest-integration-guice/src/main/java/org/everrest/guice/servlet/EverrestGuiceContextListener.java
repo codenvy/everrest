@@ -53,6 +53,7 @@ import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
 import org.everrest.guice.GuiceObjectFactory;
+import org.everrest.guice.PathKey;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -246,6 +247,17 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
                     com.google.inject.Provider<?> guiceProvider = binding.getProvider();
                     resources.addResource(new GuiceObjectFactory<AbstractResourceDescriptor>(rDescriptor, guiceProvider));
                 }
+            } else if (binding.getKey() instanceof PathKey) {
+                Class clazz = ((PathKey)binding.getKey()).getClazz();
+                ComponentLifecycleScope lifeCycle = ((BindingImpl<?>)binding).getScoping().isNoScope() //
+                                                    ? ComponentLifecycleScope.PER_REQUEST //
+                                                    : ComponentLifecycleScope.SINGLETON;
+                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(((PathKey)binding.getKey()).getPath(),
+                                                                                            clazz,
+                                                                                            lifeCycle);
+                rDescriptor.accept(rdv);
+                com.google.inject.Provider<?> guiceProvider = binding.getProvider();
+                resources.addResource(new GuiceObjectFactory<AbstractResourceDescriptor>(rDescriptor, guiceProvider));
             }
         }
     }
