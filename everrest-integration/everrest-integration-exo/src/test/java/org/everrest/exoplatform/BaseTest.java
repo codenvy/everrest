@@ -21,16 +21,13 @@ package org.everrest.exoplatform;
 import junit.framework.TestCase;
 
 import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RuntimeDelegateImpl;
 import org.exoplatform.container.StandaloneContainer;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public abstract class BaseTest extends TestCase {
     protected StandaloneContainer container;
@@ -38,7 +35,6 @@ public abstract class BaseTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
 
         // reset set of providers for each test
         Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();

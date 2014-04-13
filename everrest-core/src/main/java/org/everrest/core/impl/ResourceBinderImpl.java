@@ -34,7 +34,6 @@ import org.everrest.core.util.Logger;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,9 +78,6 @@ public class ResourceBinderImpl implements ResourceBinder {
     private final ReentrantLock lock = new ReentrantLock();
 
     public ResourceBinderImpl() {
-        // Initialize RuntimeDelegate instance. This is first component in life cycle what needs.
-        RuntimeDelegate rd = new RuntimeDelegateImpl();
-        RuntimeDelegate.setInstance(rd);
     }
 
     public void addResource(Class<?> resourceClass, MultivaluedMap<String, String> properties) {

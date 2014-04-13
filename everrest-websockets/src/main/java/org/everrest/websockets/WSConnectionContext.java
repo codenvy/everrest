@@ -35,13 +35,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class WSConnectionContext {
     private static final Logger                      LOG                 = Logger.getLogger(WSConnectionContext.class);
-    static final         List<WSConnectionListener>  connectionListeners = new CopyOnWriteArrayList<WSConnectionListener>();
-    static final         Map<Long, WSConnectionImpl> connections         = new ConcurrentHashMap<Long, WSConnectionImpl>();
+    static final         List<WSConnectionListener>  connectionListeners = new CopyOnWriteArrayList<>();
+    static final         Map<Long, WSConnectionImpl> connections         = new ConcurrentHashMap<>();
 
     public static boolean registerConnectionListener(WSConnectionListener listener) {
         return connectionListeners.add(listener);
@@ -94,8 +93,8 @@ public class WSConnectionContext {
     private static RESTfulOutputMessage newRESTfulOutputMessage(ChannelBroadcastMessage message) {
         final RESTfulOutputMessage transport = new RESTfulOutputMessage();
         transport.setUuid(message.getUuid());
-        transport.setHeaders(new Pair[]{new Pair("x-everrest-websocket-channel", message.getChannel()),
-                                        new Pair("x-everrest-websocket-message-type", message.getType().toString())});
+        transport.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-channel", message.getChannel()),
+                                        Pair.of("x-everrest-websocket-message-type", message.getType().toString())});
         transport.setBody(message.getBody());
         return transport;
     }
@@ -153,7 +152,7 @@ public class WSConnectionContext {
         if (httpSessionId == null) {
             throw new IllegalArgumentException("HTTP session may not be null. ");
         }
-        final List<WSConnectionImpl> result = new ArrayList<WSConnectionImpl>();
+        final List<WSConnectionImpl> result = new ArrayList<>();
         for (WSConnectionImpl connection : connections.values()) {
             if (httpSessionId.equals(connection.getHttpSession().getId())) {
                 result.add(connection);

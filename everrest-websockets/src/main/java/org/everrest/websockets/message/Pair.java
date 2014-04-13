@@ -26,8 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class Pair {
     public static MultivaluedMap<String, String> toMap(Pair[] pairs) {
@@ -42,20 +41,24 @@ public final class Pair {
 
     public static Pair[] fromMap(MultivaluedMap<String, Object> source) {
         if (!(source == null || source.isEmpty())) {
-            final List<Pair> list = new ArrayList<Pair>();
+            final List<Pair> list = new ArrayList<>();
             for (String key : source.keySet()) {
                 List<Object> values = source.get(key);
                 if (!(values == null || values.isEmpty())) {
                     for (Object v : values) {
-                        list.add(new Pair(key, HeaderHelper.getHeaderAsString(v)));
+                        list.add(Pair.of(key, HeaderHelper.getHeaderAsString(v)));
                     }
                 } else {
-                    list.add(new Pair(key, null));
+                    list.add(Pair.of(key, null));
                 }
             }
             return list.toArray(new Pair[list.size()]);
         }
         return new Pair[0];
+    }
+
+    public static Pair of(String name, String value) {
+        return new Pair(name, value);
     }
 
     private String name;

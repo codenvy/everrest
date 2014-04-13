@@ -42,8 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class RuntimeDelegateImpl extends RuntimeDelegate {
     /** HeaderDelegate cache. */

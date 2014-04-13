@@ -24,9 +24,6 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.InputHeadersMap;
-import org.everrest.core.impl.async.AsynchronousJob;
-import org.everrest.core.impl.async.AsynchronousJobListener;
-import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.provider.json.JsonException;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.JsonValue;
@@ -45,7 +42,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 
 /**
  * @author andrew00x
@@ -53,58 +53,47 @@ import java.util.concurrent.atomic.AtomicLong;
 class WS2RESTAdapter implements WSMessageReceiver {
     private static final Logger LOG = Logger.getLogger(WS2RESTAdapter.class);
 
-    private static final AtomicLong sequence = new AtomicLong(1);
+    private static final URI BASE_URI = URI.create("");
 
-    private final WSConnection        connection;
-    private final SecurityContext     securityContext;
-    private final EverrestProcessor   everrestProcessor;
-    private final AsynchronousJobPool asynchronousPool;
+    private final WSConnection      connection;
+    private final SecurityContext   securityContext;
+    private final EverrestProcessor everrestProcessor;
+    private final Executor          executor;
+    private final Set<String>       inProgress;
 
-    WS2RESTAdapter(WSConnection connection,
-                   SecurityContext securityContext,
-                   EverrestProcessor everrestProcessor,
-                   AsynchronousJobPool asynchronousPool) {
-        if (connection == null) {
-            throw new IllegalArgumentException();
-        }
-        if (everrestProcessor == null) {
-            throw new IllegalArgumentException();
-        }
-        if (asynchronousPool == null) {
-            throw new IllegalArgumentException();
-        }
+    WS2RESTAdapter(WSConnection connection, SecurityContext securityContext, EverrestProcessor everrestProcessor, Executor executor) {
         this.connection = connection;
         this.securityContext = securityContext;
         this.everrestProcessor = everrestProcessor;
-        this.asynchronousPool = asynchronousPool;
+        this.executor = executor;
+        this.inProgress = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     }
 
     @Override
-    public void onMessage(InputMessage input) {
+    public void onMessage(final InputMessage input) {
         // See method onTextMessage(CharBuffer) in class WSConnectionImpl.
         if (!(input instanceof RESTfulInputMessage)) {
             throw new IllegalArgumentException("Invalid input message. ");
         }
-
-        final RESTfulInputMessage restInputMessage = (RESTfulInputMessage)input;
-        final MultivaluedMap<String, String> headers = Pair.toMap(restInputMessage.getHeaders());
+        final RESTfulInputMessage request = (RESTfulInputMessage)input;
+        final MultivaluedMap<String, String> headers = Pair.toMap(request.getHeaders());
         final String messageType = headers.getFirst("x-everrest-websocket-message-type");
-
         if ("ping".equalsIgnoreCase(messageType)) {
             // At the moment is no JavaScript API to send ping message from client side.
-            final RESTfulOutputMessage pong = newOutputMessage(restInputMessage);
+            final RESTfulOutputMessage pong = newOutputMessage(request);
             // Copy body from ping request.
-            pong.setBody(restInputMessage.getBody());
+            pong.setBody(request.getBody());
             pong.setResponseCode(200);
-            pong.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "pong")});
+            pong.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "pong")});
             doSendMessage(pong);
             return;
-        } else if ("subscribe-channel".equalsIgnoreCase(messageType) || "unsubscribe-channel".equalsIgnoreCase(messageType)) {
+        }
+        if ("subscribe-channel".equalsIgnoreCase(messageType) || "unsubscribe-channel".equalsIgnoreCase(messageType)) {
             final String channel = parseSubscriptionMessage(input);
-            final RESTfulOutputMessage response = newOutputMessage(restInputMessage);
+            final RESTfulOutputMessage response = newOutputMessage(request);
             // Send the same body as in request.
-            response.setBody(restInputMessage.getBody());
-            response.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", messageType)});
+            response.setBody(request.getBody());
+            response.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", messageType)});
             if (channel != null) {
                 if ("subscribe-channel".equalsIgnoreCase(messageType)) {
                     connection.subscribeToChannel(channel);
@@ -120,109 +109,61 @@ class WS2RESTAdapter implements WSMessageReceiver {
             doSendMessage(response);
             return;
         }
-
-        final String uuid = restInputMessage.getUuid();
-        RESTfulOutputMessage output = (RESTfulOutputMessage)connection.getHttpSession().getAttribute(uuid);
-        if (output != null) {
-            // Message with specified id in progress. Probably client did not get 'accepted' response, try resend it to client.
-            doSendMessage(output);
-            return;
+        final String uuid = request.getUuid();
+        if (uuid == null) {
+            throw new IllegalArgumentException("Invalid input message. Message UUID is required. ");
         }
-
-        final String trackerId = Long.toString(sequence.getAndIncrement());
-
-        // This listener called when asynchronous task is done.
-        asynchronousPool.registerListener(new AsynchronousJobListener() {
-            @Override
-            public void done(AsynchronousJob job) {
-                if (connection.isConnected()) {
-                    final MultivaluedMap<String, String> requestHeaders =
-                            ((ContainerRequest)job.getContext().get("org.everrest.async.request")).getRequestHeaders();
-                    if ("websocket".equals(requestHeaders.getFirst("x-everrest-protocol"))
-                        && trackerId.equals(requestHeaders.getFirst("x-everrest-websocket-tracker-id"))) {
-                        final RESTfulOutputMessage output = newOutputMessage(restInputMessage);
+        if (inProgress.contains(uuid)) {
+            // Re-send accept response if client tries send message with the same id
+            final RESTfulOutputMessage response = newOutputMessage(request);
+            response.setResponseCode(202);
+            doSendMessage(response);
+        }
+        executor.execute(new Runnable() {
+            public void run() {
+                try {
+                    ByteArrayInputStream data = null;
+                    final String body = input.getBody();
+                    if (body != null) {
                         try {
-                            final ContainerRequest req = new ContainerRequest("GET",
-                                                                              URI.create(job.getJobURI()),
-                                                                              URI.create(""),
-                                                                              null,
-                                                                              new InputHeadersMap(),
-                                                                              securityContext);
-                            final ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
-                            final EnvironmentContext env = new EnvironmentContext();
-                            env.put(WSConnection.class, connection);
-                            everrestProcessor.process(req, resp, env);
-                        } catch (Exception e) {
-                            LOG.error(e.getMessage(), e);
-                        } finally {
-                            // Not need this listener any more.
-                            asynchronousPool.unregisterListener(this);
-                            // Job is done not need to store 'accepted' message any more.
-                            connection.getHttpSession().removeAttribute(uuid);
+                            data = new ByteArrayInputStream(body.getBytes("UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            // Should never happen since UTF-8 is supported.
+                            throw new IllegalStateException(e.getMessage(), e);
                         }
-
-                        doSendMessage(output);
                     }
-                } else {
-                    // If the connection is already closed while the task was done do not get result.
-                    // Lets user get result manually after restoring of connection.
-                    LOG.debug("Connection already closed skip getting result of job: {}. ", job.getJobId());
-                    asynchronousPool.unregisterListener(this);
-                    try {
-                        connection.getHttpSession().removeAttribute(uuid);
-                    } catch (IllegalStateException ignored) {
-                        // May be thrown if HTTP session already invalidated
+                    final String requestPath = request.getPath();
+                    final URI requestUri = requestPath == null || requestPath.isEmpty()
+                                           ? URI.create("/")
+                                           : URI.create(requestPath.charAt(0) == '/' ? requestPath : ('/' + requestPath));
+                    if (data != null) {
+                        // Always know content length since we use ByteArrayInputStream.
+                        headers.putSingle("content-length", Integer.toString(data.available()));
                     }
+                    final RESTfulOutputMessage response = newOutputMessage(request);
+                    final ContainerRequest internalRequest = new ContainerRequest(request.getMethod(),
+                                                                                  requestUri,
+                                                                                  BASE_URI,
+                                                                                  data,
+                                                                                  new InputHeadersMap(headers),
+                                                                                  securityContext);
+                    final ContainerResponse internalResponse = new ContainerResponse(new EverrestResponseWriter(response));
+                    final EnvironmentContext env = new EnvironmentContext();
+                    env.put(WSConnection.class, connection);
+                    everrestProcessor.process(internalRequest, internalResponse, env);
+                    doSendMessage(response);
+                } catch (Exception e) {
+                    LOG.error(e.getMessage(), e);
+                } finally {
+                    inProgress.remove(uuid);
                 }
             }
         });
-
-        ByteArrayInputStream data = null;
-        final String body = input.getBody();
-        if (body != null) {
-            try {
-                data = new ByteArrayInputStream(body.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                // Should never happen since UTF-8 is supported.
-                throw new IllegalStateException(e.getMessage(), e);
-            }
-        }
-
-        final String requestPath = restInputMessage.getPath();
-        final URI requestUri = URI.create(requestPath.startsWith("/") ? requestPath : ('/' + requestPath));
-
-        if (data != null) {
-            // Always know content length since we use ByteArrayInputStream.
-            headers.putSingle("content-length", Integer.toString(data.available()));
-        }
-
-        // Put some additional 'helper' headers.
-        headers.putSingle("x-everrest-async", "true");
-        headers.putSingle("x-everrest-protocol", "websocket");
-        headers.putSingle("x-everrest-websocket-tracker-id", trackerId);
-
-        output = newOutputMessage(restInputMessage);
-        final ContainerRequest req = new ContainerRequest(restInputMessage.getMethod(),
-                                                          requestUri,
-                                                          URI.create(""),
-                                                          data,
-                                                          new InputHeadersMap(headers),
-                                                          securityContext);
-        final ContainerResponse resp = new ContainerResponse(new EverrestResponseWriter(output));
-
-        try {
-            final EnvironmentContext env = new EnvironmentContext();
-            env.put(WSConnection.class, connection);
-            everrestProcessor.process(req, resp, env);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
-
-        // Save 'accepted' response in session. If we fail to send accepted response to client it may try to resend request.
-        // In this case we do not start the same job twice (use message uuid), instead take this response from session and try send it again.
-        connection.getHttpSession().setAttribute(uuid, output);
-
-        doSendMessage(output);
+        // send accept response
+        final RESTfulOutputMessage restOutputMessage = newOutputMessage(request);
+        restOutputMessage.setResponseCode(202);
+        inProgress.add(uuid);
+        doSendMessage(restOutputMessage);
     }
 
     @Override
@@ -249,9 +190,7 @@ class WS2RESTAdapter implements WSMessageReceiver {
         if (connection.isConnected()) {
             try {
                 connection.sendMessage(output);
-            } catch (MessageConversionException e) {
-                LOG.error(e.getMessage(), e);
-            } catch (IOException e) {
+            } catch (MessageConversionException | IOException e) {
                 LOG.error(e.getMessage(), e);
             }
         } else {

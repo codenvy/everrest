@@ -49,6 +49,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -80,11 +81,11 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(AsynchronousJobPool.class);
 
-    /** Generator for unique job ID . */
-    private static final AtomicLong jobIdGenerator = new AtomicLong(1);
+    /** Generator for unique ID . */
+    private static final AtomicLong sequence = new AtomicLong(1);
 
-    private static Long nextJobId() {
-        return jobIdGenerator.getAndIncrement();
+    private static Long nextId() {
+        return sequence.getAndIncrement();
     }
 
     protected final String asynchronousServicePath;
@@ -136,7 +137,16 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
         int queueSize = config.getAsynchronousQueueSize();
         return new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS,
                                       new LinkedBlockingQueue<Runnable>(queueSize),
-                                      new ManyJobsPolicy(new ThreadPoolExecutor.AbortPolicy()));
+                                      new ThreadFactory() {
+                                          @Override
+                                          public Thread newThread(Runnable r) {
+                                              final Thread t = new Thread(r, "everrest.AsynchronousJobPool" + nextId());
+                                              t.setDaemon(true);
+                                              return t;
+                                          }
+                                      },
+                                      new ManyJobsPolicy(new ThreadPoolExecutor.AbortPolicy())
+        );
     }
 
     /** @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class) */
@@ -160,7 +170,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
                                         ResourceMethodDescriptor resourceMethod,
                                         Object[] params) throws AsynchronousJobRejectedException {
         AsynchronousFuture job = new AsynchronousFuture(
-                nextJobId(),
+                nextId(),
                 newCallable(resource, resourceMethod.getMethod(), params),
                 System.currentTimeMillis() + jobTimeout * 60 * 1000,
                 resourceMethod);

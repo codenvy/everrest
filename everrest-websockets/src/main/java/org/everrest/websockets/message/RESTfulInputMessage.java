@@ -21,14 +21,14 @@ package org.everrest.websockets.message;
 /**
  * RESTful input message.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
+ * @author andrew00x
  */
 public class RESTfulInputMessage extends InputMessage {
     public static RESTfulInputMessage newPingMessage(String uuid, String message) {
         final RESTfulInputMessage instance = new RESTfulInputMessage();
         instance.setUuid(uuid);
         instance.setMethod("POST");
-        instance.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "ping")});
+        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "ping")});
         instance.setBody(message);
         return instance;
     }
@@ -37,7 +37,7 @@ public class RESTfulInputMessage extends InputMessage {
         final RESTfulInputMessage instance = new RESTfulInputMessage();
         instance.setUuid(uuid);
         instance.setMethod("POST");
-        instance.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "subscribe-channel")});
+        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "subscribe-channel")});
         instance.setBody(String.format("{\"channel\":\"%s\"}", channel));
         return instance;
     }
@@ -46,7 +46,7 @@ public class RESTfulInputMessage extends InputMessage {
         final RESTfulInputMessage instance = new RESTfulInputMessage();
         instance.setUuid(uuid);
         instance.setMethod("POST");
-        instance.setHeaders(new Pair[]{new Pair("x-everrest-websocket-message-type", "unsubscribe-channel")});
+        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "unsubscribe-channel")});
         instance.setBody(String.format("{\"channel\":\"%s\"}", channel));
         return instance;
     }

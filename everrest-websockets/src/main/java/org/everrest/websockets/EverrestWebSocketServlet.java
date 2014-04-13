@@ -20,10 +20,7 @@ package org.everrest.websockets;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.tools.SimplePrincipal;
 import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.core.tools.WebApplicationDeclaredRoles;
@@ -33,41 +30,43 @@ import org.everrest.websockets.message.MessageConverter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.ContextResolver;
 import java.security.Principal;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class EverrestWebSocketServlet extends WebSocketServlet {
     public static final String EVERREST_PROCESSOR_ATTRIBUTE = EverrestProcessor.class.getName();
-    public static final String PROVIDER_BINDER_ATTRIBUTE    = ApplicationProviderBinder.class.getName();
     public static final String MESSAGE_CONVERTER_ATTRIBUTE  = MessageConverter.class.getName();
 
+    private static final AtomicLong sequence = new AtomicLong(1);
+
     private EverrestProcessor           processor;
-    private AsynchronousJobPool         asynchronousPool;
     private MessageConverter            messageConverter;
     private WebApplicationDeclaredRoles webApplicationRoles;
+    private Executor executor;
 
     @Override
     public void init() throws ServletException {
         processor = getEverrestProcessor();
-        asynchronousPool = getAsynchronousJobPool();
         messageConverter = getMessageConverter();
         if (messageConverter == null) {
             messageConverter = new JsonMessageConverter();
         }
         webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
+        executor = getExecutor();
     }
 
     @Override
     protected StreamInbound createWebSocketInbound(String s, HttpServletRequest req) {
         WSConnectionImpl connection = WSConnectionContext.open(req.getSession(), messageConverter);
-        connection.registerMessageReceiver(
-                new WS2RESTAdapter(connection, createSecurityContext(req), processor, asynchronousPool));
+        connection.registerMessageReceiver(new WS2RESTAdapter(connection, createSecurityContext(req), processor, executor));
         return connection;
     }
 
@@ -79,17 +78,15 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
         return (MessageConverter)getServletContext().getAttribute(MESSAGE_CONVERTER_ATTRIBUTE);
     }
 
-    protected AsynchronousJobPool getAsynchronousJobPool() {
-        ProviderBinder providers = ((ProviderBinder)getServletContext().getAttribute(PROVIDER_BINDER_ATTRIBUTE));
-        if (providers != null) {
-            ContextResolver<AsynchronousJobPool> asyncJobsResolver =
-                    providers.getContextResolver(AsynchronousJobPool.class, null);
-            if (asyncJobsResolver != null) {
-                return asyncJobsResolver.getContext(null);
+    protected Executor getExecutor() {
+        return Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                final Thread t = new Thread(r, "everrest.WebSocket" + sequence.getAndIncrement());
+                t.setDaemon(true);
+                return t;
             }
-        }
-        throw new IllegalStateException(
-                "Unable get web socket connection. Asynchronous jobs feature is not configured properly. ");
+        });
     }
 
     private SecurityContext createSecurityContext(HttpServletRequest req) {
@@ -97,13 +94,12 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
         if (principal == null) {
             return new SimpleSecurityContext(req.isSecure());
         }
-        Set<String> userRoles = new LinkedHashSet<String>();
+        Set<String> userRoles = new LinkedHashSet<>();
         for (String declaredRole : webApplicationRoles.getDeclaredRoles()) {
             if (req.isUserInRole(declaredRole)) {
                 userRoles.add(declaredRole);
             }
         }
-        return new SimpleSecurityContext(
-                new SimplePrincipal(principal.getName()), userRoles, req.getAuthType(), req.isSecure());
+        return new SimpleSecurityContext(new SimplePrincipal(principal.getName()), userRoles, req.getAuthType(), req.isSecure());
     }
 }
