@@ -70,14 +70,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Gives access to common predefined provider. Users of EverRest are not expected to use this class or any of its
  * subclasses.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  * @see Providers
  * @see Provider
  * @see MessageBodyReader
@@ -97,7 +98,7 @@ public class ProviderBinder implements Providers {
     private static final RuntimePermission PROVIDERS_PERMISSIONS = new RuntimePermission("providersManagePermission");
 
     /** Providers binder instance. */
-    private static final AtomicReference<ProviderBinder> INSTANCE = new AtomicReference<ProviderBinder>();
+    private static final AtomicReference<ProviderBinder> INSTANCE = new AtomicReference<>();
 
     /** @return instance of {@link ProviderBinder} */
     public static ProviderBinder getInstance() {
@@ -133,32 +134,26 @@ public class ProviderBinder implements Providers {
     }
 
     /** Read message body providers. Also see {@link MediaTypeMultivaluedMap}. */
-    protected final MediaTypeMultivaluedMap<ObjectFactory<ProviderDescriptor>> writeProviders =
-            new MediaTypeMultivaluedMap<ObjectFactory<ProviderDescriptor>>();
+    protected final MediaTypeMultivaluedMap<ObjectFactory<ProviderDescriptor>> writeProviders = new MediaTypeMultivaluedMap<>();
 
     /** Read message body providers. Also see {@link MediaTypeMultivaluedMap}. */
-    protected final MediaTypeMultivaluedMap<ObjectFactory<ProviderDescriptor>> readProviders =
-            new MediaTypeMultivaluedMap<ObjectFactory<ProviderDescriptor>>();
+    protected final MediaTypeMultivaluedMap<ObjectFactory<ProviderDescriptor>> readProviders = new MediaTypeMultivaluedMap<>();
 
     /** Exception mappers, see {@link ExceptionMapper}. */
-    protected final Map<Class<? extends Throwable>, ObjectFactory<ProviderDescriptor>> exceptionMappers =
-            new HashMap<Class<? extends Throwable>, ObjectFactory<ProviderDescriptor>>();
+    protected final ConcurrentMap<Class<? extends Throwable>, ObjectFactory<ProviderDescriptor>> exceptionMappers =
+            new ConcurrentHashMap<>();
 
     /** Context resolvers. */
-    protected final Map<Class<?>, MediaTypeMap<ObjectFactory<ProviderDescriptor>>> contextResolvers =
-            new HashMap<Class<?>, MediaTypeMap<ObjectFactory<ProviderDescriptor>>>();
+    protected final Map<Class<?>, MediaTypeMap<ObjectFactory<ProviderDescriptor>>> contextResolvers = new HashMap<>();
 
     /** Request filters, see {@link RequestFilter}. */
-    protected final UriPatternMap<ObjectFactory<FilterDescriptor>> requestFilters =
-            new UriPatternMap<ObjectFactory<FilterDescriptor>>();
+    protected final UriPatternMap<ObjectFactory<FilterDescriptor>> requestFilters = new UriPatternMap<>();
 
     /** Response filters, see {@link ResponseFilter}. */
-    protected final UriPatternMap<ObjectFactory<FilterDescriptor>> responseFilters =
-            new UriPatternMap<ObjectFactory<FilterDescriptor>>();
+    protected final UriPatternMap<ObjectFactory<FilterDescriptor>> responseFilters = new UriPatternMap<>();
 
     /** Method invoking filters. */
-    protected final UriPatternMap<ObjectFactory<FilterDescriptor>> invokerFilters =
-            new UriPatternMap<ObjectFactory<FilterDescriptor>>();
+    protected final UriPatternMap<ObjectFactory<FilterDescriptor>> invokerFilters = new UriPatternMap<>();
 
     /** Validator. */
     protected final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
@@ -179,7 +174,7 @@ public class ProviderBinder implements Providers {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
             descriptor.accept(rdv);
-            addContextResolver(new PerRequestObjectFactory<ProviderDescriptor>(descriptor));
+            addContextResolver(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
             LOG.error("Failed add ContextResolver " + clazz.getName(), e);
         }
@@ -197,7 +192,7 @@ public class ProviderBinder implements Providers {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
             descriptor.accept(rdv);
-            addContextResolver(new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance));
+            addContextResolver(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
             LOG.error("Failed add ContextResolver " + clazz.getName(), e);
         }
@@ -246,7 +241,7 @@ public class ProviderBinder implements Providers {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
             descriptor.accept(rdv);
-            addMessageBodyReader(new PerRequestObjectFactory<ProviderDescriptor>(descriptor));
+            addMessageBodyReader(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
             LOG.error("Failed add MessageBodyReader " + clazz.getName(), e);
         }
@@ -280,7 +275,7 @@ public class ProviderBinder implements Providers {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
             descriptor.accept(rdv);
-            addMessageBodyWriter(new PerRequestObjectFactory<ProviderDescriptor>(descriptor));
+            addMessageBodyWriter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
             LOG.error("Failed add MessageBodyWriter " + clazz.getName(), e);
         }
@@ -298,7 +293,7 @@ public class ProviderBinder implements Providers {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
             descriptor.accept(rdv);
-            addMessageBodyWriter(new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance));
+            addMessageBodyWriter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
             LOG.error("Failed add MessageBodyWriter " + clazz.getName(), e);
         }
@@ -314,7 +309,7 @@ public class ProviderBinder implements Providers {
         try {
             FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
             descriptor.accept(rdv);
-            addMethodInvokerFilter(new PerRequestObjectFactory<FilterDescriptor>(descriptor));
+            addMethodInvokerFilter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
             LOG.error("Failed add MethodInvokerFilter " + clazz.getName(), e);
         }
@@ -331,7 +326,7 @@ public class ProviderBinder implements Providers {
         try {
             FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
             descriptor.accept(rdv);
-            addMethodInvokerFilter(new SingletonObjectFactory<FilterDescriptor>(descriptor, instance));
+            addMethodInvokerFilter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
             LOG.error("Failed add RequestFilter " + clazz.getName(), e);
         }
@@ -347,7 +342,7 @@ public class ProviderBinder implements Providers {
         try {
             FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
             descriptor.accept(rdv);
-            addRequestFilter(new PerRequestObjectFactory<FilterDescriptor>(descriptor));
+            addRequestFilter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
             LOG.error("Failed add MethodInvokerFilter " + clazz.getName(), e);
         }
@@ -364,7 +359,7 @@ public class ProviderBinder implements Providers {
         try {
             FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
             descriptor.accept(rdv);
-            addRequestFilter(new SingletonObjectFactory<FilterDescriptor>(descriptor, instance));
+            addRequestFilter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
             LOG.error("Failed add RequestFilter " + clazz.getName(), e);
         }
@@ -380,7 +375,7 @@ public class ProviderBinder implements Providers {
         try {
             FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
             descriptor.accept(rdv);
-            addResponseFilter(new PerRequestObjectFactory<FilterDescriptor>(descriptor));
+            addResponseFilter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
             LOG.error("Failed add ResponseFilter " + clazz.getName(), e);
         }
@@ -397,7 +392,7 @@ public class ProviderBinder implements Providers {
         try {
             FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
             descriptor.accept(rdv);
-            addResponseFilter(new SingletonObjectFactory<FilterDescriptor>(descriptor, instance));
+            addResponseFilter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
             LOG.error("Failed add ResponseFilter " + clazz.getName(), e);
         }
@@ -430,8 +425,7 @@ public class ProviderBinder implements Providers {
     }
 
     /** {@inheritDoc} */
-    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
-                                                         MediaType mediaType) {
+    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return doGetMessageBodyReader(type, genericType, annotations, mediaType);
     }
 
@@ -469,34 +463,34 @@ public class ProviderBinder implements Providers {
     }
 
     public void addContextResolver(ObjectFactory<ProviderDescriptor> contextResolverFactory) {
-        for (Type type : contextResolverFactory.getObjectModel().getObjectClass().getGenericInterfaces()) {
-            if (type instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType)type;
-                if (ContextResolver.class == pt.getRawType()) {
-                    Type[] typeArguments = pt.getActualTypeArguments();
-                    if (typeArguments.length > 1) {
-                        throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
-                    }
+            for (Type type : contextResolverFactory.getObjectModel().getObjectClass().getGenericInterfaces()) {
+                if (type instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType)type;
+                    if (ContextResolver.class == pt.getRawType()) {
+                        Type[] typeArguments = pt.getActualTypeArguments();
+                        if (typeArguments.length > 1) {
+                            throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
+                        }
 
-                    Class<?> aclazz = (Class<?>)typeArguments[0];
-                    MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(aclazz);
+                        Class<?> aclazz = (Class<?>)typeArguments[0];
+                        MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(aclazz);
 
-                    if (pm == null) {
-                        pm = new MediaTypeMap<ObjectFactory<ProviderDescriptor>>();
-                        contextResolvers.put(aclazz, pm);
-                    }
+                        if (pm == null) {
+                            pm = new MediaTypeMap<>();
+                            contextResolvers.put(aclazz, pm);
+                        }
 
-                    for (MediaType mime : contextResolverFactory.getObjectModel().produces()) {
-                        if (pm.get(mime) != null) {
-                            throw new RuntimeException("ContextResolver for " + aclazz.getName() + " and media type " + mime
-                                                       + " already registered.");
-                        } else {
-                            pm.put(mime, contextResolverFactory);
+                        for (MediaType mime : contextResolverFactory.getObjectModel().produces()) {
+                            if (pm.get(mime) != null) {
+                                throw new RuntimeException("ContextResolver for " + aclazz.getName() + " and media type " + mime
+                                                           + " already registered.");
+                            } else {
+                                pm.put(mime, contextResolverFactory);
+                            }
                         }
                     }
                 }
             }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -510,11 +504,9 @@ public class ProviderBinder implements Providers {
                         throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
                     }
                     Class<? extends Throwable> exc = (Class<? extends Throwable>)typeArguments[0];
-
-                    if (exceptionMappers.get(exc) != null) {
+                    if (exceptionMappers.putIfAbsent(exc, exceptionMapperFactory) != null) {
                         throw new RuntimeException("ExceptionMapper for exception " + exc + " already registered.");
                     }
-                    exceptionMappers.put(exc, exceptionMapperFactory);
                 }
             }
         }
@@ -525,9 +517,9 @@ public class ProviderBinder implements Providers {
         // supports, see method MessageBodyReader.isReadable. So here does not
         // check is reader for the same Java and media type already exists.
         // Let it be under developer's control.
-        for (MediaType mime : readerFactory.getObjectModel().consumes()) {
-            readProviders.getList(mime).add(readerFactory);
-        }
+            for (MediaType mime : readerFactory.getObjectModel().consumes()) {
+                readProviders.getList(mime).add(readerFactory);
+            }
     }
 
     public void addMessageBodyWriter(ObjectFactory<ProviderDescriptor> writerFactory) {
@@ -535,9 +527,9 @@ public class ProviderBinder implements Providers {
         // supports, see method MessageBodyWriter#isWriteable. So here does not
         // check is writer for the same Java and media type already exists.
         // Let it be under developer's control.
-        for (MediaType mime : writerFactory.getObjectModel().produces()) {
-            writeProviders.getList(mime).add(writerFactory);
-        }
+            for (MediaType mime : writerFactory.getObjectModel().produces()) {
+                writeProviders.getList(mime).add(writerFactory);
+            }
     }
 
     public void addMethodInvokerFilter(ObjectFactory<FilterDescriptor> filterFactory) {
@@ -554,22 +546,22 @@ public class ProviderBinder implements Providers {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected List<MediaType> doGetAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations) {
-        List<MediaType> l = new ArrayList<MediaType>();
-        Map<Class, MessageBodyWriter> instanceCache = new HashMap<Class, MessageBodyWriter>();
-        for (Map.Entry<MediaType, List<ObjectFactory<ProviderDescriptor>>> e : writeProviders.entrySet()) {
-            MediaType mime = e.getKey();
-            for (ObjectFactory pf : e.getValue()) {
-                Class clazz = pf.getObjectModel().getObjectClass();
-                MessageBodyWriter writer = instanceCache.get(clazz);
-                if (writer == null) {
-                    writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
-                    instanceCache.put(clazz, writer);
-                }
-                if (writer.isWriteable(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE)) {
-                    l.add(mime);
+        List<MediaType> l = new ArrayList<>();
+        Map<Class, MessageBodyWriter> instanceCache = new HashMap<>();
+            for (Map.Entry<MediaType, List<ObjectFactory<ProviderDescriptor>>> e : writeProviders.entrySet()) {
+                MediaType mime = e.getKey();
+                for (ObjectFactory pf : e.getValue()) {
+                    Class clazz = pf.getObjectModel().getObjectClass();
+                    MessageBodyWriter writer = instanceCache.get(clazz);
+                    if (writer == null) {
+                        writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+                        instanceCache.put(clazz, writer);
+                    }
+                    if (writer.isWriteable(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE)) {
+                        l.add(mime);
+                    }
                 }
             }
-        }
         if (l.size() > 1) {
             Collections.sort(l, MediaTypeHelper.MEDIA_TYPE_COMPARATOR);
         }
@@ -577,32 +569,27 @@ public class ProviderBinder implements Providers {
     }
 
     protected <T> ContextResolver<T> doGetContextResolver(Class<T> contextType, MediaType mediaType) {
-        MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(contextType);
-        ContextResolver<T> resolver = null;
-        if (pm != null) {
-            MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
-            while (mrange.hasNext() && resolver == null) {
-                MediaType actual = mrange.next();
-                resolver = doGetContextResolver(pm, contextType, actual);
+            MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(contextType);
+            ContextResolver<T> resolver = null;
+            if (pm != null) {
+                MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
+                while (mrange.hasNext() && resolver == null) {
+                    MediaType actual = mrange.next();
+                    resolver = doGetContextResolver(pm, actual);
+                }
             }
-        }
-        return resolver;
+            return resolver;
     }
 
     /**
-     * @param <T>
-     *         context resolver actual type argument
      * @param pm
      *         MediaTypeMap that contains ProviderFactories that may produce objects that are instance of T
-     * @param contextType
-     *         context type
      * @param mediaType
      *         media type that can be used to restrict context resolver choose
      * @return ContextResolver or null if nothing was found
      */
     @SuppressWarnings("unchecked")
-    private <T> ContextResolver<T> doGetContextResolver(MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm,
-                                                        Class<T> contextType, MediaType mediaType) {
+    private <T> ContextResolver<T> doGetContextResolver(MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm, MediaType mediaType) {
         for (Map.Entry<MediaType, ObjectFactory<ProviderDescriptor>> e : pm.entrySet()) {
             if (mediaType.isCompatible(e.getKey())) {
                 return (ContextResolver<T>)e.getValue().getInstance(ApplicationContextImpl.getCurrent());
@@ -641,21 +628,21 @@ public class ProviderBinder implements Providers {
     protected <T> MessageBodyReader<T> doGetMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
                                                               MediaType mediaType) {
         MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
-        Map<Class, MessageBodyReader> instanceCache = new HashMap<Class, MessageBodyReader>();
-        while (mrange.hasNext()) {
-            MediaType actual = mrange.next();
-            for (ObjectFactory pf : readProviders.getList(actual)) {
-                Class<?> clazz = pf.getObjectModel().getObjectClass();
-                MessageBodyReader reader = instanceCache.get(clazz);
-                if (reader == null) {
-                    reader = (MessageBodyReader)pf.getInstance(ApplicationContextImpl.getCurrent());
-                    instanceCache.put(clazz, reader);
-                }
-                if (reader.isReadable(type, genericType, annotations, actual)) {
-                    return reader;
+        Map<Class, MessageBodyReader> instanceCache = new HashMap<>();
+            while (mrange.hasNext()) {
+                MediaType actual = mrange.next();
+                for (ObjectFactory pf : readProviders.getList(actual)) {
+                    Class<?> clazz = pf.getObjectModel().getObjectClass();
+                    MessageBodyReader reader = instanceCache.get(clazz);
+                    if (reader == null) {
+                        reader = (MessageBodyReader)pf.getInstance(ApplicationContextImpl.getCurrent());
+                        instanceCache.put(clazz, reader);
+                    }
+                    if (reader.isReadable(type, genericType, annotations, actual)) {
+                        return reader;
+                    }
                 }
             }
-        }
         return null;
     }
 
@@ -679,21 +666,21 @@ public class ProviderBinder implements Providers {
     protected <T> MessageBodyWriter<T> doGetMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
                                                               MediaType mediaType) {
         MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
-        Map<Class, MessageBodyWriter> instanceCache = new HashMap<Class, MessageBodyWriter>();
-        while (mrange.hasNext()) {
-            MediaType actual = mrange.next();
-            for (ObjectFactory pf : writeProviders.getList(actual)) {
-                Class<?> clazz = pf.getObjectModel().getObjectClass();
-                MessageBodyWriter writer = instanceCache.get(clazz);
-                if (writer == null) {
-                    writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
-                    instanceCache.put(clazz, writer);
-                }
-                if (writer.isWriteable(type, genericType, annotations, actual)) {
-                    return writer;
+        Map<Class, MessageBodyWriter> instanceCache = new HashMap<>();
+            while (mrange.hasNext()) {
+                MediaType actual = mrange.next();
+                for (ObjectFactory pf : writeProviders.getList(actual)) {
+                    Class<?> clazz = pf.getObjectModel().getObjectClass();
+                    MessageBodyWriter writer = instanceCache.get(clazz);
+                    if (writer == null) {
+                        writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+                        instanceCache.put(clazz, writer);
+                    }
+                    if (writer.isWriteable(type, genericType, annotations, actual)) {
+                        return writer;
+                    }
                 }
             }
-        }
         return null;
     }
 
@@ -707,11 +694,13 @@ public class ProviderBinder implements Providers {
      * @see #getRequestFilters(String)
      * @see #getResponseFilters(String)
      */
-    protected List<ObjectFactory<FilterDescriptor>> doGetMatchedFilters(String path,
-                                                                        UriPatternMap<ObjectFactory<FilterDescriptor>> m) {
-        List<ObjectFactory<FilterDescriptor>> l = new ArrayList<ObjectFactory<FilterDescriptor>>();
+    protected List<ObjectFactory<FilterDescriptor>> doGetMatchedFilters(String path, UriPatternMap<ObjectFactory<FilterDescriptor>> m) {
+        if (path == null) {
+            path = FilterDescriptorImpl.DEFAULT_PATH;
+        }
+        List<ObjectFactory<FilterDescriptor>> l = new ArrayList<>();
 
-        List<String> capturingValues = new ArrayList<String>();
+        List<String> capturingValues = new ArrayList<>();
         for (Map.Entry<UriPattern, List<ObjectFactory<FilterDescriptor>>> e : m.entrySet()) {
             UriPattern uriPattern = e.getKey();
 
@@ -780,7 +769,7 @@ public class ProviderBinder implements Providers {
         addMessageBodyReader(soep);
         addMessageBodyWriter(soep);
 
-        JsonEntityProvider<Object> jsep = new JsonEntityProvider<Object>();
+        JsonEntityProvider<Object> jsep = new JsonEntityProvider<>();
         addMessageBodyReader(jsep);
         addMessageBodyWriter(jsep);
 

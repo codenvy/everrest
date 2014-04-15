@@ -37,8 +37,7 @@ import java.util.List;
  * MessageBodyWriter or MessageBodyReader for media type 'application/xml' then such reader/writer will be in use for
  * all resources from the same Application.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  * @see javax.ws.rs.core.Application
  */
 public class ApplicationProviderBinder extends ProviderBinder {
@@ -47,12 +46,10 @@ public class ApplicationProviderBinder extends ProviderBinder {
         super();
     }
 
-    /** {@inheritDoc} */
     protected void init() {
         // Do not add default providers.
     }
 
-    /** {@inheritDoc} */
     @Override
     public List<MediaType> getAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations) {
         List<MediaType> l = doGetAcceptableWriterMediaTypes(type, genericType, annotations);
@@ -60,7 +57,6 @@ public class ApplicationProviderBinder extends ProviderBinder {
         return l;
     }
 
-    /** {@inheritDoc} */
     @Override
     public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType) {
         ContextResolver<T> resolver = doGetContextResolver(contextType, mediaType);
@@ -70,7 +66,6 @@ public class ApplicationProviderBinder extends ProviderBinder {
         return resolver;
     }
 
-    /** {@inheritDoc} */
     @Override
     public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type) {
         ExceptionMapper<T> excMapper = doGetExceptionMapper(type);
@@ -80,10 +75,8 @@ public class ApplicationProviderBinder extends ProviderBinder {
         return excMapper;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
-                                                         MediaType mediaType) {
+    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         MessageBodyReader<T> reader = doGetMessageBodyReader(type, genericType, annotations, mediaType);
         if (reader == null) {
             reader = getDefaults().getMessageBodyReader(type, genericType, annotations, mediaType);
@@ -91,10 +84,8 @@ public class ApplicationProviderBinder extends ProviderBinder {
         return reader;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
-                                                         MediaType mediaType) {
+    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         MessageBodyWriter<T> writer = doGetMessageBodyWriter(type, genericType, annotations, mediaType);
         if (writer == null) {
             writer = getDefaults().getMessageBodyWriter(type, genericType, annotations, mediaType);
@@ -102,7 +93,6 @@ public class ApplicationProviderBinder extends ProviderBinder {
         return writer;
     }
 
-    /** {@inheritDoc} */
     @Override
     public List<ObjectFactory<FilterDescriptor>> getMethodInvokerFilters(String path) {
         List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, invokerFilters);
@@ -110,7 +100,6 @@ public class ApplicationProviderBinder extends ProviderBinder {
         return l;
     }
 
-    /** {@inheritDoc} */
     @Override
     public List<ObjectFactory<FilterDescriptor>> getRequestFilters(String path) {
         List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, requestFilters);
@@ -118,7 +107,6 @@ public class ApplicationProviderBinder extends ProviderBinder {
         return l;
     }
 
-    /** {@inheritDoc} */
     @Override
     public List<ObjectFactory<FilterDescriptor>> getResponseFilters(String path) {
         List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, responseFilters);
@@ -129,5 +117,4 @@ public class ApplicationProviderBinder extends ProviderBinder {
     private ProviderBinder getDefaults() {
         return ProviderBinder.getInstance();
     }
-
 }

@@ -24,13 +24,15 @@ import org.everrest.core.uri.UriPattern;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @param <V>
  *         {@link org.everrest.core.RequestFilter} or
  *         {@link org.everrest.core.ResponseFilter}
  */
-public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements ExtMultivaluedMap<UriPattern, V> {
+public class UriPatternMap<V> extends ConcurrentHashMap<UriPattern, List<V>> implements ExtMultivaluedMap<UriPattern, V> {
     private static final long serialVersionUID = 8248982446381545144L;
 
     /**
@@ -40,15 +42,17 @@ public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements Ex
      *         never return null, empty List instead.
      */
     public List<V> getList(UriPattern uriPattern) {
-        List<V> l = get(uriPattern);
-        if (l == null) {
-            l = new ArrayList<V>();
-            put(uriPattern, l);
+        List<V> list = get(uriPattern);
+        if (list == null) {
+            List<V> newList = new CopyOnWriteArrayList<>();
+            list = putIfAbsent(uriPattern, newList);
+            if (list == null) {
+                list = newList;
+            }
         }
-        return l;
+        return list;
     }
 
-    /** {@inheritDoc} */
     public void add(UriPattern uriPattern, V value) {
         if (value == null) {
             return;
@@ -57,13 +61,11 @@ public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements Ex
         list.add(value);
     }
 
-    /** {@inheritDoc} */
     public V getFirst(UriPattern uriPattern) {
         List<V> list = getList(uriPattern);
         return list != null && list.size() > 0 ? list.get(0) : null;
     }
 
-    /** {@inheritDoc} */
     public void putSingle(UriPattern uriPattern, V value) {
         if (value == null) {
             remove(uriPattern);

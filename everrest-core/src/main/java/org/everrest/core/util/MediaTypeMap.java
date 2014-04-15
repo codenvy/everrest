@@ -22,16 +22,16 @@ import org.everrest.core.impl.header.MediaTypeHelper;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Comparator;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Keeps sorted values.
  *
  * @param <T>
  *         actual value type
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T> {
+public class MediaTypeMap<T> extends ConcurrentSkipListMap<MediaType, T> {
     /** Serial Version UID. */
     private static final long serialVersionUID = -4713556573521776577L;
 

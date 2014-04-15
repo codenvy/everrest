@@ -28,10 +28,10 @@ import org.everrest.core.uri.UriPattern;
 import javax.ws.rs.Path;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescriptor {
+    public static final String DEFAULT_PATH = "/{path:.*}";
     /** @see PathValue */
     private final PathValue path;
 
@@ -52,39 +52,26 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
             this.path = new PathValue(p.value());
             this.uriPattern = new UriPattern(p.value());
         } else {
-            this.path = null;
-            this.uriPattern = null;
+            this.path = new PathValue(DEFAULT_PATH);
+            this.uriPattern = new UriPattern(this.path.getPath());
         }
     }
 
-    /** {@inheritDoc} */
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitFilterDescriptor(this);
     }
 
-    /** {@inheritDoc} */
     public PathValue getPathValue() {
         return path;
     }
 
-    /** {@inheritDoc} */
     public UriPattern getUriPattern() {
         return uriPattern;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[ FilterDescriptorImpl: ");
-        sb.append("path: ");
-        sb.append(getPathValue());
-        sb.append("; filter class: ");
-        sb.append(getObjectClass());
-        sb.append("; ");
-        sb.append(getConstructorDescriptors());
-        sb.append("; ");
-        sb.append(getFieldInjectors());
-        sb.append(" ]");
-        return sb.toString();
+        return "[ FilterDescriptorImpl: " + "path: " + getPathValue() + "; filter class: " + getObjectClass() + "; " +
+               getConstructorDescriptors() + "; " + getFieldInjectors() + " ]";
     }
 }

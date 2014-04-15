@@ -21,8 +21,8 @@ package org.everrest.core.util;
 import org.everrest.core.ExtMultivaluedMap;
 
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements ExtMultivaluedMap<MediaType, V> {
     private static final long serialVersionUID = 7082102018450744774L;
@@ -37,15 +37,17 @@ public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements
      *         then empty list will be returned instead null
      */
     public List<V> getList(MediaType mediaType) {
-        List<V> l = get(mediaType);
-        if (l == null) {
-            l = new ArrayList<V>();
-            put(mediaType, l);
+        List<V> list = get(mediaType);
+        if (list == null) {
+            List<V> newList = new CopyOnWriteArrayList<>();
+            list = putIfAbsent(mediaType, newList);
+            if (list == null) {
+                list = newList;
+            }
         }
-        return l;
+        return list;
     }
 
-    /** {@inheritDoc} */
     public void add(MediaType mediaType, V value) {
         if (value == null) {
             return;
@@ -54,13 +56,11 @@ public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements
         list.add(value);
     }
 
-    /** {@inheritDoc} */
     public V getFirst(MediaType mime) {
         List<V> list = get(mime);
         return list != null && list.size() > 0 ? list.get(0) : null;
     }
 
-    /** {@inheritDoc} */
     public void putSingle(MediaType mediaType, V value) {
         if (value == null) {
             remove(mediaType);
