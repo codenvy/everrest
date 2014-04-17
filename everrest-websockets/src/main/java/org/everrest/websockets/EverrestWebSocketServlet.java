@@ -89,7 +89,7 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
         });
     }
 
-    private SecurityContext createSecurityContext(HttpServletRequest req) {
+    protected SecurityContext createSecurityContext(HttpServletRequest req) {
         Principal principal = req.getUserPrincipal();
         if (principal == null) {
             return new SimpleSecurityContext(req.isSecure());
