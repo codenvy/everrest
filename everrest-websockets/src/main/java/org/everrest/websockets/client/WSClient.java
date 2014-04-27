@@ -31,7 +31,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,12 +51,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class WSClient {
     /** Max size of message payload. See http://tools.ietf.org/html/rfc6455#section-5.2 */
-    public static final int DEFAULT_MAX_MESSAGE_PAYLOAD_SIZE = 2 * 1024 * 1024;
+    public static final  int DEFAULT_MAX_MESSAGE_PAYLOAD_SIZE = 2 * 1024 * 1024;
+    private static final int DEFAULT_BUFFER_SIZE              = 8 * 1024;
 
     private static final Logger  LOG                   = Logger.getLogger(WSClient.class);
     private static final String  GLOBAL_WS_SERVER_UUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -78,9 +80,11 @@ public class WSClient {
     private final int                         maxMessagePayloadSize;
     private final String                      secWebSocketKey;
     private final List<ClientMessageListener> listeners;
-    private       Socket                      socket;
-    private       InputStream                 in;
-    private       OutputStream                out;
+
+    private Socket       socket;
+    private InputStream  in;
+    private OutputStream out;
+    private ByteBuffer   inputBuffer;
 
     // Thread that reads from socket check this.
     private volatile boolean connected;
@@ -133,11 +137,11 @@ public class WSClient {
 
         if (!"ws".equals(target.getScheme())) {
             // TODO: add 'wss' support
-            throw new IllegalArgumentException("Unsupported scheme: " + target.getScheme());
+            throw new IllegalArgumentException(String.format("Unsupported scheme: %s", target.getScheme()));
         }
 
         if (maxMessagePayloadSize < 1) {
-            throw new IllegalArgumentException("Invalid max message payload size: " + maxMessagePayloadSize);
+            throw new IllegalArgumentException(String.format("Invalid max message payload size: %d", maxMessagePayloadSize));
         }
 
         if (listeners == null) {
@@ -147,7 +151,7 @@ public class WSClient {
         this.target = target;
         this.maxMessagePayloadSize = maxMessagePayloadSize;
         executor = Executors.newSingleThreadExecutor();
-        this.listeners = new ArrayList<ClientMessageListener>(listeners.length);
+        this.listeners = new ArrayList<>(listeners.length);
         Collections.addAll(this.listeners, listeners);
 
         secWebSocketKey = generateSecKey();
@@ -165,7 +169,7 @@ public class WSClient {
      */
     public synchronized void connect(long timeout) throws IOException {
         if (timeout < 1) {
-            throw new IllegalArgumentException("Invalid timeout: " + timeout);
+            throw new IllegalArgumentException(String.format("Invalid timeout: %d", timeout));
         }
 
         if (connected) {
@@ -182,6 +186,7 @@ public class WSClient {
                         out = socket.getOutputStream();
                         out.write(getHandshake());
                         validateResponseHeaders();
+                        inputBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
                         connected = true;
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -201,7 +206,7 @@ public class WSClient {
             throw re;
         } catch (TimeoutException e) {
             // Connection time out reached.
-            throw new IOException("Connection timeout. ");
+            throw new SocketTimeoutException("Connection timeout. ");
         } finally {
             if (!connected) {
                 executor.shutdown();
@@ -217,7 +222,7 @@ public class WSClient {
                 } catch (ConnectionException e) {
                     LOG.error(e.getMessage(), e);
                     onClose(e.status, e.getMessage());
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // All unexpected errors represents as protocol error, status: 1002.
                     LOG.error(e.getMessage(), e);
                     onClose(1002, e.getMessage());
@@ -265,6 +270,29 @@ public class WSClient {
 
         // Send 'text' message without fragments.
         writeFrame((byte)0x81, UTF8_CS.encode(message).array());
+    }
+
+    /**
+     * Send bin message.
+     *
+     * @param message
+     *         min message
+     * @throws IOException
+     *         if any i/o errors occurred
+     * @throws IllegalArgumentException
+     *         if message is <code>null</code>
+     */
+    public synchronized void send(byte[] message) throws IOException {
+        if (!connected) {
+            throw new IOException("Not connected. ");
+        }
+
+        if (message == null) {
+            throw new IllegalArgumentException("Message may not be null. ");
+        }
+
+        // Send 'bin' message without fragments.
+        writeFrame((byte)0x82, message);
     }
 
     /**
@@ -362,6 +390,16 @@ public class WSClient {
         }
     }
 
+    private void onMessage(byte[] message) {
+        for (ClientMessageListener listener : listeners) {
+            try {
+                listener.onMessage(message);
+            } catch (Exception e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+    }
+
     private void onPong(byte[] message) {
         for (ClientMessageListener listener : listeners) {
             try {
@@ -376,8 +414,11 @@ public class WSClient {
         try {
             socket.close();
         } catch (IOException e) {
+            e.printStackTrace();
             LOG.error(e.getMessage(), e);
         }
+
+        inputBuffer.clear();
 
         for (ClientMessageListener listener : listeners) {
             try {
@@ -440,7 +481,7 @@ public class WSClient {
             throw new IOException("Invalid server response. Expected status is 101 'Switching Protocols'. ");
         }
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         while (!((line = br.readLine()) == null || line.isEmpty())) {
             int colon = line.indexOf(':');
             if (colon > 0 && colon < line.length()) {
@@ -451,13 +492,13 @@ public class WSClient {
         // 'Upgrade' header
         String header = headers.get("upgrade");
         if (!"websocket".equals(header)) {
-            throw new IOException("Invalid 'Upgrade' response header. Returned '" + header + "' but 'websocket' expected. ");
+            throw new IOException(String.format("Invalid 'Upgrade' response header. Returned '%s' but 'websocket' expected. ", header));
         }
 
         // 'Connection' header
         header = headers.get("connection");
         if (!"upgrade".equals(header)) {
-            throw new IOException("Invalid 'Connection' response header. Returned '" + header + "' but 'upgrade' expected. ");
+            throw new IOException(String.format("Invalid 'Connection' response header. Returned '%s' but 'upgrade' expected. ", header));
         }
 
         // 'Sec-WebSocket-Accept' header
@@ -477,6 +518,11 @@ public class WSClient {
         }
     }
 
+    private static final int TEXT = 1;
+    private static final int BIN  = 1 << 1;
+
+    private int type;
+
     private void read() throws IOException {
         while (connected) {
             final int firstByte = in.read();
@@ -486,31 +532,50 @@ public class WSClient {
 
             // Check most significant bit in this byte. It always set in '1' if this fragment is final fragment.
             // In other word each message may not be sent in more then one fragment.
-            if ((firstByte & 0x80) == 0) {
-                throw new ConnectionException(1003, "Fragmented messages is nor supported. ");
-            }
-
+            final boolean fin = (firstByte & 0x80) != 0;
             final byte opCode = (byte)(firstByte & 0x0F);
 
             byte[] payload;
             switch (opCode) {
-                case 0:
-                    // Should never happen since we already checked most significant bit in this byte.
-                    throw new ConnectionException(1003, "Continuation frame is not supported. ");
-                case 1:
+                case 0: // continuation frame
                     payload = readFrame();
-                    onMessage(new String(payload, UTF8_CS));
+                    saveInInputBuffer(payload);
+                    // Only data frames might be fragmented. Control frames may not be fragmented.
+                    // So we can't get here with any control frames, e.g. with ping/pong messages.
+                    if (fin) {
+                        if (type == TEXT) {
+                            onMessage(getStringFormInputBuffer());
+                        } else if (type == BIN) {
+                            onMessage(getBytesFormInputBuffer());
+                        }
+                    }
                     break;
-                case 2:
-                    throw new ConnectionException(1003, "Binary messages is not supported. ");
+                case 1: // text frame
+                    payload = readFrame();
+                    if (fin) {
+                        onMessage(new String(payload, UTF8_CS));
+                    } else {
+                        saveInInputBuffer(payload);
+                        type = TEXT;
+                    }
+                    break;
+                case 2: // binary frame
+                    payload = readFrame();
+                    if (fin) {
+                        onMessage(payload);
+                    } else {
+                        saveInInputBuffer(payload);
+                        type = BIN;
+                    }
+                    break;
                 case 3:
                 case 4:
                 case 5:
                 case 6:
                 case 7:
-                    // Do nothing fo this.
+                    // Do nothing fo this. They are reserved for further non-control frames.
                     break;
-                case 8:
+                case 8: // connection close
                     payload = readFrame();
                     int status;
                     // Read status.
@@ -532,13 +597,13 @@ public class WSClient {
                     // Send body to the listeners here if server provides it and lets listeners decide what to do.
                     onClose(status, message);
                     break;
-                case 9:
+                case 9: // ping
                     payload = readFrame();
                     // 'pong' response for the 'ping' message.
                     writeFrame((byte)0x8A, payload);
                     LOG.debug("Ping: {} ", new String(payload, UTF8_CS));
                     break;
-                case 0x0A:
+                case 0x0A: // pong
                     payload = readFrame();
                     onPong(payload);
                     break;
@@ -550,7 +615,7 @@ public class WSClient {
                     // Do nothing fo this.
                     break;
                 default:
-                    throw new ConnectionException(1003, "Invalid opcode: '" + Integer.toHexString(opCode) + "' ");
+                    throw new ConnectionException(1003, String.format("Invalid opcode: '%s' ", Integer.toHexString(opCode)));
             }
             if (socket.isClosed()) {
                 // May be server going down, we did not receive 'close' op_code but connection is lost.
@@ -586,10 +651,10 @@ public class WSClient {
         }
 
         if (length > maxMessagePayloadSize) {
-            throw new IOException("Message payload is to large, may not be greater than " + maxMessagePayloadSize);
+            throw new IOException(String.format("Message payload is to large, may not be greater than %d", maxMessagePayloadSize));
         }
         // Payload may not greater then max integer: (2^31)-1
-        byte[] payload = new byte[(int)length];
+        final byte[] payload = new byte[(int)length];
         readBlock(payload);
 
         if (mask != null) {
@@ -600,6 +665,35 @@ public class WSClient {
         }
 
         return payload;
+    }
+
+    private void saveInInputBuffer(byte[] frame) {
+        final int fSize = frame.length;
+        if (inputBuffer.remaining() < fSize) {
+            LOG.debug("Increase input buffer: {}", fSize);
+            final int capacity = inputBuffer.capacity() + fSize;
+            final ByteBuffer buf = ByteBuffer.allocate(capacity);
+            inputBuffer.flip();
+            buf.put(inputBuffer);
+            inputBuffer = buf;
+            LOG.debug("New input buffer size {}", inputBuffer.capacity());
+        }
+        inputBuffer.put(frame);
+    }
+
+    private String getStringFormInputBuffer() {
+        inputBuffer.flip();
+        final String str = UTF8_CS.decode(inputBuffer).toString();
+        inputBuffer.clear();
+        return str;
+    }
+
+    private byte[] getBytesFormInputBuffer() {
+        inputBuffer.flip();
+        final byte[] bytes = new byte[inputBuffer.remaining()];
+        inputBuffer.get(bytes);
+        inputBuffer.clear();
+        return bytes;
     }
 
     private void writeFrame(byte opCode, byte[] payload) throws IOException {
@@ -628,8 +722,9 @@ public class WSClient {
     private long getPayloadLength(byte[] bytes) throws IOException {
         if (!(bytes.length == 2 || bytes.length == 8)) {
             // Should never happen. Caller of this method must check to full reading of byte range.
-            throw new IOException("Unable get payload length. Invalid length bytes. Length must be represented by 2 or 8 bytes but " +
-                                  bytes.length + " reached. ");
+            throw new IOException(String.format(
+                    "Unable get payload length. Invalid length bytes. Length must be represented by 2 or 8 bytes but %d reached. ",
+                    bytes.length));
         }
         return getLongFromBytes(bytes);
     }
