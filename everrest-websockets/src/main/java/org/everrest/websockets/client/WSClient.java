@@ -594,7 +594,7 @@ public class WSClient {
                         LOG.warn("Close status: {}, message: {} ", status, message);
                     }
                     // Specification says: body is not guaranteed to be human readable.
-                    // Send body to the listeners here if server provides it and lets listeners decide what to do.
+                    // Send body to the listeners here if server provides it and let listeners decide what to do.
                     onClose(status, message);
                     break;
                 case 9: // ping
@@ -660,7 +660,7 @@ public class WSClient {
         if (mask != null) {
             // Unmask payload bytes if they masked.
             for (int i = 0; i < payload.length; i++) {
-                payload[i] = (byte)(payload[i] ^ (mask[i % 4]));
+                payload[i] = (byte)(payload[i] ^ mask[i % 4]);
             }
         }
 
