@@ -64,7 +64,7 @@ public class EverrestConfiguration {
 
     public static final int defaultAsynchronousPoolSize = 10;
 
-    public static final String defaultAsynchronousSericePath = "/async";
+    public static final String defaultAsynchronousServicePath = "/async";
 
     public static final int defaultAsynchronousQueueSize = 100;
 
@@ -95,7 +95,7 @@ public class EverrestConfiguration {
 
     protected int maxBufferSize = defaultMaxBufferSize;
 
-    protected String asynchronousServicePath = defaultAsynchronousSericePath;
+    protected String asynchronousServicePath = defaultAsynchronousServicePath;
 
     protected final Map<String, Object> properties;
 

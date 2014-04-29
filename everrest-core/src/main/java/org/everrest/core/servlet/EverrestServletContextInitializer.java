@@ -101,7 +101,7 @@ public class EverrestServletContextInitializer {
                                                  EverrestConfiguration.defaultAsynchronousPoolSize).intValue());
 
         config.setAsynchronousServicePath(getParameter(EverrestConfiguration.EVERREST_ASYNCHRONOUS_SERVICE_PATH,
-                                                       EverrestConfiguration.defaultAsynchronousSericePath));
+                                                       EverrestConfiguration.defaultAsynchronousServicePath));
 
         config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
                                                   EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
