@@ -21,11 +21,20 @@ package org.everrest.test.mock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** @author andrew00x */
 public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>> {
 
     private static final long serialVersionUID = 6637313979061607685L;
+
+    //override putAll since in java8 in doesn't use method put.
+    @Override
+    public void putAll(Map<? extends String, ? extends List<T>> m) {
+        for (Entry<? extends String, ? extends List<T>> entry : m.entrySet()) {
+            put(entry.getKey(), entry.getValue());
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
