@@ -19,20 +19,10 @@
 
 package org.everrest.test.mock;
 
-import java.util.Map;
-
 /** @author andrew00x */
 public class CaseInsensetiveMap<T> extends java.util.HashMap<String, T> {
 
     private static final long serialVersionUID = -8562529039657285360L;
-
-    //override putAll since in java8 in doesn't use method put.
-    @Override
-    public void putAll(Map<? extends String, ? extends T> m) {
-        for (Entry<? extends String, ? extends T> entry : m.entrySet()) {
-            put(entry.getKey(), entry.getValue());
-        }
-    }
 
     /** {@inheritDoc} */
     @Override
