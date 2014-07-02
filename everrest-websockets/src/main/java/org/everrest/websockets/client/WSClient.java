@@ -47,8 +47,10 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author andrew00x
@@ -58,12 +60,13 @@ public class WSClient {
     public static final  int DEFAULT_MAX_MESSAGE_PAYLOAD_SIZE = 2 * 1024 * 1024;
     private static final int DEFAULT_BUFFER_SIZE              = 8 * 1024;
 
-    private static final Logger  LOG                   = Logger.getLogger(WSClient.class);
-    private static final String  GLOBAL_WS_SERVER_UUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-    private static final Random  RANDOM                = new Random();
-    private static final Charset UTF8_CS               = Charset.forName("UTF-8");
-    private static final char[]  CHARS                 = new char[36];
-    private static final int     MASK_SIZE             = 4;
+    private static final Logger     LOG                   = Logger.getLogger(WSClient.class);
+    private static final String     GLOBAL_WS_SERVER_UUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+    private static final Random     RANDOM                = new Random();
+    private static final Charset    UTF8_CS               = Charset.forName("UTF-8");
+    private static final char[]     CHARS                 = new char[36];
+    private static final int        MASK_SIZE             = 4;
+    private static final AtomicLong sequence              = new AtomicLong(1);
 
     static {
         int i = 0;
@@ -150,7 +153,14 @@ public class WSClient {
 
         this.target = target;
         this.maxMessagePayloadSize = maxMessagePayloadSize;
-        executor = Executors.newSingleThreadExecutor();
+        executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                final Thread t = new Thread(r, "everrest.WSClient" + sequence.getAndIncrement());
+                t.setDaemon(true);
+                return t;
+            }
+        });
         this.listeners = new ArrayList<>(listeners.length);
         Collections.addAll(this.listeners, listeners);
 
