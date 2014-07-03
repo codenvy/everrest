@@ -30,8 +30,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Provider
 public class StringEntityProvider implements EntityProvider<String> {
@@ -47,7 +46,7 @@ public class StringEntityProvider implements EntityProvider<String> {
                            MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders,
                            InputStream entityStream) throws IOException {
-        return IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get("charset") : null);
+        return IOHelper.readString(entityStream, mediaType == null ? null : mediaType.getParameters().get("charset"));
     }
 
     /** {@inheritDoc} */
@@ -69,6 +68,6 @@ public class StringEntityProvider implements EntityProvider<String> {
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        IOHelper.writeString(t, entityStream, mediaType.getParameters().get("charset"));
+        IOHelper.writeString(t, entityStream, mediaType == null ? null : mediaType.getParameters().get("charset"));
     }
 }

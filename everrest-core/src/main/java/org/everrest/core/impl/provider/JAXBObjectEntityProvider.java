@@ -41,9 +41,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: JAXBObjectEntityProvider.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * @author andrew00x
  */
 @Provider
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
@@ -104,7 +102,7 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object> {
             JAXBContext jaxbContext = getJAXBContext(type, mediaType);
             Marshaller m = jaxbContext.createMarshaller();
             // Must respect application specified character set.
-            String charset = mediaType.getParameters().get("charset");
+            String charset = mediaType == null ? null : mediaType.getParameters().get("charset");
             if (charset != null) {
                 m.setProperty(Marshaller.JAXB_ENCODING, charset);
             }

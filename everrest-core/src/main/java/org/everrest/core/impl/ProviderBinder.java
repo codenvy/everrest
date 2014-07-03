@@ -45,6 +45,9 @@ import org.everrest.core.impl.provider.SAXSourceEntityProvider;
 import org.everrest.core.impl.provider.StreamOutputEntityProvider;
 import org.everrest.core.impl.provider.StreamSourceEntityProvider;
 import org.everrest.core.impl.provider.StringEntityProvider;
+import org.everrest.core.impl.provider.multipart.CollectionMultipartFormDataMessageBodyWriter;
+import org.everrest.core.impl.provider.multipart.ListMultipartFormDataMessageBodyReader;
+import org.everrest.core.impl.provider.multipart.MapMultipartFormDataMessageBodyReader;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
@@ -782,6 +785,11 @@ public class ProviderBinder implements Providers {
 
         // per-request mode, HttpServletRequest should be injected in provider
         addMessageBodyReader(MultipartFormDataEntityProvider.class);
+
+        // per-request mode, Providers should be injected
+        addMessageBodyReader(ListMultipartFormDataMessageBodyReader.class);
+        addMessageBodyReader(MapMultipartFormDataMessageBodyReader.class);
+        addMessageBodyWriter(CollectionMultipartFormDataMessageBodyWriter.class);
 
         // JAXB context
         addContextResolver(new JAXBContextResolver());

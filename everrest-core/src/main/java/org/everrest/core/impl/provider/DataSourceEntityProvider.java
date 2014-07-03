@@ -40,9 +40,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: DataSourceEntityProvider.java 448 2009-10-30 10:54:42Z
- *          aparfonov $
+ * @author andrew00x
  */
 @Provider
 public class DataSourceEntityProvider implements EntityProvider<DataSource> {
@@ -59,7 +57,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
                                MediaType mediaType,
                                MultivaluedMap<String, String> httpHeaders,
                                InputStream entityStream) throws IOException {
-        String m = mediaType != null ? mediaType.toString() : null;
+        String m = mediaType == null ? null : mediaType.toString();
 
         return createDataSource(entityStream, m);
     }
