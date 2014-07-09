@@ -167,6 +167,14 @@ public class WSClient {
         secWebSocketKey = generateSecKey();
     }
 
+    public URI getUri() {
+        return target;
+    }
+
+    public synchronized boolean isConnected() {
+        return connected;
+    }
+
     /**
      * Connect to remote server.
      *
