@@ -1,59 +1,51 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2009 eXo Platform SAS.
+    Copyright (c) 2012-2014 Codenvy, S.A.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
 
-    This is free software; you can redistribute it and/or modify it
-    under the terms of the GNU Lesser General Public License as
-    published by the Free Software Foundation; either version 2.1 of
-    the License, or (at your option) any later version.
-
-    This software is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this software; if not, write to the Free
-    Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-    02110-1301 USA, or see the FSF site: http://www.fsf.org.
+    Contributors:
+      Codenvy, S.A. - initial API and implementation
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>org.everrest</groupId>
         <artifactId>everrest-parent</artifactId>
+        <groupId>org.everrest</groupId>
         <version>1.1.14-SNAPSHOT</version>
     </parent>
-
     <artifactId>everrest-groovy</artifactId>
-
     <name>EverRest :: Groovy</name>
-
     <dependencies>
-        <dependency>
-            <groupId>org.everrest</groupId>
-            <artifactId>everrest-core</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <exclusions>
                 <!-- Do not want have junit in war. -->
                 <exclusion>
-                    <groupId>junit</groupId>
                     <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.everrest</groupId>
+            <artifactId>everrest-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
+            <version>${javax.servlet.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.everrest</groupId>
@@ -65,11 +57,6 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -78,8 +65,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>-Djava.security.manager=default -Djava.security.policy=${project.build.directory}/test-classes/test.policy
-                        -Djava.security.debug=denied
-                    </argLine>
+                        -Djava.security.debug=denied</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -100,7 +86,7 @@
                                 <makeurl file="${project.build.testOutputDirectory}" property="testOutputDirectoryURL" />
                                 <makeurl file="${project.build.directory}/../../" property="parentDirectoryURL" />
                                 <!-- <echo>***** ${parentDirectory}</echo> -->
-                                <copy todir="${project.build.testOutputDirectory}" overwrite="true">
+                                <copy overwrite="true" todir="${project.build.testOutputDirectory}">
                                     <fileset dir="${project.basedir}/src/test/resources/">
                                         <include name="test.policy" />
                                     </fileset>

@@ -1,42 +1,31 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2009 eXo Platform SAS.
+    Copyright (c) 2012-2014 Codenvy, S.A.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
 
-    This is free software; you can redistribute it and/or modify it
-    under the terms of the GNU Lesser General Public License as
-    published by the Free Software Foundation; either version 2.1 of
-    the License, or (at your option) any later version.
-
-    This software is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this software; if not, write to the Free
-    Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-    02110-1301 USA, or see the FSF site: http://www.fsf.org.
+    Contributors:
+      Codenvy, S.A. - initial API and implementation
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
+        <artifactId>maven-depmgt-pom</artifactId>
+        <groupId>com.codenvy</groupId>
+        <version>1.8.3-SNAPSHOT</version>
+    </parent>
     <groupId>org.everrest</groupId>
     <artifactId>everrest-parent</artifactId>
-    <name>EverRest :: Parent</name>
     <version>1.1.14-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <description>
-        everREST is a project which provides a way to build RESTful applications
-        using own complete implementation of JAX-RS specification (a.k.a JSR-311)
-    </description>
-
+    <name>EverRest :: Parent</name>
+    <description>everREST is a project which provides a way to build RESTful applications
+        using own complete implementation of JAX-RS specification (a.k.a JSR-311)</description>
     <url>https://github.com/codenvy/everrest</url>
-
     <developers>
         <developer>
             <id>andrew00x</id>
@@ -48,116 +37,6 @@
             </roles>
         </developer>
     </developers>
-
-    <organization>
-        <name>Codenvy</name>
-        <url>https://codenvy.com</url>
-    </organization>
-
-    <licenses>
-        <license>
-            <name>LGPL, version 2.1</name>
-            <url>http://www.opensource.org/licenses/lgpl-license.php</url>
-        </license>
-    </licenses>
-
-    <scm>
-        <connection>scm:git:git@github.com:codenvy/everrest.git</connection>
-        <developerConnection>scm:git:git@github.com:codenvy/everrest.git</developerConnection>
-        <url>https://github.com/codenvy/everrest/</url>
-      <tag>HEAD</tag>
-  </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>repo.codenvy.private</id>
-            <url>${maven.releases.repo.url}</url>
-        </repository>
-        <snapshotRepository>
-            <id>repo.codenvy.private</id>
-            <url>${maven.snapshots.repo.url}</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <properties>
-        <!-- Repositories URLs -->
-        <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-releases/</maven.releases.repo.url>
-        <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
-
-        <product.name>${project.name}</product.name>
-
-
-        <javax.ws.rs.version>1.0</javax.ws.rs.version>
-        <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-
-        <!-- Defaut compiler settings -->
-        <maven.compiler.optimize>true</maven.compiler.optimize>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-
-        <!-- Maven plugin versions -->
-        <version.assembly.plugin>2.4</version.assembly.plugin>
-        <version.buildhelper.plugin>1.7</version.buildhelper.plugin>
-        <version.buildnumber.plugin>1.2</version.buildnumber.plugin>
-        <version.checkstyle.plugin>2.9.1</version.checkstyle.plugin>
-        <version.failsafe.plugin>${version.surefire.plugin}</version.failsafe.plugin>
-        <version.surefire.plugin>2.13</version.surefire.plugin>
-        <version.javadoc.plugin>2.9</version.javadoc.plugin>
-        <version.jaxb2.plugin>0.9.0</version.jaxb2.plugin>
-        <version.release.plugin>2.4</version.release.plugin>
-        <version.source.plugin>2.2.1</version.source.plugin>
-        <version.war.plugin>2.3</version.war.plugin>
-
-        <!-- ************** -->
-        <!-- Build settings -->
-        <!-- ************** -->
-        <!-- Cross plugins settings -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- maven-clirr-plugin -->
-        <textOutputFile>${project.build.directory}/clirr-report.txt</textOutputFile>
-        <!-- maven-compiler-plugin -->
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
-        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-        <maven.compiler.optimize>true</maven.compiler.optimize>
-        <!-- maven-dependency-plugin -->
-        <repoUrl>${maven.releases.repo.url}</repoUrl>
-        <!-- maven-enforcer-plugin -->
-        <maven.min.version>3.0.4</maven.min.version>
-        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
-        <!-- The version of maven-scm-provider-svnjava to use -->
-        <maven-scm-provider-svnjava.version>2.0.5</maven-scm-provider-svnjava.version>
-        <!-- maven-gpg-plugin -->
-        <gpg.useagent>true</gpg.useagent>
-        <!-- maven-idea-plugin & maven-eclipse-plugin -->
-        <downloadSources>true</downloadSources>
-        <!--  maven-javadoc-plugin -->
-        <detectOfflineLinks>false</detectOfflineLinks>
-        <!-- too slow : http://jira.codehaus.org/browse/MJAVADOC-268 -->
-        <quiet>true</quiet>
-        <!-- maven-pmd-plugin -->
-        <targetJdk>${maven.compiler.target}</targetJdk>
-        <!-- These properties are automatically computed during the build -->
-        <parsedVersion.majorVersion>N/A</parsedVersion.majorVersion>
-        <!-- maven-war-plugin -->
-        <useCache>true</useCache>
-        <archiveClasses>false</archiveClasses>
-        <maven.war.attachClasses>false</maven.war.attachClasses>
-        <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
-        <maven.assembly.recompressZippedFiles>false</maven.assembly.recompressZippedFiles>
-        <maven.war.recompressZippedFiles>false</maven.war.recompressZippedFiles>
-
-
-
-
-    </properties>
-
-    <prerequisites>
-        <maven>${maven.min.version}</maven>
-    </prerequisites>
-
     <modules>
         <module>everrest-test</module>
         <module>everrest-core</module>
@@ -177,13 +56,86 @@
         <module>everrest-websockets</module>
         <module>everrest-project-template-war</module>
     </modules>
-
+    <scm>
+        <connection>scm:git:git@github.com:codenvy/everrest.git</connection>
+        <developerConnection>scm:git:git@github.com:codenvy/everrest.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/codenvy/everrest/</url>
+    </scm>
+    <properties>
+        <!-- Repositories URLs -->
+        <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-releases/</maven.releases.repo.url>
+        <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.everrest</groupId>
-                <artifactId>everrest-test</artifactId>
-                <version>${project.version}</version>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>jsr250-api</artifactId>
+                <version>${javax.annotation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javax.mail.version}</version>
+                <!-- Java6 has it -->
+                <exclusions>
+                    <exclusion>
+                        <artifactId>activation</artifactId>
+                        <groupId>javax.activation</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>jsr311-api</artifactId>
+                <version>${javax.ws.rs.version}</version>
+            </dependency>
+            <!-- Third part dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-catalina</artifactId>
+                <version>${org.apache.tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-coyote</artifactId>
+                <version>${org.apache.tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>1.7.6</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>ant</artifactId>
+                        <groupId>org.apache.ant</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>ant-launcher</artifactId>
+                        <groupId>org.apache.ant</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
@@ -207,286 +159,25 @@
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
-                <artifactId>everrest-websockets</artifactId>
+                <artifactId>everrest-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!-- Third part dependencies -->
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-fileupload</groupId>
-                <artifactId>commons-fileupload</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>1.4.2</version>
-                <!-- Java6 has it -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>jsr311-api</artifactId>
-                <version>${javax.ws.rs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>jsr250-api</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-                <version>1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-all</artifactId>
-                <version>1.7.6</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-launcher</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.everrest</groupId>
+                <artifactId>everrest-websockets</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.7</version>
+                <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.7</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-catalina</artifactId>
-                <version>7.0.42</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-coyote</artifactId>
-                <version>7.0.42</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.6</version>
+                <version>${org.slf4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>${version.assembly.plugin}</version>
-                    <configuration>
-                        <!-- Perfs improvements - PAR-191 -->
-                        <useJvmChmod>true</useJvmChmod>
-                        <!-- Allow to activate/deactivate the recompression of zip files -->
-                        <recompressZippedFiles>${maven.assembly.recompressZippedFiles}</recompressZippedFiles>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>${version.buildhelper.plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>${version.buildnumber.plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${version.checkstyle.plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${version.javadoc.plugin}</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                            <manifestEntries>
-                                <Date>${maven.build.timestamp}</Date>
-                                <Implementation-URL>${project.url}</Implementation-URL>
-                                <SCM-URL>${project.scm.connection}</SCM-URL>
-                                <SCM-Revision>${buildNumber}</SCM-Revision>
-                                <Specification-Title>${product.name}</Specification-Title>
-                                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
-                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-                                <Implementation-Title>${project.name}</Implementation-Title>
-                                <Implementation-Version>${project.version}</Implementation-Version>
-                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-                            </manifestEntries>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>${version.source.plugin}</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                            <manifestEntries>
-                                <Date>${maven.build.timestamp}</Date>
-                                <Implementation-URL>${project.url}</Implementation-URL>
-                                <SCM-URL>${project.scm.connection}</SCM-URL>
-                                <SCM-Revision>${buildNumber}</SCM-Revision>
-                                <Specification-Title>${product.name}</Specification-Title>
-                                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
-                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-                                <Implementation-Title>${project.name}</Implementation-Title>
-                                <Implementation-Version>${project.version}</Implementation-Version>
-                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-                            </manifestEntries>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.jvnet.jaxb2.maven2</groupId>
-                    <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>${version.jaxb2.plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${version.failsafe.plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.surefire.plugin}</version>
-                    <configuration>
-                        <systemPropertyVariables>
-                            <!-- To avoid conflicts on CI server - PAR-192 -->
-                            <!-- There is an incompatibility with Byteman - used in social -->
-                            <!-- <java.io.tmpdir>${project.build.directory}</java.io.tmpdir> -->
-                        </systemPropertyVariables>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>${version.surefire.plugin}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <includePom>true</includePom>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>${version.war.plugin}</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Date>${maven.build.timestamp}</Date>
-                            <Implementation-URL>${project.url}</Implementation-URL>
-                            <SCM-URL>${project.scm.connection}</SCM-URL>
-                            <SCM-Revision>${buildNumber}</SCM-Revision>
-                            <Specification-Title>${product.name}</Specification-Title>
-                            <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
-                            <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-                            <Implementation-Title>${project.name}</Implementation-Title>
-                            <Implementation-Version>${project.version}</Implementation-Version>
-                            <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-                        </manifestEntries>
-                    </archive>
-                    <!-- PAR-145 : Be sure that all product package all their classes in JAR (No stand alone classes in WEB-INF/classes) -->
-                    <archiveClasses>${archiveClasses}</archiveClasses>
-                    <attachClasses>${maven.war.attachClasses}</attachClasses>
-                    <useCache>${useCache}</useCache>
-                    <!-- Allow to activate/deactivate the recompression of zip files -->
-                    <recompressZippedFiles>${maven.war.recompressZippedFiles}</recompressZippedFiles>
-                </configuration>
-            </plugin>
-        </plugins>
-
-    </build>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${version.javadoc.plugin}</version>
-                <reportSets>
-                    <reportSet>
-                        <id>aggregate</id>
-                        <reports>
-                            <report>aggregate</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-                <configuration>
-                    <aggregate>true</aggregate>
-                    <reportOutputDirectory>${project.build.directory}/javadoc</reportOutputDirectory>
-                    <maxmemory>512m</maxmemory>
-                    <minmemory>256m</minmemory>
-                    <links>
-                        <link>http://java.sun.com/j2ee/1.4/docs/api</link>
-                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                        <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
-                        <link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
-                        <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
-                        <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
-                        <link>http://jakarta.apache.org/commons/logging/api/</link>
-                        <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
-                        <link>http://www.junit.org/junit/javadoc/</link>
-                        <link>http://logging.apache.org/log4j/docs/api/</link>
-                        <link>http://jakarta.apache.org/regexp/apidocs/</link>
-                        <link>http://jakarta.apache.org/velocity/api/</link>
-                    </links>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
 </project>
