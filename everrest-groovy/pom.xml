@@ -65,7 +65,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>-Djava.security.manager=default -Djava.security.policy=${project.build.directory}/test-classes/test.policy
-                        -Djava.security.debug=denied</argLine>
+                        -Djava.security.debug=denied  ${argLine}</argLine>
                 </configuration>
             </plugin>
             <plugin>
