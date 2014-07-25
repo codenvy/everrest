@@ -14,9 +14,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>maven-depmgt-pom</artifactId>
+        <artifactId>maven-parent-pom</artifactId>
         <groupId>com.codenvy</groupId>
-        <version>1.8.3-SNAPSHOT</version>
+        <version>3.3.2</version>
+        <relativePath />
     </parent>
     <groupId>org.everrest</groupId>
     <artifactId>everrest-parent</artifactId>
@@ -63,9 +64,20 @@
         <url>https://github.com/codenvy/everrest/</url>
     </scm>
     <properties>
+        <commons-codec.version>1.6</commons-codec.version>
+        <commons-fileupload.version>1.2.1</commons-fileupload.version>
+        <commons-io.version>2.4</commons-io.version>
+        <javax.annotation.version>1.0</javax.annotation.version>
+        <javax.inject.version>1</javax.inject.version>
+        <javax.mail.version>1.4.4</javax.mail.version>
+        <javax.servlet.version>3.0.1</javax.servlet.version>
+        <javax.ws.rs.version>1.0</javax.ws.rs.version>
+        <junit.version>4.11</junit.version>
         <!-- Repositories URLs -->
         <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-releases/</maven.releases.repo.url>
         <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
+        <org.apache.tomcat.version>7.0.54</org.apache.tomcat.version>
+        <org.slf4j.version>1.7.7</org.slf4j.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -179,5 +191,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>
