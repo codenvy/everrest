@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.everrest.core.servlet;
+package org.everrest.core.impl;
 
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.async.AsynchronousJobPool;
@@ -47,8 +47,8 @@ public final class EverrestApplication extends Application {
     private Map<String, Object> mappedSingletonResources;
 
     public EverrestApplication(EverrestConfiguration config) {
-        classes = new LinkedHashSet<Class<?>>(1);
-        singletons = new LinkedHashSet<Object>(3);
+        classes = new LinkedHashSet<>(1);
+        singletons = new LinkedHashSet<>(3);
         if (config.isAsynchronousSupported()) {
             addResource(config.getAsynchronousServicePath(), AsynchronousJobService.class);
             singletons.add(new AsynchronousJobPool(config));
@@ -61,14 +61,14 @@ public final class EverrestApplication extends Application {
 
     public void addResource(String uriPattern, Class<?> resourceClass) {
         if (mappedPerRequestResources == null) {
-            mappedPerRequestResources = new LinkedHashMap<String, Class<?>>();
+            mappedPerRequestResources = new LinkedHashMap<>();
         }
         mappedPerRequestResources.put(uriPattern, resourceClass);
     }
 
     public void addResource(String uriPattern, Object resource) {
         if (mappedSingletonResources == null) {
-            mappedSingletonResources = new LinkedHashMap<String, Object>();
+            mappedSingletonResources = new LinkedHashMap<>();
         }
         mappedSingletonResources.put(uriPattern, resource);
     }
@@ -104,7 +104,7 @@ public final class EverrestApplication extends Application {
         if (application != null) {
             Set<Object> appSingletons = application.getSingletons();
             if (appSingletons != null && appSingletons.size() > 0) {
-                Set<Object> tmp = new LinkedHashSet<Object>(getSingletons().size() + appSingletons.size());
+                Set<Object> tmp = new LinkedHashSet<>(getSingletons().size() + appSingletons.size());
                 tmp.addAll(appSingletons);
                 tmp.addAll(getSingletons());
                 getSingletons().clear();
@@ -112,7 +112,7 @@ public final class EverrestApplication extends Application {
             }
             Set<Class<?>> appClasses = application.getClasses();
             if (appClasses != null && appClasses.size() > 0) {
-                Set<Class<?>> tmp = new LinkedHashSet<Class<?>>(getClasses().size() + appClasses.size());
+                Set<Class<?>> tmp = new LinkedHashSet<>(getClasses().size() + appClasses.size());
                 tmp.addAll(appClasses);
                 tmp.addAll(getClasses());
                 getClasses().clear();

@@ -58,7 +58,9 @@ import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -103,11 +105,12 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         processor.start();
 
         servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
+        servletContext.setAttribute(Application.class.getName(), everrest);
         servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
         servletContext.setAttribute(ResourceBinder.class.getName(), resources);
         servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
         servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
-        processBindings(injector);
+        processBindings(injector, everrest);
     }
 
     /** {@inheritDoc} */
@@ -177,7 +180,10 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         return new ServletModule() {
             @Override
             protected void configureServlets() {
-                serve("/*").with(GuiceEverrestServlet.class);
+                Map<String, String> params = new HashMap<>();
+//                params.put("api.version", "1.0.0");
+                params.put("swagger.api.basepath", "http://localhost:9999/guice-book-service/r");
+                serve("/r/*").with(GuiceEverrestServlet.class, params);
             }
         };
     }
@@ -187,7 +193,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected void processBindings(Injector injector) {
+    protected void processBindings(Injector injector, EverrestApplication everrest) {
         ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         for (Binding<?> binding : injector.getBindings().values()) {
             Type type = binding.getKey().getTypeLiteral().getType();
@@ -233,6 +239,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
                         providers.addResponseFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
                     }
                 } else if (clazz.getAnnotation(Path.class) != null) {
+                    everrest.getClasses().add(clazz);
                     AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz, lifeCycle);
                     rDescriptor.accept(rdv);
                     com.google.inject.Provider<?> guiceProvider = binding.getProvider();

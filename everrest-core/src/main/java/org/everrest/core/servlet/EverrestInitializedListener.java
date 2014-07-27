@@ -62,6 +62,7 @@ public class EverrestInitializedListener implements ServletContextListener {
         processor.start();
 
         ctx.setAttribute(EverrestConfiguration.class.getName(), config);
+        ctx.setAttribute(Application.class.getName(), everrest);
         ctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
         ctx.setAttribute(ResourceBinder.class.getName(), resources);
         ctx.setAttribute(ApplicationProviderBinder.class.getName(), providers);
