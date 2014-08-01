@@ -52,9 +52,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
      * <i>javax.ws.rs.Application</i> and instantiate it. If such parameter is not specified then scan (if scanning is
      * enabled) web application's folders WEB-INF/classes and WEB-INF/lib for classes which contains JAX-RS annotations.
      * Interesting for three annotations {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS
-     * components
-     * is managed by context-param <i>org.everrest.scan.components</i>. This parameter must be <i>true</i> to enable
-     * scanning.
+     * components is managed by context-param <i>org.everrest.scan.components</i>. This parameter must be <i>true</i> to enable scanning.
      */
     public static class DefaultListener extends EverrestExoContextListener {
         /** @see org.everrest.exoplatform.servlet.EverrestExoContextListener#getContainer(javax.servlet.ServletContext) */
@@ -68,10 +66,8 @@ public abstract class EverrestExoContextListener implements ServletContextListen
      * Implementation of EverrestExoContextListener which get path to StandaloneContainer configuration from
      * context-param <i>everrest.exoplatform.standalone.config</i>. If path to configuration found then this path added
      * in to StandaloneContainer configuration. All other configuration located in war and jar files will be processed
-     * as
-     * described <a
-     * href="http://platform30.demo.exoplatform.org/docs/refguide/html/ch-service-configuration-for-beginners.html"
-     * >here</a>. Additionally this implementation do the same work as {@link DefaultListener}.
+     * as described <a href="http://platform30.demo.exoplatform.org/docs/refguide/html/ch-service-configuration-for-beginners.html">here</a>.
+     * Additionally this implementation do the same work as {@link DefaultListener}.
      */
     public static class StandaloneContainerStarter extends EverrestExoContextListener {
         public static final String CONFIGURATION_PATH = "everrest.exoplatform.standalone.config";
@@ -163,6 +159,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
         processor.start();
 
         servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
+        servletContext.setAttribute(Application.class.getName(), everrest);
         servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
         servletContext.setAttribute(ResourceBinder.class.getName(), resources);
         servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);

@@ -26,8 +26,7 @@ import javax.ws.rs.core.Application;
  * SpringComponentsLoader which obtains resources and providers delivered via {@link Application} or obtained after
  * scanning JAX-RS components if Application is not configured as JAX-RS specification says.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class SpringComponentsServletContextLoader extends SpringComponentsLoader implements ServletContextAware {
     private ServletContext servletContext;

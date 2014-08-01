@@ -31,9 +31,7 @@ import javax.servlet.http.HttpServletResponse;
  * ServletConfigAware since we need ServletContext and ServletConfig to be able
  * inject it via &#64;Context annotation to resources or providers.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- * @see EverrestHandlerMapping
+ * @author andrew00x
  */
 public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAware, ServletConfigAware {
     private ServletContext              servletContext;

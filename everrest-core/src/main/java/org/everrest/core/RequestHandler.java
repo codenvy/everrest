@@ -17,8 +17,7 @@ import java.io.IOException;
  * Contract of this component is process all requests, initialization and
  * control main components of JAX-RS implementation.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface RequestHandler {
     /**

@@ -165,6 +165,7 @@ public class EverrestComposer implements WebappComposer {
         container.addComponent(new PicoFileCollectorDestroyer(makeFileCollectorDestroyer()));
 
         servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
+        servletContext.setAttribute(Application.class.getName(), everrest);
         servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
         servletContext.setAttribute(ResourceBinder.class.getName(), resources);
         servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);

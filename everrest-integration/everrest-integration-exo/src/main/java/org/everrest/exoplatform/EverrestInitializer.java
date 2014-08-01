@@ -46,8 +46,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link org.everrest.exoplatform.servlet.EverrestExoServlet} instead of
  * {@link org.everrest.core.servlet.EverrestServlet}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class EverrestInitializer implements Startable {
     private static final Logger LOG = Logger.getLogger(EverrestInitializer.class);

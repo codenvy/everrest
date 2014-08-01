@@ -23,12 +23,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Application;
 import java.io.IOException;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @SuppressWarnings("serial")
 public class EverrestServlet extends HttpServlet {
@@ -50,7 +48,6 @@ public class EverrestServlet extends HttpServlet {
         env.put(ServletConfig.class, getServletConfig());
         final ServletContext servletContext = getServletContext();
         env.put(ServletContext.class, servletContext);
-        env.put(Application.class, servletContext.getAttribute(Application.class.getName()));
         env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
         try {
             ServletContainerRequest request = new ServletContainerRequest(httpRequest);
