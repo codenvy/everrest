@@ -12,7 +12,6 @@ package org.everrest.exoplatform.container;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.BaseDependencySupplier;
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.ObjectFactory;
@@ -44,8 +43,7 @@ import java.util.List;
 /**
  * Implementation of {@link ComponentAdapter} for providing instance of JAX-RS resource of provider.
  *
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class RestfulComponentAdapter implements ComponentAdapter {
     public static boolean isRestfulComponent(Object classOrInstance) {
@@ -80,32 +78,29 @@ public class RestfulComponentAdapter implements ComponentAdapter {
 
         this.componentKey = componentKey;
 
-        ComponentLifecycleScope lifecycle;
+        Object instance = null;
+
         if (classOrInstance instanceof Class) {
             clazz = (Class<?>)classOrInstance;
-            lifecycle = ComponentLifecycleScope.PER_REQUEST;
         } else {
             clazz = classOrInstance.getClass();
-            lifecycle = ComponentLifecycleScope.SINGLETON;
+            instance = classOrInstance;
         }
 
         implementedInterfaces = getImplementedInterfaces(clazz);
 
         ObjectModel objectModel;
         if (clazz.isAnnotationPresent(Path.class)) {
-            objectModel = new AbstractResourceDescriptorImpl(clazz, lifecycle);
+            objectModel = instance == null ? new AbstractResourceDescriptorImpl(clazz) : new AbstractResourceDescriptorImpl(instance);
         } else if (clazz.isAnnotationPresent(Provider.class)) {
-            objectModel = new ProviderDescriptorImpl(clazz, lifecycle);
+            objectModel = instance == null ? new ProviderDescriptorImpl(clazz):new ProviderDescriptorImpl(instance);
         } else if (clazz.isAnnotationPresent(Filter.class)) {
-            objectModel = new FilterDescriptorImpl(clazz, lifecycle);
+            objectModel = instance == null ? new FilterDescriptorImpl(clazz):new FilterDescriptorImpl(instance);
         } else {
             throw new IllegalArgumentException("Incorrect type or instance " + clazz + ". ");
         }
 
-        factory =
-                ComponentLifecycleScope.SINGLETON == lifecycle ? new SingletonObjectFactory<ObjectModel>(objectModel,
-                                                                                                         classOrInstance)
-                                                               : new PerRequestObjectFactory<ObjectModel>(objectModel);
+        factory = instance == null ? new PerRequestObjectFactory<>(objectModel) : new SingletonObjectFactory<>(objectModel, instance);
     }
 
     public ObjectModel getObjectModel() {

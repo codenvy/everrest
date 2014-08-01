@@ -11,30 +11,29 @@
 package org.everrest.spring;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.InitialProperties;
-import org.everrest.core.RequestFilter;
 import org.everrest.core.ResourceBinder;
-import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.async.AsynchronousProcessListWriter;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
-import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
-import org.everrest.core.servlet.EverrestApplication;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -46,10 +45,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -60,33 +55,52 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @version $Id$
  */
 public class SpringComponentsLoader implements BeanFactoryPostProcessor, HandlerMapping {
-    private static abstract class Destroyer implements org.springframework.context.Lifecycle {
-        private final AtomicBoolean started = new AtomicBoolean(true);
+    private static abstract class _Lifecycle implements org.springframework.context.Lifecycle {
+        private final AtomicBoolean flag = new AtomicBoolean(false);
 
         @Override
         public final void start() {
+            doStart();
+            flag.set(true);
+        }
+
+        @Override
+        public final void stop() {
+            doStop();
+            flag.set(false);
         }
 
         @Override
         public final boolean isRunning() {
-            return started.get();
+            return flag.get();
+        }
+
+        void doStart() {
+        }
+
+        void doStop() {
         }
     }
 
-    private static final class SpringEverrestProcessorDestroyer extends Destroyer {
+    private static final class SpringEverrestProcessorLifecycle extends _Lifecycle {
         private final EverrestProcessor processor;
 
-        private SpringEverrestProcessorDestroyer(EverrestProcessor processor) {
+        private SpringEverrestProcessorLifecycle(EverrestProcessor processor) {
             this.processor = processor;
         }
 
         @Override
-        public void stop() {
+        void doStart() {
+            processor.start();
+        }
+
+        @Override
+        void doStop() {
             processor.stop();
         }
     }
 
-    private static final class SpringFileCollectorDestroyer extends Destroyer {
+    private static final class SpringFileCollectorDestroyer extends _Lifecycle {
         private final FileCollectorDestroyer fileCollectorDestroyer;
 
         public SpringFileCollectorDestroyer(FileCollectorDestroyer fileCollectorDestroyer) {
@@ -94,7 +108,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         }
 
         @Override
-        public void stop() {
+        void doStop() {
             fileCollectorDestroyer.stopFileCollector();
         }
     }
@@ -132,69 +146,32 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        beanFactory.registerSingleton("org.everrest.lifecycle.SpringEverrestProcessorDestroyer", //
-                                      new SpringEverrestProcessorDestroyer(processor));
-        beanFactory.registerSingleton("org.everrest.lifecycle.SpringFileCollectorDestroyer", //
+        beanFactory.registerSingleton("org.everrest.lifecycle.SpringEverrestProcessorLifecycle",
+                                      new SpringEverrestProcessorLifecycle(processor));
+        beanFactory.registerSingleton("org.everrest.lifecycle.SpringFileCollectorDestroyer",
                                       new SpringFileCollectorDestroyer(makeFileCollectorDestroyer()));
-        processor.addApplication(makeEverrestApplication());
+        EverrestApplication everrest = makeEverrestApplication();
 
         ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         addAutowiredDependencies(beanFactory);
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
             Class<?> beanClass = beanFactory.getType(beanName);
-            BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            // Avoid unnecessary for bean with life cycle other then 'prototype' (creation new instance for each call).
-            ComponentLifecycleScope lifeCycle =
-                    beanDefinition.isPrototype() ? ComponentLifecycleScope.PER_REQUEST : ComponentLifecycleScope.SINGLETON;
-
             if (beanClass.getAnnotation(Provider.class) != null) {
-                ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(beanClass, lifeCycle);
+                ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(beanClass);
                 pDescriptor.accept(rdv);
-
-                if (ContextResolver.class.isAssignableFrom(beanClass)) {
-                    providers.addContextResolver(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
-                                                                                             beanFactory));
-                }
-
-                if (ExceptionMapper.class.isAssignableFrom(beanClass)) {
-                    providers.addExceptionMapper(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
-                                                                                             beanFactory));
-                }
-
-                if (MessageBodyReader.class.isAssignableFrom(beanClass)) {
-                    providers.addMessageBodyReader(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
-                                                                                               beanFactory));
-                }
-
-                if (MessageBodyWriter.class.isAssignableFrom(beanClass)) {
-                    providers.addMessageBodyWriter(new SpringObjectFactory<ProviderDescriptor>(pDescriptor, beanName,
-                                                                                               beanFactory));
-                }
+                everrest.addFactory(new SpringObjectFactory<>(pDescriptor, beanName, beanFactory));
             } else if (beanClass.getAnnotation(Filter.class) != null) {
-                FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(beanClass, lifeCycle);
+                FilterDescriptor fDescriptor = new FilterDescriptorImpl(beanClass);
                 fDescriptor.accept(rdv);
-
-                if (MethodInvokerFilter.class.isAssignableFrom(beanClass)) {
-                    providers.addMethodInvokerFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName,
-                                                                                               beanFactory));
-                }
-
-                if (RequestFilter.class.isAssignableFrom(beanClass)) {
-                    providers
-                            .addRequestFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
-                }
-
-                if (ResponseFilter.class.isAssignableFrom(beanClass)) {
-                    providers
-                            .addResponseFilter(new SpringObjectFactory<FilterDescriptor>(fDescriptor, beanName, beanFactory));
-                }
+                everrest.addFactory(new SpringObjectFactory<>(fDescriptor, beanName, beanFactory));
             } else if (beanClass.getAnnotation(Path.class) != null) {
-                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(beanClass, lifeCycle);
+                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(beanClass);
                 rDescriptor.accept(rdv);
-                resources.addResource(new SpringObjectFactory<AbstractResourceDescriptor>(rDescriptor, beanName,
-                                                                                          beanFactory));
+                everrest.addFactory(new SpringObjectFactory<>(rDescriptor, beanName, beanFactory));
             }
         }
+
+        processor.addApplication(everrest);
     }
 
     protected FileCollectorDestroyer makeFileCollectorDestroyer() {
@@ -202,7 +179,16 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
     }
 
     protected EverrestApplication makeEverrestApplication() {
-        return new EverrestApplication(configuration);
+        final EverrestApplication everrest = new EverrestApplication();
+        if (configuration.isAsynchronousSupported()) {
+            everrest.addResource(configuration.getAsynchronousServicePath(), AsynchronousJobService.class);
+            everrest.addSingleton(new AsynchronousJobPool(configuration));
+            everrest.addSingleton(new AsynchronousProcessListWriter());
+        }
+        if (configuration.isCheckSecurity()) {
+            everrest.addSingleton(new SecurityConstraint());
+        }
+        return everrest;
     }
 
     /**

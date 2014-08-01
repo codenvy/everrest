@@ -98,8 +98,7 @@ public class RequestHandlerImpl implements RequestHandler {
         httpMethodOverrideFeature = config.isHttpMethodOverride();
         normalizeUriFeature = config.isNormalizeUri();
         maxBufferSize = config.getMaxBufferSize();
-        String decoratorFactoryClassName =
-                (String)config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
+        String decoratorFactoryClassName = (String)config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
         if (decoratorFactoryClassName != null) {
             try {
                 methodInvokerDecoratorFactory = MethodInvokerDecoratorFactory.class.cast(

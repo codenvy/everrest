@@ -194,8 +194,15 @@ public final class WadlProcessor {
     private void processSubResourceLocators(org.everrest.core.wadl.research.Resource wadlResource,
                                             AbstractResourceDescriptor resourceDescriptor) {
         for (SubResourceLocatorDescriptor srld : resourceDescriptor.getSubResourceLocators().values()) {
-            AbstractResourceDescriptor subResourceDescriptor =
-                    new AbstractResourceDescriptorImpl(srld.getMethod().getReturnType(), ComponentLifecycleScope.SINGLETON);
+            AbstractResourceDescriptor subResourceDescriptor = new AbstractResourceDescriptorImpl(srld.getMethod().getReturnType()) {
+                @Override
+                protected void processConstructors() {
+                }
+
+                @Override
+                protected void processFields() {
+                }
+            };
             org.everrest.core.wadl.research.Resource wadlSubResource = processResource(subResourceDescriptor);
             wadlSubResource.setPath(srld.getPathValue().getPath());
             wadlResource.getMethodOrResource().add(wadlSubResource);

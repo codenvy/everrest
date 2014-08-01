@@ -10,18 +10,9 @@
  *******************************************************************************/
 package org.everrest.sample.guice;
 
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-@ApiModel(value = "A book")
-@XmlRootElement(name="Book")
 public class Book {
     private String title;
     private String author;
@@ -29,8 +20,6 @@ public class Book {
     private double price;
     private String id;
 
-    @XmlElement(name = "author")
-    @ApiModelProperty
     public String getAuthor() {
         return author;
     }

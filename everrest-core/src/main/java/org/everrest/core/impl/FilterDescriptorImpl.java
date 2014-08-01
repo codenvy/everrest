@@ -11,7 +11,6 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.BaseObjectModel;
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.impl.resource.PathValue;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
@@ -33,19 +32,32 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
     /**
      * @param filterClass
      *         filter class
-     * @param scope
-     *         filter scope
-     * @see ComponentLifecycleScope
      */
-    public FilterDescriptorImpl(Class<?> filterClass, ComponentLifecycleScope scope) {
-        super(filterClass, scope);
-        final Path p = filterClass.getAnnotation(Path.class);
+    public FilterDescriptorImpl(Class<?> filterClass) {
+        super(filterClass);
+        final String p = PathValue.getPath(filterClass.getAnnotation(Path.class));
         if (p != null) {
-            this.path = new PathValue(p.value());
-            this.uriPattern = new UriPattern(p.value());
+            this.path = new PathValue(p);
+            this.uriPattern = new UriPattern(p);
         } else {
             this.path = new PathValue(DEFAULT_PATH);
-            this.uriPattern = new UriPattern(this.path.getPath());
+            this.uriPattern = new UriPattern(DEFAULT_PATH);
+        }
+    }
+
+    /**
+     * @param filter
+     *         filter
+     */
+    public FilterDescriptorImpl(Object filter) {
+        super(filter);
+        final String p = PathValue.getPath(filter.getClass().getAnnotation(Path.class));
+        if (p != null) {
+            this.path = new PathValue(p);
+            this.uriPattern = new UriPattern(p);
+        } else {
+            this.path = new PathValue(DEFAULT_PATH);
+            this.uriPattern = new UriPattern(DEFAULT_PATH);
         }
     }
 

@@ -10,13 +10,18 @@
  *******************************************************************************/
 package org.everrest.core.impl.resource;
 
+import javax.ws.rs.Path;
+
 /**
  * Describe the Path annotation, see {@link javax.ws.rs.Path}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class PathValue {
+    public static String getPath(Path annotation) {
+        return annotation == null ? null : annotation.value();
+    }
+
     /** URI template, see {@link javax.ws.rs.Path#value()} . */
     private final String path;
 

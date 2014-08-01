@@ -11,7 +11,6 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.PerRequestObjectFactory;
 import org.everrest.core.ResourceBinder;
@@ -56,12 +55,12 @@ public class ResourceBinderImpl implements ResourceBinder {
                  */
                 public int compare(ObjectFactory<AbstractResourceDescriptor> o1, ObjectFactory<AbstractResourceDescriptor> o2) {
                     return UriPattern.URIPATTERN_COMPARATOR
-                                     .compare(o1.getObjectModel().getUriPattern(), o2.getObjectModel().getUriPattern());
+                            .compare(o1.getObjectModel().getUriPattern(), o2.getObjectModel().getUriPattern());
                 }
             };
 
     /** Root resource descriptors. */
-    private volatile List<ObjectFactory<AbstractResourceDescriptor>> resources = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
+    private volatile List<ObjectFactory<AbstractResourceDescriptor>> resources = new ArrayList<>();
 
     /** Validator. */
     private final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
@@ -80,7 +79,7 @@ public class ResourceBinderImpl implements ResourceBinder {
                     resourceClass.getName()));
         }
         try {
-            addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(null, resourceClass, properties)));
+            addResource(new PerRequestObjectFactory<>(newResourceDescriptor(null, resourceClass, properties)));
         } catch (Exception e) {
             if (e instanceof ResourcePublicationException) {
                 throw (ResourcePublicationException)e;
@@ -91,23 +90,14 @@ public class ResourceBinderImpl implements ResourceBinder {
 
     @Override
     public void addResource(String uriPattern, Class<?> resourceClass, MultivaluedMap<String, String> properties) {
-        try {
-            addResource(
-                    new PerRequestObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(uriPattern, resourceClass, properties)));
-        } catch (Exception e) {
-            if (e instanceof ResourcePublicationException) {
-                throw (ResourcePublicationException)e;
-            }
-            throw new ResourcePublicationException(e.getMessage(), e);
-        }
+        addResource(new PerRequestObjectFactory<>(newResourceDescriptor(uriPattern, resourceClass, properties)));
     }
 
     private AbstractResourceDescriptor newResourceDescriptor(String path,
                                                              Class<?> resourceClass,
-                                                             MultivaluedMap<String, String> properties) throws Exception {
+                                                             MultivaluedMap<String, String> properties) {
         AbstractResourceDescriptor descriptor =
-                path == null ? new AbstractResourceDescriptorImpl(resourceClass, ComponentLifecycleScope.PER_REQUEST)
-                             : new AbstractResourceDescriptorImpl(path, resourceClass, ComponentLifecycleScope.PER_REQUEST);
+                path == null ? new AbstractResourceDescriptorImpl(resourceClass) : new AbstractResourceDescriptorImpl(path, resourceClass);
         descriptor.accept(rdv);
         if (properties != null) {
             descriptor.getProperties().putAll(properties);
@@ -122,37 +112,19 @@ public class ResourceBinderImpl implements ResourceBinder {
                     "Resource class %s it is not root resource. Path annotation javax.ws.rs.Path is not specified for this class.",
                     resource.getClass().getName()));
         }
-        try {
-            addResource(
-                    new SingletonObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(null, resource, properties), resource));
-        } catch (Exception e) {
-            if (e instanceof ResourcePublicationException) {
-                throw (ResourcePublicationException)e;
-            }
-            throw new ResourcePublicationException(e.getMessage(), e);
-        }
+        addResource(new SingletonObjectFactory<>(newResourceDescriptor(null, resource, properties), resource));
     }
 
     @Override
     public void addResource(String uriPattern, Object resource, MultivaluedMap<String, String> properties) {
-        try {
-            addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(newResourceDescriptor(uriPattern, resource, properties),
-                                                                               resource));
-        } catch (Exception e) {
-            if (e instanceof ResourcePublicationException) {
-                throw (ResourcePublicationException)e;
-            }
-            throw new ResourcePublicationException(e.getMessage(), e);
-        }
+        addResource(new SingletonObjectFactory<>(newResourceDescriptor(uriPattern, resource, properties), resource));
     }
 
     private AbstractResourceDescriptor newResourceDescriptor(String path,
                                                              Object resource,
-                                                             MultivaluedMap<String, String> properties) throws Exception {
-        AbstractResourceDescriptor descriptor = path == null
-                                                ? new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON)
-                                                : new AbstractResourceDescriptorImpl(path, resource.getClass(),
-                                                                                     ComponentLifecycleScope.SINGLETON);
+                                                             MultivaluedMap<String, String> properties) {
+        AbstractResourceDescriptor descriptor =
+                path == null ? new AbstractResourceDescriptorImpl(resource) : new AbstractResourceDescriptorImpl(path, resource);
         descriptor.accept(rdv);
         if (properties != null) {
             descriptor.getProperties().putAll(properties);
@@ -164,7 +136,7 @@ public class ResourceBinderImpl implements ResourceBinder {
         UriPattern pattern = resourceFactory.getObjectModel().getUriPattern();
         lock.lock();
         try {
-            List<ObjectFactory<AbstractResourceDescriptor>> snapshot = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
+            List<ObjectFactory<AbstractResourceDescriptor>> snapshot = new ArrayList<>(resources);
             for (ObjectFactory<AbstractResourceDescriptor> resource : snapshot) {
                 if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern())) {
                     if (resource.getObjectModel().getObjectClass() == resourceFactory.getObjectModel().getObjectClass()) {
@@ -172,11 +144,10 @@ public class ResourceBinderImpl implements ResourceBinder {
                                                 resourceFactory.getObjectModel().getObjectClass().getName()));
                         return;
                     }
-                    throw new ResourcePublicationException("Resource class "
-                                                           + resourceFactory.getObjectModel().getObjectClass().getName()
-                                                           + " can't be registered. Resource class " +
-                                                           resource.getObjectModel().getObjectClass().getName()
-                                                           + " with the same pattern " + pattern + " already registered.");
+                    throw new ResourcePublicationException(String.format(
+                            "Resource class %s can't be registered. Resource class %s with the same pattern %s already registered.",
+                            resourceFactory.getObjectModel().getObjectClass().getName(),
+                            resource.getObjectModel().getObjectClass().getName(), pattern));
                 }
             }
             snapshot.add(resourceFactory);
@@ -194,7 +165,7 @@ public class ResourceBinderImpl implements ResourceBinder {
     public void clear() {
         lock.lock();
         try {
-            resources = new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
+            resources = new ArrayList<>();
         } finally {
             lock.unlock();
         }
@@ -237,7 +208,7 @@ public class ResourceBinderImpl implements ResourceBinder {
     /** {@inheritDoc} */
     public List<ObjectFactory<AbstractResourceDescriptor>> getResources() {
         List<ObjectFactory<AbstractResourceDescriptor>> myResources = resources;
-        return new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(myResources);
+        return new ArrayList<>(myResources);
     }
 
     /** {@inheritDoc} */
@@ -250,11 +221,11 @@ public class ResourceBinderImpl implements ResourceBinder {
         lock.lock();
         try {
             ObjectFactory<AbstractResourceDescriptor> resource = null;
-            List<ObjectFactory<AbstractResourceDescriptor>> snapshot =
-                    new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
+            List<ObjectFactory<AbstractResourceDescriptor>> snapshot = new ArrayList<>(resources);
 
-            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iterator = snapshot.iterator(); iterator.hasNext()
-                                                                                                     && resource == null; ) {
+            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iterator = snapshot.iterator();
+                 iterator.hasNext() && resource == null; ) {
+
                 ObjectFactory<AbstractResourceDescriptor> next = iterator.next();
                 Class<?> resourceClass = next.getObjectModel().getObjectClass();
                 if (clazz.equals(resourceClass)) {
@@ -279,12 +250,12 @@ public class ResourceBinderImpl implements ResourceBinder {
         lock.lock();
         try {
             ObjectFactory<AbstractResourceDescriptor> resource = null;
-            List<ObjectFactory<AbstractResourceDescriptor>> snapshot =
-                    new ArrayList<ObjectFactory<AbstractResourceDescriptor>>(resources);
+            List<ObjectFactory<AbstractResourceDescriptor>> snapshot = new ArrayList<>(resources);
 
             UriPattern pattern = new UriPattern(path);
-            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iterator = snapshot.iterator(); iterator.hasNext()
-                                                                                                     && resource == null; ) {
+            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iterator = snapshot.iterator();
+                 iterator.hasNext() && resource == null; ) {
+
                 ObjectFactory<AbstractResourceDescriptor> next = iterator.next();
                 UriPattern resourcePattern = next.getObjectModel().getUriPattern();
                 if (pattern.equals(resourcePattern)) {

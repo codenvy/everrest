@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public final class EverrestProcessor implements Lifecycle {
     private static final Logger LOG = Logger.getLogger(EverrestProcessor.class.getName());
@@ -39,17 +38,13 @@ public final class EverrestProcessor implements Lifecycle {
 
     public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencies,
                              EverrestConfiguration config, Application application) {
-        this(new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, config),
-             resources,
-             providers,
-             application);
+        this(new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, config), resources, providers, application);
     }
 
     // TODO : workaround to make possible use customized request handler. typically not need this for everrest itself but
     // may be useful for some integration. At the moment need this to get work exo integration through web sockets.
     // Need to find something smarter to configure RequestHandler.
-    public EverrestProcessor(RequestHandler handler, ResourceBinder resources, ProviderBinder providers,
-                             Application application) {
+    public EverrestProcessor(RequestHandler handler, ResourceBinder resources, ProviderBinder providers, Application application) {
         this.resources = resources;
         this.providers = providers;
         this.requestHandler = handler;
@@ -76,7 +71,7 @@ public final class EverrestProcessor implements Lifecycle {
         Set<Object> singletons = application.getSingletons();
         if (singletons != null && singletons.size() > 0) {
             for (Object o : singletons) {
-                singletonsReferences.add(new WeakReference<Object>(o));
+                singletonsReferences.add(new WeakReference<>(o));
             }
         }
     }

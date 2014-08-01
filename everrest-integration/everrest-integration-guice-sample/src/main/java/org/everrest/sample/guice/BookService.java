@@ -10,12 +10,6 @@
  *******************************************************************************/
 package org.everrest.sample.guice;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
-
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,23 +24,17 @@ import java.net.URI;
 import java.util.Collection;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Path("books")
-@Api(value = "/books", description = "TEST ROOT")
 public class BookService {
     @Inject
     private BookStorage bookStorage;
 
-    @Path("{id}")
+    @Path("/{id}")
     @GET
     @Produces("application/json")
-    @ApiOperation(value = "Find book by ID", notes = "TEST", response = Book.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Book not found")
-    })
-    public Book get(@ApiParam(value = "ID of book to fetch", required = true) @PathParam("id") String id) throws BookNotFoundException {
+    public Book get(@PathParam("id") String id) throws BookNotFoundException {
         Book book = bookStorage.getBook(id);
         if (book == null)
             throw new BookNotFoundException(id);

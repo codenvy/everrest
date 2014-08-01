@@ -11,11 +11,12 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.Filter;
+import org.everrest.core.ObjectFactory;
+import org.everrest.core.ObjectModel;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.method.MethodInvokerFilter;
-import org.everrest.core.servlet.EverrestApplication;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
@@ -24,6 +25,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,30 +42,33 @@ public class ApplicationPublisher {
     }
 
     public void publish(Application application) {
+        Set<Class<?>> classes = new LinkedHashSet<>();
+        Set<Class<?>> appClasses = application.getClasses();
+        if (appClasses != null) {
+            classes.addAll(appClasses);
+        }
+        if (application instanceof EverrestApplication) {
+            EverrestApplication everrest = (EverrestApplication)application;
+            for (Map.Entry<String, Class<?>> e : everrest.getResourceClasses().entrySet()) {
+                Class<?> clazz = e.getValue();
+                addResource(e.getKey(), clazz);
+                classes.remove(clazz);
+            }
+            for (Map.Entry<String, Object> e : everrest.getResourceSingletons().entrySet()) {
+                addResource(e.getKey(), e.getValue());
+            }
+            for (ObjectFactory<? extends ObjectModel> factory : everrest.getFactories()) {
+                addFactory(factory);
+                classes.remove(factory.getObjectModel().getObjectClass());
+            }
+        }
+        for (Class<?> clazz : classes) {
+            addPerRequest(clazz);
+        }
         Set<Object> singletons = application.getSingletons();
         if (singletons != null) {
             for (Object instance : singletons) {
                 addSingleton(instance);
-            }
-        }
-        Set<Class<?>> perRequests = application.getClasses();
-        if (perRequests != null) {
-            for (Class<?> clazz : perRequests) {
-                addPerRequest(clazz);
-            }
-        }
-        if (application instanceof EverrestApplication) {
-            Map<String, Class<?>> perRequestResources = ((EverrestApplication)application).getPerRequestResources();
-            if (!(perRequestResources == null || perRequestResources.isEmpty())) {
-                for (Map.Entry<String, Class<?>> e : perRequestResources.entrySet()) {
-                    addResource(e.getKey(), e.getValue());
-                }
-            }
-            Map<String, Object> singletonResources = ((EverrestApplication)application).getSingletonResources();
-            if (!(singletonResources == null || singletonResources.isEmpty())) {
-                for (Map.Entry<String, Object> e : singletonResources.entrySet()) {
-                    addResource(e.getKey(), e.getValue());
-                }
             }
         }
     }
@@ -109,7 +114,7 @@ public class ApplicationPublisher {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     private void addPerRequest(Class clazz) {
         if (clazz.getAnnotation(Provider.class) != null) {
             // per-request provider
@@ -139,6 +144,40 @@ public class ApplicationPublisher {
         } else if (clazz.getAnnotation(Path.class) != null) {
             // per-request resource
             resources.addResource(clazz, null);
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void addFactory(ObjectFactory factory) {
+        Class clazz = factory.getObjectModel().getObjectClass();
+        if (clazz.getAnnotation(Provider.class) != null) {
+            // per-request provider
+            if (ContextResolver.class.isAssignableFrom(clazz)) {
+                providers.addContextResolver(factory);
+            }
+            if (ExceptionMapper.class.isAssignableFrom(clazz)) {
+                providers.addExceptionMapper(factory);
+            }
+            if (MessageBodyReader.class.isAssignableFrom(clazz)) {
+                providers.addMessageBodyReader(factory);
+            }
+            if (MessageBodyWriter.class.isAssignableFrom(clazz)) {
+                providers.addMessageBodyWriter(factory);
+            }
+        } else if (clazz.getAnnotation(Filter.class) != null) {
+            // per-request filter
+            if (MethodInvokerFilter.class.isAssignableFrom(clazz)) {
+                providers.addMethodInvokerFilter(factory);
+            }
+            if (RequestFilter.class.isAssignableFrom(clazz)) {
+                providers.addRequestFilter(factory);
+            }
+            if (ResponseFilter.class.isAssignableFrom(clazz)) {
+                providers.addResponseFilter(factory);
+            }
+        } else if (clazz.getAnnotation(Path.class) != null) {
+            // per-request resource
+            resources.addResource(factory);
         }
     }
 }

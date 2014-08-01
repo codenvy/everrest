@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.exoplatform;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 
 /**
@@ -19,14 +18,18 @@ import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
  * always has an advantage over embedded Providers ({@link javax.ws.rs.ext.MessageBodyReader},
  * {@link javax.ws.rs.ext.MessageBodyWriter}, {@link javax.ws.rs.ext.ExceptionMapper}, etc).
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00
  */
 public final class ApplicationResource extends AbstractResourceDescriptorImpl {
     private final String applicationName;
 
-    public ApplicationResource(String applicationName, Class<?> resourceClass, ComponentLifecycleScope scope) {
-        super(resourceClass, scope);
+    public ApplicationResource(String applicationName, Class<?> resourceClass) {
+        super(resourceClass);
+        this.applicationName = applicationName;
+    }
+
+    public ApplicationResource(String applicationName, Object resource) {
+        super(resource);
         this.applicationName = applicationName;
     }
 

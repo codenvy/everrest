@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class BookServiceBootstrap extends EverrestGuiceContextListener {
     @Override
@@ -39,21 +38,8 @@ public class BookServiceBootstrap extends EverrestGuiceContextListener {
                 binder.bind(BookService.class);
                 binder.bind(BookStorage.class);
                 binder.bind(BookNotFoundExceptionMapper.class);
-
-                binder.bind(Application.class).toProvider(new ApplicationProvider());
             }
         });
         return modules;
-    }
-
-    public static class ApplicationProvider implements Provider<Application> {
-        public Application get() {
-            return new Application() {
-                @Override
-                public Set<Class<?>> getClasses() {
-                    return new HashSet<Class<?>>(Arrays.asList(BookService.class));
-                }
-            };
-        }
     }
 }

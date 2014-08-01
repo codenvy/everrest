@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.BaseTest;
 
 import javax.ws.rs.GET;
@@ -72,7 +71,7 @@ public class AnnotationInheritanceTest extends BaseTest {
 
     public void testFailedInheritance() {
         try {
-            new AbstractResourceDescriptorImpl(Resource3.class, ComponentLifecycleScope.PER_REQUEST);
+            new AbstractResourceDescriptorImpl(Resource3.class);
             fail("Should be failed here, equivocality annotation on method m0");
         } catch (RuntimeException e) {
         }

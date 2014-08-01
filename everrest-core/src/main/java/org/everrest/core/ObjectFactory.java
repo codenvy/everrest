@@ -16,12 +16,11 @@ package org.everrest.core;
  *
  * @param <T>
  *         ObjectModel extensions
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
+ * @author andrew00x
  * @version $Id$
  * @see ObjectModel
  */
 public interface ObjectFactory<T extends ObjectModel> {
-
     /**
      * Create object instance. ApplicationContext can be used for getting
      * required parameters for object constructors or fields.

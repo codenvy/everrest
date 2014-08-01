@@ -11,7 +11,6 @@
 package org.everrest.core.impl.resource;
 
 import org.everrest.core.BaseObjectModel;
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.impl.method.MethodParameterImpl;
 import org.everrest.core.impl.method.ParameterHelper;
@@ -68,32 +67,17 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
     private final ResourceMethodMap<ResourceMethodDescriptor> resourceMethods;
 
     /**
-     * Constructs new instance of AbstractResourceDescriptor without path (sub-resource).
+     * Constructs new instance of AbstractResourceDescriptor.
      *
      * @param resourceClass
      *         resource class
-     * @param scope
-     *         the components lifecycle scope
      */
-    public AbstractResourceDescriptorImpl(Class<?> resourceClass, ComponentLifecycleScope scope) {
-        this(resourceClass.getAnnotation(Path.class), resourceClass, scope);
+    public AbstractResourceDescriptorImpl(Class<?> resourceClass) {
+        this(PathValue.getPath(resourceClass.getAnnotation(Path.class)), resourceClass);
     }
 
-    /**
-     * @param path
-     *         the path value
-     * @param resourceClass
-     *         resource class
-     * @param scope
-     *         resource scope
-     * @see org.everrest.core.ComponentLifecycleScope
-     */
-    private AbstractResourceDescriptorImpl(Path path, Class<?> resourceClass, ComponentLifecycleScope scope) {
-        this(path == null ? null : path.value(), resourceClass, scope);
-    }
-
-    public AbstractResourceDescriptorImpl(String path, Class<?> resourceClass, ComponentLifecycleScope scope) {
-        super(resourceClass, scope);
+    public AbstractResourceDescriptorImpl(String path, Class<?> resourceClass) {
+        super(resourceClass);
         if (path == null) {
             this.path = null;
             this.uriPattern = null;
@@ -101,7 +85,32 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             this.path = new PathValue(path);
             this.uriPattern = new UriPattern(path);
         }
-        this.resourceMethods = new ResourceMethodMap<ResourceMethodDescriptor>();
+        this.resourceMethods = new ResourceMethodMap<>();
+        this.subResourceMethods = new SubResourceMethodMap();
+        this.subResourceLocators = new SubResourceLocatorMap();
+        processMethods();
+    }
+
+    /**
+     * Constructs new instance of AbstractResourceDescriptor.
+     *
+     * @param resource
+     *         resource
+     */
+    public AbstractResourceDescriptorImpl(Object resource) {
+        this(PathValue.getPath(resource.getClass().getAnnotation(Path.class)), resource);
+    }
+
+    public AbstractResourceDescriptorImpl(String path, Object resource) {
+        super(resource);
+        if (path == null) {
+            this.path = null;
+            this.uriPattern = null;
+        } else {
+            this.path = new PathValue(path);
+            this.uriPattern = new UriPattern(path);
+        }
+        this.resourceMethods = new ResourceMethodMap<>();
         this.subResourceMethods = new SubResourceMethodMap();
         this.subResourceLocators = new SubResourceLocatorMap();
         processMethods();
@@ -252,7 +261,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             Type[] parameterGenTypes = method.getGenericParameterTypes();
             Annotation[][] annotations = method.getParameterAnnotations();
 
-            List<MethodParameter> params = new ArrayList<MethodParameter>(parameterClasses.length);
+            List<MethodParameter> params = new ArrayList<>(parameterClasses.length);
             boolean classEncoded = getClassAnnotation(resourceClass, Encoded.class) != null;
             boolean methodEncoded = getMethodAnnotation(method, resourceClass, Encoded.class, false) != null;
             for (int i = 0; i < parameterClasses.length; i++) {

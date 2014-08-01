@@ -14,10 +14,6 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.ProvisionException;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider;
-import com.wordnik.swagger.jaxrs.listing.ApiListingResource;
-import com.wordnik.swagger.jaxrs.listing.ResourceListingProvider;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
@@ -125,17 +121,5 @@ public class EverrestModule implements Module {
         binder.bind(SecurityContext.class).toProvider(new SecurityContextProvider());
         binder.bind(ServletConfig.class).toProvider(new ServletConfigProvider());
         binder.bind(UriInfo.class).toProvider(new UriInfoProvider());
-
-        binder.bind(ResourceListingProvider.class);
-        binder.bind(ApiDeclarationProvider.class);
-        binder.bind(_.class);
     }
-
-    @Path("/api-docs")
-    @Api("/api-docs")
-    @Produces(MediaType.APPLICATION_JSON)
-    public static class _ extends ApiListingResource {
-
-    }
-
 }

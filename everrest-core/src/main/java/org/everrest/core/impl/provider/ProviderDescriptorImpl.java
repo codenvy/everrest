@@ -42,11 +42,20 @@ public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderD
     /**
      * @param providerClass
      *         provider class
-     * @param scope
-     *         provider scope
      */
-    public ProviderDescriptorImpl(Class<?> providerClass, ComponentLifecycleScope scope) {
-        super(providerClass, scope);
+    public ProviderDescriptorImpl(Class<?> providerClass) {
+        super(providerClass);
+        this.consumes = MediaTypeHelper.createConsumesList(providerClass.getAnnotation(Consumes.class));
+        this.produces = MediaTypeHelper.createProducesList(providerClass.getAnnotation(Produces.class));
+    }
+
+    /**
+     * @param provider
+     *         provider
+     */
+    public ProviderDescriptorImpl(Object provider) {
+        super(provider);
+        final Class<?> providerClass = provider.getClass();
         this.consumes = MediaTypeHelper.createConsumesList(providerClass.getAnnotation(Consumes.class));
         this.produces = MediaTypeHelper.createProducesList(providerClass.getAnnotation(Produces.class));
     }
