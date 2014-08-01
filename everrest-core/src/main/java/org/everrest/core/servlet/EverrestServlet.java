@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Application;
 import java.io.IOException;
 
 /**
@@ -47,7 +48,9 @@ public class EverrestServlet extends HttpServlet {
         env.put(HttpServletRequest.class, httpRequest);
         env.put(HttpServletResponse.class, httpResponse);
         env.put(ServletConfig.class, getServletConfig());
-        env.put(ServletContext.class, getServletContext());
+        final ServletContext servletContext = getServletContext();
+        env.put(ServletContext.class, servletContext);
+        env.put(Application.class, servletContext.getAttribute(Application.class.getName()));
         env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
         try {
             ServletContainerRequest request = new ServletContainerRequest(httpRequest);

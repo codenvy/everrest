@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.wadl;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.resource.AbstractResourceDescriptor;
@@ -104,8 +103,7 @@ public class WadlProcessorTest extends BaseTest {
 
     public void testBaseWadlGenerator() throws Exception {
 
-        AbstractResourceDescriptor ard =
-                new AbstractResourceDescriptorImpl(Resource1.class, ComponentLifecycleScope.PER_REQUEST);
+        AbstractResourceDescriptor ard = new AbstractResourceDescriptorImpl(Resource1.class);
         WadlProcessor wadlProcessor = new WadlProcessor();
         Application app = wadlProcessor.process(ard, new URI("http://localhost:8080/ws/rs"));
 

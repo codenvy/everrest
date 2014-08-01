@@ -21,7 +21,10 @@ import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.EnvironmentContext;
 
 import javax.servlet.ServletConfig;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
@@ -119,5 +122,4 @@ public class EverrestModule implements Module {
         binder.bind(ServletConfig.class).toProvider(new ServletConfigProvider());
         binder.bind(UriInfo.class).toProvider(new UriInfoProvider());
     }
-
 }

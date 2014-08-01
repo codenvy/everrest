@@ -36,8 +36,7 @@ import java.util.List;
 public class ResourceDescriptorValidatorTest extends BaseTest {
 
     public void testAbstractResourceDescriptorValidator() {
-        AbstractResourceDescriptor resource =
-                new AbstractResourceDescriptorImpl(Resource2.class, ComponentLifecycleScope.PER_REQUEST);
+        AbstractResourceDescriptor resource =new AbstractResourceDescriptorImpl(Resource2.class);
         try {
             resource.accept(ResourceDescriptorValidator.getInstance());
             fail("Exception should be here");
@@ -46,8 +45,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest {
     }
 
     public void testResourceMethodDescriptorValidator() {
-        AbstractResourceDescriptor resource =
-                new AbstractResourceDescriptorImpl(Resource3.class, ComponentLifecycleScope.PER_REQUEST);
+        AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(Resource3.class);
         for (List<ResourceMethodDescriptor> l : resource.getResourceMethods().values()) {
             ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
             for (ResourceMethodDescriptor rmd : l) {
@@ -69,8 +67,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest {
     }
 
     public void testSubResourceMethodDescriptorValidator() {
-        AbstractResourceDescriptor resource =
-                new AbstractResourceDescriptorImpl(Resource4.class, ComponentLifecycleScope.PER_REQUEST);
+        AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(Resource4.class);
         ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
         for (ResourceMethodMap<SubResourceMethodDescriptor> srmm : resource.getSubResourceMethods().values()) {
             for (List<SubResourceMethodDescriptor> l : srmm.values()) {
@@ -91,8 +88,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest {
     }
 
     public void testSubResourceLocatorDescriptorValidator() {
-        AbstractResourceDescriptor resource =
-                new AbstractResourceDescriptorImpl(Resource5.class, ComponentLifecycleScope.PER_REQUEST);
+        AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(Resource5.class);
         ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
         for (SubResourceLocatorDescriptor rmd : resource.getSubResourceLocators().values()) {
             String mn = rmd.getMethod().getName();

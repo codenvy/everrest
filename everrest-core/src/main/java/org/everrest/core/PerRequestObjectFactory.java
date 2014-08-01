@@ -20,8 +20,7 @@ import java.util.List;
  *
  * @param <T>
  *         ObjectModel extensions
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  * @see ObjectModel
  */
 public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
@@ -64,7 +63,7 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
             List<LifecycleComponent> perRequest =
                     (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
             if (perRequest == null) {
-                perRequest = new ArrayList<LifecycleComponent>();
+                perRequest = new ArrayList<>();
                 context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
             }
             perRequest.add(lc);

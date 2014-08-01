@@ -11,8 +11,7 @@
 package org.everrest.sample.guice;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class Book {
     private String title;

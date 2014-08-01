@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.ObjectFactory;
@@ -167,7 +166,7 @@ public class ProviderBinder implements Providers {
      */
     public void addContextResolver(@SuppressWarnings("rawtypes") Class<? extends ContextResolver> clazz) {
         try {
-            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
+            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz);
             descriptor.accept(rdv);
             addContextResolver(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
@@ -183,13 +182,12 @@ public class ProviderBinder implements Providers {
      */
     @SuppressWarnings("rawtypes")
     public void addContextResolver(ContextResolver instance) {
-        Class<? extends ContextResolver> clazz = instance.getClass();
         try {
-            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
+            ProviderDescriptor descriptor = new ProviderDescriptorImpl(instance);
             descriptor.accept(rdv);
             addContextResolver(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
-            LOG.error("Failed add ContextResolver " + clazz.getName(), e);
+            LOG.error("Failed add ContextResolver " + instance.getClass().getName(), e);
         }
     }
 
@@ -202,8 +200,7 @@ public class ProviderBinder implements Providers {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void addExceptionMapper(Class<? extends ExceptionMapper> clazz) {
         try {
-            addExceptionMapper(new PerRequestObjectFactory(new ProviderDescriptorImpl(clazz,
-                                                                                      ComponentLifecycleScope.PER_REQUEST)));
+            addExceptionMapper(new PerRequestObjectFactory(new ProviderDescriptorImpl(clazz)));
         } catch (Exception e) {
             LOG.error("Failed add ExceptionMapper " + clazz.getName(), e);
         }
@@ -217,12 +214,10 @@ public class ProviderBinder implements Providers {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void addExceptionMapper(ExceptionMapper instance) {
-        Class<? extends ExceptionMapper> clazz = instance.getClass();
         try {
-            addExceptionMapper(new SingletonObjectFactory(new ProviderDescriptorImpl(clazz,
-                                                                                     ComponentLifecycleScope.SINGLETON), instance));
+            addExceptionMapper(new SingletonObjectFactory(new ProviderDescriptorImpl(instance), instance));
         } catch (Exception e) {
-            LOG.error("Failed add ExceptionMapper " + clazz.getName(), e);
+            LOG.error("Failed add ExceptionMapper " + instance.getClass(), e);
         }
     }
 
@@ -234,7 +229,7 @@ public class ProviderBinder implements Providers {
      */
     public void addMessageBodyReader(@SuppressWarnings("rawtypes") Class<? extends MessageBodyReader> clazz) {
         try {
-            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
+            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz);
             descriptor.accept(rdv);
             addMessageBodyReader(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
@@ -250,13 +245,12 @@ public class ProviderBinder implements Providers {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void addMessageBodyReader(MessageBodyReader instance) {
-        Class<? extends MessageBodyReader> clazz = instance.getClass();
         try {
-            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
+            ProviderDescriptor descriptor = new ProviderDescriptorImpl(instance);
             descriptor.accept(rdv);
             addMessageBodyReader(new SingletonObjectFactory(descriptor, instance));
         } catch (Exception e) {
-            LOG.error("Failed add MessageBodyReader " + clazz.getName(), e);
+            LOG.error("Failed add MessageBodyReader " + instance.getClass().getName(), e);
         }
     }
 
@@ -268,7 +262,7 @@ public class ProviderBinder implements Providers {
      */
     public void addMessageBodyWriter(@SuppressWarnings("rawtypes") Class<? extends MessageBodyWriter> clazz) {
         try {
-            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
+            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz);
             descriptor.accept(rdv);
             addMessageBodyWriter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
@@ -284,13 +278,12 @@ public class ProviderBinder implements Providers {
      */
     @SuppressWarnings("rawtypes")
     public void addMessageBodyWriter(MessageBodyWriter instance) {
-        Class<? extends MessageBodyWriter> clazz = instance.getClass();
         try {
-            ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
+            ProviderDescriptor descriptor = new ProviderDescriptorImpl(instance);
             descriptor.accept(rdv);
             addMessageBodyWriter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
-            LOG.error("Failed add MessageBodyWriter " + clazz.getName(), e);
+            LOG.error("Failed add MessageBodyWriter " + instance.getClass(), e);
         }
     }
 
@@ -302,7 +295,7 @@ public class ProviderBinder implements Providers {
      */
     public void addMethodInvokerFilter(Class<? extends MethodInvokerFilter> clazz) {
         try {
-            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
+            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz);
             descriptor.accept(rdv);
             addMethodInvokerFilter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
@@ -317,13 +310,12 @@ public class ProviderBinder implements Providers {
      *         MethodInvokerFilter instance
      */
     public void addMethodInvokerFilter(MethodInvokerFilter instance) {
-        Class<? extends MethodInvokerFilter> clazz = instance.getClass();
         try {
-            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
+            FilterDescriptor descriptor = new FilterDescriptorImpl(instance);
             descriptor.accept(rdv);
             addMethodInvokerFilter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
-            LOG.error("Failed add RequestFilter " + clazz.getName(), e);
+            LOG.error("Failed add RequestFilter " + instance.getClass().getName(), e);
         }
     }
 
@@ -335,7 +327,7 @@ public class ProviderBinder implements Providers {
      */
     public void addRequestFilter(Class<? extends RequestFilter> clazz) {
         try {
-            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
+            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz);
             descriptor.accept(rdv);
             addRequestFilter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
@@ -350,13 +342,12 @@ public class ProviderBinder implements Providers {
      *         RequestFilter instance
      */
     public void addRequestFilter(RequestFilter instance) {
-        Class<? extends RequestFilter> clazz = instance.getClass();
         try {
-            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
+            FilterDescriptor descriptor = new FilterDescriptorImpl(instance);
             descriptor.accept(rdv);
             addRequestFilter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
-            LOG.error("Failed add RequestFilter " + clazz.getName(), e);
+            LOG.error("Failed add RequestFilter " + instance.getClass(), e);
         }
     }
 
@@ -368,7 +359,7 @@ public class ProviderBinder implements Providers {
      */
     public void addResponseFilter(Class<? extends ResponseFilter> clazz) {
         try {
-            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.PER_REQUEST);
+            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz);
             descriptor.accept(rdv);
             addResponseFilter(new PerRequestObjectFactory<>(descriptor));
         } catch (Exception e) {
@@ -383,13 +374,12 @@ public class ProviderBinder implements Providers {
      *         ResponseFilter instance
      */
     public void addResponseFilter(ResponseFilter instance) {
-        Class<? extends ResponseFilter> clazz = instance.getClass();
         try {
-            FilterDescriptor descriptor = new FilterDescriptorImpl(clazz, ComponentLifecycleScope.SINGLETON);
+            FilterDescriptor descriptor = new FilterDescriptorImpl(instance);
             descriptor.accept(rdv);
             addResponseFilter(new SingletonObjectFactory<>(descriptor, instance));
         } catch (Exception e) {
-            LOG.error("Failed add ResponseFilter " + clazz.getName(), e);
+            LOG.error("Failed add ResponseFilter " + instance.getClass().getName(), e);
         }
     }
 

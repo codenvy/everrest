@@ -11,7 +11,6 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.Lifecycle;
@@ -42,6 +41,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
@@ -57,8 +57,7 @@ public class RequestDispatcher {
     /** See {@link org.everrest.core.ResourceBinder}. */
     protected final ResourceBinder resourceBinder;
 
-    private final HelperCache<Class<?>, AbstractResourceDescriptor> locatorDescriptorCache =
-            new HelperCache<Class<?>, AbstractResourceDescriptor>(60 * 1000, 50);
+    private final HelperCache<Class<?>, AbstractResourceDescriptor> locatorDescriptorCache = new HelperCache<>(60 * 1000, 50);
 
     /**
      * Constructs new instance of RequestDispatcher.
@@ -141,7 +140,7 @@ public class RequestDispatcher {
         if ((parameterValues.get(len - 1) == null || "/".equals(parameterValues.get(len - 1))) && rmm.size() > 0) {
             // Resource method, then process HTTP method and consume/produce media types.
 
-            List<ResourceMethodDescriptor> methods = new ArrayList<ResourceMethodDescriptor>();
+            List<ResourceMethodDescriptor> methods = new ArrayList<>();
             boolean match = processResourceMethod(rmm, request, response, methods);
             if (match) {
                 if (Tracer.isTracingEnabled()) {
@@ -164,7 +163,7 @@ public class RequestDispatcher {
             SubResourceLocatorMap srlm = resourceFactory.getObjectModel().getSubResourceLocators();
 
             // Check sub-resource methods.
-            List<SubResourceMethodDescriptor> methods = new ArrayList<SubResourceMethodDescriptor>();
+            List<SubResourceMethodDescriptor> methods = new ArrayList<>();
             boolean match = processSubResourceMethod(srmm, requestPath, request, response, parameterValues, methods);
 
             if (match && Tracer.isTracingEnabled()) {
@@ -175,7 +174,7 @@ public class RequestDispatcher {
             }
 
             // Check sub-resource locators.
-            List<SubResourceLocatorDescriptor> locators = new ArrayList<SubResourceLocatorDescriptor>();
+            List<SubResourceLocatorDescriptor> locators = new ArrayList<>();
             boolean acceptableLocators = processSubResourceLocator(srlm, requestPath, parameterValues, locators);
 
             if (acceptableLocators && Tracer.isTracingEnabled()) {
@@ -333,19 +332,17 @@ public class RequestDispatcher {
         synchronized (locatorDescriptorCache) {
             descriptor = locatorDescriptorCache.get(resource.getClass());
             if (descriptor == null) {
-                descriptor = new AbstractResourceDescriptorImpl(resource.getClass(), ComponentLifecycleScope.SINGLETON);
+                descriptor = new AbstractResourceDescriptorImpl(resource);
                 locatorDescriptorCache.put(resource.getClass(), descriptor);
             }
         }
-        SingletonObjectFactory<AbstractResourceDescriptor> locResource =
-                new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, resource);
+        SingletonObjectFactory<AbstractResourceDescriptor> locResource = new SingletonObjectFactory<>(descriptor, resource);
 
         if (context instanceof Lifecycle) {
             @SuppressWarnings("unchecked")
-            List<LifecycleComponent> perRequest =
-                    (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
+            List<LifecycleComponent> perRequest = (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
             if (perRequest == null) {
-                perRequest = new ArrayList<LifecycleComponent>();
+                perRequest = new LinkedList<>();
                 context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
             }
             // We do nothing for initialize resource since it is created by other resource
@@ -564,7 +561,7 @@ public class RequestDispatcher {
             return false;
         }
 
-        List<SubResourceMethodDescriptor> l = new ArrayList<SubResourceMethodDescriptor>();
+        List<SubResourceMethodDescriptor> l = new ArrayList<>();
         boolean match = processResourceMethod(rmm, request, response, l);
 
         if (match) {

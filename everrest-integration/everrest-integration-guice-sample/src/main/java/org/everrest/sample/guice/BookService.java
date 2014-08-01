@@ -24,15 +24,14 @@ import java.net.URI;
 import java.util.Collection;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Path("books")
 public class BookService {
     @Inject
     private BookStorage bookStorage;
 
-    @Path("{id}")
+    @Path("/{id}")
     @GET
     @Produces("application/json")
     public Book get(@PathParam("id") String id) throws BookNotFoundException {
@@ -41,7 +40,6 @@ public class BookService {
             throw new BookNotFoundException(id);
         return book;
     }
-
 
     @GET
     @Produces("application/json")

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.exoplatform;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.Filter;
 import org.everrest.core.PerRequestObjectFactory;
 import org.everrest.core.RequestFilter;
@@ -34,8 +33,7 @@ import javax.ws.rs.ext.Provider;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author amdrew00x
  */
 public class ExoApplicationPublisher extends ApplicationPublisher {
     private final ResourceBinder resources;
@@ -84,8 +82,7 @@ public class ExoApplicationPublisher extends ApplicationPublisher {
                         }
                     } else if (clazz.getAnnotation(Path.class) != null) {
                         // singleton resource
-                        ApplicationResource resource =
-                                new ApplicationResource(applicationName, clazz, ComponentLifecycleScope.SINGLETON);
+                        ApplicationResource resource = new ApplicationResource(applicationName, clazz);
                         resource.accept(rdv);
                         resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(resource, instance));
                     }
@@ -121,8 +118,7 @@ public class ExoApplicationPublisher extends ApplicationPublisher {
                         }
                     } else if (clazz.getAnnotation(Path.class) != null) {
                         // per-request resource
-                        ApplicationResource resource =
-                                new ApplicationResource(applicationName, clazz, ComponentLifecycleScope.PER_REQUEST);
+                        ApplicationResource resource = new ApplicationResource(applicationName, clazz);
                         resource.accept(rdv);
                         resources.addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(resource));
                     }

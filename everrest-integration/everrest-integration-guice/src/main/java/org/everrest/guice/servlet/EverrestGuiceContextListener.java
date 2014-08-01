@@ -14,32 +14,30 @@ import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.google.inject.Scopes;
 import com.google.inject.Stage;
-import com.google.inject.internal.BindingImpl;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;
-import org.everrest.core.RequestFilter;
 import org.everrest.core.ResourceBinder;
-import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.async.AsynchronousProcessListWriter;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.impl.resource.ResourceDescriptorValidator;
-import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
-import org.everrest.core.servlet.EverrestApplication;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
@@ -50,10 +48,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -61,8 +55,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public abstract class EverrestGuiceContextListener extends GuiceServletContextListener {
     /**
@@ -81,33 +74,39 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         }
     }
 
-    protected ResourceBinderImpl resources;
-
-    protected ApplicationProviderBinder providers;
-
     /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         super.contextInitialized(sce);
         ServletContext servletContext = sce.getServletContext();
         EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
-        this.resources = new ResourceBinderImpl();
-        this.providers = new ApplicationProviderBinder();
+        ResourceBinderImpl resources = new ResourceBinderImpl();
+        ApplicationProviderBinder providers = new ApplicationProviderBinder();
         Injector injector = getInjector(servletContext);
         DependencySupplier dependencySupplier = new GuiceDependencySupplier(injector);
         EverrestConfiguration config = everrestInitializer.getConfiguration();
         Application application = everrestInitializer.getApplication();
-        EverrestApplication everrest = new EverrestApplication(config);
+        EverrestApplication everrest = new EverrestApplication();
+        if (config.isAsynchronousSupported()) {
+            everrest.addResource(config.getAsynchronousServicePath(), AsynchronousJobService.class);
+            everrest.addSingleton(new AsynchronousJobPool(config));
+            everrest.addSingleton(new AsynchronousProcessListWriter());
+        }
+        if (config.isCheckSecurity()) {
+            everrest.addSingleton(new SecurityConstraint());
+        }
         everrest.addApplication(application);
+
+        processBindings(injector, everrest);
         EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
         processor.start();
 
         servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
+        servletContext.setAttribute(Application.class.getName(), everrest);
         servletContext.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
         servletContext.setAttribute(ResourceBinder.class.getName(), resources);
         servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
         servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
-        processBindings(injector);
     }
 
     /** {@inheritDoc} */
@@ -187,68 +186,30 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected void processBindings(Injector injector) {
+    protected void processBindings(Injector injector, EverrestApplication everrest) {
         ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         for (Binding<?> binding : injector.getBindings().values()) {
             Type type = binding.getKey().getTypeLiteral().getType();
             if (type instanceof Class) {
                 Class clazz = (Class)type;
-                // Get scope on binding. Will not initialize fields for object with
-                // scope other then Scopes.NO_SCOPE. In this case we just need avoid
-                // useless processing of constructors and fields.
-                ComponentLifecycleScope lifeCycle = ((BindingImpl<?>)binding).getScoping().isNoScope() //
-                                                    ? ComponentLifecycleScope.PER_REQUEST //
-                                                    : ComponentLifecycleScope.SINGLETON;
                 if (clazz.getAnnotation(Provider.class) != null) {
-                    ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz, lifeCycle);
-                    com.google.inject.Provider<?> guiceProvider = binding.getProvider();
+                    ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz);
                     pDescriptor.accept(rdv);
-                    if (ContextResolver.class.isAssignableFrom(clazz)) {
-                        providers.addContextResolver(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
-                    }
-                    if (ExceptionMapper.class.isAssignableFrom(clazz)) {
-                        providers.addExceptionMapper(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
-                    }
-                    if (MessageBodyReader.class.isAssignableFrom(clazz)) {
-                        providers
-                                .addMessageBodyReader(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
-                    }
-                    if (MessageBodyWriter.class.isAssignableFrom(clazz)) {
-                        providers
-                                .addMessageBodyWriter(new GuiceObjectFactory<ProviderDescriptor>(pDescriptor, guiceProvider));
-                    }
+                    everrest.addFactory(new GuiceObjectFactory<>(pDescriptor, binding.getProvider()));
                 } else if (clazz.getAnnotation(Filter.class) != null) {
-                    FilterDescriptorImpl fDescriptor = new FilterDescriptorImpl(clazz, lifeCycle);
+                    FilterDescriptor fDescriptor = new FilterDescriptorImpl(clazz);
                     fDescriptor.accept(rdv);
-                    com.google.inject.Provider<?> guiceProvider = binding.getProvider();
-
-                    if (MethodInvokerFilter.class.isAssignableFrom(clazz)) {
-                        providers
-                                .addMethodInvokerFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
-                    }
-                    if (RequestFilter.class.isAssignableFrom(clazz)) {
-                        providers.addRequestFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
-                    }
-                    if (ResponseFilter.class.isAssignableFrom(clazz)) {
-                        providers.addResponseFilter(new GuiceObjectFactory<FilterDescriptor>(fDescriptor, guiceProvider));
-                    }
+                    everrest.addFactory(new GuiceObjectFactory<>(fDescriptor, binding.getProvider()));
                 } else if (clazz.getAnnotation(Path.class) != null) {
-                    AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz, lifeCycle);
+                    AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz);
                     rDescriptor.accept(rdv);
-                    com.google.inject.Provider<?> guiceProvider = binding.getProvider();
-                    resources.addResource(new GuiceObjectFactory<AbstractResourceDescriptor>(rDescriptor, guiceProvider));
+                    everrest.addFactory(new GuiceObjectFactory<>(rDescriptor, binding.getProvider()));
                 }
             } else if (binding.getKey() instanceof PathKey) {
                 Class clazz = ((PathKey)binding.getKey()).getClazz();
-                ComponentLifecycleScope lifeCycle = ((BindingImpl<?>)binding).getScoping().isNoScope() //
-                                                    ? ComponentLifecycleScope.PER_REQUEST //
-                                                    : ComponentLifecycleScope.SINGLETON;
-                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(((PathKey)binding.getKey()).getPath(),
-                                                                                            clazz,
-                                                                                            lifeCycle);
+                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(((PathKey)binding.getKey()).getPath(), clazz);
                 rDescriptor.accept(rdv);
-                com.google.inject.Provider<?> guiceProvider = binding.getProvider();
-                resources.addResource(new GuiceObjectFactory<AbstractResourceDescriptor>(rDescriptor, guiceProvider));
+                everrest.addFactory(new GuiceObjectFactory<>(rDescriptor, binding.getProvider()));
             }
         }
     }

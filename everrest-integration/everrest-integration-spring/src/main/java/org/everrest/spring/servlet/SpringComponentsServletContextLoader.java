@@ -14,7 +14,7 @@ import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
-import org.everrest.core.servlet.EverrestApplication;
+import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.spring.SpringComponentsLoader;
 import org.springframework.web.context.ServletContextAware;

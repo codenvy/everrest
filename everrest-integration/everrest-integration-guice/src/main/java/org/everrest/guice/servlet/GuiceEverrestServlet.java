@@ -14,14 +14,16 @@ import com.google.inject.Singleton;
 
 import org.everrest.core.servlet.EverrestServlet;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+
 /**
  * Has additional {@link Singleton} annotation which required for web components
  * by guice container. Since we want to have possibility to deploy servlet via
  * {@link com.google.inject.servlet.ServletModule#configureServlets
  * ServletModule.configureServlets} .
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @SuppressWarnings("serial")
 @Singleton
