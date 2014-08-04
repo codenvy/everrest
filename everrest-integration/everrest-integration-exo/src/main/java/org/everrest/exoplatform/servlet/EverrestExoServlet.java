@@ -35,8 +35,7 @@ import java.io.IOException;
  * registered in ExoContainer. To do so do not use EverrestExoContextListener as bootstrap but use
  * org.everrest.exoplatform.EverrestInitializer instead and provide corresponded configuration for ExoContainer.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @SuppressWarnings("serial")
 public class EverrestExoServlet extends AbstractHttpServlet {
@@ -48,10 +47,6 @@ public class EverrestExoServlet extends AbstractHttpServlet {
         webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
     }
 
-    /**
-     * @see org.exoplatform.container.web.AbstractHttpServlet#onService(org.exoplatform.container.ExoContainer,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     */
     @Override
     protected void onService(ExoContainer container, HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {

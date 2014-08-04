@@ -10,12 +10,16 @@
  *******************************************************************************/
 package org.everrest.exoplatform;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class StandaloneInjectionTest extends StandaloneBaseTest {
     public static interface Injectable {
@@ -36,8 +40,8 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            assertNotNull(inj);
-            assertEquals(InjectableImpl.class.getName(), inj.getName());
+            Assert.assertNotNull(inj);
+            Assert.assertEquals(InjectableImpl.class.getName(), inj.getName());
         }
     }
 
@@ -48,10 +52,10 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            assertNotNull(pInj);
+            Assert.assertNotNull(pInj);
             Injectable inj = pInj.get();
-            assertNotNull(inj);
-            assertEquals(InjectableImpl.class.getName(), inj.getName());
+            Assert.assertNotNull(inj);
+            Assert.assertEquals(InjectableImpl.class.getName(), inj.getName());
         }
     }
 
@@ -76,8 +80,8 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            assertNotNull(inj);
-            assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
+            Assert.assertNotNull(inj);
+            Assert.assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
         }
     }
 
@@ -88,10 +92,10 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            assertNotNull(pInj);
+            Assert.assertNotNull(pInj);
             InjectableComponent inj = pInj.get();
-            assertNotNull(inj);
-            assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
+            Assert.assertNotNull(inj);
+            Assert.assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
         }
     }
 
@@ -99,9 +103,9 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
     private final String injectableProviderKey = "StandaloneInjectionTest.Provider.Injectable";
 
-    /** @see org.everrest.exoplatform.WebAppBaseTest#setUp() */
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         javax.inject.Provider<Injectable> provider = new javax.inject.Provider<Injectable>() {
@@ -114,35 +118,35 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
         container.registerComponentInstance(InjectableComponent.class, new InjectableComponentImpl());
     }
 
-    /** @see junit.framework.TestCase#tearDown() */
+    @After
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         container.unregisterComponent(injectableProviderKey);
         container.unregisterComponent(InjectableComponent.class);
         super.tearDown();
     }
 
+    @Test
     public void testInjectInstance() throws Exception {
         resources.addResource(Resource1.class, null);
-        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource1", "", null, null, null)
-                                  .getStatus());
+        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource1", "", null, null, null).getStatus());
         resources.removeResource(Resource1.class);
     }
 
+    @Test
     public void testInjectProvider() throws Exception {
         resources.addResource(Resource2.class, null);
-        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource2", "", null, null, null)
-                                  .getStatus());
+        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource2", "", null, null, null).getStatus());
         resources.removeResource(Resource2.class);
     }
 
     /*
      * Test to inject instance to JAX-RS resource directly from ExoContainer.
      */
+    @Test
     public void testInjectInstance2() throws Exception {
         resources.addResource(Resource3.class, null);
-        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource3", "", null, null, null)
-                                  .getStatus());
+        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource3", "", null, null, null).getStatus());
         resources.removeResource(Resource3.class);
     }
 
@@ -152,10 +156,10 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
      * but if should be created because implementation of InjectableComponent
      * registered in container.
      */
+    @Test
     public void testInjectProvider2() throws Exception {
         resources.addResource(Resource4.class, null);
-        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource4", "", null, null, null).getStatus());
+        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource4", "", null, null, null).getStatus());
         resources.removeResource(Resource4.class);
     }
-
 }

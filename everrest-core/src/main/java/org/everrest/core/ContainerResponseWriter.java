@@ -14,11 +14,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 
 /**
- * All implementation of this interface should be able to write data in
- * container response, e. g. servlet response.
+ * All implementation of this interface should be able to write data in container response, e. g. servlet response.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface ContainerResponseWriter {
 
@@ -44,5 +42,4 @@ public interface ContainerResponseWriter {
      */
     void writeBody(GenericContainerResponse response, @SuppressWarnings("rawtypes") MessageBodyWriter entityWriter)
             throws IOException;
-
 }

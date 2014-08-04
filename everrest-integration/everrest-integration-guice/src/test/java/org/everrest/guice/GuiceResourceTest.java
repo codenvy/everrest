@@ -16,6 +16,8 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 
 import org.everrest.core.impl.provider.IOHelper;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,8 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GuiceResourceTest extends BaseTest {
     public static class Message {
@@ -82,18 +83,20 @@ public class GuiceResourceTest extends BaseTest {
     public static class Resource {
         @GET
         public void m(Message m) {
-            assertEquals(messageBody, m.getMessage());
+            Assert.assertEquals(messageBody, m.getMessage());
         }
     }
 
     private static final String messageBody = "GUICE RESOURCE TEST";
 
+    @Test
     public void testResource() throws Exception {
-        assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
+        Assert.assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
     }
 
+    @Test
     public void testRemapResource() throws Exception {
-        assertEquals(204, launcher.service("GET", "/a/b/c", "", null, messageBody.getBytes(), null).getStatus());
+        Assert.assertEquals(204, launcher.service("GET", "/a/b/c", "", null, messageBody.getBytes(), null).getStatus());
     }
 
     @Override

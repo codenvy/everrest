@@ -95,8 +95,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * URI pattern or provider with the same purpose already registered in this container.
  * </p>
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  * @see javax.ws.rs.core.Context
  * @see MessageBodyReader
  * @see MessageBodyWriter
@@ -121,7 +120,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
         return new RestfulComponentAdapterFactory(componentAdapterFactory);
     }
 
-    private volatile Map<Key, ComponentAdapter> restToComponentAdapters = new HashMap<Key, ComponentAdapter>();
+    private volatile Map<Key, ComponentAdapter> restToComponentAdapters = new HashMap<>();
     private final    Lock                       lock                    = new ReentrantLock();
 
     private static final class ProviderKey implements Key {
@@ -222,24 +221,21 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
         if (type.isAnnotationPresent(Filter.class)) {
             // TODO: avoid duplication of few filters even if they are registered with different keys in container.
         } else if (type.isAnnotationPresent(Path.class)) {
-            List<Key> keys = new ArrayList<Key>(1);
+            List<Key> keys = new ArrayList<>(1);
             keys.add(new ResourceKey(new UriPattern(type.getAnnotation(Path.class).value())));
             return keys;
         } else if (type.isAnnotationPresent(Provider.class)) {
             ParameterizedType[] implementedInterfaces = componentAdapter.getImplementedInterfaces();
-            List<Key> keys = new ArrayList<Key>(implementedInterfaces.length);
-            for (int i = 0; i < implementedInterfaces.length; i++) {
-                ParameterizedType genericInterface = implementedInterfaces[i];
+            List<Key> keys = new ArrayList<>(implementedInterfaces.length);
+            for (ParameterizedType genericInterface : implementedInterfaces) {
                 Class<?> rawType = (Class<?>)genericInterface.getRawType();
                 // @Consumes makes sense for MessageBodyReader ONLY
                 Set<MediaType> consumes = MessageBodyReader.class == rawType //
-                                          ? new HashSet<MediaType>(MediaTypeHelper.createConsumesList(type.getAnnotation(Consumes.class)))
-                                          //
+                                          ? new HashSet<>(MediaTypeHelper.createConsumesList(type.getAnnotation(Consumes.class)))
                                           : null;
                 // @Produces makes sense for MessageBodyWriter or ContextResolver
                 Set<MediaType> produces = ContextResolver.class == rawType || MessageBodyWriter.class == rawType//
-                                          ? new HashSet<MediaType>(MediaTypeHelper.createProducesList(type.getAnnotation(Produces.class)))
-                                          //
+                                          ? new HashSet<>(MediaTypeHelper.createProducesList(type.getAnnotation(Produces.class)))
                                           : null;
                 keys.add(new ProviderKey(consumes, produces, genericInterface));
             }
@@ -248,7 +244,6 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
         return Collections.emptyList();
     }
 
-    /** @see org.exoplatform.container.ConcurrentPicoContainer#registerComponent(org.picocontainer.ComponentAdapter) */
     @Override
     public ComponentAdapter registerComponent(ComponentAdapter componentAdapter)
             throws DuplicateComponentKeyRegistrationException {
@@ -257,7 +252,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
             if (keys.size() > 0) {
                 lock.lock();
                 try {
-                    Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
+                    Map<Key, ComponentAdapter> copy = new HashMap<>(restToComponentAdapters);
                     for (Key key : keys) {
                         ComponentAdapter previous = copy.put(key, componentAdapter);
                         if (previous != null) {
@@ -276,10 +271,6 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
         return super.registerComponent(componentAdapter);
     }
 
-    /**
-     * @see org.exoplatform.container.ConcurrentPicoContainer#registerComponentInstance(java.lang.Object,
-     *      java.lang.Object)
-     */
     @Override
     public ComponentAdapter registerComponentInstance(Object componentKey, Object componentInstance)
             throws PicoRegistrationException {
@@ -291,7 +282,6 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
         return super.registerComponentInstance(componentKey, componentInstance);
     }
 
-    /** @see org.exoplatform.container.ConcurrentPicoContainer#unregisterComponent(java.lang.Object) */
     @Override
     public ComponentAdapter unregisterComponent(Object componentKey) {
         ComponentAdapter componentAdapter = super.unregisterComponent(componentKey);
@@ -300,7 +290,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
             if (keys.size() > 0) {
                 lock.lock();
                 try {
-                    Map<Key, ComponentAdapter> copy = new HashMap<Key, ComponentAdapter>(restToComponentAdapters);
+                    Map<Key, ComponentAdapter> copy = new HashMap<>(restToComponentAdapters);
                     copy.keySet().removeAll(keys);
                     restToComponentAdapters = copy;
                 } finally {
@@ -314,19 +304,18 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
     //
 
     /**
-     * Retrieve all the component adapters for types annotated with <code>annotation</code> inside this container. The
-     * component adapters from the parent container are not returned.
+     * Retrieve all the component adapters for types annotated with <code>annotation</code> inside this container. The component adapters
+     * from the parent container are not returned.
      *
      * @param annotation
      *         the annotation type
-     * @return a collection containing all the ComponentAdapters for types annotated with <code>annotation</code> inside
-     *         this container.
+     * @return a collection containing all the ComponentAdapters for types annotated with <code>annotation</code> inside this container.
      */
     @SuppressWarnings("unchecked")
     public List<ComponentAdapter> getComponentAdapters(Class<? extends Annotation> annotation) {
         Collection<ComponentAdapter> adapters = getComponentAdapters();
         if (adapters.size() > 0) {
-            List<ComponentAdapter> result = new ArrayList<ComponentAdapter>();
+            List<ComponentAdapter> result = new ArrayList<>();
             for (ComponentAdapter a : adapters) {
                 if (a.getComponentImplementation().isAnnotationPresent(annotation)) {
                     result.add(a);
@@ -338,21 +327,21 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
     }
 
     /**
-     * Retrieve all the component adapters of the specified type and annotated with <code>annotation</code> inside this
-     * container. The component adapters from the parent container are not returned.
+     * Retrieve all the component adapters of the specified type and annotated with <code>annotation</code> inside this container. The
+     * component adapters from the parent container are not returned.
      *
      * @param componentType
      *         the type of component
      * @param annotation
      *         the annotation type
-     * @return a collection containing all the ComponentAdapters of the specified type and annotated with
-     *         <code>annotation</code> inside this container.
+     * @return a collection containing all the ComponentAdapters of the specified type and annotated with <code>annotation</code> inside
+     * this container.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<ComponentAdapter> getComponentAdaptersOfType(Class componentType, Class<? extends Annotation> annotation) {
         List<ComponentAdapter> adapters = getComponentAdaptersOfType(componentType);
         if (adapters.size() > 0) {
-            List<ComponentAdapter> result = new ArrayList<ComponentAdapter>();
+            List<ComponentAdapter> result = new ArrayList<>();
             for (ComponentAdapter a : adapters) {
                 if (a.getComponentImplementation().isAnnotationPresent(annotation)) {
                     result.add(a);
@@ -375,7 +364,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
     public <T> List<T> getComponentsOfType(Class<T> componentType, Class<? extends Annotation> annotation) {
         List<?> instances = getComponentInstancesOfType(componentType);
         if (instances.size() > 0) {
-            List<T> result = new ArrayList<T>();
+            List<T> result = new ArrayList<>();
             for (Object o : instances) {
                 if (o.getClass().isAnnotationPresent(annotation)) {
                     result.add(componentType.cast(o));
@@ -396,7 +385,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
     public List<Object> getComponents(Class<? extends Annotation> annotation) {
         List<?> instances = getComponentInstances();
         if (instances.size() > 0) {
-            List<Object> result = new ArrayList<Object>();
+            List<Object> result = new ArrayList<>();
             for (Object o : instances) {
                 if (o.getClass().isAnnotationPresent(annotation)) {
                     result.add(o);
@@ -424,33 +413,23 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
 
     // -------- Providers --------
 
-    /**
-     * @see javax.ws.rs.ext.Providers#getMessageBodyReader(java.lang.Class, java.lang.reflect.Type,
-     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
-     */
     @Override
     public final <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
                                                                MediaType mediaType) {
         return ComponentsFinder.findReader(this, type, genericType, annotations, mediaType);
     }
 
-    /**
-     * @see javax.ws.rs.ext.Providers#getMessageBodyWriter(java.lang.Class, java.lang.reflect.Type,
-     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
-     */
     @Override
     public final <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
                                                                MediaType mediaType) {
         return ComponentsFinder.findWriter(this, type, genericType, annotations, mediaType);
     }
 
-    /** @see javax.ws.rs.ext.Providers#getExceptionMapper(java.lang.Class) */
     @Override
     public final <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type) {
         return ComponentsFinder.findExceptionMapper(this, type);
     }
 
-    /** @see javax.ws.rs.ext.Providers#getContextResolver(java.lang.Class, javax.ws.rs.core.MediaType) */
     @Override
     public final <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType) {
         return ComponentsFinder.findContextResolver(this, contextType, mediaType);

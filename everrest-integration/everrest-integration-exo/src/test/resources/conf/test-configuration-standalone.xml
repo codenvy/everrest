@@ -22,19 +22,16 @@
         <type>org.everrest.exoplatform.StartableApplication</type>
     </component>
     <component>
-        <type>org.everrest.exoplatform.ProvidersRegistry</type>
-    </component>
-    <component>
         <type>org.everrest.exoplatform.ExoDependencySupplier</type>
     </component>
     <component>
-        <type>org.everrest.exoplatform.ExoRequestDispatcher</type>
-    </component>
-    <component>
-        <type>org.everrest.exoplatform.ExoRequestHandler</type>
+        <type>org.everrest.core.impl.ApplicationProviderBinder</type>
     </component>
     <component>
         <type>org.everrest.core.impl.ResourceBinderImpl</type>
+    </component>
+    <component>
+        <type>org.everrest.core.impl.EverrestProcessor</type>
     </component>
     <component>
         <key>RestfulContainerProvider</key>
@@ -56,14 +53,6 @@
     <!-- Add Application in container -->
     <component>
         <type>org.everrest.exoplatform.StandaloneExoResourcesTest$Application0</type>
-    </component>
-
-    <!-- =========================================================== -->
-    <component>
-        <type>org.everrest.exoplatform.WebAppExoResourcesTest$MessageProvider</type>
-    </component>
-    <component>
-        <type>org.everrest.exoplatform.WebAppExoResourcesTest$Resource1</type>
     </component>
 
 </configuration>

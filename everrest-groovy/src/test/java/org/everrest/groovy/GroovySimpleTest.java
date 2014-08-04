@@ -12,12 +12,13 @@ package org.everrest.groovy;
 
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.ArrayList;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GroovySimpleTest extends BaseTest {
 
@@ -27,10 +28,12 @@ public class GroovySimpleTest extends BaseTest {
         super.tearDown();
     }
 
+    @Test
     public void testPerRequest() throws Exception {
         publicationTest(false, new BaseResourceId("g1"));
     }
 
+    @Test
     public void testSingleton() throws Exception {
         publicationTest(true, new BaseResourceId("g2"));
     }
@@ -44,7 +47,7 @@ public class GroovySimpleTest extends BaseTest {
                 + "}";
 
         int initSize = resources.getSize();
-        assertEquals(0, groovyPublisher.resources.size());
+        Assert.assertEquals(0, groovyPublisher.resources.size());
 
         if (singleton) {
             groovyPublisher.publishSingleton(script, resourceId, null, null, null);
@@ -52,23 +55,22 @@ public class GroovySimpleTest extends BaseTest {
             groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
         }
 
-        assertEquals(initSize + 1, resources.getSize());
-        assertEquals(1, groovyPublisher.resources.size());
-        assertTrue(groovyPublisher.isPublished(resourceId));
+        Assert.assertEquals(initSize + 1, resources.getSize());
+        Assert.assertEquals(1, groovyPublisher.resources.size());
+        Assert.assertTrue(groovyPublisher.isPublished(resourceId));
 
-        String cs =
-                resources.getMatchedResource("/a", new ArrayList<String>()).getObjectModel().getObjectClass()
-                         .getProtectionDomain().getCodeSource().getLocation().toString();
-        assertEquals("file:/groovy/script/jaxrs", cs);
+        String cs = resources.getMatchedResource("/a", new ArrayList<String>()).getObjectModel().getObjectClass().getProtectionDomain()
+                             .getCodeSource().getLocation().toString();
+        Assert.assertEquals("file:/groovy/script/jaxrs", cs);
 
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse resp = launcher.service("GET", "/a/groovy", "", null, null, writer, null);
-        assertEquals(200, resp.getStatus());
-        assertEquals("hello groovy", new String(writer.getBody()));
+        Assert.assertEquals(200, resp.getStatus());
+        Assert.assertEquals("hello groovy", new String(writer.getBody()));
 
         groovyPublisher.unpublishResource(resourceId);
 
-        assertEquals(initSize, resources.getSize());
-        assertEquals(0, groovyPublisher.resources.size());
+        Assert.assertEquals(initSize, resources.getSize());
+        Assert.assertEquals(0, groovyPublisher.resources.size());
     }
 }

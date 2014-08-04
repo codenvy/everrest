@@ -115,7 +115,6 @@ public class RestfulComponentAdapter implements ComponentAdapter {
         return implementedInterfaces;
     }
 
-    /** @see org.picocontainer.ComponentAdapter#getComponentInstance(org.picocontainer.PicoContainer) */
     @Override
     public Object getComponentInstance(final PicoContainer container) throws PicoInitializationException,
                                                                              PicoIntrospectionException {
@@ -147,24 +146,20 @@ public class RestfulComponentAdapter implements ComponentAdapter {
         }
     }
 
-    /** @see org.picocontainer.ComponentAdapter#verify(org.picocontainer.PicoContainer) */
     @Override
     public void verify(PicoContainer container) throws PicoIntrospectionException {
     }
 
-    /** @see org.picocontainer.ComponentAdapter#accept(org.picocontainer.PicoVisitor) */
     @Override
     public void accept(PicoVisitor visitor) {
         visitor.visitComponentAdapter(this);
     }
 
-    /** @see org.picocontainer.ComponentAdapter#getComponentKey() */
     @Override
     public Object getComponentKey() {
         return componentKey;
     }
 
-    /** @see org.picocontainer.ComponentAdapter#getComponentImplementation() */
     @Override
     public Class getComponentImplementation() {
         return clazz;
@@ -183,7 +178,7 @@ public class RestfulComponentAdapter implements ComponentAdapter {
 
     private static ParameterizedType[] getImplementedInterfaces(Class<?> type) {
         if (type.isAnnotationPresent(Provider.class)) {
-            List<ParameterizedType> implementedInterfaces = new ArrayList<ParameterizedType>();
+            List<ParameterizedType> implementedInterfaces = new ArrayList<>();
             for (int i = 0; i < KNOWN_INTERFACES.length; i++) {
                 ParameterizedType impl = getGenericInterface(KNOWN_INTERFACES[i], type);
                 if (impl != null) {

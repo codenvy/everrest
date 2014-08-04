@@ -18,8 +18,7 @@ import org.picocontainer.defaults.ComponentAdapterFactory;
 import org.picocontainer.defaults.NotConcreteRegistrationException;
 
 /**
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class RestfulComponentAdapterFactory implements ComponentAdapterFactory {
     private final ComponentAdapterFactory delegate;
@@ -31,16 +30,10 @@ public final class RestfulComponentAdapterFactory implements ComponentAdapterFac
         this.delegate = delegate;
     }
 
-    /**
-     * @see org.picocontainer.defaults.ComponentAdapterFactory#createComponentAdapter(java.lang.Object, java.lang.Class,
-     *      org.picocontainer.Parameter[])
-     */
     @SuppressWarnings("rawtypes")
     @Override
-    public ComponentAdapter createComponentAdapter(Object componentKey, Class componentImplementation,
-                                                   Parameter[] parameters)
-            throws PicoIntrospectionException, AssignabilityRegistrationException,
-                   NotConcreteRegistrationException {
+    public ComponentAdapter createComponentAdapter(Object componentKey, Class componentImplementation, Parameter[] parameters)
+            throws PicoIntrospectionException, AssignabilityRegistrationException, NotConcreteRegistrationException {
         if (RestfulComponentAdapter.isRestfulComponent(componentImplementation)) {
             return new RestfulComponentAdapter(componentKey, componentImplementation);
         }

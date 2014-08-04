@@ -11,6 +11,8 @@
 package org.everrest.exoplatform;
 
 import org.everrest.core.impl.provider.IOHelper;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,8 +32,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class StandaloneExoResourcesTest extends StandaloneBaseTest {
     public static class Message {
@@ -61,15 +62,15 @@ public class StandaloneExoResourcesTest extends StandaloneBaseTest {
         }
 
         public Message readFrom(Class<Message> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                                MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
-                                                                                                             WebApplicationException {
+                                MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+                throws IOException, WebApplicationException {
             return new Message(IOHelper.readString(entityStream,
                                                    mediaType != null ? mediaType.getParameters().get("charset") : null));
         }
 
         public void writeTo(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-                                                                                                          WebApplicationException {
+                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+                throws IOException, WebApplicationException {
             IOHelper.writeString(t.getMessage(), entityStream, mediaType.getParameters().get("charset"));
         }
     }
@@ -78,17 +79,17 @@ public class StandaloneExoResourcesTest extends StandaloneBaseTest {
     public static class Resource1 {
         @GET
         public void m(Message m) {
-            assertEquals(mesageBody, m.getMessage());
+            Assert.assertEquals(messageBody, m.getMessage());
         }
     }
 
-    private static final String mesageBody = "EXO RESOURCE TEST";
+    private static final String messageBody = "EXO RESOURCE TEST";
 
     @Path("StandaloneExoResourcesTest.Resource2")
     public static class Resource2 {
         @GET
         public void m(Message m) {
-            assertEquals(mesageBody, m.getMessage());
+            Assert.assertEquals(messageBody, m.getMessage());
         }
     }
 
@@ -104,15 +105,17 @@ public class StandaloneExoResourcesTest extends StandaloneBaseTest {
         }
     }
 
+    @Test
     public void testResource() throws Exception {
-        assertEquals(204,
-                     launcher.service("GET", "/StandaloneExoResourcesTest.Resource1", "", null, mesageBody.getBytes(), null)
-                             .getStatus());
+        Assert.assertEquals(204,
+                            launcher.service("GET", "/StandaloneExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null)
+                                    .getStatus());
     }
 
+    @Test
     public void testApplicationResource() throws Exception {
-        assertEquals(204,
-                     launcher.service("GET", "/StandaloneExoResourcesTest.Resource2", "", null, mesageBody.getBytes(), null)
-                             .getStatus());
+        Assert.assertEquals(204,
+                            launcher.service("GET", "/StandaloneExoResourcesTest.Resource2", "", null, messageBody.getBytes(), null)
+                                    .getStatus());
     }
 }

@@ -11,6 +11,10 @@
 package org.everrest.exoplatform.container;
 
 import org.everrest.exoplatform.StandaloneBaseTest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -30,25 +34,26 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class ProvidersCollisionTest extends StandaloneBaseTest {
     private RestfulContainer restfulContainer;
 
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         restfulContainer = new RestfulContainer(container);
     }
 
-    /** @see org.everrest.exoplatform.BaseTest#tearDown() */
+    @After
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         restfulContainer.stop();
         super.tearDown();
     }
 
+    @Test
     public void testCollisionMultipleImpl1() throws Exception {
         // Component A implements all JAX-RS extension interfaces:
         // javax.ws.rs.ext.MessageBodyReader, javax.ws.rs.ext.MessageBodyWriter,
@@ -59,36 +64,37 @@ public class ProvidersCollisionTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation(A.class);
         try {
             restfulContainer.registerComponentImplementation(B.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation(C.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation(D.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation(E.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation(F.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation(G.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }
 
+    @Test
     public void testCollisionMultipleImpl2() throws Exception {
         // Component D implements JAX-RS extension interface javax.ws.rs.ext.ExceptionMapper.
         // Components E, F, G must be allowed to add in container but A, B, C should not be
@@ -106,21 +112,22 @@ public class ProvidersCollisionTest extends StandaloneBaseTest {
         restfulContainer.unregisterComponent("G");
         try {
             restfulContainer.registerComponentImplementation("A", A.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("B", B.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("C", C.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }
 
+    @Test
     public void testCollisionMultipleImpl3() throws Exception {
         // Component J implements JAX-RS extension interface javax.ws.rs.ext.ContextResolver.
         // Components F, G and D must be allowed to add in container but A, B, E, C should not be
@@ -136,26 +143,27 @@ public class ProvidersCollisionTest extends StandaloneBaseTest {
         restfulContainer.unregisterComponent("G");
         try {
             restfulContainer.registerComponentImplementation("A", A.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("B", B.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("C", C.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("E", E.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }
 
+    @Test
     public void testCollisionMultipleImpl4() throws Exception {
         // Interface H implements JAX-RS extension interface javax.ws.rs.ext.MessageBodyWriter.
         // Components C, D must be allowed to add in container but A, B, E, F should not be
@@ -171,26 +179,27 @@ public class ProvidersCollisionTest extends StandaloneBaseTest {
         restfulContainer.unregisterComponent("D");
         try {
             restfulContainer.registerComponentImplementation("F", F.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("E", E.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("B", B.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("A", A.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }
 
+    @Test
     public void testCollisionMultipleImpl5() throws Exception {
         // Interface G implements JAX-RS extension interface javax.ws.rs.ext.MessageBodyReader.
         // Components B, C, D must be allowed to add in container but A, E, F should not be
@@ -208,35 +217,37 @@ public class ProvidersCollisionTest extends StandaloneBaseTest {
         restfulContainer.unregisterComponent("D");
         try {
             restfulContainer.registerComponentImplementation("F", F.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("E", E.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
         try {
             restfulContainer.registerComponentImplementation("A", A.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }
 
+    @Test
     public void testRegisterComponentTwice() throws Exception {
         restfulContainer.registerComponentImplementation("H", H.class);
         try {
             restfulContainer.registerComponentImplementation("H", H.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }
 
+    @Test
     public void testRegisterExtended() throws Exception {
         restfulContainer.registerComponentImplementation(H.class);
         try {
             restfulContainer.registerComponentImplementation(ExtH.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }

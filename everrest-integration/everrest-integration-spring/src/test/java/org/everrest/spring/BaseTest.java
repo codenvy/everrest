@@ -13,9 +13,8 @@ package org.everrest.spring;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RequestDispatcher;
-import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.tools.ResourceLauncher;
 import org.junit.After;
 import org.junit.Before;
@@ -26,8 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/spring-component-test.xml"})
@@ -38,16 +36,16 @@ public abstract class BaseTest {
     protected ResourceBinder                  resources;
     @Autowired
     protected DependencySupplier              dependencies;
-    protected RequestHandlerImpl              requestHandler;
-    protected ResourceLauncher                launcher;
     @Autowired
     protected ConfigurableListableBeanFactory factory;
 
+    protected EverrestProcessor               processor;
+    protected ResourceLauncher                launcher;
+
     @Before
     public void start() throws Exception {
-        requestHandler =
-                new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
-        launcher = new ResourceLauncher(requestHandler);
+        processor = new EverrestProcessor(resources, providers, dependencies, new EverrestConfiguration(), null);
+        launcher = new ResourceLauncher(processor);
     }
 
     @After

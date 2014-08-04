@@ -11,34 +11,39 @@
 package org.everrest.exoplatform;
 
 import org.everrest.core.DependencySupplier;
-import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
-import org.everrest.core.impl.RequestDispatcher;
+import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.tools.ResourceLauncher;
+import org.exoplatform.container.StandaloneContainer;
+import org.junit.Before;
 
 /**
- * Initialize EverRest framework by ExoContainer.
- * EverRest itself and JAX-RS application are configured as ExoContainer components.
+ * Initialize EverRest framework by ExoContainer. EverRest itself and JAX-RS application are configured as ExoContainer components.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public abstract class StandaloneBaseTest extends BaseTest {
-    protected ResourceLauncher   launcher;
-    protected ResourceBinder     resources;
-    protected DependencySupplier dependencies;
-    protected ProvidersRegistry  providersRegistry;
-    protected RequestHandler     requestHandler;
-    protected RequestDispatcher  requestDispatcher;
+    protected ResourceLauncher          launcher;
+    protected ResourceBinder            resources;
+    protected DependencySupplier        dependencySupplier;
+    protected ApplicationProviderBinder providers;
+    protected EverrestProcessor         processor;
 
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
-        dependencies = (DependencySupplier)container.getComponentInstanceOfType(DependencySupplier.class);
+        dependencySupplier = (DependencySupplier)container.getComponentInstanceOfType(DependencySupplier.class);
         resources = (ResourceBinder)container.getComponentInstanceOfType(ResourceBinder.class);
-        providersRegistry = (ProvidersRegistry)container.getComponentInstanceOfType(ProvidersRegistry.class);
-        requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
-        launcher = new ResourceLauncher(requestHandler);
-        requestDispatcher = (RequestDispatcher)container.getComponentInstanceOfType(RequestDispatcher.class);
+        providers = (ApplicationProviderBinder)container.getComponentInstanceOfType(ApplicationProviderBinder.class);
+        processor = (EverrestProcessor)container.getComponentInstanceOfType(EverrestProcessor.class);
+        launcher = new ResourceLauncher(processor);
+    }
+
+    protected StandaloneContainer getContainer() throws Exception {
+        String conf = getClass().getResource("/conf/test-configuration-standalone.xml").toString();
+        StandaloneContainer.setConfigurationURL(conf);
+        return StandaloneContainer.getInstance();
     }
 }

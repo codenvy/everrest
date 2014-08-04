@@ -21,8 +21,7 @@ import javax.inject.Provider;
  * <li>if have circular dependency problem</li>
  * </ul>
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class RestfulContainerProvider implements Provider<RestfulContainer> {
     @Override

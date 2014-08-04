@@ -15,6 +15,9 @@ import groovy.lang.GroovyClassLoader;
 import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.groovy.servlet.GroovyEverrestServletContextInitializer;
 import org.everrest.test.mock.MockServletContext;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.core.Application;
 import java.net.URL;
@@ -29,7 +32,9 @@ public class GroovyApplicationTest extends BaseTest {
     protected ApplicationPublisher applicationPublisher;
     protected GroovyClassLoader    groovyClassLoader;
 
-    protected void setUp() throws Exception {
+    @Before
+    @Override
+    public void setUp() throws Exception {
         super.setUp();
         groovyClassLoader = new GroovyClassLoader();
         URL root = Thread.currentThread().getContextClassLoader().getResource("repo");
@@ -38,6 +43,7 @@ public class GroovyApplicationTest extends BaseTest {
         applicationPublisher = new ApplicationPublisher(resources, providers);
     }
 
+    @Test
     public void testApplication() throws Exception {
         String application =
                 "class Application0 extends javax.ws.rs.core.Application\n"
@@ -47,11 +53,12 @@ public class GroovyApplicationTest extends BaseTest {
         Class<?> class1 = groovyClassLoader.parseClass(application);
         javax.ws.rs.core.Application groovyApplication = (javax.ws.rs.core.Application)class1.newInstance();
         applicationPublisher.publish(groovyApplication);
-        assertEquals("GResource1", launcher.service("GET", "/a/1", "", null, null, null).getEntity());
+        Assert.assertEquals("GResource1", launcher.service("GET", "/a/1", "", null, null, null).getEntity());
         // ExceptionMapper written in Groovy should process a.b.GRuntimeException.
-        assertEquals("GExceptionMapper", launcher.service("GET", "/a/2", "", null, null, null).getEntity());
+        Assert.assertEquals("GExceptionMapper", launcher.service("GET", "/a/2", "", null, null, null).getEntity());
     }
 
+    @Test
     public void testScanComponents() {
         MockServletContext mockContext = new MockServletContext("test");
         StringBuilder classPath = new StringBuilder();
@@ -62,14 +69,14 @@ public class GroovyApplicationTest extends BaseTest {
         GroovyEverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(mockContext);
         Application application = initializer.getApplication();
         Set<Class<?>> classes = application.getClasses();
-        assertNotNull(classes);
-        assertEquals(2, classes.size());
+        Assert.assertNotNull(classes);
+        Assert.assertEquals(2, classes.size());
         java.util.List<String> l = new ArrayList<>(2);
         for (Class<?> c : classes) {
             l.add(c.getName());
         }
-        assertTrue(l.contains("org.everrest.A"));
-        assertTrue(l.contains("org.everrest.B"));
+        Assert.assertTrue(l.contains("org.everrest.A"));
+        Assert.assertTrue(l.contains("org.everrest.B"));
     }
 
 }

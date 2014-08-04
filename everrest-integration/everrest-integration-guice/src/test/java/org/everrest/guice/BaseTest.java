@@ -10,30 +10,27 @@
  *******************************************************************************/
 package org.everrest.guice;
 
-import junit.framework.TestCase;
-
 import com.google.inject.Module;
 import com.google.inject.servlet.ServletModule;
 
 import org.everrest.core.DependencySupplier;
-import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
-import org.everrest.core.impl.RequestDispatcher;
-import org.everrest.core.impl.RequestHandlerImpl;
+import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.guice.servlet.EverrestGuiceContextListener;
 import org.everrest.test.mock.MockServletContext;
+import org.junit.After;
+import org.junit.Before;
 
 import javax.servlet.ServletContextEvent;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public abstract class BaseTest extends TestCase {
+public abstract class BaseTest {
     private class Listener extends EverrestGuiceContextListener {
         protected ServletModule getServletModule() {
             // Do not need servlet in test.
@@ -45,10 +42,12 @@ public abstract class BaseTest extends TestCase {
         }
     }
 
+    protected EverrestProcessor  processor;
     protected ResourceLauncher   launcher;
     private   MockServletContext sctx;
     private   Listener           listener;
 
+    @Before
     public void setUp() throws Exception {
         sctx = new MockServletContext();
         listener = new Listener();
@@ -56,17 +55,14 @@ public abstract class BaseTest extends TestCase {
 
         DependencySupplier dependencies = (DependencySupplier)sctx.getAttribute(DependencySupplier.class.getName());
         ResourceBinder resources = (ResourceBinder)sctx.getAttribute(ResourceBinder.class.getName());
-        ApplicationProviderBinder providers =
-                (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
-        RequestHandler requestHandler =
-                new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
-        launcher = new ResourceLauncher(requestHandler);
+        ApplicationProviderBinder providers = (ApplicationProviderBinder)sctx.getAttribute(ApplicationProviderBinder.class.getName());
+        processor = new EverrestProcessor(resources, providers, dependencies, new EverrestConfiguration(), null);
+        launcher = new ResourceLauncher(processor);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         listener.contextDestroyed(new ServletContextEvent(sctx));
-        super.tearDown();
     }
 
     protected abstract List<Module> getModules();

@@ -20,8 +20,7 @@ import org.exoplatform.container.xml.ValueParam;
 import java.util.Iterator;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class EverrestConfigurationHelper extends EverrestConfiguration {
     public static final String DEFAULT_RESTFUL_CONTAINER_NAME = "everrest";

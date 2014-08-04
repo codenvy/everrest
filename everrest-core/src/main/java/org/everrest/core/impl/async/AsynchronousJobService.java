@@ -38,8 +38,7 @@ import java.util.List;
  * Instance of AsynchronousJobPool obtained in instance of this class via mechanism of injections.
  * This resource must always be deployed as per-request resource.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 @Path("async")
 public class AsynchronousJobService {

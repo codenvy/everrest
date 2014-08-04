@@ -44,8 +44,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
- * @version $Id: ProxyService.java 2720 2010-06-29 16:09:50Z aparfonov $
+ * @author Max Shaposhnik
  */
 @Path("proxy")
 public class ProxyService {

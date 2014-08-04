@@ -23,11 +23,9 @@ import java.util.List;
 /**
  * Get instance of requested type from ExoContainer.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class ExoDependencySupplier extends BaseDependencySupplier {
-    /** @see org.everrest.core.BaseDependencySupplier#getProvider(java.lang.reflect.Type) */
     @Override
     public javax.inject.Provider<?> getProvider(Type providerType) {
         if (!(providerType instanceof ParameterizedType)) {
@@ -70,7 +68,6 @@ public class ExoDependencySupplier extends BaseDependencySupplier {
         return null;
     }
 
-    /** @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class) */
     @Override
     public Object getComponent(Class<?> type) {
         javax.inject.Provider<?> provider = getProvider(ExoContainerContext.getCurrentContainer(), type);
@@ -80,7 +77,6 @@ public class ExoDependencySupplier extends BaseDependencySupplier {
         return null;
     }
 
-    /** @see org.everrest.core.BaseDependencySupplier#getComponentByName(java.lang.String) */
     @Override
     public Object getComponentByName(String name) {
         return ExoContainerContext.getCurrentContainer().getComponentInstance(name);

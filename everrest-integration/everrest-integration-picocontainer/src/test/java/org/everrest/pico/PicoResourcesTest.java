@@ -11,6 +11,8 @@
 package org.everrest.pico;
 
 import org.everrest.core.impl.provider.IOHelper;
+import org.junit.Assert;
+import org.junit.Test;
 import org.picocontainer.MutablePicoContainer;
 
 import javax.servlet.ServletContext;
@@ -29,8 +31,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class PicoResourcesTest extends BaseTest {
 
@@ -78,14 +79,15 @@ public class PicoResourcesTest extends BaseTest {
     public static class Resource {
         @GET
         public void m(Message m) {
-            assertEquals(messageBody, m.getMessage());
+            Assert.assertEquals(messageBody, m.getMessage());
         }
     }
 
     private static final String messageBody = "PICO RESOURCE TEST";
 
+    @Test
     public void test() throws Exception {
-        assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
+        Assert.assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
     }
 
     @Override
@@ -100,5 +102,4 @@ public class PicoResourcesTest extends BaseTest {
             }
         };
     }
-
 }

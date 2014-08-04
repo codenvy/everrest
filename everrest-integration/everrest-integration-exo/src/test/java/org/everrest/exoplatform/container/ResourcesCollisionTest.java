@@ -11,44 +11,50 @@
 package org.everrest.exoplatform.container;
 
 import org.everrest.exoplatform.StandaloneBaseTest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class ResourcesCollisionTest extends StandaloneBaseTest {
     private RestfulContainer restfulContainer;
 
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         restfulContainer = new RestfulContainer(container);
     }
 
-    /** @see org.everrest.exoplatform.BaseTest#tearDown() */
+    @After
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         restfulContainer.stop();
         super.tearDown();
     }
 
+    @Test
     public void testSameResource() {
         restfulContainer.registerComponentImplementation("X", X.class);
         try {
             restfulContainer.registerComponentImplementation("X", X.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }
 
+    @Test
     public void testResourcesWithSameURITemplate() {
         restfulContainer.registerComponentImplementation("X", X.class);
         try {
             restfulContainer.registerComponentImplementation("Y", Y.class);
-            fail("PicoRegistrationException must be thrown. ");
+            Assert.fail("PicoRegistrationException must be thrown. ");
         } catch (org.picocontainer.PicoRegistrationException e) {
         }
     }

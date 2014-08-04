@@ -10,15 +10,13 @@
  *******************************************************************************/
 package org.everrest.exoplatform;
 
-import org.everrest.core.ResourceBinder;
-import org.everrest.core.impl.ApplicationProviderBinder;
-import org.everrest.core.impl.ApplicationPublisher;
+import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.impl.LifecycleComponent;
-import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
@@ -31,10 +29,8 @@ import org.picocontainer.Startable;
 import javax.ws.rs.core.Application;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Load all available instances of {@link Application} (include {@link StartableApplication}) from ExoContainer and
@@ -51,78 +47,50 @@ import java.util.concurrent.atomic.AtomicLong;
 public class EverrestInitializer implements Startable {
     private static final Logger LOG = Logger.getLogger(EverrestInitializer.class);
 
-    private static final AtomicLong appNameCounter = new AtomicLong(1);
-
     private final ExoContainer                container;
-    private final ResourceBinder              resources;
-    private final ProvidersRegistry           providersRegistry;
     private final EverrestConfiguration       config;
+    private final EverrestProcessor           processor;
     private       List<WeakReference<Object>> singletonsReferences;
 
-    public EverrestInitializer(ExoContainerContext containerContext, ResourceBinder resources,
-                               ProvidersRegistry providersRegistry, StartableApplication eXo /* Be sure eXo components are initialized. */,
+    public EverrestInitializer(ExoContainerContext containerContext,
+                               EverrestProcessor processor,
+                               StartableApplication eXo /* Be sure eXo components are initialized. */,
                                InitParams initParams) {
-        this.resources = resources;
-        this.providersRegistry = providersRegistry;
+        this.processor = processor;
         this.container = containerContext.getContainer();
         this.config = EverrestConfigurationHelper.createEverrestConfiguration(initParams);
     }
 
-    public EverrestInitializer(ExoContainerContext containerContext, ResourceBinder resources,
-                               ProvidersRegistry providersRegistry,
-                               StartableApplication eXo /* Be sure eXo components are initialized. */) {
-        this(containerContext, resources, providersRegistry, eXo, null);
-    }
-
-    /** @see org.picocontainer.Startable#start() */
-    @SuppressWarnings("rawtypes")
     @Override
     public void start() {
-        Application everrest = new Application() {
-            private final Set<Class<?>> classes = new HashSet<Class<?>>(1);
-            private final Set<Object> singletons = new HashSet<Object>(3);
-
-            @Override
-            public Set<Class<?>> getClasses() {
-                return classes;
-            }
-
-            @Override
-            public Set<Object> getSingletons() {
-                return singletons;
-            }
-        };
-
+        EverrestApplication everrest = new EverrestApplication();
         if (config.isAsynchronousSupported()) {
-            everrest.getSingletons().add(new ExoAsynchronousJobPool(config));
-            everrest.getSingletons().add(new AsynchronousProcessListWriter());
-            everrest.getClasses().add(AsynchronousJobService.class);
+            everrest.addSingleton(new ExoAsynchronousJobPool(config));
+            everrest.addSingleton(new AsynchronousProcessListWriter());
+            everrest.addClass(AsynchronousJobService.class);
         }
         if (config.isCheckSecurity()) {
-            everrest.getSingletons().add(new SecurityConstraint());
+            everrest.addSingleton(new SecurityConstraint());
         }
 
         // Do not prevent GC remove objects if they are removed somehow from ResourceBinder or ProviderBinder.
         // NOTE We provider life cycle control ONLY for internal components and do nothing for components
         // obtained from container. Container must take care about its components.
         Set<Object> singletons = everrest.getSingletons();
-        singletonsReferences = new ArrayList<WeakReference<Object>>(singletons.size());
+        singletonsReferences = new ArrayList<>(singletons.size());
         for (Object o : singletons) {
-            singletonsReferences.add(new WeakReference<Object>(o));
+            singletonsReferences.add(new WeakReference<>(o));
         }
-        // Publish components of EverRest framework.
-        new ApplicationPublisher(resources, ProviderBinder.getInstance()).publish(everrest);
-
+        processor.addApplication(everrest);
         // Process applications.
         List allApps = container.getComponentInstancesOfType(Application.class);
         if (allApps != null && !allApps.isEmpty()) {
             for (Object o : allApps) {
-                addApplication((Application)o);
+                processor.addApplication((Application)o);
             }
         }
     }
 
-    /** @see org.picocontainer.Startable#stop() */
     @Override
     public void stop() {
         makeFileCollectorDestroyer().stopFileCollector();
@@ -150,17 +118,5 @@ public class EverrestInitializer implements Startable {
                 fc.stop();
             }
         };
-    }
-
-    public void addApplication(Application application) {
-        String applicationName = "application" + appNameCounter.getAndIncrement();
-        ApplicationProviderBinder applicationProviders = new ApplicationProviderBinder();
-        new ExoApplicationPublisher(resources, applicationProviders).publish(new ApplicationConfiguration(
-                applicationName, application));
-        providersRegistry.addProviders(applicationName, applicationProviders);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("JAX-RS Application " + applicationName + ", class: " + application.getClass().getName()
-                      + " registered. ");
-        }
     }
 }

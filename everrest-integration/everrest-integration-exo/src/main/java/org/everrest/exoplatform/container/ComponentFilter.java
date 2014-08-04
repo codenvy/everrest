@@ -15,8 +15,7 @@ import org.picocontainer.ComponentAdapter;
 /**
  * Implementation of this interface may be used to hide some components of RestfulContainer.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public interface ComponentFilter {
     boolean accept(ComponentAdapter component);

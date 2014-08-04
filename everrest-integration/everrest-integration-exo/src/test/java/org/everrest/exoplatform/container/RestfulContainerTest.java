@@ -11,6 +11,10 @@
 package org.everrest.exoplatform.container;
 
 import org.everrest.exoplatform.StandaloneBaseTest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.picocontainer.ComponentAdapter;
 
 import java.lang.annotation.Retention;
@@ -19,54 +23,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class RestfulContainerTest extends StandaloneBaseTest {
     private RestfulContainer restfulContainer;
 
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         restfulContainer = new RestfulContainer(container);
     }
 
-    /** @see org.everrest.exoplatform.BaseTest#tearDown() */
+    @After
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         restfulContainer.stop();
         super.tearDown();
     }
 
+    @Test
     public void testFindComponentAdaptersByAnnotation() throws Exception {
         restfulContainer.registerComponentImplementation(A.class);
         restfulContainer.registerComponentImplementation(B.class);
         restfulContainer.registerComponentImplementation(C.class);
         restfulContainer.registerComponentImplementation(D.class);
         List<ComponentAdapter> adapters = restfulContainer.getComponentAdapters(MyAnnotation.class);
-        assertEquals(3, adapters.size());
+        Assert.assertEquals(3, adapters.size());
         List<Class<?>> l = new ArrayList<Class<?>>(3);
         for (ComponentAdapter a : adapters) {
             l.add(a.getComponentImplementation());
         }
-        assertTrue(l.contains(A.class));
-        assertTrue(l.contains(B.class));
-        assertTrue(l.contains(D.class));
+        Assert.assertTrue(l.contains(A.class));
+        Assert.assertTrue(l.contains(B.class));
+        Assert.assertTrue(l.contains(D.class));
     }
 
+    @Test
     public void testFindComponentAdaptersByTypeAndAnnotation() throws Exception {
         restfulContainer.registerComponentImplementation(A.class);
         restfulContainer.registerComponentImplementation(B.class);
         restfulContainer.registerComponentImplementation(C.class);
         restfulContainer.registerComponentImplementation(D.class);
         List<ComponentAdapter> adapters = restfulContainer.getComponentAdaptersOfType(I.class, MyAnnotation.class);
-        assertEquals(2, adapters.size());
+        Assert.assertEquals(2, adapters.size());
         List<Class<?>> l = new ArrayList<Class<?>>(2);
         for (ComponentAdapter a : adapters) {
             l.add(a.getComponentImplementation());
         }
-        assertTrue(l.contains(A.class));
-        assertTrue(l.contains(B.class));
+        Assert.assertTrue(l.contains(A.class));
+        Assert.assertTrue(l.contains(B.class));
     }
 
     @Retention(RetentionPolicy.RUNTIME)

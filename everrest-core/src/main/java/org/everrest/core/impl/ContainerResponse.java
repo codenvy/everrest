@@ -38,10 +38,10 @@ public class ContainerResponse implements GenericContainerResponse {
    /* ----------------- Write response helpers ---------------- */
 
     /**
-     * Wrapper for underlying MessageBodyWriter. Need such wrapper to give possibility update HTTP headers but commit
-     * them before writing the response body. NotifiesOutputStream wraps original OutputStream for the HTTP body and
-     * notify OutputListener about any changes, e.g. write bytes, flush or close. OutputListener processes events
-     * and initiates process of commit HTTP headers after getting the first one.
+     * Wrapper for underlying MessageBodyWriter. Need such wrapper to give possibility update HTTP headers but commit them before writing
+     * the response body. NotifiesOutputStream wraps original OutputStream for the HTTP body and notify OutputListener about any changes,
+     * e.g. write bytes, flush or close. OutputListener processes events and initiates process of commit HTTP headers after getting the
+     * first one.
      */
     private static class BodyWriter implements MessageBodyWriter<Object> {
         private final MessageBodyWriter<Object> delegate;
@@ -219,9 +219,16 @@ public class ContainerResponse implements GenericContainerResponse {
         MediaType contentType = getContentType();
 
         // if content-type is still not preset try determine it
-        if (contentType == null) {
+        if (contentType == null || (contentType.isWildcardType() && contentType.isWildcardSubtype())) {
             List<MediaType> availableWriters = context.getProviders().getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
-            contentType = context.getContainerRequest().getAcceptableMediaType(availableWriters);
+            MediaType mediaType;
+            if (availableWriters.isEmpty() ||
+                (availableWriters.size() == 1 && (mediaType = availableWriters.get(0)).isWildcardType() && mediaType.isWildcardSubtype())) {
+                // getAcceptableMediaTypes() return list which contains at least one element even HTTP header 'accept' is absent
+                contentType = context.getContainerRequest().getAcceptableMediaTypes().get(0);
+            } else {
+                contentType = context.getContainerRequest().getAcceptableMediaType(availableWriters);
+            }
 
             if (contentType == null || contentType.isWildcardType() || contentType.isWildcardSubtype()) {
                 contentType = MediaType.APPLICATION_OCTET_STREAM_TYPE;

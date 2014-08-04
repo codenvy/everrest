@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.everrest.groovy;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
@@ -21,13 +19,15 @@ import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
+import org.junit.After;
+import org.junit.Before;
 
 import java.lang.reflect.Constructor;
 
 /**
  * @author andrew00x
  */
-public abstract class BaseTest extends TestCase {
+public abstract class BaseTest {
     protected ProviderBinder          providers;
     protected ResourceBinderImpl      resources;
     protected DependencySupplierImpl  dependencySupplier;
@@ -35,7 +35,8 @@ public abstract class BaseTest extends TestCase {
     protected ResourceLauncher        launcher;
     protected GroovyResourcePublisher groovyPublisher;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         resources = new ResourceBinderImpl();
         // reset embedded providers to be sure it is clean
         Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
@@ -50,8 +51,7 @@ public abstract class BaseTest extends TestCase {
         groovyPublisher = new GroovyResourcePublisher(resources, dependencySupplier);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
     }
 }

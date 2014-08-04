@@ -19,8 +19,7 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface GenericContainerRequest extends Request, SecurityContext, ExtHttpHeaders {
     /**
@@ -31,13 +30,12 @@ public interface GenericContainerRequest extends Request, SecurityContext, ExtHt
     List<String> getCookieHeaders();
 
     /**
-     * Select the first media type, from a given list of media types, that is
-     * most acceptable according to the requested acceptable media types.
+     * Select the first media type, from a given list of media types, that is most acceptable according to the requested acceptable media
+     * types.
      *
      * @param mediaTypes
      *         the list of media types
-     * @return the most acceptable media type, or null if no media type was found
-     *         to be acceptable
+     * @return the most acceptable media type, or null if no media type was found to be acceptable
      */
     MediaType getAcceptableMediaType(List<MediaType> mediaTypes);
 
@@ -95,5 +93,4 @@ public interface GenericContainerRequest extends Request, SecurityContext, ExtHt
      *         read-only case insensitive {@link MultivaluedMap}
      */
     void setRequestHeaders(MultivaluedMap<String, String> httpHeaders);
-
 }

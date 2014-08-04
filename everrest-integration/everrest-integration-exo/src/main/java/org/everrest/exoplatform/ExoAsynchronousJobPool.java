@@ -22,8 +22,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 @Provider
 public class ExoAsynchronousJobPool extends AsynchronousJobPool implements ContextResolver<AsynchronousJobPool> {
@@ -31,10 +30,6 @@ public class ExoAsynchronousJobPool extends AsynchronousJobPool implements Conte
         super(config);
     }
 
-    /**
-     * @see org.everrest.core.impl.async.AsynchronousJobPool#newCallable(java.lang.Object, java.lang.reflect.Method,
-     *      java.lang.Object[])
-     */
     @Override
     protected Callable<Object> newCallable(Object resource, Method method, Object[] params) {
         return new CallableWrapper(super.newCallable(resource, method, params));

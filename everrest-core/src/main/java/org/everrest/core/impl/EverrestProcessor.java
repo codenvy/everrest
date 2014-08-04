@@ -89,6 +89,10 @@ public final class EverrestProcessor implements Lifecycle {
         }
     }
 
+    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier) {
+        this(resources, providers, dependencySupplier, null, null);
+    }
+
     public String getProperty(String name) {
         return properties.get(name);
     }

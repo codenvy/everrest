@@ -41,11 +41,10 @@ import java.util.Set;
 /**
  * Base implementation of PicoVisitor for lookup JAX-RS components by annotation.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 abstract class ComponentsFinder extends AbstractPicoVisitor {
-    private static final Set<ComponentFilter> COMPONENT_FILTERS = new LinkedHashSet<ComponentFilter>();
+    private static final Set<ComponentFilter> COMPONENT_FILTERS = new LinkedHashSet<>();
 
     static {
         for (ComponentFilter f : ServiceLoader.load(ComponentFilter.class)) {
@@ -57,7 +56,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         if (source.size() == 0 || COMPONENT_FILTERS.size() == 0) {
             return source;
         }
-        List<ComponentAdapter> result = new ArrayList<ComponentAdapter>();
+        List<ComponentAdapter> result = new ArrayList<>();
         for (ComponentAdapter component : source) {
             for (ComponentFilter f : COMPONENT_FILTERS) {
                 if (f.accept(component)) {
@@ -74,13 +73,11 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         this.annotation = annotation;
     }
 
-    /** @see org.picocontainer.PicoVisitor#visitComponentAdapter(org.picocontainer.ComponentAdapter) */
     @Override
     public final void visitComponentAdapter(ComponentAdapter componentAdapter) {
         checkTraversal();
     }
 
-    /** @see org.picocontainer.PicoVisitor#visitParameter(org.picocontainer.Parameter) */
     @Override
     public final void visitParameter(Parameter parameter) {
         checkTraversal();
@@ -89,7 +86,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
     final static class ResourceFinder extends ComponentsFinder {
         private final String       requestPath;
         private final List<String> parameterValues;
-        private final List<ComponentAdapter> components = new ArrayList<ComponentAdapter>();
+        private final List<ComponentAdapter> components = new ArrayList<>();
 
         ResourceFinder(Class<? extends Annotation> annotation, String requestPath, List<String> parameterValues) {
             super(annotation);
@@ -97,13 +94,12 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             this.parameterValues = parameterValues;
         }
 
-        /** @see org.picocontainer.PicoVisitor#traverse(java.lang.Object) */
         @Override
         public Object traverse(Object container) {
             components.clear();
             try {
                 super.traverse(container);
-                Map<UriPattern, ComponentAdapter> matched = new HashMap<UriPattern, ComponentAdapter>();
+                Map<UriPattern, ComponentAdapter> matched = new HashMap<>();
                 for (ComponentAdapter adapter : components) {
                     if (adapter instanceof RestfulComponentAdapter) {
                         AbstractResourceDescriptor resource =
@@ -136,7 +132,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             }
         }
 
-        /** @see org.picocontainer.PicoVisitor#visitContainer(org.picocontainer.PicoContainer) */
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
@@ -153,10 +148,10 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         private final Type         genericEntityType;
         private final MediaType    mediaType;
         private final Annotation[] annotations;
-        private final List<ComponentAdapter> components = new ArrayList<ComponentAdapter>();
+        private final List<ComponentAdapter> components = new ArrayList<>();
 
-        WriterFinder(Class<? extends Annotation> annotation, Class<T> entityType, Type genericEntityType,
-                     Annotation[] annotations, MediaType mediaType) {
+        WriterFinder(Class<? extends Annotation> annotation, Class<T> entityType, Type genericEntityType, Annotation[] annotations,
+                     MediaType mediaType) {
             super(annotation);
             this.entityType = entityType;
             this.genericEntityType = genericEntityType;
@@ -164,7 +159,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             this.mediaType = mediaType;
         }
 
-        /** @see org.picocontainer.defaults.AbstractPicoVisitor#traverse(java.lang.Object) */
         @SuppressWarnings({"rawtypes", "unchecked"})
         @Override
         public Object traverse(Object container) {
@@ -176,11 +170,9 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
                     MediaType next = mediaTypeRange.next();
                     for (ComponentAdapter adapter : components) {
                         if (adapter instanceof RestfulComponentAdapter) {
-                            ProviderDescriptor provider =
-                                    (ProviderDescriptor)((RestfulComponentAdapter)adapter).getObjectModel();
+                            ProviderDescriptor provider = (ProviderDescriptor)((RestfulComponentAdapter)adapter).getObjectModel();
                             if (provider.produces().contains(next)) {
-                                MessageBodyWriter writer =
-                                        (MessageBodyWriter)adapter.getComponentInstance((PicoContainer)container);
+                                MessageBodyWriter writer = (MessageBodyWriter)adapter.getComponentInstance((PicoContainer)container);
                                 if (writer.isWriteable(entityType, genericEntityType, annotations, next)) {
                                     return writer;
                                 }
@@ -194,7 +186,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             }
         }
 
-        /** @see org.picocontainer.PicoVisitor#visitContainer(org.picocontainer.PicoContainer) */
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
@@ -211,10 +202,10 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         private final Type         genericEntityType;
         private final MediaType    mediaType;
         private final Annotation[] annotations;
-        private final List<ComponentAdapter> components = new ArrayList<ComponentAdapter>();
+        private final List<ComponentAdapter> components = new ArrayList<>();
 
-        ReaderFinder(Class<? extends Annotation> annotation, Class<T> entityType, Type genericEntityType,
-                     Annotation[] annotations, MediaType mediaType) {
+        ReaderFinder(Class<? extends Annotation> annotation, Class<T> entityType, Type genericEntityType, Annotation[] annotations,
+                     MediaType mediaType) {
             super(annotation);
             this.entityType = entityType;
             this.genericEntityType = genericEntityType;
@@ -222,7 +213,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             this.mediaType = mediaType;
         }
 
-        /** @see org.picocontainer.defaults.AbstractPicoVisitor#traverse(java.lang.Object) */
         @SuppressWarnings({"rawtypes", "unchecked"})
         @Override
         public Object traverse(Object container) {
@@ -237,8 +227,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
                             ProviderDescriptor provider =
                                     (ProviderDescriptor)((RestfulComponentAdapter)adapter).getObjectModel();
                             if (provider.consumes().contains(next)) {
-                                MessageBodyReader reader =
-                                        (MessageBodyReader)adapter.getComponentInstance((PicoContainer)container);
+                                MessageBodyReader reader = (MessageBodyReader)adapter.getComponentInstance((PicoContainer)container);
                                 if (reader.isReadable(entityType, genericEntityType, annotations, next)) {
                                     return reader;
                                 }
@@ -252,7 +241,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             }
         }
 
-        /** @see org.picocontainer.PicoVisitor#visitContainer(org.picocontainer.PicoContainer) */
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
@@ -266,14 +254,13 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
 
     final static class ExceptionMapperFinder<T> extends ComponentsFinder {
         private final Class<T> exceptionType;
-        private final List<ComponentAdapter> components = new ArrayList<ComponentAdapter>();
+        private final List<ComponentAdapter> components = new ArrayList<>();
 
         ExceptionMapperFinder(Class<? extends Annotation> annotation, Class<T> exceptionType) {
             super(annotation);
             this.exceptionType = exceptionType;
         }
 
-        /** @see org.picocontainer.defaults.AbstractPicoVisitor#traverse(java.lang.Object) */
         @Override
         public Object traverse(Object container) {
             components.clear();
@@ -281,10 +268,8 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
                 super.traverse(container);
                 for (ComponentAdapter adapter : components) {
                     if (adapter instanceof RestfulComponentAdapter) {
-                        ParameterizedType[] implementedInterfaces =
-                                ((RestfulComponentAdapter)adapter).getImplementedInterfaces();
-                        for (int i = 0; i < implementedInterfaces.length; i++) {
-                            ParameterizedType genericInterface = implementedInterfaces[i];
+                        ParameterizedType[] implementedInterfaces = ((RestfulComponentAdapter)adapter).getImplementedInterfaces();
+                        for (ParameterizedType genericInterface : implementedInterfaces) {
                             if (ExceptionMapper.class == genericInterface.getRawType()
                                 && exceptionType == genericInterface.getActualTypeArguments()[0]) {
                                 return adapter.getComponentInstance((PicoContainer)container);
@@ -298,7 +283,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             }
         }
 
-        /** @see org.picocontainer.PicoVisitor#visitContainer(org.picocontainer.PicoContainer) */
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
@@ -313,7 +297,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
     final static class ContextResolverFinder<T> extends ComponentsFinder {
         private final Class<T>  contextType;
         private final MediaType mediaType;
-        private final List<ComponentAdapter> components = new ArrayList<ComponentAdapter>();
+        private final List<ComponentAdapter> components = new ArrayList<>();
 
         ContextResolverFinder(Class<? extends Annotation> annotation, Class<T> contextType, MediaType mediaType) {
             super(annotation);
@@ -321,7 +305,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             this.mediaType = mediaType;
         }
 
-        /** @see org.picocontainer.defaults.AbstractPicoVisitor#traverse(java.lang.Object) */
         @Override
         public Object traverse(Object container) {
             components.clear();
@@ -335,10 +318,8 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
                             ProviderDescriptor provider =
                                     (ProviderDescriptor)((RestfulComponentAdapter)adapter).getObjectModel();
                             if (provider.produces().contains(next)) {
-                                ParameterizedType[] implementedInterfaces =
-                                        ((RestfulComponentAdapter)adapter).getImplementedInterfaces();
-                                for (int i = 0; i < implementedInterfaces.length; i++) {
-                                    ParameterizedType genericInterface = implementedInterfaces[i];
+                                ParameterizedType[] implementedInterfaces = ((RestfulComponentAdapter)adapter).getImplementedInterfaces();
+                                for (ParameterizedType genericInterface : implementedInterfaces) {
                                     Type rawType = genericInterface.getRawType();
                                     Class<?> actualType;
                                     try {
@@ -360,7 +341,6 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             }
         }
 
-        /** @see org.picocontainer.PicoVisitor#visitContainer(org.picocontainer.PicoContainer) */
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
@@ -379,24 +359,24 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
     @SuppressWarnings("unchecked")
     static <T> MessageBodyWriter<T> findWriter(PicoContainer pico, Class<T> entityType, Type genericEntityType,
                                                Annotation[] annotations, MediaType mediaType) {
-        return (MessageBodyWriter<T>)new WriterFinder<T>(Provider.class, entityType, genericEntityType, annotations,
-                                                         mediaType).traverse(pico);
+        return (MessageBodyWriter<T>)new WriterFinder<>(Provider.class, entityType, genericEntityType, annotations, mediaType)
+                .traverse(pico);
     }
 
     @SuppressWarnings("unchecked")
     static <T> MessageBodyReader<T> findReader(PicoContainer pico, Class<T> entityType, Type genericEntityType,
                                                Annotation[] annotations, MediaType mediaType) {
-        return (MessageBodyReader<T>)new ReaderFinder<T>(Provider.class, entityType, genericEntityType, annotations,
-                                                         mediaType).traverse(pico);
+        return (MessageBodyReader<T>)new ReaderFinder<>(Provider.class, entityType, genericEntityType, annotations, mediaType)
+                .traverse(pico);
     }
 
     @SuppressWarnings("unchecked")
     static <T extends Throwable> ExceptionMapper<T> findExceptionMapper(PicoContainer pico, Class<T> exceptionType) {
-        return (ExceptionMapper<T>)new ExceptionMapperFinder<T>(Provider.class, exceptionType).traverse(pico);
+        return (ExceptionMapper<T>)new ExceptionMapperFinder<>(Provider.class, exceptionType).traverse(pico);
     }
 
     @SuppressWarnings("unchecked")
     static <T> ContextResolver<T> findContextResolver(PicoContainer pico, Class<T> contextType, MediaType mediaType) {
-        return (ContextResolver<T>)new ContextResolverFinder<T>(Provider.class, contextType, mediaType).traverse(pico);
+        return (ContextResolver<T>)new ContextResolverFinder<>(Provider.class, contextType, mediaType).traverse(pico);
     }
 }

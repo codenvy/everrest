@@ -36,8 +36,7 @@ import java.util.Set;
  * with {@link Path}, {@link Provider} and {@link Filter}). All components considered as singleton Resources and
  * Providers, see {@link #getSingletons()}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public final class StartableApplication extends Application implements Startable {
     private final ExoContainer container;

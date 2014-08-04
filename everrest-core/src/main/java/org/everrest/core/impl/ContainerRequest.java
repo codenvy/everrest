@@ -38,8 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class ContainerRequest implements GenericContainerRequest {
     /** HTTP method. */
@@ -109,22 +108,13 @@ public class ContainerRequest implements GenericContainerRequest {
     /** {@inheritDoc} */
     @Override
     public MediaType getAcceptableMediaType(List<MediaType> mediaTypes) {
-        if (mediaTypes.isEmpty()) {
-            // getAcceptableMediaTypes() return list which contains at least one
-            // element even HTTP header 'accept' is absent
-            return getAcceptableMediaTypes().get(0);
-        }
-
-        List<MediaType> l = getAcceptableMediaTypes();
-
-        for (MediaType at : l) {
+        for (MediaType at : getAcceptableMediaTypes()) {
             for (MediaType rt : mediaTypes) {
                 if (MediaTypeHelper.isMatched(at, rt)) {
                     return rt;
                 }
             }
         }
-
         return null;
     }
 
@@ -301,9 +291,8 @@ public class ContainerRequest implements GenericContainerRequest {
     // javax.ws.rs.core.HttpHeaders
 
     /**
-     * If accept-language header does not present or its length is null then
-     * default language list will be returned. This list contains only one
-     * element Locale with language '*', and it minds any language accepted.
+     * If accept-language header does not present or its length is null then default language list will be returned. This list contains
+     * only one element Locale with language '*', and it minds any language accepted.
      * {@inheritDoc}
      */
     @Override
@@ -324,9 +313,9 @@ public class ContainerRequest implements GenericContainerRequest {
     }
 
     /**
-     * If accept header does not presents or its length is null then list with
-     * one element will be returned. That one element is default media type, see
-     * {@link AcceptMediaType#DEFAULT} . {@inheritDoc}
+     * If accept header does not presents or its length is null then list with one element will be returned. That one element is default
+     * media type, see {@link AcceptMediaType#DEFAULT}.
+     * {@inheritDoc}
      */
     @Override
     public List<MediaType> getAcceptableMediaTypes() {
@@ -397,8 +386,7 @@ public class ContainerRequest implements GenericContainerRequest {
      *
      * @param etag
      *         the ETag
-     * @return ResponseBuilder with status 412 (precondition failed) if If-Match
-     *         header is NOT MATCH to ETag or null otherwise
+     * @return ResponseBuilder with status 412 (precondition failed) if If-Match header is NOT MATCH to ETag or null otherwise
      */
     private ResponseBuilder evaluateIfMatch(EntityTag etag) {
         String ifMatch = getRequestHeaders().getFirst(IF_MATCH);
@@ -429,11 +417,9 @@ public class ContainerRequest implements GenericContainerRequest {
      *
      * @param etag
      *         the ETag
-     * @return ResponseBuilder with status 412 (precondition failed) if
-     *         If-None-Match header is MATCH to ETag and HTTP method is not GET
-     *         or HEAD. If method is GET or HEAD and If-None-Match is MATCH to
-     *         ETag then ResponseBuilder with status 304 (not modified) will be
-     *         returned.
+     * @return ResponseBuilder with status 412 (precondition failed) if If-None-Match header is MATCH to ETag and HTTP method is not GET or
+     * HEAD. If method is GET or HEAD and If-None-Match is MATCH to ETag then ResponseBuilder with status 304 (not modified) will be
+     * returned.
      */
     private ResponseBuilder evaluateIfNoneMatch(EntityTag etag) {
         String ifNoneMatch = getRequestHeaders().getFirst(IF_NONE_MATCH);
@@ -471,10 +457,8 @@ public class ContainerRequest implements GenericContainerRequest {
      *
      * @param lastModified
      *         the last modified time
-     * @return ResponseBuilder with status 412 (precondition failed) if
-     *         lastModified time is greater then unmodifiedSince otherwise return
-     *         null. If date format in header If-Unmodified-Since is wrong also
-     *         null returned
+     * @return ResponseBuilder with status 412 (precondition failed) if lastModified time is greater then unmodifiedSince otherwise return
+     * null. If date format in header If-Unmodified-Since is wrong also null returned
      */
     private ResponseBuilder evaluateIfModified(long lastModified) {
         String ifUnmodified = getRequestHeaders().getFirst(IF_UNMODIFIED_SINCE);
@@ -500,9 +484,8 @@ public class ContainerRequest implements GenericContainerRequest {
      *
      * @param lastModified
      *         the last modified time
-     * @return ResponseBuilder with status 304 (not modified) if lastModified
-     *         time is greater then modifiedSince otherwise return null. If date
-     *         format in header If-Modified-Since is wrong also null returned
+     * @return ResponseBuilder with status 304 (not modified) if lastModified time is greater then modifiedSince otherwise return null. If
+     * date format in header If-Modified-Since is wrong also null returned
      */
     private ResponseBuilder evaluateIfUnmodified(long lastModified) {
         String ifModified = getRequestHeaders().getFirst(IF_MODIFIED_SINCE);

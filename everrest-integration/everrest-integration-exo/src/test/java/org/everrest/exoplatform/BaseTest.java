@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.everrest.exoplatform;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.impl.ProviderBinder;
 import org.exoplatform.container.StandaloneContainer;
+import org.junit.After;
+import org.junit.Before;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -21,30 +21,26 @@ import java.lang.reflect.Field;
 /**
  * @author andrew00x
  */
-public abstract class BaseTest extends TestCase {
+public abstract class BaseTest {
     protected StandaloneContainer container;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         // reset set of providers for each test
         Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
         c.setAccessible(true);
         ProviderBinder.setInstance(c.newInstance());
-
-        String conf = getClass().getResource("/conf/test-configuration.xml").toString();
-        StandaloneContainer.setConfigurationURL(conf);
-        container = StandaloneContainer.getInstance();
+        container = getContainer();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    protected abstract StandaloneContainer getContainer() throws Exception;
+
+    @After
+    public void tearDown() throws Exception {
         container.stop();
         Field containerField = StandaloneContainer.class.getDeclaredField("container");
         containerField.setAccessible(true);
         containerField.set(null, null);
         container = null;
-        super.tearDown();
     }
 }

@@ -14,6 +14,10 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 import org.everrest.test.mock.MockHttpServletRequest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -25,26 +29,30 @@ public class GroovyContextParamTest extends BaseTest {
 
     private InputStream script;
 
+    @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GroovyResource1.groovy");
-        assertNotNull(script);
+        Assert.assertNotNull(script);
     }
 
+    @After
     @Override
     public void tearDown() throws Exception {
         groovyPublisher.resources.clear();
         super.tearDown();
     }
 
+    @Test
     public void testPerRequest() throws Exception {
         int initSize = resources.getSize();
-        assertEquals(0, groovyPublisher.resources.size());
+        Assert.assertEquals(0, groovyPublisher.resources.size());
 
         groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null, null, null);
 
-        assertEquals(initSize + 1, resources.getSize());
-        assertEquals(1, groovyPublisher.resources.size());
+        Assert.assertEquals(initSize + 1, resources.getSize());
+        Assert.assertEquals(1, groovyPublisher.resources.size());
 
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
 
@@ -55,7 +63,7 @@ public class GroovyContextParamTest extends BaseTest {
 
         ContainerResponse resp =
                 launcher.service("GET", "http://localhost:8080/context/a/b", "http://localhost:8080/context", null, null, writer, envctx);
-        assertEquals(200, resp.getStatus());
-        assertEquals("GET\n/context/a/b", new String(writer.getBody()));
+        Assert.assertEquals(200, resp.getStatus());
+        Assert.assertEquals("GET\n/context/a/b", new String(writer.getBody()));
     }
 }

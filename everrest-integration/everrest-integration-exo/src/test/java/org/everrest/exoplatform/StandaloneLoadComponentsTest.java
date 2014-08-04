@@ -10,16 +10,18 @@
  *******************************************************************************/
 package org.everrest.exoplatform;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class StandaloneLoadComponentsTest extends StandaloneBaseTest {
+    @Test
     public void testLoadComponents() {
-        assertNotNull(dependencies);
-        assertNotNull(resources);
-        assertNotNull(providersRegistry);
-        assertNotNull(requestHandler);
+        Assert.assertNotNull(dependencySupplier);
+        Assert.assertNotNull(providers);
+        Assert.assertNotNull(resources);
+        Assert.assertNotNull(processor);
     }
-
 }

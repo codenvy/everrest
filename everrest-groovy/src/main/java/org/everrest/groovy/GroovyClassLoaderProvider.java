@@ -43,15 +43,13 @@ public class GroovyClassLoaderProvider {
     }
 
     /**
-     * Get customized instance of GroovyClassLoader that able to resolve
-     * additional Groovy source files.
+     * Get customized instance of GroovyClassLoader that able to resolve additional Groovy source files.
      *
      * @param sources
      *         additional Groovy sources
      * @return GroovyClassLoader
      * @throws MalformedURLException
-     *         if any of entries in <code>sources</code>
-     *         has invalid URL.
+     *         if any of entries in <code>sources</code> has invalid URL.
      */
     public ExtendedGroovyClassLoader getGroovyClassLoader(SourceFolder[] sources) throws MalformedURLException {
         if (sources == null || sources.length == 0) {

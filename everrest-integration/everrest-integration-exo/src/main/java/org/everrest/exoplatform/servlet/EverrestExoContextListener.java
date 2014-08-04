@@ -78,7 +78,6 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
         private StandaloneContainer container;
 
-        /** @see org.everrest.exoplatform.servlet.EverrestExoContextListener#getContainer(javax.servlet.ServletContext) */
         @Override
         protected ExoContainer getContainer(ServletContext servletContext) {
             String configurationURL = servletContext.getInitParameter(CONFIGURATION_PATH);
@@ -115,7 +114,6 @@ public abstract class EverrestExoContextListener implements ServletContextListen
             return container;
         }
 
-        /** {@inheritDoc} */
         public void contextDestroyed(ServletContextEvent sce) {
             if (container != null) {
                 container.stop();
@@ -126,7 +124,6 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
    /* ================================================================================ */
 
-    /** @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent) */
     @Override
     public final void contextInitialized(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
@@ -178,7 +175,6 @@ public abstract class EverrestExoContextListener implements ServletContextListen
      */
     protected abstract ExoContainer getContainer(ServletContext servletContext);
 
-    /** @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent) */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         makeFileCollectorDestroyer().stopFileCollector();

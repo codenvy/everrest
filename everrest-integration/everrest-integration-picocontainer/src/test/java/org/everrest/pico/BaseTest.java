@@ -10,18 +10,16 @@
  *******************************************************************************/
 package org.everrest.pico;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.DependencySupplier;
-import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestConfiguration;
-import org.everrest.core.impl.RequestDispatcher;
-import org.everrest.core.impl.RequestHandlerImpl;
+import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.pico.servlet.EverrestPicoFilter;
 import org.everrest.test.mock.MockServletContext;
+import org.junit.After;
+import org.junit.Before;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.behaviors.Caching;
@@ -29,10 +27,9 @@ import org.picocontainer.behaviors.Caching;
 import javax.servlet.ServletContext;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public abstract class BaseTest extends TestCase {
+public abstract class BaseTest {
     protected abstract class Composer extends EverrestComposer {
         protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext) {
         }
@@ -44,9 +41,11 @@ public abstract class BaseTest extends TestCase {
         }
     }
 
+    protected EverrestProcessor    processor;
     protected ResourceLauncher     launcher;
     private   DefaultPicoContainer appContainer;
 
+    @Before
     public void setUp() throws Exception {
         appContainer = new DefaultPicoContainer(new Caching());
         appContainer.start();
@@ -68,17 +67,14 @@ public abstract class BaseTest extends TestCase {
         ResourceBinder resources = (ResourceBinder)servletContext.getAttribute(ResourceBinder.class.getName());
         ApplicationProviderBinder providers =
                 (ApplicationProviderBinder)servletContext.getAttribute(ApplicationProviderBinder.class.getName());
-
-        RequestHandler requestHandler =
-                new RequestHandlerImpl(new RequestDispatcher(resources), providers, dependencies, new EverrestConfiguration());
-        launcher = new ResourceLauncher(requestHandler);
+        processor = new EverrestProcessor(resources, providers, dependencies, new EverrestConfiguration(), null);
+        launcher = new ResourceLauncher(processor);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         appContainer.stop();
         appContainer.dispose();
-        super.tearDown();
     }
 
     protected abstract Composer getComposer();
