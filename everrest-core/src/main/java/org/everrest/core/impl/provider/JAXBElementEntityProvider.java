@@ -45,8 +45,11 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
     private static final Logger LOG = Logger.getLogger(JAXBElementEntityProvider.class);
 
     /** @see Providers */
-    @Context
     private Providers providers;
+
+    public JAXBElementEntityProvider(@Context Providers providers) {
+        this.providers = providers;
+    }
 
     /** {@inheritDoc} */
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {

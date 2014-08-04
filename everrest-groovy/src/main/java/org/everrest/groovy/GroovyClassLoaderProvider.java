@@ -16,12 +16,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Factory of Groovy class loader. It can provide preset GroovyClassLoader
- * instance or customized instance of GroovyClassLoader able resolve additional
- * Groovy source files.
+ * Factory of Groovy class loader. It can provide preset GroovyClassLoader instance or customized instance of GroovyClassLoader able resolve
+ * additional Groovy source files.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GroovyClassLoaderProvider {
     /** Preset default GroovyClassLoader. */
@@ -56,11 +54,13 @@ public class GroovyClassLoaderProvider {
      *         has invalid URL.
      */
     public ExtendedGroovyClassLoader getGroovyClassLoader(SourceFolder[] sources) throws MalformedURLException {
-        if (sources == null || sources.length == 0)
+        if (sources == null || sources.length == 0) {
             return getGroovyClassLoader();
+        }
         URL[] roots = new URL[sources.length];
-        for (int i = 0; i < sources.length; i++)
+        for (int i = 0; i < sources.length; i++) {
             roots[i] = sources[i].getPath();
+        }
         GroovyClassLoader parent = getGroovyClassLoader();
         ExtendedGroovyClassLoader classLoader = new ExtendedGroovyClassLoader(parent);
         classLoader.setResourceLoader(new DefaultGroovyResourceLoader(roots));

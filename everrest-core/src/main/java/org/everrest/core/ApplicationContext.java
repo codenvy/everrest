@@ -15,6 +15,7 @@ import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
 import org.everrest.core.uri.UriPattern;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
@@ -24,38 +25,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides access to ContainerRequest, ContainerResponse and request URI
- * information.
+ * Provides access to ContainerRequest, ContainerResponse and request URI information.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface ApplicationContext extends UriInfo, InitialProperties {
     /**
      * Add ancestor resource, according to JSR-311:
      * <p>
-     * Entries are ordered according in reverse request URI matching order, with
-     * the root resource last.
+     * Entries are ordered according in reverse request URI matching order, with the root resource last.
      * </p>
      * So add each new resource at the begin of list.
      *
      * @param resource
-     *         the resource e. g. resource class, sub-resource method or
-     *         sub-resource locator.
+     *         the resource e. g. resource class, sub-resource method or sub-resource locator.
      */
     void addMatchedResource(Object resource);
 
     /**
      * Add ancestor resource, according to JSR-311:
      * <p>
-     * Entries are ordered in reverse request URI matching order, with the root
-     * resource URI last.
+     * Entries are ordered in reverse request URI matching order, with the root resource URI last.
      * </p>
      * So add each new URI at the begin of list.
      *
      * @param uri
-     *         the partial part of that matched to resource class,
-     *         sub-resource method or sub-resource locator.
+     *         the partial part of that matched to resource class, sub-resource method or sub-resource locator.
      */
     void addMatchedURI(String uri);
 
@@ -91,10 +86,8 @@ public interface ApplicationContext extends UriInfo, InitialProperties {
     MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor);
 
     /**
-     * Should be used to pass template values in context by using returned list
-     * in matching to @see
-     * {@link org.everrest.core.uri.UriPattern#match(String, List)} . List will
-     * be cleared during matching.
+     * Should be used to pass template values in context by using returned list in matching to @see
+     * {@link org.everrest.core.uri.UriPattern#match(String, List)}. List will be cleared during matching.
      *
      * @return the list for template values
      */
@@ -131,4 +124,6 @@ public interface ApplicationContext extends UriInfo, InitialProperties {
 
     /** @return <code>true</code> if request is asynchronous and <code>false</code> otherwise, */
     boolean isAsynchronous();
+
+    Application getApplication();
 }

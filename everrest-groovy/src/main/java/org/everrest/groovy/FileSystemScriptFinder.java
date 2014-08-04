@@ -21,8 +21,7 @@ import java.util.List;
 /**
  * Scanner of Groovy scripts on local file system.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class FileSystemScriptFinder implements ScriptFinder {
     /** {@inheritDoc} */
@@ -38,7 +37,7 @@ public class FileSystemScriptFinder implements ScriptFinder {
     }
 
     private URL[] find(File directory, URLFilter filter) throws MalformedURLException {
-        List<URL> files = new ArrayList<URL>();
+        List<URL> files = new ArrayList<>();
         LinkedList<File> q = new LinkedList<File>();
         q.add(directory);
         while (!q.isEmpty()) {

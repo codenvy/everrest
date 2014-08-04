@@ -14,6 +14,7 @@ import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
 import org.everrest.core.impl.EnvironmentContext;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -22,9 +23,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContextParameterResolver.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * @author andrew00x
  */
 public class ContextParameterResolver extends ParameterResolver<Context> {
     /**
@@ -49,11 +48,12 @@ public class ContextParameterResolver extends ParameterResolver<Context> {
             return context.getUriInfo();
         } else if (parameterClass == Providers.class) {
             return context.getProviders();
+        } else if (parameterClass == Application.class) {
+            return context.getApplication();
         } else if (parameterClass == InitialProperties.class) {
             return context.getInitialProperties();
         }
-        // For servlet container environment context contains HttpServletRequest, HttpServletResponse, ServletConfig,
-        // ServletContext
+        // For servlet container environment context contains HttpServletRequest, HttpServletResponse, ServletConfig, ServletContext
         return EnvironmentContext.getCurrent().get(parameter.getParameterClass());
     }
 }

@@ -10,78 +10,92 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class AcceptMediaTypeTest extends BaseTest {
+public class AcceptMediaTypeTest {
 
+    @Test
     public void testValueOf() {
+        String mt = "text/xml;charset=utf8";
+        AcceptMediaType acceptedMediaType = AcceptMediaType.valueOf(mt);
+        Assert.assertEquals("text", acceptedMediaType.getType());
+        Assert.assertEquals("xml", acceptedMediaType.getSubtype());
+        Assert.assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
+        Assert.assertEquals(1.0F, acceptedMediaType.getQvalue(), 0.0F);
+    }
+
+    @Test
+    public void testValueOfWithQValue() {
         String mt = "text/xml;charset=utf8;q=0.825";
         AcceptMediaType acceptedMediaType = AcceptMediaType.valueOf(mt);
-        assertEquals("text", acceptedMediaType.getType());
-        assertEquals("xml", acceptedMediaType.getSubtype());
-        assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
-        assertEquals(0.825F, acceptedMediaType.getQvalue());
-
-        mt = "text/xml;charset=utf8";
-        acceptedMediaType = AcceptMediaType.valueOf(mt);
-        assertEquals("text", acceptedMediaType.getType());
-        assertEquals("xml", acceptedMediaType.getSubtype());
-        assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
-        assertEquals(1.0F, acceptedMediaType.getQvalue());
+        Assert.assertEquals("text", acceptedMediaType.getType());
+        Assert.assertEquals("xml", acceptedMediaType.getSubtype());
+        Assert.assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
+        Assert.assertEquals(0.825F, acceptedMediaType.getQvalue(), 0.0F);
     }
 
+    @Test
     public void testFromString() {
+        String mt = "text/xml;charset=utf8";
+        AcceptMediaTypeHeaderDelegate hd = new AcceptMediaTypeHeaderDelegate();
+        AcceptMediaType acceptedMediaType = hd.fromString(mt);
+        Assert.assertEquals("text", acceptedMediaType.getType());
+        Assert.assertEquals("xml", acceptedMediaType.getSubtype());
+        Assert.assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
+        Assert.assertEquals(1.0F, acceptedMediaType.getQvalue(), 0.0F);
+    }
+
+    @Test
+    public void testFromStringWithQValue() {
         String mt = "text/xml;charset=utf8;q=0.825";
         AcceptMediaTypeHeaderDelegate hd = new AcceptMediaTypeHeaderDelegate();
-
         AcceptMediaType acceptedMediaType = hd.fromString(mt);
-        assertEquals("text", acceptedMediaType.getType());
-        assertEquals("xml", acceptedMediaType.getSubtype());
-        assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
-        assertEquals(0.825F, acceptedMediaType.getQvalue());
-
-        mt = "text/xml;charset=utf8";
-        acceptedMediaType = hd.fromString(mt);
-        assertEquals("text", acceptedMediaType.getType());
-        assertEquals("xml", acceptedMediaType.getSubtype());
-        assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
-        assertEquals(1.0F, acceptedMediaType.getQvalue());
+        Assert.assertEquals("text", acceptedMediaType.getType());
+        Assert.assertEquals("xml", acceptedMediaType.getSubtype());
+        Assert.assertEquals("utf8", acceptedMediaType.getParameters().get("charset"));
+        Assert.assertEquals(0.825F, acceptedMediaType.getQvalue(), 0.0F);
     }
 
-    public void testListProducer() {
+    @Test
+    public void testListProducerNull() {
         List<AcceptMediaType> l = HeaderHelper.createAcceptedMediaTypeList(null);
-        assertEquals(1, l.size());
-        assertEquals(l.get(0).getType(), "*");
-        assertEquals(l.get(0).getSubtype(), "*");
-        assertEquals(l.get(0).getQvalue(), 1.0F);
-
-        l = HeaderHelper.createAcceptedMediaTypeList("");
-        assertEquals(1, l.size());
-        assertEquals(l.get(0).getType(), "*");
-        assertEquals(l.get(0).getSubtype(), "*");
-        assertEquals(l.get(0).getQvalue(), 1.0F);
-
-        String mt = "text/xml;  charset=utf8;q=0.825,    text/html;charset=utf8,  text/plain;charset=utf8;q=0.8";
-        l = HeaderHelper.createAcceptedMediaTypeList(mt);
-        assertEquals(3, l.size());
-
-        assertEquals(l.get(0).getType(), "text");
-        assertEquals(l.get(0).getSubtype(), "html");
-        assertEquals(l.get(0).getQvalue(), 1.0F);
-
-        assertEquals(l.get(1).getType(), "text");
-        assertEquals(l.get(1).getSubtype(), "xml");
-        assertEquals(l.get(1).getQvalue(), 0.825F);
-
-        assertEquals(l.get(2).getType(), "text");
-        assertEquals(l.get(2).getSubtype(), "plain");
-        assertEquals(l.get(2).getQvalue(), 0.8F);
+        Assert.assertEquals(1, l.size());
+        Assert.assertEquals(l.get(0).getType(), "*");
+        Assert.assertEquals(l.get(0).getSubtype(), "*");
+        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
     }
 
+    @Test
+    public void testListProducerEmptyString() {
+        List<AcceptMediaType> l = HeaderHelper.createAcceptedMediaTypeList("");
+        Assert.assertEquals(1, l.size());
+        Assert.assertEquals(l.get(0).getType(), "*");
+        Assert.assertEquals(l.get(0).getSubtype(), "*");
+        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
+    }
+
+    @Test
+    public void testListProducer() {
+        String mt = "text/xml;  charset=utf8;q=0.825,    text/html;charset=utf8,  text/plain;charset=utf8;q=0.8";
+        List<AcceptMediaType> l = HeaderHelper.createAcceptedMediaTypeList(mt);
+        Assert.assertEquals(3, l.size());
+
+        Assert.assertEquals(l.get(0).getType(), "text");
+        Assert.assertEquals(l.get(0).getSubtype(), "html");
+        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
+
+        Assert.assertEquals(l.get(1).getType(), "text");
+        Assert.assertEquals(l.get(1).getSubtype(), "xml");
+        Assert.assertEquals(l.get(1).getQvalue(), 0.825F, 0.0F);
+
+        Assert.assertEquals(l.get(2).getType(), "text");
+        Assert.assertEquals(l.get(2).getSubtype(), "plain");
+        Assert.assertEquals(l.get(2).getQvalue(), 0.8F, 0.0F);
+    }
 }

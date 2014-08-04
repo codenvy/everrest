@@ -17,8 +17,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GroovyDependenciesTest extends BaseTest {
     private InputStream script;

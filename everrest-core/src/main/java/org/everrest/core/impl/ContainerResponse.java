@@ -32,8 +32,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class ContainerResponse implements GenericContainerResponse {
    /* ----------------- Write response helpers ---------------- */
@@ -77,9 +76,8 @@ public class ContainerResponse implements GenericContainerResponse {
     }
 
     /**
-     * Use underlying output stream as data stream. Pass all invocations to the back-end stream and notify
-     * OutputListener
-     * about changes in back-end stream.
+     * Use underlying output stream as data stream. Pass all invocations to the back-end stream and notify OutputListener about changes in
+     * back-end stream.
      */
     private static class NotifiesOutputStream extends OutputStream {
         OutputStream   delegate;
@@ -222,8 +220,7 @@ public class ContainerResponse implements GenericContainerResponse {
 
         // if content-type is still not preset try determine it
         if (contentType == null) {
-            List<MediaType> availableWriters = context.getProviders()
-                                                      .getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
+            List<MediaType> availableWriters = context.getProviders().getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
             contentType = context.getContainerRequest().getAcceptableMediaType(availableWriters);
 
             if (contentType == null || contentType.isWildcardType() || contentType.isWildcardSubtype()) {
@@ -235,8 +232,7 @@ public class ContainerResponse implements GenericContainerResponse {
         }
 
         @SuppressWarnings("rawtypes")
-        MessageBodyWriter entityWriter =
-                context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
+        MessageBodyWriter entityWriter = context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
 
         if (entityWriter == null) {
             String message = "Not found writer for " + entity.getClass() + " and MIME type " + contentType;

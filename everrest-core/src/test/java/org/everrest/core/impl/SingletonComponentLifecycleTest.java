@@ -10,12 +10,10 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
-import org.everrest.core.servlet.EverrestInitializedListener;
-import org.everrest.test.mock.MockServletContext;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.annotation.PreDestroy;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -36,8 +34,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class SingletonComponentLifecycleTest extends BaseTest {
     @Path("a")
@@ -80,8 +77,8 @@ public class SingletonComponentLifecycleTest extends BaseTest {
 
         @Override
         public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-                                                                                                          WebApplicationException {
+                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+                throws IOException, WebApplicationException {
         }
 
         @Override
@@ -113,15 +110,12 @@ public class SingletonComponentLifecycleTest extends BaseTest {
         }
     }
 
+    @Test
     public void testLifeCycle() throws Exception {
-        MockServletContext servletContext = new MockServletContext();
-        servletContext.setInitParameter("javax.ws.rs.Application", Application1.class.getName());
-        Application1.singletons.clear();
-        ServletContextListener listener = new EverrestInitializedListener();
-        listener.contextInitialized(new ServletContextEvent(servletContext));
-        listener.contextDestroyed(new ServletContextEvent(servletContext));
+        processor.addApplication(new Application1());
+        processor.stop();
         Iterator<Object> iterator = Application1.singletons.iterator();
-        assertEquals(1, ((Resource1)iterator.next()).destroyVisit.intValue());
-        assertEquals(1, ((Provider1)iterator.next()).destroyVisit.intValue());
+        Assert.assertEquals(1, ((Resource1)iterator.next()).destroyVisit.intValue());
+        Assert.assertEquals(1, ((Provider1)iterator.next()).destroyVisit.intValue());
     }
 }

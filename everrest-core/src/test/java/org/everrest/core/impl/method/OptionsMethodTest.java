@@ -11,21 +11,22 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * Created by The eXo Platform SAS. <br/>
- * Date: 21 Jan 2009
- *
- * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
- * @version $Id: OptionsMethodTest.java
+ * @author Dmytro Katayev
  */
 public class OptionsMethodTest extends BaseTest {
 
@@ -33,44 +34,54 @@ public class OptionsMethodTest extends BaseTest {
     @Retention(RetentionPolicy.RUNTIME)
     @HttpMethod("OPTIONS")
     public @interface OPTIONS {
-
     }
 
     @Path("/a")
     public static class Resource1 {
-
         @OPTIONS
         public String m0() {
             return "options";
         }
-
     }
 
     @Path("/b")
     public static class Resource2 {
-
         @GET
         public String m0() {
             return "get";
         }
-
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
+    @Test
     public void testOptionsMethod() throws Exception {
-        Resource1 resource1 = new Resource1();
-        registry(resource1);
-        assertEquals("options", launcher.service("OPTIONS", "/a", "", null, null, null).getEntity());
-        unregistry(resource1);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        Resource2 resource2 = new Resource2();
-        registry(resource2);
-        assertEquals(200, launcher.service("OPTIONS", "/b", "", null, null, null).getStatus());
-        assertNotNull(launcher.service("OPTIONS", "/b", "", null, null, null).getResponse().getMetadata());
-        unregistry(resource2);
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        Assert.assertEquals(200, launcher.service("OPTIONS", "/b", "", null, null, null).getStatus());
+        Assert.assertNotNull(launcher.service("OPTIONS", "/b", "", null, null, null).getResponse().getEntity());
     }
 
+    @Test
+    public void testOptionsMethodCustom() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        Assert.assertEquals("options", launcher.service("OPTIONS", "/a", "", null, null, null).getEntity());
+    }
 }

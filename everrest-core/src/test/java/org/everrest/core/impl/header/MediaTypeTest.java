@@ -10,74 +10,83 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class MediaTypeTest extends BaseTest {
+public class MediaTypeTest {
 
+    @Test
     public void testToString() {
         MediaType mime = new MediaType("text", "plain");
         MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
-
-        assertEquals("text/plain", hd.toString(mime));
+        Assert.assertEquals("text/plain", hd.toString(mime));
     }
 
-    public void testToString2() {
-        HashMap<String, String> p = new HashMap<String, String>();
+    @Test
+    public void testToStringWithCharset() {
+        HashMap<String, String> p = new HashMap<>();
         p.put("charset", "utf8");
         MediaType mime = new MediaType("text", "plain", p);
         MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
-
-        assertEquals("text/plain;charset=utf8", hd.toString(mime));
+        Assert.assertEquals("text/plain;charset=utf8", hd.toString(mime));
     }
 
+    @Test
     public void testFromString() throws Exception {
         MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
+        String header = "text/plain";
+        MediaType mime = hd.fromString(header);
+        Assert.assertEquals(0, mime.getParameters().size());
+        Assert.assertEquals("text", mime.getType());
+        Assert.assertEquals("plain", mime.getSubtype());
+    }
 
+    @Test
+    public void testFromStringNoSubType() throws Exception {
+        MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
         String header = "text";
         MediaType mime = hd.fromString(header);
-        assertEquals(0, mime.getParameters().size());
-        assertEquals("text", mime.getType());
-        assertEquals("*", mime.getSubtype());
-
-        header = "text/plain";
-        mime = hd.fromString(header);
-        assertEquals(0, mime.getParameters().size());
-        assertEquals("text", mime.getType());
-        assertEquals("plain", mime.getSubtype());
+        Assert.assertEquals(0, mime.getParameters().size());
+        Assert.assertEquals("text", mime.getType());
+        Assert.assertEquals("*", mime.getSubtype());
     }
 
-    public void testFromString2() throws Exception {
+    @Test
+    public void testFromStringWithCharset() throws Exception {
         MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
-
         String header = "text;charset =     utf8";
         MediaType mime = hd.fromString(header);
-        assertEquals(1, mime.getParameters().size());
-        assertEquals("utf8", mime.getParameters().get("charset"));
-        assertEquals("text", mime.getType());
-        assertEquals("*", mime.getSubtype());
-
-        header = "text/plain;   charset   =  utf-8  ;  test=hello";
-        mime = hd.fromString(header);
-        assertEquals(2, mime.getParameters().size());
-        assertEquals("utf-8", mime.getParameters().get("charset"));
-        assertEquals("hello", mime.getParameters().get("test"));
-        assertEquals("text", mime.getType());
-        assertEquals("plain", mime.getSubtype());
+        Assert.assertEquals(1, mime.getParameters().size());
+        Assert.assertEquals("utf8", mime.getParameters().get("charset"));
+        Assert.assertEquals("text", mime.getType());
+        Assert.assertEquals("*", mime.getSubtype());
     }
 
+    @Test
+    public void testFromStringWithCharsetAndParameters() throws Exception {
+        MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
+        String header = "text/plain;   charset   =  utf-8  ;  test=hello";
+        MediaType mime = hd.fromString(header);
+        Assert.assertEquals(2, mime.getParameters().size());
+        Assert.assertEquals("utf-8", mime.getParameters().get("charset"));
+        Assert.assertEquals("hello", mime.getParameters().get("test"));
+        Assert.assertEquals("text", mime.getType());
+        Assert.assertEquals("plain", mime.getSubtype());
+    }
+
+    @Test
     public void testNoMediaType() throws Exception {
         MediaTypeHeaderDelegate hd = new MediaTypeHeaderDelegate();
         String header = "; charset=utf8";
         MediaType mime = hd.fromString(header);
-        assertEquals("utf8", mime.getParameters().get("charset"));
-        assertEquals("*", mime.getType());
-        assertEquals("*", mime.getSubtype());
+        Assert.assertEquals("utf8", mime.getParameters().get("charset"));
+        Assert.assertEquals("*", mime.getType());
+        Assert.assertEquals("*", mime.getSubtype());
     }
 }

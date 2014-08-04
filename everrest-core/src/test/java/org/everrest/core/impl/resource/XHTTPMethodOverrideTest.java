@@ -14,14 +14,17 @@ import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.impl.RequestHandlerImpl;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class XHTTPMethodOverrideTest extends BaseTest {
 
@@ -35,25 +38,26 @@ public class XHTTPMethodOverrideTest extends BaseTest {
 
     public void setUp() throws Exception {
         super.setUp();
-        registry(Resource1.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource1.class);
+            }
+        });
     }
 
-    public void tearDown() throws Exception {
-        super.tearDown();
-        unregistry(Resource1.class);
-    }
-
+    @Test
     public void testNoOverride() throws Exception {
         // Provide GET instead of POST - method not allowed response
-        assertEquals(405, launcher.service("GET", "/a", "", null, null, null).getStatus());
+        Assert.assertEquals(405, launcher.service("GET", "/a", "", null, null, null).getStatus());
     }
 
+    @Test
     public void testOverride() throws Exception {
         MultivaluedMapImpl headers = new MultivaluedMapImpl();
         headers.putSingle(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE, "POST");
-        RequestHandlerImpl.setProperty("org.everrest.x-http-method-override", "true");
         ContainerResponse response = launcher.service("GET", "/a", "", headers, null, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("m0", response.getEntity());
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("m0", response.getEntity());
     }
 }

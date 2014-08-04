@@ -13,8 +13,7 @@ package org.everrest.groovy;
 /**
  * Base implementation of ResourceId.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class BaseResourceId implements ResourceId {
     private final String id;

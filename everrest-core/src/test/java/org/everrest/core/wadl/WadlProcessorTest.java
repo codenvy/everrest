@@ -14,6 +14,8 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.wadl.research.Application;
+import org.junit.Assert;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -46,8 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class WadlProcessorTest extends BaseTest {
 
@@ -101,8 +102,8 @@ public class WadlProcessorTest extends BaseTest {
         }
     }
 
+    @Test
     public void testBaseWadlGenerator() throws Exception {
-
         AbstractResourceDescriptor ard = new AbstractResourceDescriptorImpl(Resource1.class);
         WadlProcessor wadlProcessor = new WadlProcessor();
         Application app = wadlProcessor.process(ard, new URI("http://localhost:8080/ws/rs"));
@@ -119,110 +120,95 @@ public class WadlProcessorTest extends BaseTest {
         XPath xp = XPathFactory.newInstance().newXPath();
         xp.setNamespaceContext(new DummyNamespaceContext());
         String str = (String)xp.evaluate("count(//wadl:resource)", doc, XPathConstants.STRING);
-        assertEquals("4", str);
+        Assert.assertEquals("4", str);
         str = (String)xp.evaluate("count(//wadl:resource[@path='a/{b}'])", doc, XPathConstants.STRING);
-        assertEquals("1", str);
+        Assert.assertEquals("1", str);
         str = (String)xp.evaluate("count(//wadl:resource[@path='{c}/{d}'])", doc, XPathConstants.STRING);
-        assertEquals("1", str);
+        Assert.assertEquals("1", str);
         str = (String)xp.evaluate("count(//wadl:resource[@path='{c}/{d}/{e}'])", doc, XPathConstants.STRING);
-        assertEquals("1", str);
+        Assert.assertEquals("1", str);
         str = (String)xp.evaluate("count(//wadl:resource[@path='sub/{x}'])", doc, XPathConstants.STRING);
-        assertEquals("1", str);
+        Assert.assertEquals("1", str);
 
         // discover resource methods
         str = (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:method)", doc, XPathConstants.STRING);
         // OPTIONS added automatically by JAX-RS implementation
-        //    assertEquals("6", str);
-        assertEquals("5", str);
-        NodeList nl =
-                (NodeList)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m1']/@name", doc,
-                                      XPathConstants.NODESET);
-        // assertEquals(2, nl.getLength());
-        assertEquals(1, nl.getLength());
+        //    Assert.assertEquals("6", str);
+        Assert.assertEquals("5", str);
+        NodeList nl = (NodeList)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m1']/@name", doc, XPathConstants.NODESET);
+        // Assert.assertEquals(2, nl.getLength());
+        Assert.assertEquals(1, nl.getLength());
         boolean get = false;
         // boolean head = false;
         for (int i = 0; i < nl.getLength(); i++) {
             String t = nl.item(i).getTextContent();
             // if (t.equals("HEAD"))
             // head = true;
-            if (t.equals("GET"))
+            if (t.equals("GET")) {
                 get = true;
+            }
         }
-        // assertTrue(head && get);
-        assertTrue(get);
-        for (int i = 0; i < nl.getLength(); i++)
+        // Assert.assertTrue(head && get);
+        Assert.assertTrue(get);
+        for (int i = 0; i < nl.getLength(); i++) {
             System.out.println(">>>>> resource method : " + nl.item(i).getTextContent());
-        str =
-                (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m2']/@name", doc, XPathConstants.STRING);
-        assertEquals("POST", str);
-        str =
-                (String)xp.evaluate(
-                        "//wadl:resource[@path='a/{b}']/wadl:method[@id='m2']/wadl:request/wadl:param[@style='header']/@name", doc,
-                        XPathConstants.STRING);
-        assertEquals("content-type", str);
-        str =
-                (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m3']/@name", doc, XPathConstants.STRING);
-        assertEquals("DELETE", str);
-        str =
-                (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m4']/@name", doc, XPathConstants.STRING);
-        assertEquals("PUT", str);
+        }
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m2']/@name", doc, XPathConstants.STRING);
+        Assert.assertEquals("POST", str);
+        str = (String)xp
+                .evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m2']/wadl:request/wadl:param[@style='header']/@name", doc,
+                          XPathConstants.STRING);
+        Assert.assertEquals("content-type", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m3']/@name", doc, XPathConstants.STRING);
+        Assert.assertEquals("DELETE", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m4']/@name", doc, XPathConstants.STRING);
+        Assert.assertEquals("PUT", str);
 
         // discover sub-resource methods
-        nl =
-                (NodeList)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}']/wadl:method/@name", doc,
-                                      XPathConstants.NODESET);
-        // assertEquals(2, nl.getLength());
-        assertEquals(1, nl.getLength());
+        nl = (NodeList)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}']/wadl:method/@name", doc,
+                                   XPathConstants.NODESET);
+        // Assert.assertEquals(2, nl.getLength());
+        Assert.assertEquals(1, nl.getLength());
         boolean subget = false;
         // boolean subhead = false;
         for (int i = 0; i < nl.getLength(); i++) {
             String t = nl.item(i).getTextContent();
             // if (t.equals("HEAD"))
             // subhead = true;
-            if (t.equals("GET"))
+            if (t.equals("GET")) {
                 subget = true;
+            }
         }
-        // assertTrue(subhead && subget);
-        assertTrue(subget);
-        for (int i = 0; i < nl.getLength(); i++)
+        // Assert.assertTrue(subhead && subget);
+        Assert.assertTrue(subget);
+        for (int i = 0; i < nl.getLength(); i++) {
             System.out.println(">>>>> sub-resource method : " + nl.item(i).getTextContent());
-        str =
-                (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:method)",
-                                    doc, XPathConstants.STRING);
-        assertEquals("1", str);
+        }
+        str = (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:method)",
+                                  doc, XPathConstants.STRING);
+        Assert.assertEquals("1", str);
 
-        str =
-                (String)xp.evaluate(
-                        "//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}']/wadl:param[@name='c']/@style", doc,
-                        XPathConstants.STRING);
-        assertEquals("template", str);
-        str =
-                (String)xp.evaluate(
-                        "//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}']/wadl:param[@name='b']/@style", doc,
-                        XPathConstants.STRING);
-        assertEquals("template", str);
-        str =
-                (String)xp.evaluate(
-                        "//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:param[@name='c']/@style", doc,
-                        XPathConstants.STRING);
-        assertEquals("template", str);
-        str =
-                (String)xp.evaluate(
-                        "//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:param[@name='e']/@style", doc,
-                        XPathConstants.STRING);
-        assertEquals("template", str);
-        str =
-                (String)xp.evaluate(
-                        "//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:method[@id='m6']/@name", doc,
-                        XPathConstants.STRING);
-        assertEquals("POST", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}']/wadl:param[@name='c']/@style", doc,
+                                  XPathConstants.STRING);
+        Assert.assertEquals("template", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}']/wadl:param[@name='b']/@style", doc,
+                                  XPathConstants.STRING);
+        Assert.assertEquals("template", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:param[@name='c']/@style", doc,
+                                  XPathConstants.STRING);
+        Assert.assertEquals("template", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:param[@name='e']/@style", doc,
+                                  XPathConstants.STRING);
+        Assert.assertEquals("template", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:method[@id='m6']/@name", doc,
+                                  XPathConstants.STRING);
+        Assert.assertEquals("POST", str);
 
         // discover sub-resource locators
-        nl =
-                (NodeList)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method/@name", doc,
-                                      XPathConstants.NODESET);
-        // assertEquals(3, nl.getLength());
-        assertEquals(2, nl.getLength());
+        nl = (NodeList)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method/@name", doc,
+                                   XPathConstants.NODESET);
+        // Assert.assertEquals(3, nl.getLength());
+        Assert.assertEquals(2, nl.getLength());
         boolean childget = false;
         // boolean childhead = false;
         boolean childopt = false;
@@ -230,41 +216,36 @@ public class WadlProcessorTest extends BaseTest {
             String t = nl.item(i).getTextContent();
             // if (t.equals("HEAD"))
             // childhead = true;
-            if (t.equals("GET"))
+            if (t.equals("GET")) {
                 childget = true;
-            if (t.equals("OPTIONS"))
+            }
+            if (t.equals("OPTIONS")) {
                 childopt = true;
+            }
         }
-        // assertTrue(childhead && childget && childopt);
-        assertTrue(childget && childopt);
-        for (int i = 0; i < nl.getLength(); i++)
+        // Assert.assertTrue(childhead && childget && childopt);
+        Assert.assertTrue(childget && childopt);
+        for (int i = 0; i < nl.getLength(); i++) {
             System.out.println(">>>>> child resource method : " + nl.item(i).getTextContent());
+        }
 
-        str =
-                (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method)", doc,
-                                    XPathConstants.STRING);
-        // assertEquals("3", str);
-        assertEquals("2", str);
-        str =
-                (String)xp.evaluate(
-                        "//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:param[@name='x']/@style", doc,
-                        XPathConstants.STRING);
-        assertEquals("template", str);
-        str =
-                (String)xp
-                        .evaluate(
-                                "//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method[@id='m0']/wadl:response/wadl:representation/@mediaType",
-                                doc, XPathConstants.STRING);
-        assertEquals("text/plain", str);
+        str = (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method)", doc,
+                                  XPathConstants.STRING);
+        // Assert.assertEquals("3", str);
+        Assert.assertEquals("2", str);
+        str = (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:param[@name='x']/@style", doc,
+                                  XPathConstants.STRING);
+        Assert.assertEquals("template", str);
+        str = (String)xp.evaluate(
+                "//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method[@id='m0']/wadl:response/wadl:representation/@mediaType",
+                doc, XPathConstants.STRING);
+        Assert.assertEquals("text/plain", str);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static class DummyNamespaceContext implements NamespaceContext {
-
-        private final String nsPrefix;
-
-        private final String nsUri;
-
+        private final String   nsPrefix;
+        private final String   nsUri;
         private final Iterator nsIter;
 
         public DummyNamespaceContext() {
@@ -273,27 +254,27 @@ public class WadlProcessorTest extends BaseTest {
             List l = new ArrayList(1);
             l.add(nsPrefix);
             nsIter = l.iterator();
-
         }
 
         public String getNamespaceURI(String prefix) {
-            if (prefix.equals(nsPrefix))
+            if (prefix.equals(nsPrefix)) {
                 return nsUri;
+            }
             return "";
         }
 
         public String getPrefix(String namespaceURI) {
-            if (namespaceURI.equals(nsUri))
+            if (namespaceURI.equals(nsUri)) {
                 return nsPrefix;
+            }
             return null;
         }
 
         public Iterator getPrefixes(String namespaceURI) {
-            if (namespaceURI.equals(nsUri))
+            if (namespaceURI.equals(nsUri)) {
                 return nsIter;
+            }
             return Collections.emptyList().iterator();
         }
-
     }
-
 }

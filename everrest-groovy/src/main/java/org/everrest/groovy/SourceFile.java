@@ -15,8 +15,7 @@ import java.net.URL;
 /**
  * Describe location of Groovy source file.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class SourceFile extends ClassPathEntry {
     public SourceFile(URL path) {

@@ -11,6 +11,9 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.tools.SimpleSecurityContext;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -19,70 +22,88 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class VariantsHandlerTest extends BaseTest {
-    public void testVariantHandler() throws Exception {
-        List<Variant> vs =
-                Variant.VariantListBuilder.newInstance().mediaTypes(MediaType.valueOf("image/jpeg")).add().mediaTypes(
-                        MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().mediaTypes(
-                        MediaType.valueOf("text/xml")).languages(new Locale("en")).add().mediaTypes(MediaType.valueOf("text/xml"))
-                       .languages(new Locale("en", "us")).add().build();
+public class VariantsHandlerTest {
+    List<Variant> variantList;
 
+    @Before
+    public void setUp() {
+        variantList = Variant.VariantListBuilder.newInstance().mediaTypes(MediaType.valueOf("image/jpeg")).add()
+                                                .mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add()
+                                                .mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en")).add()
+                                                .mediaTypes(MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().build();
+    }
+
+    @Test
+    public void testVariantHandler1() throws Exception {
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
-        h.putSingle("Accept", glue("text/xml", "image/png", "text/html;q=0.9", "text/plain;q=0.8", "application/xml",
-                                   "*/*;q=0.5"));
-
+        h.putSingle("Accept", glue("text/xml", "image/png", "text/html;q=0.9", "text/plain;q=0.8", "application/xml", "*/*;q=0.5"));
         h.putSingle("Accept-Language", "en-us,en;q=0.5");
         ContainerRequest r = new ContainerRequest("GET", null, null, null, h, null);
-        Variant v = VariantsHandler.handleVariants(r, vs);
-        assertEquals(new MediaType("text", "xml"), v.getMediaType());
-        assertEquals(new Locale("en", "us"), v.getLanguage());
-        // ---
-        h.putSingle("Accept", glue("text/xml;q=0.95", "text/html;q=0.9", "application/xml", "image/png",
-                                   "text/plain;q=0.8", "*/*;q=0.5"));
+        Variant v = VariantsHandler.handleVariants(r, variantList);
+        Assert.assertEquals(new MediaType("text", "xml"), v.getMediaType());
+        Assert.assertEquals(new Locale("en", "us"), v.getLanguage());
+    }
+
+    @Test
+    public void testVariantHandler2() throws Exception {
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        h.putSingle("Accept", glue("text/xml;q=0.95", "text/html;q=0.9", "application/xml", "image/png", "text/plain;q=0.8", "*/*;q=0.5"));
         h.putSingle("Accept-Language", "en-us;q=0.5,en;q=0.7");
-        r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
-        v = VariantsHandler.handleVariants(r, vs);
+        ContainerRequest r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
+        Variant v = VariantsHandler.handleVariants(r, variantList);
         // 'application/xml' has higher 'q' value then 'text/xml'
-        assertEquals(new MediaType("application", "xml"), v.getMediaType());
-        assertEquals(new Locale("en", "us"), v.getLanguage());
-        // ---
-        h.putSingle("Accept", glue("text/xml", "application/xml", "text/plain;q=0.8", "image/png", "text/html;q=0.9",
-                                   "*/*;q=0.5"));
+        Assert.assertEquals(new MediaType("application", "xml"), v.getMediaType());
+        Assert.assertEquals(new Locale("en", "us"), v.getLanguage());
 
+    }
+
+    @Test
+    public void testVariantHandler3() throws Exception {
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        h.putSingle("Accept", glue("text/xml", "application/xml", "text/plain;q=0.8", "image/png", "text/html;q=0.9", "*/*;q=0.5"));
         h.putSingle("Accept-Language", "en,en-us");
-        r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
-        v = VariantsHandler.handleVariants(r, vs);
-        assertEquals(new MediaType("text", "xml"), v.getMediaType());
+        ContainerRequest r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
+        Variant v = VariantsHandler.handleVariants(r, variantList);
+        Assert.assertEquals(new MediaType("text", "xml"), v.getMediaType());
         // then 'en' goes first in 'accept' list
-        assertEquals(new Locale("en"), v.getLanguage());
-        // ---
-        h.putSingle("Accept", glue("text/xml", "application/xml", "image/png", "text/html;q=0.9", "text/plain;q=0.8",
-                                   "*/*;q=0.5"));
+        Assert.assertEquals(new Locale("en"), v.getLanguage());
 
+    }
+
+    @Test
+    public void testVariantHandler4() throws Exception {
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        h.putSingle("Accept", glue("text/xml", "application/xml", "image/png", "text/html;q=0.9", "text/plain;q=0.8", "*/*;q=0.5"));
         h.putSingle("Accept-Language", "uk");
-        r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
-        v = VariantsHandler.handleVariants(r, vs);
+        ContainerRequest r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
+        Variant v = VariantsHandler.handleVariants(r, variantList);
         // no language 'uk' in variants then '*/*;q=0.5' will work
-        assertEquals(new MediaType("image", "jpeg"), v.getMediaType());
-        // ---
+        Assert.assertEquals(new MediaType("image", "jpeg"), v.getMediaType());
+    }
+
+    @Test
+    public void testVariantHandler5() throws Exception {
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle("Accept", glue("text/xml", "application/xml", "image/png", "text/html;q=0.9", "text/plain;q=0.8"));
-
         h.putSingle("Accept-Language", "uk");
-        r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
-        v = VariantsHandler.handleVariants(r, vs);
+        ContainerRequest r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
+        Variant v = VariantsHandler.handleVariants(r, variantList);
         // no language 'uk' in variants and '*/*;q=0.5' removed
-        assertNull(v); // 'Not Acceptable' (406) will be generated here
-        // ---
-        h.putSingle("Accept", glue("text/xml", "application/xml", "image/*", "text/html;q=0.9", "text/plain;q=0.8"));
+        Assert.assertNull(v); // 'Not Acceptable' (406) will be generated here
 
+    }
+
+    @Test
+    public void testVariantHandler6() throws Exception {
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        h.putSingle("Accept", glue("text/xml", "application/xml", "image/*", "text/html;q=0.9", "text/plain;q=0.8"));
         h.putSingle("Accept-Language", "uk");
-        r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
-        v = VariantsHandler.handleVariants(r, vs);
+        ContainerRequest r = new ContainerRequest("GET", null, null, null, h, new SimpleSecurityContext(false));
+        Variant v = VariantsHandler.handleVariants(r, variantList);
         // no language 'uk' in variants then 'image/*' will work
-        assertEquals(new MediaType("image", "jpeg"), v.getMediaType());
+        Assert.assertEquals(new MediaType("image", "jpeg"), v.getMediaType());
     }
 
     private static String glue(String... s) {
@@ -94,5 +115,4 @@ public class VariantsHandlerTest extends BaseTest {
         }
         return sb.toString();
     }
-
 }

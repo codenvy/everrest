@@ -11,23 +11,23 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * Created by The eXo Platform SAS. <br/>
- * Date: 21 Jan 2009
- *
- * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
- * @version $Id: HeadMethodTest.java
+ * @author Dmytro Katayev
  */
 public class HeadMethodTest extends BaseTest {
 
     @Path("/a")
     public static class Resource1 {
-
         @GET
         public String m0() {
             return "get";
@@ -37,41 +37,48 @@ public class HeadMethodTest extends BaseTest {
         public String m1() {
             return "head";
         }
-
     }
 
     @Path("/b")
     public static class Resource2 {
-
         @GET
         public String m0() {
             return "get";
         }
-
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
+    @Test
     public void testHeadMethod() throws Exception {
-        Resource1 resource1 = new Resource1();
-        registry(resource1);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        assertEquals("get", launcher.service("GET", "/a", "", null, null, null).getEntity());
-        assertEquals(200, launcher.service("HEAD", "/a", "", null, null, null).getStatus());
-
-        unregistry(resource1);
-
-        Resource2 resource2 = new Resource2();
-
-        registry(resource2);
-
-        assertEquals("get", launcher.service("GET", "/b", "", null, null, null).getEntity());
-        assertEquals(200, launcher.service("HEAD", "/b", "", null, null, null).getStatus());
-        assertNull(launcher.service("HEAD", "/b", "", null, null, null).getEntity());
-
-        unregistry(resource2);
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        Assert.assertEquals("get", launcher.service("GET", "/a", "", null, null, null).getEntity());
+        Assert.assertEquals(200, launcher.service("HEAD", "/a", "", null, null, null).getStatus());
     }
 
+    @Test
+    public void testHeadMethodForGetMethod() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        Assert.assertEquals("get", launcher.service("GET", "/b", "", null, null, null).getEntity());
+        Assert.assertEquals(200, launcher.service("HEAD", "/b", "", null, null, null).getStatus());
+        Assert.assertNull(launcher.service("HEAD", "/b", "", null, null, null).getEntity());
+    }
 }

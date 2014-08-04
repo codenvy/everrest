@@ -25,8 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Provider
 public class InputStreamEntityProvider implements EntityProvider<InputStream> {

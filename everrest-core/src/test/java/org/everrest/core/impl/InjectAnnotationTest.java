@@ -10,31 +10,25 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
-import org.everrest.core.tools.DependencySupplierImpl;
-import org.everrest.core.tools.ResourceLauncher;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class InjectAnnotationTest extends BaseTest {
+    @Before
     @Override
     public void setUp() throws Exception {
-        resources = new ResourceBinderImpl();
-        DependencySupplierImpl depInjector = new DependencySupplierImpl();
-        depInjector.addComponent(InjectableComponent.class, new InjectableComponent());
-        ProviderBinder.setInstance(new ProviderBinder());
-        providers = new ApplicationProviderBinder();
-        requestHandler =
-                new RequestHandlerImpl(new RequestDispatcher(resources), depInjector, new EverrestConfiguration());
-        launcher = new ResourceLauncher(requestHandler);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
+        super.setUp();
+        dependencySupplier.addComponent(InjectableComponent.class, new InjectableComponent());
     }
 
     public static class InjectableComponent {
@@ -47,7 +41,7 @@ public class InjectAnnotationTest extends BaseTest {
 
         @GET
         public void m0() {
-            assertNotNull(ic);
+            Assert.assertNotNull(ic);
         }
     }
 
@@ -58,8 +52,8 @@ public class InjectAnnotationTest extends BaseTest {
 
         @GET
         public void m0() {
-            assertNotNull(pic);
-            assertNotNull(pic.get());
+            Assert.assertNotNull(pic);
+            Assert.assertNotNull(pic.get());
         }
     }
 
@@ -71,8 +65,8 @@ public class InjectAnnotationTest extends BaseTest {
 
         @GET
         public void m0() {
-            assertNotNull(injected);
-            assertTrue(injectedThroughSetter);
+            Assert.assertNotNull(injected);
+            Assert.assertTrue(injectedThroughSetter);
         }
 
         public void setInjected(InjectableComponent injected) {
@@ -81,21 +75,36 @@ public class InjectAnnotationTest extends BaseTest {
         }
     }
 
+    @Test
     public void testResourceInjectInstance() throws Exception {
-        registry(Resource1.class);
-        assertEquals(204, launcher.service("GET", "/a", "", null, null, null).getStatus());
-        unregistry(Resource1.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource1.class);
+            }
+        });
+        Assert.assertEquals(204, launcher.service("GET", "/a", "", null, null, null).getStatus());
     }
 
+    @Test
     public void testResourceInjectProvider() throws Exception {
-        registry(Resource2.class);
-        assertEquals(204, launcher.service("GET", "/a", "", null, null, null).getStatus());
-        unregistry(Resource2.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource2.class);
+            }
+        });
+        Assert.assertEquals(204, launcher.service("GET", "/a", "", null, null, null).getStatus());
     }
 
+    @Test
     public void testInjectWithSetter() throws Exception {
-        registry(Resource3.class);
-        assertEquals(204, launcher.service("GET", "/a", "", null, null, null).getStatus());
-        unregistry(Resource3.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource3.class);
+            }
+        });
+        Assert.assertEquals(204, launcher.service("GET", "/a", "", null, null, null).getStatus());
     }
 }

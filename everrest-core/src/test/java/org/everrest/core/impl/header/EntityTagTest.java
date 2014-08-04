@@ -11,41 +11,55 @@
 package org.everrest.core.impl.header;
 
 import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.core.EntityTag;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class EntityTagTest extends BaseTest {
 
+    @Test
     public void testToString() {
-        EntityTag entityTag = new EntityTag("test", true);
-        assertEquals("W/\"test\"", entityTag.toString());
-
-        entityTag = new EntityTag("test \"test\"", true);
-        assertEquals("W/\"test \\\"test\\\"\"", entityTag.toString());
-
-        entityTag = new EntityTag("test \"test\"", false);
-        assertEquals("\"test \\\"test\\\"\"", entityTag.toString());
+        EntityTag entityTag = new EntityTag("test \"test\"", false);
+        Assert.assertEquals("\"test \\\"test\\\"\"", entityTag.toString());
     }
 
+    @Test
+    public void testToStringWeak() {
+        EntityTag entityTag = new EntityTag("test", true);
+        Assert.assertEquals("W/\"test\"", entityTag.toString());
+    }
+
+    @Test
+    public void testToString2() {
+        EntityTag entityTag = new EntityTag("test \"test\"", false);
+        Assert.assertEquals("\"test \\\"test\\\"\"", entityTag.toString());
+    }
+
+    @Test
     public void testFromString() {
+        String header = "\"test\"";
+        EntityTag entityTag = EntityTag.valueOf(header);
+        Assert.assertFalse(entityTag.isWeak());
+        Assert.assertEquals("test", entityTag.getValue());
+    }
+
+    @Test
+    public void testFromStringWeak() {
         String header = "W/\"test\"";
         EntityTag entityTag = EntityTag.valueOf(header);
-        assertTrue(entityTag.isWeak());
-        assertEquals("test", entityTag.getValue());
-
-        header = "\"test\"";
-        entityTag = EntityTag.valueOf(header);
-        assertFalse(entityTag.isWeak());
-        assertEquals("test", entityTag.getValue());
-
-        header = "W/\"test \\\"test\\\"\"";
-        entityTag = EntityTag.valueOf(header);
-        assertTrue(entityTag.isWeak());
-        assertEquals("test \"test\"", entityTag.getValue());
+        Assert.assertTrue(entityTag.isWeak());
+        Assert.assertEquals("test", entityTag.getValue());
     }
 
+    @Test
+    public void testFromStringWeak2() {
+        String header = "W/\"test \\\"test\\\"\"";
+        EntityTag entityTag = EntityTag.valueOf(header);
+        Assert.assertTrue(entityTag.isWeak());
+        Assert.assertEquals("test \"test\"", entityTag.getValue());
+    }
 }

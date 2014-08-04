@@ -10,9 +10,11 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.OutputHeadersMap;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -23,38 +25,37 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class JsonEntityProviderTest extends BaseTest {
+public class JsonEntityProviderTest {
 
-    private static final String DATA = "{\"name\":\"andrew\",\"password\":\"hello\"}";
-
+    private String    data;
     private MediaType mediaType;
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
+        data = "{\"name\":\"andrew\",\"password\":\"hello\"}";
         mediaType = new MediaType("application", "json");
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testRead() throws Exception {
-        MessageBodyReader reader = providers.getMessageBodyReader(Bean.class, null, null, mediaType);
-        assertNotNull(reader);
-        assertTrue(reader.isReadable(Bean.class, Bean.class, null, mediaType));
-        byte[] data = DATA.getBytes("UTF-8");
+        MessageBodyReader reader = new JsonEntityProvider();
+        Assert.assertTrue(reader.isReadable(Bean.class, Bean.class, null, mediaType));
+        byte[] data = this.data.getBytes("UTF-8");
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
-        h.putSingle(HttpHeaders.CONTENT_LENGTH, "" + data.length);
+        h.putSingle(HttpHeaders.CONTENT_LENGTH, Integer.toString(data.length));
         Bean bean = (Bean)reader.readFrom(Bean.class, Bean.class, null, mediaType, h, new ByteArrayInputStream(data));
-        assertEquals("andrew", bean.getName());
-        assertEquals("hello", bean.getPassword());
+        Assert.assertEquals("andrew", bean.getName());
+        Assert.assertEquals("hello", bean.getPassword());
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testWrite() throws Exception {
-        MessageBodyWriter writer = providers.getMessageBodyWriter(Bean.class, null, null, mediaType);
-        assertNotNull(writer);
-        assertTrue(writer.isWriteable(Bean.class, Bean.class, null, mediaType));
+        MessageBodyWriter writer = new JsonEntityProvider();
+        Assert.assertTrue(writer.isWriteable(Bean.class, Bean.class, null, mediaType));
         Bean bean = new Bean();
         bean.setName("andrew");
         bean.setPassword("test");
@@ -67,7 +68,6 @@ public class JsonEntityProviderTest extends BaseTest {
 
     public static class Bean {
         private String name;
-
         private String password;
 
         public String getName() {
@@ -90,5 +90,4 @@ public class JsonEntityProviderTest extends BaseTest {
             return "name=" + name + "; password=" + password;
         }
     }
-
 }

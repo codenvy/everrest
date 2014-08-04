@@ -17,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -30,9 +29,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: StreamSourceEntityProvider.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * @author andrew00x
  */
 @Provider
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
@@ -74,11 +71,7 @@ public class StreamSourceEntityProvider implements EntityProvider<StreamSource> 
         StreamResult out = new StreamResult(entityStream);
         try {
             TransformerFactory.newInstance().newTransformer().transform(t, out);
-        } catch (TransformerConfigurationException e) {
-            throw new IOException("Can't write to output stream " + e);
-        } catch (TransformerException e) {
-            throw new IOException("Can't write to output stream " + e);
-        } catch (TransformerFactoryConfigurationError e) {
+        } catch (TransformerException | TransformerFactoryConfigurationError e) {
             throw new IOException("Can't write to output stream " + e);
         }
     }

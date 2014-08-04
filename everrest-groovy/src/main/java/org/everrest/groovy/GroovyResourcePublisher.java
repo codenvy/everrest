@@ -130,7 +130,7 @@ public class GroovyResourcePublisher {
      * @param resourceId
      *         id of resource to be checked
      * @return <code>true</code> if resource is published and <code>false</code>
-     *         otherwise
+     * otherwise
      */
     public boolean isPublished(ResourceId resourceId) {
         return null != getResource(resourceId);
@@ -224,8 +224,7 @@ public class GroovyResourcePublisher {
      */
     public final void publishPerRequest(String source, String charset, ResourceId resourceId,
                                         MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files) {
-        publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
-                          src, files);
+        publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties, src, files);
     }
 
     /**
@@ -260,13 +259,7 @@ public class GroovyResourcePublisher {
         Object r;
         try {
             r = createInstance(rc);
-        } catch (IllegalArgumentException e) {
-            throw new ResourcePublicationException(e.getMessage());
-        } catch (InstantiationException e) {
-            throw new ResourcePublicationException(e.getMessage());
-        } catch (IllegalAccessException e) {
-            throw new ResourcePublicationException(e.getMessage());
-        } catch (InvocationTargetException e) {
+        } catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new ResourcePublicationException(e.getMessage());
         }
 
@@ -338,8 +331,8 @@ public class GroovyResourcePublisher {
      * @param resourceId
      *         id of resource to be unpublished
      * @return <code>true</code> if resource was published and <code>false</code>
-     *         otherwise, e.g. because there is not resource corresponded to
-     *         supplied <code>resourceId</code>
+     * otherwise, e.g. because there is not resource corresponded to
+     * supplied <code>resourceId</code>
      */
     public ObjectFactory<AbstractResourceDescriptor> unpublishResource(ResourceId resourceId) {
         String path = resources.get(resourceId);
@@ -401,8 +394,7 @@ public class GroovyResourcePublisher {
      * @return GroovyCodeSource
      */
     protected GroovyCodeSource createCodeSource(InputStream in, String name) {
-        GroovyCodeSource gcs =
-                new GroovyCodeSource(new BufferedReader(new InputStreamReader(in)), name, "/groovy/script/jaxrs");
+        GroovyCodeSource gcs = new GroovyCodeSource(new BufferedReader(new InputStreamReader(in)), name, "/groovy/script/jaxrs");
         gcs.setCachable(false);
         return gcs;
     }

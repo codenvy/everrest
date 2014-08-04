@@ -15,8 +15,7 @@ import java.net.URL;
 /**
  * Item of Groovy class-path.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class ClassPathEntry {
     private final URL path;

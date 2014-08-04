@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class EmptyInputStream extends InputStream {
     public int read() throws IOException {

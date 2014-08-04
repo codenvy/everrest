@@ -14,11 +14,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
+ * Reads and writes entity.
+ *
  * @param <T>
  *         entity type
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface EntityProvider<T> extends MessageBodyReader<T>, MessageBodyWriter<T> {
-
 }

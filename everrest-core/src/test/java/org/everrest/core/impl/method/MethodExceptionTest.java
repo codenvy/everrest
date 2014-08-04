@@ -11,37 +11,35 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * Created by The eXo Platform SAS. <br/>
- * Date: 21 Jan 2009
- *
- * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
- * @version $Id: TestMethodException.java
+ * @author Dmytro Katayev
  */
 public class MethodExceptionTest extends BaseTest {
 
     @SuppressWarnings("serial")
-    public static class UncheckedException extends Exception {
-
-        public UncheckedException() {
+    public static class MyException extends Exception {
+        public MyException() {
             super();
         }
 
-        public UncheckedException(String msg) {
+        public MyException(String msg) {
             super(msg);
         }
-
     }
 
     @Path("/a")
     public static class Resource1 {
-
         @GET
         @Path("/0")
         public void m0() throws WebApplicationException {
@@ -57,33 +55,26 @@ public class MethodExceptionTest extends BaseTest {
         @GET
         @Path("/2")
         public void m2() throws Exception {
-            throw new UncheckedException("Unchecked exception");
+            throw new MyException("My exception");
         }
-
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
+    @Test
     public void testExceptionProcessing() throws Exception {
-        Resource1 resource = new Resource1();
-        registry(resource);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        assertEquals(500, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
-        assertEquals(500, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
 
-        assertEquals(500, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
-        //      try
-        //      {
-        //         assertEquals(500, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
-        //         fail();
-        //      }
-        //      catch (UnhandledException e)
-        //      {
-        //      }
-        unregistry(resource);
+        Assert.assertEquals(500, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
+        Assert.assertEquals(500, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
+        Assert.assertEquals(500, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
     }
-
-    //
 }

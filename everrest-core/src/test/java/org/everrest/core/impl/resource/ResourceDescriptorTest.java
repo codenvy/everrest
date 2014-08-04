@@ -10,10 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.ConstructorDescriptor;
 import org.everrest.core.FieldInjector;
-import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;
@@ -24,6 +22,8 @@ import org.everrest.core.resource.SubResourceLocatorMap;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodMap;
 import org.everrest.core.uri.UriPattern;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -50,93 +50,76 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class ResourceDescriptorTest extends BaseTest {
+public class ResourceDescriptorTest {
 
-   /*public void testFailedCreation1()
-   {
-      try
-      {
-         new AbstractResourceDescriptorImpl(Resource1.class);
-         fail("Should be failed here, resource does not contains JAX-RS methods");
-      }
-      catch (RuntimeException e)
-      {
-      }
-   }*/
-
+    @Test
     public void testFailedCreation2() {
         try {
             new AbstractResourceDescriptorImpl(Resource2.class);
-            fail("Should be failed here, resource does not have public constructor");
+            Assert.fail("Should be failed here, resource does not have public constructor");
         } catch (RuntimeException e) {
         }
     }
 
+    @Test
     public void testFailedCreation3() {
         try {
             new AbstractResourceDescriptorImpl(Resource3.class);
-            fail("Should be failed here, resource has two methods that have tha same HTTP method, consumes and produces annotation");
+            Assert.fail("Should be failed here, resource has two methods that have tha same HTTP method, consumes and produces annotation");
         } catch (RuntimeException e) {
         }
         try {
             new AbstractResourceDescriptorImpl(Resource4.class);
-            fail("Should be failed here, resource has two methods that have tha same HTTP method, consumes and produces annotation");
+            Assert.fail("Should be failed here, resource has two methods that have tha same HTTP method, consumes and produces annotation");
         } catch (RuntimeException e) {
         }
         try {
             new AbstractResourceDescriptorImpl(Resource5.class);
-            fail("Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
+            Assert.fail(
+                    "Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
         } catch (RuntimeException e) {
         }
         try {
             new AbstractResourceDescriptorImpl(Resource6.class);
-            fail("Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
+            Assert.fail(
+                    "Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
         } catch (RuntimeException e) {
         }
         try {
             new AbstractResourceDescriptorImpl(Resource7.class);
-            fail("Should be failed here, resource has two methods that have tha same path");
+            Assert.fail("Should be failed here, resource has two methods that have tha same path");
         } catch (RuntimeException e) {
         }
     }
 
+    @Test
     public void testFailedCreation4() {
         try {
             new AbstractResourceDescriptorImpl(Resource8.class);
-            fail("Should be failed here, method has two JAX-RS annotation on the same parameter");
+            Assert.fail("Should be failed here, method has two JAX-RS annotation on the same parameter");
         } catch (RuntimeException e) {
         }
-        // must warn
-        //new AbstractResourceDescriptorImpl(Resource9.class);
     }
 
+    @Test
     public void testFailedCreation5() {
         try {
             new AbstractResourceDescriptorImpl(Resource10.class);
-            fail("Should be failed here, constructor of per-request resource has two JAX-RS annotation on the same parameter");
+            Assert.fail("Should be failed here, constructor of per-request resource has two JAX-RS annotation on the same parameter");
         } catch (RuntimeException e) {
         }
-        // must warn
-        //new AbstractResourceDescriptorImpl(Resource11.class);
     }
 
+    @Test
     public void testFailedCreation6() {
         try {
             new AbstractResourceDescriptorImpl(Resource12.class);
-            fail("Should be failed here, fields of per-request resource has two JAX-RS annotation on the same parameter");
+            Assert.fail("Should be failed here, fields of per-request resource has two JAX-RS annotation on the same parameter");
         } catch (RuntimeException e) {
         }
     }
-
-/*
-   public void testNotPublicMethodAnnotated()
-   {
-      new AbstractResourceDescriptorImpl(Resource14.class);
-   }
-*/
 
     // ====================== all of this resource are not valid =========================
 
@@ -170,14 +153,11 @@ public class ResourceDescriptorTest extends BaseTest {
 
     @Path("a")
     public static class Resource4 {
-
-
         @GET
         @Consumes({"text/xml", "application/xml", "application/xml+xhtml"})
         @Produces("text/plain")
         public void m1() {
         }
-
 
         @GET
         @Consumes({"application/xml", "text/xml", "application/xml+xhtml"})
@@ -186,8 +166,6 @@ public class ResourceDescriptorTest extends BaseTest {
         }
 
         @GET
-//      @Consumes({"application/xml", "text/xml", "application/xml+xhtml1"})
-//      @Produces("text/plain")
         public void m0() {
         }
     }
@@ -247,19 +225,17 @@ public class ResourceDescriptorTest extends BaseTest {
     public static class Resource9 {
         @GET
         @Path("c")
-        public void m1(@Test @HeaderParam("head1") String b) {
+        public void m1(@MyAnnotation @HeaderParam("head1") String b) {
         }
     }
 
     @Target(ElementType.PARAMETER)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface Test {
-
+    public @interface MyAnnotation {
     }
 
     @Path("/a")
     public static class Resource10 {
-
         public Resource10(@PathParam("b") @HeaderParam("head1") String b) {
         }
 
@@ -270,9 +246,7 @@ public class ResourceDescriptorTest extends BaseTest {
 
     @Path("/a")
     public static class Resource11 {
-
         // must warn about two constructors with the same number of parameters
-
         public Resource11(@PathParam("b") String b, @QueryParam("c") int c) {
         }
 
@@ -285,7 +259,6 @@ public class ResourceDescriptorTest extends BaseTest {
     }
 
     public static class Resource12 {
-
         @SuppressWarnings("unused")
         @Context
         private UriInfo uriInfo;
@@ -313,147 +286,153 @@ public class ResourceDescriptorTest extends BaseTest {
 
     // ===================================== end =================================
 
+    @Test
     public void testCreateAbstractResourceDescriptor() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource.class);
-        assertTrue(resource.isRootResource());
-        assertEquals("/a/{b}/", resource.getPathValue().getPath());
-        assertEquals(SampleResource.class, resource.getObjectClass());
-        assertEquals(3, resource.getResourceMethods().size());
-        assertEquals(1, resource.getSubResourceMethods().size());
-        assertEquals(3, resource.getSubResourceMethods().values().iterator().next().size());
-        assertEquals(1, resource.getSubResourceLocators().size());
+        Assert.assertTrue(resource.isRootResource());
+        Assert.assertEquals("/a/{b}/", resource.getPathValue().getPath());
+        Assert.assertEquals(SampleResource.class, resource.getObjectClass());
+        Assert.assertEquals(3, resource.getResourceMethods().size());
+        Assert.assertEquals(1, resource.getSubResourceMethods().size());
+        Assert.assertEquals(3, resource.getSubResourceMethods().values().iterator().next().size());
+        Assert.assertEquals(1, resource.getSubResourceLocators().size());
     }
 
+    @Test
     public void testResourceMethods() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource.class);
         // GET
         ResourceMethodDescriptor methodDescriptor = resource.getResourceMethods().getFirst("GET");
-        assertEquals("GET", methodDescriptor.getHttpMethod());
-        assertEquals(MediaTypeHelper.DEFAULT_TYPE, methodDescriptor.consumes().get(0));
-        assertEquals(MediaType.valueOf("application/xml"), methodDescriptor.produces().get(0));
-        assertEquals(SampleResource.class, methodDescriptor.getParentResource().getObjectClass());
-        assertEquals(1, methodDescriptor.getMethodParameters().size());
+        Assert.assertEquals("GET", methodDescriptor.getHttpMethod());
+        Assert.assertEquals(MediaTypeHelper.DEFAULT_TYPE, methodDescriptor.consumes().get(0));
+        Assert.assertEquals(MediaType.valueOf("application/xml"), methodDescriptor.produces().get(0));
+        Assert.assertEquals(SampleResource.class, methodDescriptor.getParentResource().getObjectClass());
+        Assert.assertEquals(1, methodDescriptor.getMethodParameters().size());
         MethodParameter methodParameter = methodDescriptor.getMethodParameters().get(0);
-        assertEquals("hello", methodParameter.getDefaultValue());
-        assertEquals(String.class, methodParameter.getParameterClass());
-        assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
-        assertEquals(2, methodParameter.getAnnotations().length);
-        assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
-        assertEquals(DefaultValue.class, methodParameter.getAnnotations()[1].annotationType());
+        Assert.assertEquals("hello", methodParameter.getDefaultValue());
+        Assert.assertEquals(String.class, methodParameter.getParameterClass());
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
+        Assert.assertEquals(2, methodParameter.getAnnotations().length);
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
+        Assert.assertEquals(DefaultValue.class, methodParameter.getAnnotations()[1].annotationType());
         // the same must be for HEAD
         methodDescriptor = resource.getResourceMethods().getFirst("HEAD");
-        assertEquals("HEAD", methodDescriptor.getHttpMethod());
-        assertEquals(MediaTypeHelper.DEFAULT_TYPE, methodDescriptor.consumes().get(0));
-        assertEquals(MediaType.valueOf("application/xml"), methodDescriptor.produces().get(0));
-        assertEquals(SampleResource.class, methodDescriptor.getParentResource().getObjectClass());
-        assertEquals(1, methodDescriptor.getMethodParameters().size());
+        Assert.assertEquals("HEAD", methodDescriptor.getHttpMethod());
+        Assert.assertEquals(MediaTypeHelper.DEFAULT_TYPE, methodDescriptor.consumes().get(0));
+        Assert.assertEquals(MediaType.valueOf("application/xml"), methodDescriptor.produces().get(0));
+        Assert.assertEquals(SampleResource.class, methodDescriptor.getParentResource().getObjectClass());
+        Assert.assertEquals(1, methodDescriptor.getMethodParameters().size());
         methodParameter = methodDescriptor.getMethodParameters().get(0);
-        assertEquals("hello", methodParameter.getDefaultValue());
-        assertEquals(String.class, methodParameter.getParameterClass());
-        assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
-        assertEquals(2, methodParameter.getAnnotations().length);
-        assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
-        assertEquals(DefaultValue.class, methodParameter.getAnnotations()[1].annotationType());
+        Assert.assertEquals("hello", methodParameter.getDefaultValue());
+        Assert.assertEquals(String.class, methodParameter.getParameterClass());
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
+        Assert.assertEquals(2, methodParameter.getAnnotations().length);
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
+        Assert.assertEquals(DefaultValue.class, methodParameter.getAnnotations()[1].annotationType());
     }
 
+    @Test
     public void testSubResourceMethods() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource.class);
         Collection<ResourceMethodMap<SubResourceMethodDescriptor>> subRes = resource.getSubResourceMethods().values();
         // POST
         SubResourceMethodDescriptor subResourceMethodDescriptor = subRes.iterator().next().getFirst("POST");
-        assertEquals("POST", subResourceMethodDescriptor.getHttpMethod());
-        assertEquals("{c}", subResourceMethodDescriptor.getPathValue().getPath());
-        assertEquals(MediaType.valueOf("text/plain"), subResourceMethodDescriptor.consumes().get(0));
-        assertEquals(MediaType.valueOf("text/xml"), subResourceMethodDescriptor.consumes().get(1));
-        assertEquals(MediaType.valueOf("text/html"), subResourceMethodDescriptor.produces().get(0));
-        assertEquals(SampleResource.class, subResourceMethodDescriptor.getParentResource().getObjectClass());
-        assertEquals(1, subResourceMethodDescriptor.getMethodParameters().size());
+        Assert.assertEquals("POST", subResourceMethodDescriptor.getHttpMethod());
+        Assert.assertEquals("{c}", subResourceMethodDescriptor.getPathValue().getPath());
+        Assert.assertEquals(MediaType.valueOf("text/plain"), subResourceMethodDescriptor.consumes().get(0));
+        Assert.assertEquals(MediaType.valueOf("text/xml"), subResourceMethodDescriptor.consumes().get(1));
+        Assert.assertEquals(MediaType.valueOf("text/html"), subResourceMethodDescriptor.produces().get(0));
+        Assert.assertEquals(SampleResource.class, subResourceMethodDescriptor.getParentResource().getObjectClass());
+        Assert.assertEquals(1, subResourceMethodDescriptor.getMethodParameters().size());
         MethodParameter methodParameter = subResourceMethodDescriptor.getMethodParameters().get(0);
-        assertEquals(null, methodParameter.getDefaultValue());
-        assertEquals(List.class, methodParameter.getParameterClass());
-        assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
-        assertEquals(1, methodParameter.getAnnotations().length);
-        assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
+        Assert.assertEquals(null, methodParameter.getDefaultValue());
+        Assert.assertEquals(List.class, methodParameter.getParameterClass());
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
+        Assert.assertEquals(1, methodParameter.getAnnotations().length);
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
         // GET
         subResourceMethodDescriptor = subRes.iterator().next().getFirst("GET");
-        assertEquals("GET", subResourceMethodDescriptor.getHttpMethod());
-        assertEquals("{d}", subResourceMethodDescriptor.getPathValue().getPath());
-        assertEquals(MediaType.valueOf("text/plain"), subResourceMethodDescriptor.consumes().get(0));
-        assertEquals(MediaType.valueOf("text/xml"), subResourceMethodDescriptor.consumes().get(1));
-        assertEquals(MediaType.valueOf("text/html"), subResourceMethodDescriptor.produces().get(0));
-        assertEquals(SampleResource.class, subResourceMethodDescriptor.getParentResource().getObjectClass());
-        assertEquals(1, subResourceMethodDescriptor.getMethodParameters().size());
+        Assert.assertEquals("GET", subResourceMethodDescriptor.getHttpMethod());
+        Assert.assertEquals("{d}", subResourceMethodDescriptor.getPathValue().getPath());
+        Assert.assertEquals(MediaType.valueOf("text/plain"), subResourceMethodDescriptor.consumes().get(0));
+        Assert.assertEquals(MediaType.valueOf("text/xml"), subResourceMethodDescriptor.consumes().get(1));
+        Assert.assertEquals(MediaType.valueOf("text/html"), subResourceMethodDescriptor.produces().get(0));
+        Assert.assertEquals(SampleResource.class, subResourceMethodDescriptor.getParentResource().getObjectClass());
+        Assert.assertEquals(1, subResourceMethodDescriptor.getMethodParameters().size());
         methodParameter = subResourceMethodDescriptor.getMethodParameters().get(0);
-        assertEquals(null, methodParameter.getDefaultValue());
-        assertEquals(List.class, methodParameter.getParameterClass());
-        assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
-        assertEquals(1, methodParameter.getAnnotations().length);
-        assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
+        Assert.assertEquals(null, methodParameter.getDefaultValue());
+        Assert.assertEquals(List.class, methodParameter.getParameterClass());
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
+        Assert.assertEquals(1, methodParameter.getAnnotations().length);
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
         // HEAD
         subResourceMethodDescriptor = subRes.iterator().next().getFirst("HEAD");
-        assertEquals("HEAD", subResourceMethodDescriptor.getHttpMethod());
-        assertEquals("{d}", subResourceMethodDescriptor.getPathValue().getPath());
-        assertEquals(MediaType.valueOf("text/plain"), subResourceMethodDescriptor.consumes().get(0));
-        assertEquals(MediaType.valueOf("text/xml"), subResourceMethodDescriptor.consumes().get(1));
-        assertEquals(MediaType.valueOf("text/html"), subResourceMethodDescriptor.produces().get(0));
-        assertEquals(SampleResource.class, subResourceMethodDescriptor.getParentResource().getObjectClass());
-        assertEquals(1, subResourceMethodDescriptor.getMethodParameters().size());
+        Assert.assertEquals("HEAD", subResourceMethodDescriptor.getHttpMethod());
+        Assert.assertEquals("{d}", subResourceMethodDescriptor.getPathValue().getPath());
+        Assert.assertEquals(MediaType.valueOf("text/plain"), subResourceMethodDescriptor.consumes().get(0));
+        Assert.assertEquals(MediaType.valueOf("text/xml"), subResourceMethodDescriptor.consumes().get(1));
+        Assert.assertEquals(MediaType.valueOf("text/html"), subResourceMethodDescriptor.produces().get(0));
+        Assert.assertEquals(SampleResource.class, subResourceMethodDescriptor.getParentResource().getObjectClass());
+        Assert.assertEquals(1, subResourceMethodDescriptor.getMethodParameters().size());
         methodParameter = subResourceMethodDescriptor.getMethodParameters().get(0);
-        assertEquals(null, methodParameter.getDefaultValue());
-        assertEquals(List.class, methodParameter.getParameterClass());
-        assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
-        assertEquals(1, methodParameter.getAnnotations().length);
-        assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
+        Assert.assertEquals(null, methodParameter.getDefaultValue());
+        Assert.assertEquals(List.class, methodParameter.getParameterClass());
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
+        Assert.assertEquals(1, methodParameter.getAnnotations().length);
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
     }
 
+    @Test
     public void testSubResourceLocators() {
         // sub-resource method SampleResource#get2()
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource.class);
         SubResourceLocatorDescriptor subResourceLocatorDescriptor =
                 resource.getSubResourceLocators().values().iterator().next();
-        assertEquals("{c}/d", subResourceLocatorDescriptor.getPathValue().getPath());
-        assertEquals(SampleResource.class, subResourceLocatorDescriptor.getParentResource().getObjectClass());
-        assertEquals(1, subResourceLocatorDescriptor.getMethodParameters().size());
+        Assert.assertEquals("{c}/d", subResourceLocatorDescriptor.getPathValue().getPath());
+        Assert.assertEquals(SampleResource.class, subResourceLocatorDescriptor.getParentResource().getObjectClass());
+        Assert.assertEquals(1, subResourceLocatorDescriptor.getMethodParameters().size());
         MethodParameter methodParameter = subResourceLocatorDescriptor.getMethodParameters().get(0);
-        assertTrue(methodParameter.isEncoded());
-        assertEquals(null, methodParameter.getDefaultValue());
-        assertEquals(String.class, methodParameter.getParameterClass());
-        assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
-        assertEquals(2, methodParameter.getAnnotations().length);
-        assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
+        Assert.assertTrue(methodParameter.isEncoded());
+        Assert.assertEquals(null, methodParameter.getDefaultValue());
+        Assert.assertEquals(String.class, methodParameter.getParameterClass());
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotation().annotationType());
+        Assert.assertEquals(2, methodParameter.getAnnotations().length);
+        Assert.assertEquals(PathParam.class, methodParameter.getAnnotations()[0].annotationType());
     }
 
+    @Test
     public void testFields() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource.class);
         List<FieldInjector> fields = resource.getFieldInjectors();
-        assertEquals(1, fields.size());
+        Assert.assertEquals(1, fields.size());
         FieldInjector f = fields.get(0);
-        assertEquals(String.class, f.getParameterClass());
-        assertEquals(String.class, f.getGenericType());
-        assertEquals("default", f.getDefaultValue());
-        assertEquals(PathParam.class, f.getAnnotation().annotationType());
-        assertEquals("b", ((PathParam)f.getAnnotation()).value());
-        assertTrue(f.isEncoded());
+        Assert.assertEquals(String.class, f.getParameterClass());
+        Assert.assertEquals(String.class, f.getGenericType());
+        Assert.assertEquals("default", f.getDefaultValue());
+        Assert.assertEquals(PathParam.class, f.getAnnotation().annotationType());
+        Assert.assertEquals("b", ((PathParam)f.getAnnotation()).value());
+        Assert.assertTrue(f.isEncoded());
     }
 
+    @Test
     public void testConstructors() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource.class);
-        assertEquals(3, resource.getConstructorDescriptors().size());
+        Assert.assertEquals(3, resource.getConstructorDescriptors().size());
         List<ConstructorDescriptor> c = resource.getConstructorDescriptors();
-        assertEquals(2, c.get(0).getParameters().size());
-        assertEquals(1, c.get(1).getParameters().size());
-        assertEquals(0, c.get(2).getParameters().size());
+        Assert.assertEquals(2, c.get(0).getParameters().size());
+        Assert.assertEquals(1, c.get(1).getParameters().size());
+        Assert.assertEquals(0, c.get(2).getParameters().size());
 
-        assertFalse(c.get(0).getParameters().get(0).isEncoded());
-        assertTrue(c.get(0).getParameters().get(1).isEncoded());
-        assertEquals(QueryParam.class, c.get(0).getParameters().get(0).getAnnotation().annotationType());
-        assertEquals(PathParam.class, c.get(0).getParameters().get(1).getAnnotation().annotationType());
-        assertEquals("test", ((QueryParam)c.get(0).getParameters().get(0).getAnnotation()).value());
-        assertEquals("b", ((PathParam)c.get(0).getParameters().get(1).getAnnotation()).value());
+        Assert.assertFalse(c.get(0).getParameters().get(0).isEncoded());
+        Assert.assertTrue(c.get(0).getParameters().get(1).isEncoded());
+        Assert.assertEquals(QueryParam.class, c.get(0).getParameters().get(0).getAnnotation().annotationType());
+        Assert.assertEquals(PathParam.class, c.get(0).getParameters().get(1).getAnnotation().annotationType());
+        Assert.assertEquals("test", ((QueryParam)c.get(0).getParameters().get(0).getAnnotation()).value());
+        Assert.assertEquals("b", ((PathParam)c.get(0).getParameters().get(1).getAnnotation()).value());
 
-        assertFalse(c.get(1).getParameters().get(0).isEncoded());
-        assertEquals(PathParam.class, c.get(1).getParameters().get(0).getAnnotation().annotationType());
-        assertEquals("b", ((PathParam)c.get(1).getParameters().get(0).getAnnotation()).value());
+        Assert.assertFalse(c.get(1).getParameters().get(0).isEncoded());
+        Assert.assertEquals(PathParam.class, c.get(1).getParameters().get(0).getAnnotation().annotationType());
+        Assert.assertEquals("b", ((PathParam)c.get(1).getParameters().get(0).getAnnotation()).value());
     }
 
     @SuppressWarnings("unused")
@@ -502,15 +481,16 @@ public class ResourceDescriptorTest extends BaseTest {
         }
     }
 
+    @Test
     public void testResourceMethodSorting() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource1.class);
         List<ResourceMethodDescriptor> l = resource.getResourceMethods().get("GET");
-        assertEquals("m4", l.get(0).getMethod().getName());
-        assertEquals("m3", l.get(1).getMethod().getName());
-        assertEquals("m2", l.get(2).getMethod().getName());
-        assertEquals("m5", l.get(3).getMethod().getName());
-        assertEquals("m0", l.get(4).getMethod().getName());
-        assertEquals("m1", l.get(5).getMethod().getName());
+        Assert.assertEquals("m4", l.get(0).getMethod().getName());
+        Assert.assertEquals("m3", l.get(1).getMethod().getName());
+        Assert.assertEquals("m2", l.get(2).getMethod().getName());
+        Assert.assertEquals("m5", l.get(3).getMethod().getName());
+        Assert.assertEquals("m0", l.get(4).getMethod().getName());
+        Assert.assertEquals("m1", l.get(5).getMethod().getName());
     }
 
     @Path("a")
@@ -555,36 +535,37 @@ public class ResourceDescriptorTest extends BaseTest {
         }
     }
 
+    @Test
     public void testSubResourceMethodSorting() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource2.class);
         SubResourceMethodMap srmm = resource.getSubResourceMethods();
         Collection<UriPattern> uris = srmm.keySet();
         Iterator<UriPattern> i = uris.iterator();
         // NOTE template will be normalized, first slash added
-        assertEquals("/b/c/d", i.next().getTemplate());
-        assertEquals("/b/c", i.next().getTemplate());
-        assertEquals("/b/{c}", i.next().getTemplate());
-        assertEquals("/b", i.next().getTemplate());
+        Assert.assertEquals("/b/c/d", i.next().getTemplate());
+        Assert.assertEquals("/b/c", i.next().getTemplate());
+        Assert.assertEquals("/b/{c}", i.next().getTemplate());
+        Assert.assertEquals("/b", i.next().getTemplate());
 
         i = uris.iterator();
         ResourceMethodMap<SubResourceMethodDescriptor> rmm = srmm.getMethodMap(i.next());
-        assertEquals(2, rmm.size()); // Method GET + HEAD (auto-generated)
-        assertEquals(1, rmm.get("GET").size());
-        assertEquals("m4", rmm.get("GET").get(0).getMethod().getName());
+        Assert.assertEquals(2, rmm.size()); // Method GET + HEAD (auto-generated)
+        Assert.assertEquals(1, rmm.get("GET").size());
+        Assert.assertEquals("m4", rmm.get("GET").get(0).getMethod().getName());
         rmm = srmm.getMethodMap(i.next());
-        assertEquals(2, rmm.size());
-        assertEquals(1, rmm.get("GET").size());
-        assertEquals("m1", rmm.get("GET").get(0).getMethod().getName());
+        Assert.assertEquals(2, rmm.size());
+        Assert.assertEquals(1, rmm.get("GET").size());
+        Assert.assertEquals("m1", rmm.get("GET").get(0).getMethod().getName());
         rmm = srmm.getMethodMap(i.next());
-        assertEquals(2, rmm.size());
-        assertEquals(1, rmm.get("GET").size());
-        assertEquals("m3", rmm.get("GET").get(0).getMethod().getName());
+        Assert.assertEquals(2, rmm.size());
+        Assert.assertEquals(1, rmm.get("GET").size());
+        Assert.assertEquals("m3", rmm.get("GET").get(0).getMethod().getName());
         rmm = srmm.getMethodMap(i.next());
-        assertEquals(2, rmm.size());
-        assertEquals(3, rmm.get("GET").size());
-        assertEquals("m2", rmm.get("GET").get(0).getMethod().getName());
-        assertEquals("m5", rmm.get("GET").get(1).getMethod().getName());
-        assertEquals("m0", rmm.get("GET").get(2).getMethod().getName());
+        Assert.assertEquals(2, rmm.size());
+        Assert.assertEquals(3, rmm.get("GET").size());
+        Assert.assertEquals("m2", rmm.get("GET").get(0).getMethod().getName());
+        Assert.assertEquals("m5", rmm.get("GET").get(1).getMethod().getName());
+        Assert.assertEquals("m0", rmm.get("GET").get(2).getMethod().getName());
     }
 
     @Path("a")
@@ -628,23 +609,24 @@ public class ResourceDescriptorTest extends BaseTest {
         }
     }
 
+    @Test
     public void testSubResourceLocatorSorting() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource3.class);
         SubResourceLocatorMap locs = resource.getSubResourceLocators();
         Collection<UriPattern> uris = locs.keySet();
         Iterator<UriPattern> i = uris.iterator();
         // NOTE template will be normalized, first slash added
-        assertEquals("/b/c/d", i.next().getTemplate());
-        assertEquals("/b/c/z", i.next().getTemplate());
-        assertEquals("/b/c", i.next().getTemplate());
-        assertEquals("/b/{c}", i.next().getTemplate());
-        assertEquals("/b", i.next().getTemplate());
+        Assert.assertEquals("/b/c/d", i.next().getTemplate());
+        Assert.assertEquals("/b/c/z", i.next().getTemplate());
+        Assert.assertEquals("/b/c", i.next().getTemplate());
+        Assert.assertEquals("/b/{c}", i.next().getTemplate());
+        Assert.assertEquals("/b", i.next().getTemplate());
         Iterator<SubResourceLocatorDescriptor> i2 = locs.values().iterator();
-        assertEquals("m3", i2.next().getMethod().getName());
-        assertEquals("m1", i2.next().getMethod().getName());
-        assertEquals("m4", i2.next().getMethod().getName());
-        assertEquals("m2", i2.next().getMethod().getName());
-        assertEquals("m0", i2.next().getMethod().getName());
+        Assert.assertEquals("m3", i2.next().getMethod().getName());
+        Assert.assertEquals("m1", i2.next().getMethod().getName());
+        Assert.assertEquals("m4", i2.next().getMethod().getName());
+        Assert.assertEquals("m2", i2.next().getMethod().getName());
+        Assert.assertEquals("m0", i2.next().getMethod().getName());
     }
 
     @Path("a")
@@ -668,32 +650,27 @@ public class ResourceDescriptorTest extends BaseTest {
         @Path("b/c")
         public void m4() {
         }
-
     }
 
     // =========================================
-
+    @Test
     public void testInitializeFieldSuperClass() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(EndResource.class);
-        assertEquals(6, resource.getFieldInjectors().size());
+        Assert.assertEquals(6, resource.getFieldInjectors().size());
     }
 
     public abstract static class AbstractResource {
         @Context
         protected UriInfo uriInfo;
-
         @Context
-        public Request request;
-
+        public    Request request;
         @Context
-      /*protected */ UriInfo something;
+        UriInfo something;
     }
 
     public abstract static class ExtResource extends AbstractResource {
-
         @Context
         protected SecurityContext sc;
-
     }
 
     public static class EndResource extends ExtResource {

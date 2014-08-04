@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ExtendedGroovyClassLoader extends GroovyClassLoader {
@@ -87,7 +86,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
             super(cl, cunit, null);
             this.cunit = cunit;
             this.sunitSet = sunitSet;
-            this.compiledClasses = new ArrayList<Class>();
+            this.compiledClasses = new ArrayList<>();
         }
 
         @Override
@@ -189,7 +188,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
         synchronized (classCache) {
             CodeSource cs = new CodeSource(getCodeSource(), (java.security.cert.Certificate[])null);
             CompilationUnit cunit = createCompilationUnit(config, cs);
-            Set<SourceUnit> setSunit = new HashSet<SourceUnit>();
+            Set<SourceUnit> setSunit = new HashSet<>();
             for (int i = 0; i < sources.length; i++) {
                 setSunit.add(cunit.addSource(sources[i].getPath()));
             }

@@ -46,10 +46,11 @@ public class GroovySimpleTest extends BaseTest {
         int initSize = resources.getSize();
         assertEquals(0, groovyPublisher.resources.size());
 
-        if (singleton)
+        if (singleton) {
             groovyPublisher.publishSingleton(script, resourceId, null, null, null);
-        else
+        } else {
             groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
+        }
 
         assertEquals(initSize + 1, resources.getSize());
         assertEquals(1, groovyPublisher.resources.size());
@@ -70,5 +71,4 @@ public class GroovySimpleTest extends BaseTest {
         assertEquals(initSize, resources.getSize());
         assertEquals(0, groovyPublisher.resources.size());
     }
-
 }

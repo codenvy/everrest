@@ -17,8 +17,7 @@ import java.util.Locale;
 /**
  * Reflection for HTTP language tag.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class Language {
     /** See {@link RuntimeDelegate#createHeaderDelegate(Class)}. */

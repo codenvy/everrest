@@ -16,11 +16,9 @@ import java.net.URL;
 /**
  * Look up script files.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface ScriptFinder {
-
     /**
      * Find all scripts that are acceptable by <code>filter</code> in specified
      * root URL.
@@ -35,5 +33,4 @@ public interface ScriptFinder {
      *         if the URL is invalid
      */
     URL[] find(URLFilter filter, URL root) throws MalformedURLException;
-
 }

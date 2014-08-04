@@ -19,8 +19,7 @@ import javax.servlet.ServletContextListener;
 import javax.ws.rs.core.Application;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GroovyEverrestInitializedListener implements ServletContextListener {
 
@@ -32,11 +31,13 @@ public class GroovyEverrestInitializedListener implements ServletContextListener
     public void contextInitialized(ServletContextEvent event) {
         ServletContext sctx = event.getServletContext();
         EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());
-        if (processor == null)
+        if (processor == null) {
             throw new RuntimeException("EverrestProcessor not found. ");
+        }
         EverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(sctx);
         Application application = initializer.getApplication();
-        if (application != null)
+        if (application != null) {
             processor.addApplication(application);
+        }
     }
 }

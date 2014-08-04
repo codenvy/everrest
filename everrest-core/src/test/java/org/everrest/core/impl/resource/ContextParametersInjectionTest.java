@@ -14,31 +14,29 @@ import org.everrest.core.InitialProperties;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.HeaderHelper;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ContextParametersInjectionTest.java 497 2009-11-08 13:19:25Z
- *          aparfonov $
+ * @author andrew00x
  */
 public class ContextParametersInjectionTest extends BaseTest {
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
     @Path("/a/b")
     public static class Resource1 {
-
         @GET
         @Path("c")
         public String m0(@Context UriInfo uriInfo) {
@@ -61,40 +59,44 @@ public class ContextParametersInjectionTest extends BaseTest {
         @GET
         @Path("f")
         public void m3(@Context Providers providers) {
-            assertNotNull(providers);
+            Assert.assertNotNull(providers);
         }
 
         @GET
         @Path("g")
         public void m4(@Context InitialProperties properties) {
-            assertNotNull(properties);
+            Assert.assertNotNull(properties);
         }
     }
 
+    @Test
     public void testMethodContextInjection() throws Exception {
-        Resource1 r1 = new Resource1();
-        registry(r1);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
         injectionTest();
-        unregistry(r1);
     }
 
     //--------------------
 
     @Path("/a/b")
     public static class Resource2 {
-
         @Context
-        private UriInfo uriInfo;
-
+        private UriInfo           uriInfo;
         @Context
-        private HttpHeaders headers;
-
+        private HttpHeaders       headers;
         @Context
-        private Request request;
-
+        private Request           request;
         @Context
-        private Providers providers;
-
+        private Providers         providers;
         @Context
         private InitialProperties properties;
 
@@ -120,36 +122,36 @@ public class ContextParametersInjectionTest extends BaseTest {
         @GET
         @Path("f")
         public void m3() {
-            assertNotNull(providers);
+            Assert.assertNotNull(providers);
         }
 
         @GET
         @Path("g")
         public void m4() {
-            assertNotNull(properties);
+            Assert.assertNotNull(properties);
         }
 
     }
 
+    @Test
     public void testFieldInjection() throws Exception {
-        registry(Resource2.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource2.class);
+            }
+        });
         injectionTest();
-        unregistry(Resource2.class);
     }
 
     //--------------------
 
     @Path("/a/b")
     public static class Resource3 {
-
-        private UriInfo uriInfo;
-
-        private HttpHeaders headers;
-
-        private Request request;
-
-        private Providers providers;
-
+        private UriInfo           uriInfo;
+        private HttpHeaders       headers;
+        private Request           request;
+        private Providers         providers;
         private InitialProperties properties;
 
         public Resource3(@Context UriInfo uriInfo, @Context HttpHeaders headers, @Context Request request,
@@ -183,39 +185,43 @@ public class ContextParametersInjectionTest extends BaseTest {
         @GET
         @Path("f")
         public void m3() {
-            assertNotNull(providers);
+            Assert.assertNotNull(providers);
         }
 
         @GET
         @Path("g")
         public void m4() {
-            assertNotNull(properties);
+            Assert.assertNotNull(properties);
             properties.setProperty("ws.rs.tmpdir", "null");
         }
     }
 
+    @Test
     public void testConstructorInjection() throws Exception {
-        registry(Resource3.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource3.class);
+            }
+        });
         injectionTest();
-        unregistry(Resource3.class);
     }
 
     //
 
     private void injectionTest() throws Exception {
-        assertEquals("http://localhost/test/a/b/c", launcher.service("GET", "http://localhost/test/a/b/c",
-                                                                     "http://localhost/test", null, null, null).getEntity());
+        Assert.assertEquals("http://localhost/test/a/b/c",
+                            launcher.service("GET", "http://localhost/test/a/b/c", "http://localhost/test", null, null, null).getEntity());
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.add("Accept", "text/xml");
         h.add("Accept", "text/plain;q=0.7");
-        assertEquals("text/xml,text/plain;q=0.7", launcher.service("GET", "http://localhost/test/a/b/d",
-                                                                   "http://localhost/test", h, null, null).getEntity());
-        assertEquals("GET", launcher.service("GET", "http://localhost/test/a/b/e", "http://localhost/test", null, null,
-                                             null).getEntity());
-        assertEquals(204, launcher.service("GET", "http://localhost/test/a/b/f", "http://localhost/test", null, null,
-                                           null).getStatus());
-        assertEquals(204, launcher.service("GET", "http://localhost/test/a/b/g", "http://localhost/test", null, null,
-                                           null).getStatus());
+        Assert.assertEquals("text/xml,text/plain;q=0.7",
+                            launcher.service("GET", "http://localhost/test/a/b/d", "http://localhost/test", h, null, null).getEntity());
+        Assert.assertEquals("GET",
+                            launcher.service("GET", "http://localhost/test/a/b/e", "http://localhost/test", null, null, null).getEntity());
+        Assert.assertEquals(204,
+                            launcher.service("GET", "http://localhost/test/a/b/f", "http://localhost/test", null, null, null).getStatus());
+        Assert.assertEquals(204,
+                            launcher.service("GET", "http://localhost/test/a/b/g", "http://localhost/test", null, null, null).getStatus());
     }
-
 }

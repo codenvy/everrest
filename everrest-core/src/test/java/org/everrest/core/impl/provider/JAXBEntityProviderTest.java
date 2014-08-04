@@ -13,8 +13,17 @@ package org.everrest.core.impl.provider;
 import org.everrest.core.generated.Book;
 import org.everrest.core.generated.MemberPrice;
 import org.everrest.core.generated.Price;
-import org.everrest.core.impl.BaseTest;
+import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.tools.EmptyInputStream;
+import org.everrest.core.tools.SimpleSecurityContext;
+import org.everrest.core.util.ParameterizedTypeImpl;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -29,83 +38,79 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.net.URI;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class JAXBEntityProviderTest extends BaseTest {
+public class JAXBEntityProviderTest {
 
-    private byte[] data;
-
+    private byte[]    data;
     private MediaType mediaType;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-        setContext();
         mediaType = new MediaType("application", "xml");
         data =
                 ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<book send-by-post=\"true\">"
                  + "<title>Java and XML Data Binding</title>" + "<author>Brett McLaughlin</author>" + "<price>34.95</price>"
                  + "<member-price currency=\"US\">26.56</member-price>" + "</book>").getBytes("UTF-8");
+        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
+                new ContainerRequest("", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(),
+                                     new SimpleSecurityContext(false)), null, ProviderBinder.getInstance()));
     }
 
-    public static JAXBElement<Book> m(JAXBElement<Book> je) {
-        return je;
+    @After
+    public void tearDown() throws Exception {
+        ApplicationContextImpl.setCurrent(null);
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testReadJAXBElement() throws Exception {
-        Method m = getClass().getMethod("m", new Class[]{JAXBElement.class});
-        assertNotNull(m);
-        Class<?> type = m.getParameterTypes()[0];
-        Type genericType = m.getGenericParameterTypes()[0];
-        MessageBodyReader reader = providers.getMessageBodyReader(type, genericType, null, mediaType);
-        assertNotNull(reader);
-        assertTrue(reader.isReadable(type, genericType, null, mediaType));
+        Class<?> type = JAXBElement.class;
+        Type genericType = ParameterizedTypeImpl.newParameterizedType(JAXBElement.class, Book.class);
+        MessageBodyReader reader = new JAXBElementEntityProvider(ProviderBinder.getInstance());
+        Assert.assertTrue(reader.isReadable(type, genericType, null, mediaType));
         InputStream in = new ByteArrayInputStream(data);
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle(HttpHeaders.CONTENT_LENGTH, "" + data.length);
         JAXBElement<Book> je = (JAXBElement<Book>)reader.readFrom(type, genericType, null, mediaType, h, in);
-        assertTrue("Java and XML Data Binding".equals(je.getValue().getTitle()));
+        Assert.assertTrue("Java and XML Data Binding".equals(je.getValue().getTitle()));
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testWriteJAXBElement() throws Exception {
-        Method m = getClass().getMethod("m", new Class[]{JAXBElement.class});
-        assertNotNull(m);
-        Class<?> returnType = m.getReturnType();
-        Type genericReturnType = m.getGenericReturnType();
-        MessageBodyWriter writer = providers.getMessageBodyWriter(returnType, genericReturnType, null, mediaType);
-        assertNotNull(writer);
-        assertTrue(writer.isWriteable(returnType, genericReturnType, null, mediaType));
+        Class<?> type = JAXBElement.class;
+        Type genericType = ParameterizedTypeImpl.newParameterizedType(JAXBElement.class, Book.class);
+        MessageBodyWriter writer = new JAXBElementEntityProvider(ProviderBinder.getInstance());
+        Assert.assertTrue(writer.isWriteable(type, genericType, null, mediaType));
         JAXBContext ctx = JAXBContext.newInstance(Book.class);
         Unmarshaller um = ctx.createUnmarshaller();
         Source src = new StreamSource(new ByteArrayInputStream(data));
         JAXBElement<Book> je = um.unmarshal(src, Book.class);
-        writer.writeTo(je, returnType, genericReturnType, null, mediaType, null, new ByteArrayOutputStream());
+        writer.writeTo(je, type, genericType, null, mediaType, null, new ByteArrayOutputStream());
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testReadJAXBObject() throws Exception {
-        MessageBodyReader prov = providers.getMessageBodyReader(Book.class, null, null, mediaType);
-        assertNotNull(prov);
-        assertTrue(prov.isReadable(Book.class, Book.class, null, mediaType));
+        MessageBodyReader reader = new JAXBObjectEntityProvider(ProviderBinder.getInstance());
+        Assert.assertTrue(reader.isReadable(Book.class, Book.class, null, mediaType));
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle(HttpHeaders.CONTENT_LENGTH, "" + data.length);
-        Book book = (Book)prov.readFrom(Book.class, Book.class, null, mediaType, h, new ByteArrayInputStream(data));
-        assertEquals("Brett McLaughlin", book.getAuthor());
+        Book book = (Book)reader.readFrom(Book.class, Book.class, null, mediaType, h, new ByteArrayInputStream(data));
+        Assert.assertEquals("Brett McLaughlin", book.getAuthor());
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testWriteJAXBObject() throws Exception {
-        MessageBodyWriter writer = providers.getMessageBodyWriter(Book.class, null, null, mediaType);
-        assertNotNull(writer);
-        assertTrue(writer.isWriteable(Book.class, Book.class, null, mediaType));
+        MessageBodyWriter writer = new JAXBObjectEntityProvider(ProviderBinder.getInstance());
+        Assert.assertTrue(writer.isWriteable(Book.class, Book.class, null, mediaType));
         Book book = new Book();
         book.setAuthor("William Shakespeare");
         book.setTitle("Hamlet");
@@ -128,5 +133,4 @@ public class JAXBEntityProviderTest extends BaseTest {
         mprice.setValue(new BigDecimal(value));
         return mprice;
     }
-
 }

@@ -12,17 +12,21 @@ package org.everrest.core.impl.resource;
 
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class AcceptResourceTest extends BaseTest {
 
@@ -117,7 +121,6 @@ public class AcceptResourceTest extends BaseTest {
         public String m3() {
             return "m3";
         }
-
     }
 
     @Path("/a")
@@ -135,62 +138,105 @@ public class AcceptResourceTest extends BaseTest {
         public String m1() {
             return "m1";
         }
-
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
+    @Test
     public void testContentType() throws Exception {
-        Resource1 r1 = new Resource1();
-        registry(r1);
-        assertEquals("m0", testContentType("text/html"));
-        assertEquals("m2", testContentType("text/xml"));
-        assertEquals("m2", testContentType("application/xml"));
-        assertEquals("m1", testContentType("image/gif"));
-        assertEquals("m3", testContentType("image/jpeg"));
-        assertEquals("m3", testContentType("image/png"));
-        assertEquals("m4", testContentType("application/x-www-form-urlencoded"));
-        unregistry(r1);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        Assert.assertEquals("m0", testContentType("text/html"));
+        Assert.assertEquals("m2", testContentType("text/xml"));
+        Assert.assertEquals("m2", testContentType("application/xml"));
+        Assert.assertEquals("m1", testContentType("image/gif"));
+        Assert.assertEquals("m3", testContentType("image/jpeg"));
+        Assert.assertEquals("m3", testContentType("image/png"));
+        Assert.assertEquals("m4", testContentType("application/x-www-form-urlencoded"));
     }
 
+    @Test
     public void testAcceptedMediaType() throws Exception {
-        Resource2 r2 = new Resource2();
-        registry(r2);
-        assertEquals("m0", testAcceptedMediaType("text/plain;q=0.9,text/html;q=0.7,text/*;q=0.5"));
-        assertEquals("m0", testAcceptedMediaType("text/plain;q=0.7,text/html;q=0.9,text/*;q=0.5"));
-        assertEquals("m0", testAcceptedMediaType("text/plain;q=0.5,text/html;q=0.7,text/*;q=0.9"));
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        assertEquals("m1", testAcceptedMediaType("text/xml;q=0.9,text/bell;q=0.5"));
-        assertEquals("m1", testAcceptedMediaType("text/foo"));
-        assertEquals("m2", testAcceptedMediaType("image/gif"));
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        Assert.assertEquals("m0", testAcceptedMediaType("text/plain;q=0.9,text/html;q=0.7,text/*;q=0.5"));
+        Assert.assertEquals("m0", testAcceptedMediaType("text/plain;q=0.7,text/html;q=0.9,text/*;q=0.5"));
+        Assert.assertEquals("m0", testAcceptedMediaType("text/plain;q=0.5,text/html;q=0.7,text/*;q=0.9"));
 
-        assertEquals("m3", testAcceptedMediaType("image/jpeg;q=0.8,  image/png;q=0.9"));
-        assertEquals("m3", testAcceptedMediaType("image/foo;q=0.8,  image/png;q=0.9"));
-        assertEquals("m2", testAcceptedMediaType("image/foo;q=0.9,  image/png;q=0.8"));
+        Assert.assertEquals("m1", testAcceptedMediaType("text/xml;q=0.9,text/bell;q=0.5"));
+        Assert.assertEquals("m1", testAcceptedMediaType("text/foo"));
+        Assert.assertEquals("m2", testAcceptedMediaType("image/gif"));
 
-        assertEquals("m2", testAcceptedMediaType("image/foo;q=0.9,  image/gif;q=0.8"));
+        Assert.assertEquals("m3", testAcceptedMediaType("image/jpeg;q=0.8,  image/png;q=0.9"));
+        Assert.assertEquals("m3", testAcceptedMediaType("image/foo;q=0.8,  image/png;q=0.9"));
+        Assert.assertEquals("m2", testAcceptedMediaType("image/foo;q=0.9,  image/png;q=0.8"));
 
-        assertEquals("m4", testAcceptedMediaType("application/x-www-form-urlencoded"));
-        assertEquals("m0", testAcceptedMediaType("application/x-www-form-urlencoded;q=0.5,text/plain"));
-        unregistry(r2);
+        Assert.assertEquals("m2", testAcceptedMediaType("image/foo;q=0.9,  image/gif;q=0.8"));
+
+        Assert.assertEquals("m4", testAcceptedMediaType("application/x-www-form-urlencoded"));
+        Assert.assertEquals("m0", testAcceptedMediaType("application/x-www-form-urlencoded;q=0.5,text/plain"));
     }
 
+    @Test
     public void testComplex() throws Exception {
-        Resource3 r3 = new Resource3();
-        registry(r3);
-        assertEquals("m3", testComplex("text/plain", "text/plain;q=0.9"));
-        assertEquals("m0", testComplex("text/plain", "text/plain;q=0.3,text/xml;q=0.9"));
-        assertEquals("m3", testComplex("text/xml", "text/plain;q=0.9,text/html;q=0.3"));
-        assertEquals("m0", testComplex("text/xml", "text/xml,text/*;q=0.3"));
-        assertEquals("m1", testComplex("image/*", "image/*"));
-        assertEquals("m3", testComplex("image/*", "image/png"));
-        assertEquals("m3", testComplex("image/*", "image/png,image/gif;q=0.1"));
-        assertEquals("m1", testComplex("image/*", "image/*,image/gif;q=0.1"));
-        assertEquals("m3", testComplex("foo/bar", "foo/bar"));
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        unregistry(r3);
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource3());
+            }
+        });
+        Assert.assertEquals("m3", testComplex("text/plain", "text/plain;q=0.9"));
+        Assert.assertEquals("m0", testComplex("text/plain", "text/plain;q=0.3,text/xml;q=0.9"));
+        Assert.assertEquals("m3", testComplex("text/xml", "text/plain;q=0.9,text/html;q=0.3"));
+        Assert.assertEquals("m0", testComplex("text/xml", "text/xml,text/*;q=0.3"));
+        Assert.assertEquals("m1", testComplex("image/*", "image/*"));
+        Assert.assertEquals("m3", testComplex("image/*", "image/png"));
+        Assert.assertEquals("m3", testComplex("image/*", "image/png,image/gif;q=0.1"));
+        Assert.assertEquals("m1", testComplex("image/*", "image/*,image/gif;q=0.1"));
+        Assert.assertEquals("m3", testComplex("foo/bar", "foo/bar"));
+    }
+
+    @Test
+    public void testExtSubtypeWithWildcard() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource4.class);
+            }
+        });
+        Assert.assertEquals("m0", testComplex("text/xml", "text/xml,text/*+xml;q=.8"));
+    }
+
+    @Test
+    public void testExtSubtype() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource4.class);
+            }
+        });
+        Assert.assertEquals("m1", testComplex("application/atom+xml", "application/xhtml+xml"));
     }
 
     private String testContentType(String contentType) throws Exception {
@@ -210,17 +256,5 @@ public class AcceptResourceTest extends BaseTest {
         h.putSingle("content-type", contentType);
         h.putSingle("accept", acceptMediaType);
         return (String)launcher.service("POST", "/a", "", h, null, null).getEntity();
-    }
-
-    public void testExtSubtype() throws Exception {
-        registry(Resource4.class);
-        assertEquals("m0", testComplex("text/xml", "text/xml,text/*+xml;q=.8"));
-        unregistry(Resource4.class);
-    }
-
-    public void testExtSubtype2() throws Exception {
-        registry(Resource4.class);
-        assertEquals("m1", testComplex("application/atom+xml", "application/xhtml+xml"));
-        unregistry(Resource4.class);
     }
 }

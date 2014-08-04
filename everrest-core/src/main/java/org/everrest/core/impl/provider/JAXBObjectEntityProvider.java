@@ -43,8 +43,11 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object> {
     private static final Logger LOG = Logger.getLogger(JAXBObjectEntityProvider.class);
 
     /** @see Providers */
-    @Context
     private Providers providers;
+
+    public JAXBObjectEntityProvider(@Context Providers providers) {
+        this.providers = providers;
+    }
 
     /** {@inheritDoc} */
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -115,13 +118,11 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object> {
      *         if JAXBContext creation failed
      */
     protected JAXBContext getJAXBContext(Class<?> type, MediaType mediaType) throws JAXBException {
-        ContextResolver<JAXBContextResolver> resolver =
-                providers.getContextResolver(JAXBContextResolver.class, mediaType);
+        ContextResolver<JAXBContextResolver> resolver = providers.getContextResolver(JAXBContextResolver.class, mediaType);
         if (resolver == null) {
             throw new RuntimeException("Not found any JAXBContextResolver for media type " + mediaType);
         }
         JAXBContextResolver jaxbContextResolver = resolver.getContext(null);
         return jaxbContextResolver.getJAXBContext(type);
     }
-
 }

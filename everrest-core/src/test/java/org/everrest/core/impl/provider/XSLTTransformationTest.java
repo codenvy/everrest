@@ -10,10 +10,11 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,8 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class XSLTTransformationTest extends BaseTest {
 
@@ -40,8 +40,8 @@ public class XSLTTransformationTest extends BaseTest {
 
         public Application0() throws Exception {
             XSLTTemplatesContextResolver resolver = new XSLTTemplatesContextResolver();
-            resolver.addAsTemplate("test.template", new StreamSource(Thread.currentThread().getContextClassLoader()
-                                                                           .getResourceAsStream("xslt/book.xsl")));
+            resolver.addAsTemplate("test.template", new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                    "xslt/book.xsl")));
             objects.add(resolver);
             classes.add(Resource0.class);
         }
@@ -73,14 +73,12 @@ public class XSLTTransformationTest extends BaseTest {
         }
     }
 
-
+    @Test
     public void testTransformToHtml() throws Exception {
-        ApplicationPublisher deployer = new ApplicationPublisher(resources, providers);
-        deployer.publish(new Application0());
+        processor.addApplication(new Application0());
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a", "", null, null, writer, null);
-        assertEquals(200, response.getStatus());
+        Assert.assertEquals(200, response.getStatus());
         System.out.println(new String(writer.getBody()));
     }
-
 }

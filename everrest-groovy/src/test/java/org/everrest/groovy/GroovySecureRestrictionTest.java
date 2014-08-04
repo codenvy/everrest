@@ -16,8 +16,7 @@ import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 import java.io.InputStream;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GroovySecureRestrictionTest extends BaseTest {
 
@@ -38,5 +37,4 @@ public class GroovySecureRestrictionTest extends BaseTest {
         assertEquals(500, resp.getStatus());
         assertTrue(new String(writer.getBody()).startsWith("access denied"));
     }
-
 }

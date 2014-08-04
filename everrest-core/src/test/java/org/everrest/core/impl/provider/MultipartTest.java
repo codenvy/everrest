@@ -19,6 +19,8 @@ import org.everrest.core.impl.provider.multipart.InputItem;
 import org.everrest.core.impl.provider.multipart.OutputItem;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 import org.everrest.test.mock.MockHttpServletRequest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -26,6 +28,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -36,8 +39,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -101,15 +104,16 @@ public class MultipartTest extends BaseTest {
         @Consumes("multipart/*")
         public void m(Iterator<FileItem> iter) throws Exception {
             while (iter.hasNext()) {
-                if (!pattern.hasNext())
-                    fail("Wrong number of parsed items");
+                if (!pattern.hasNext()) {
+                    Assert.fail("Wrong number of parsed items");
+                }
                 FileItem fi = iter.next();
                 FileItemTester fit = pattern.next();
-                assertEquals(fit.getContentType(), fi.getContentType());
-                assertEquals(fit.isFormField(), fi.isFormField());
-                assertEquals(fit.getName(), fi.getFieldName());
-                assertEquals(fit.getFilename(), fi.getName());
-                assertEquals(fit.getString(), fi.getString());
+                Assert.assertEquals(fit.getContentType(), fi.getContentType());
+                Assert.assertEquals(fit.isFormField(), fi.isFormField());
+                Assert.assertEquals(fit.getName(), fi.getFieldName());
+                Assert.assertEquals(fit.getFilename(), fi.getName());
+                Assert.assertEquals(fit.getString(), fi.getString());
             }
         }
     }
@@ -184,14 +188,14 @@ public class MultipartTest extends BaseTest {
         @POST
         @Consumes("multipart/*")
         public void m(List<InputItem> items) throws Exception {
-            assertEquals(pattern.size(), items.size());
+            Assert.assertEquals(pattern.size(), items.size());
             for (int i = 0; i < items.size(); i++) {
                 InputItem item = items.get(i);
                 InputItemTester tester = pattern.get(i);
-                assertEquals(tester.getName(), item.getName());
-                assertEquals(tester.getFilename(), item.getFilename());
-                assertEquals(tester.getMediaType(), item.getMediaType());
-                assertEquals(tester.getBodyAsString(), item.getBodyAsString());
+                Assert.assertEquals(tester.getName(), item.getName());
+                Assert.assertEquals(tester.getFilename(), item.getFilename());
+                Assert.assertEquals(tester.getMediaType(), item.getMediaType());
+                Assert.assertEquals(tester.getBodyAsString(), item.getBodyAsString());
             }
         }
     }
@@ -210,14 +214,14 @@ public class MultipartTest extends BaseTest {
         @POST
         @Consumes("multipart/*")
         public void m(Map<String, InputItem> map) throws Exception {
-            assertEquals(pattern.size(), map.size());
+            Assert.assertEquals(pattern.size(), map.size());
             for (InputItem item : map.values()) {
                 InputItemTester tester = pattern.get(item.getName());
-                assertNotNull(tester);
-                assertEquals(tester.getName(), item.getName());
-                assertEquals(tester.getFilename(), item.getFilename());
-                assertEquals(tester.getMediaType(), item.getMediaType());
-                assertEquals(tester.getBodyAsString(), item.getBodyAsString());
+                Assert.assertNotNull(tester);
+                Assert.assertEquals(tester.getName(), item.getName());
+                Assert.assertEquals(tester.getFilename(), item.getFilename());
+                Assert.assertEquals(tester.getMediaType(), item.getMediaType());
+                Assert.assertEquals(tester.getBodyAsString(), item.getBodyAsString());
             }
         }
     }
@@ -231,7 +235,8 @@ public class MultipartTest extends BaseTest {
             list.add(OutputItem.create("xml-file", XML_DATA, MediaType.TEXT_XML_TYPE, "foo.xml"));
             list.add(OutputItem.create("json-file", new JsonData("hello world"), MediaType.APPLICATION_JSON_TYPE, "foo.json"));
             list.add(OutputItem.create("field", TEXT_DATA, null));
-            return new GenericEntity<List<OutputItem>>(list) {};
+            return new GenericEntity<List<OutputItem>>(list) {
+            };
         }
     }
 
@@ -266,41 +271,71 @@ public class MultipartTest extends BaseTest {
             + "Content-Disposition: form-data; name=\"field\"\r\n" + "\r\n" + TEXT_DATA + "\r\n"
             + "--" + BOUNDARY + "--\r\n";
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        setContext();
-    }
-
+    @Test
     public void testInputMultipartFormApache() throws Exception {
-        Resource1 r1 = new Resource1();
-        registry(r1);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
         doPost("/1");
-        unregistry(r1);
     }
 
+    @Test
     public void testInputMultipartFormList() throws Exception {
-        Resource2 r2 = new Resource2();
-        registry(r2);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
         doPost("/2");
-        unregistry(r2);
     }
 
+    @Test
     public void testInputMultipartFormMap() throws Exception {
-        Resource3 r3 = new Resource3();
-        registry(r3);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource3());
+            }
+        });
         doPost("/3");
-        unregistry(r3);
     }
 
+    @Test
     public void testOutputMultipartFormList() throws Exception {
-        Resource4 r4 = new Resource4();
-        registry(r4);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource4());
+            }
+        });
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/4", "", null, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals(FORM_DATA, new String(writer.getBody()));
-        unregistry(r4);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals(FORM_DATA, new String(writer.getBody()));
     }
 
     private void doPost(String path) throws Exception {
@@ -311,11 +346,10 @@ public class MultipartTest extends BaseTest {
         w.flush();
         h.putSingle("content-type", "multipart/form-data;boundary=" + BOUNDARY);
         byte[] data = out.toByteArray();
-        // NOTE In this test data will be red from HttpServletRequest, not from
-        // byte array. See MultipartFormDataEntityProvider.
+        // NOTE In this test data will be red from HttpServletRequest, not from byte array. See MultipartFormDataEntityProvider.
         EnvironmentContext env = new EnvironmentContext();
         env.put(HttpServletRequest.class, new MockHttpServletRequest("", new ByteArrayInputStream(data), data.length, "POST", h));
         ContainerResponse response = launcher.service("POST", path, "", h, data, env);
-        assertEquals(204, response.getStatus());
+        Assert.assertEquals(204, response.getStatus());
     }
 }

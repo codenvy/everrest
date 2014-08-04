@@ -14,6 +14,8 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -21,17 +23,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class FormEntityTest extends BaseTest {
-
-    public void setUp() throws Exception {
-        super.setUp();
-    }
 
     @Path("/")
     public static class Resource1 {
@@ -39,21 +39,21 @@ public class FormEntityTest extends BaseTest {
         @Path("a")
         @Consumes("application/x-www-form-urlencoded")
         public void m1(@FormParam("foo") String foo, @FormParam("bar") String bar, MultivaluedMap<String, String> form) {
-            assertEquals(foo, form.getFirst("foo"));
-            assertEquals(bar, form.getFirst("bar"));
+            Assert.assertEquals(foo, form.getFirst("foo"));
+            Assert.assertEquals(bar, form.getFirst("bar"));
         }
 
         @POST
         @Path("b")
         @Consumes("application/x-www-form-urlencoded")
         public void m2(MultivaluedMap<String, String> form) {
-            assertEquals("to be or not to be", form.getFirst("foo"));
-            assertEquals("hello world", form.getFirst("bar"));
+            Assert.assertEquals("to be or not to be", form.getFirst("foo"));
+            Assert.assertEquals("hello world", form.getFirst("bar"));
         }
     }
 
     @Path("/")
-    public static class Resource11 {
+    public static class Resource2 {
         @GET
         @Path("a")
         @Produces("application/x-www-form-urlencoded")
@@ -64,28 +64,46 @@ public class FormEntityTest extends BaseTest {
         }
     }
 
+    @Test
     public void testFormEntityRead() throws Exception {
-        Resource1 r1 = new Resource1();
-        registry(r1);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
         byte[] data = "foo=to%20be%20or%20not%20to%20be&bar=hello%20world".getBytes("UTF-8");
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle("content-type", "application/x-www-form-urlencoded");
         h.putSingle("content-length", "" + data.length);
-        assertEquals(204, launcher.service("POST", "/a", "", h, data, null).getStatus());
-        assertEquals(204, launcher.service("POST", "/b", "", h, data, null).getStatus());
-        unregistry(r1);
+        Assert.assertEquals(204, launcher.service("POST", "/a", "", h, data, null).getStatus());
+        Assert.assertEquals(204, launcher.service("POST", "/b", "", h, data, null).getStatus());
     }
 
+    @Test
     public void testFormEntityWrite() throws Exception {
-        Resource11 r1 = new Resource11();
-        registry(r1);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle("accept", "application/x-www-form-urlencoded");
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
+        Assert.assertEquals(200, response.getStatus());
         //System.out.println(new String(writer.getBody()));
-        assertEquals("foo=bar", new String(writer.getBody()));
-        unregistry(r1);
+        Assert.assertEquals("foo=bar", new String(writer.getBody()));
     }
 }

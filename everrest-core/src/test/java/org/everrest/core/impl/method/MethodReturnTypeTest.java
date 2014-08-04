@@ -11,29 +11,29 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Created by The eXo Platform SAS. <br/>
- * Date: 20 Jan 2009
- *
- * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
- * @version $Id: ResourceReturnTypeTest.java
+ * @author Dmytro Katayev
  */
 public class MethodReturnTypeTest extends BaseTest {
 
     @Path("/a")
     public static class Resource1 {
-
         @GET
         @Path("/0")
         public void m0() {
-
         }
 
         @GET
@@ -66,44 +66,58 @@ public class MethodReturnTypeTest extends BaseTest {
         public String m6() {
             return "body";
         }
-
     }
 
+    @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
     }
 
-    public void testResourceMethodReturnType() throws Exception {
-        Resource1 r = new Resource1();
-        registry(r);
-
-        // void Results in an empty entity body with a 204 status code.
-        assertEquals(204, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
-        assertNull(launcher.service("GET", "/a/0", "", null, null, null).getEntity());
-
-        // Response Results in an entity body mapped from the entity property of the
-        // Response
-        // with the status code specified by the status property of the Response.
-        assertEquals(200, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
-        assertEquals("body", launcher.service("GET", "/a/1", "", null, null, null).getEntity());
-
-        // GenericEntity Results: null return value results in a 204 status code
-        assertEquals(204, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
-        assertNull(launcher.service("GET", "/a/2", "", null, null, null).getEntity());
-
-        // a null return value results in a 204 status code.
-        assertEquals(204, launcher.service("GET", "/a/3", "", null, null, null).getStatus());
-        assertNull(launcher.service("GET", "/a/3", "", null, null, null).getEntity());
-
-        // Other Results: null return value results in a 204 status code
-        assertEquals(204, launcher.service("GET", "/a/5", "", null, null, null).getStatus());
-        assertNull(launcher.service("GET", "/a/5", "", null, null, null).getEntity());
-
-        // Other Results: null return value results in a 204 status code
-        assertEquals(200, launcher.service("GET", "/a/6", "", null, null, null).getStatus());
-        assertNotNull(launcher.service("GET", "/a/6", "", null, null, null).getEntity());
-
-        unregistry(r);
+    @Test
+    public void testResourceMethodReturnTypeVoid() throws Exception {
+        Assert.assertEquals(204, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
+        Assert.assertNull(launcher.service("GET", "/a/0", "", null, null, null).getEntity());
     }
 
+    @Test
+    public void testResourceMethodReturnTypeResponse() throws Exception {
+        Assert.assertEquals(200, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
+        Assert.assertEquals("body", launcher.service("GET", "/a/1", "", null, null, null).getEntity());
+    }
+
+    @Test
+    public void testResourceMethodReturnTypeResponseNull() throws Exception {
+        Assert.assertEquals(204, launcher.service("GET", "/a/2", "", null, null, null).getStatus());
+        Assert.assertNull(launcher.service("GET", "/a/2", "", null, null, null).getEntity());
+    }
+
+    @Test
+    public void testResourceMethodReturnTypeGenericEntity() throws Exception {
+        Assert.assertEquals(204, launcher.service("GET", "/a/3", "", null, null, null).getStatus());
+        Assert.assertNull(launcher.service("GET", "/a/3", "", null, null, null).getEntity());
+    }
+
+    @Test
+    public void testResourceMethodReturnTypeOtherNull() throws Exception {
+        Assert.assertEquals(204, launcher.service("GET", "/a/5", "", null, null, null).getStatus());
+        Assert.assertNull(launcher.service("GET", "/a/5", "", null, null, null).getEntity());
+    }
+
+    @Test
+    public void testResourceMethodReturnTypeOther() throws Exception {
+        Assert.assertEquals(200, launcher.service("GET", "/a/6", "", null, null, null).getStatus());
+        Assert.assertNotNull(launcher.service("GET", "/a/6", "", null, null, null).getEntity());
+    }
 }

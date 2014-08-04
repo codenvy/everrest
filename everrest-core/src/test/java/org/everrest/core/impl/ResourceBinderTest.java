@@ -11,52 +11,23 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.ResourcePublicationException;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Application;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class ResourceBinderTest extends BaseTest {
 
-    /** {@inheritDoc} */
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-    public void testBind() {
-        int prevSize = resources.getSize();
-        resources.addResource(Resource.class, null);
-        assertEquals((prevSize + 1), resources.getSize());
-    }
-
-    public void testUnbind() {
-        int prevSize = resources.getSize();
-        resources.addResource(Resource.class, null);
-        resources.removeResource(Resource.class);
-        assertEquals(prevSize, resources.getSize());
-    }
-
     @Path("/a/b/{c}")
     public static class Resource {
-
-        @SuppressWarnings("unused")
-        @PathParam("c")
-        private String pathsegm;
-
-        public Resource() {
-        }
-
-        public Resource(@Context UriInfo uriInfo) {
-        }
-
         @GET
         @Produces("text/html")
         public void m1() {
@@ -73,58 +44,117 @@ public class ResourceBinderTest extends BaseTest {
         }
     }
 
-    //-------------------------------------
-
-    public void testSameResourceURI() {
-        int initSize = resources.getSize();
-        resources.addResource(SameURIResource1.class, null);
-        assertEquals(initSize + 1, resources.getSize());
-        try {
-            resources.addResource(SameURIResource2.class, null);
-        } catch (ResourcePublicationException e) {
-        }
-        assertEquals(initSize + 1, resources.getSize());
-
-        resources.removeResource(SameURIResource1.class);
-        resources.addResource(SameURIResource2.class, null);
-        assertEquals(initSize + 1, resources.getSize());
-        try {
-            resources.addResource(SameURIResource1.class, null);
-        } catch (ResourcePublicationException e) {
-        }
-        assertEquals(initSize + 1, resources.getSize());
-
-        resources.removeResource(SameURIResource2.class);
-        resources.addResource(new SameURIResource1(), null);
-        assertEquals(initSize + 1, resources.getSize());
-        try {
-            resources.addResource(new SameURIResource2(), null);
-        } catch (ResourcePublicationException e) {
-        }
-        assertEquals(initSize + 1, resources.getSize());
-
-        resources.removeResource(SameURIResource1.class);
-        resources.addResource(new SameURIResource2(), null);
-        assertEquals(initSize + 1, resources.getSize());
-        try {
-            resources.addResource(new SameURIResource1(), null);
-        } catch (ResourcePublicationException e) {
-        }
-        assertEquals(initSize + 1, resources.getSize());
-    }
 
     @Path("/a/b/c/{d}/e")
-    public static class SameURIResource1 {
+    public static class URIConflictResource1 {
         @GET
         public void m0() {
         }
     }
 
     @Path("/a/b/c/{d}/e")
-    public static class SameURIResource2 {
+    public static class URIConflictResource2 {
         @GET
         public void m0() {
         }
     }
 
+    @Test
+    public void testBind() {
+        int prevSize = processor.getResources().getSize();
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource.class);
+            }
+        });
+        Assert.assertEquals((prevSize + 1), processor.getResources().getSize());
+    }
+
+    @Test
+    public void testUnbind() {
+        int prevSize = processor.getResources().getSize();
+        processor.getResources().addResource(Resource.class, null);
+        processor.getResources().removeResource(Resource.class);
+        Assert.assertEquals(prevSize, processor.getResources().getSize());
+    }
+
+    @Test
+    public void testURIConflict() {
+        // two per-request resources with URI conflict
+        int initSize = processor.getResources().getSize();
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(URIConflictResource1.class);
+            }
+        });
+        Assert.assertEquals(initSize + 1, processor.getResources().getSize());
+        try {
+            processor.addApplication(new Application() {
+                @Override
+                public Set<Class<?>> getClasses() {
+                    return Collections.<Class<?>>singleton(URIConflictResource2.class);
+                }
+            });
+        } catch (ResourcePublicationException e) {
+        }
+        Assert.assertEquals(initSize + 1, processor.getResources().getSize());
+    }
+
+    @Test
+    public void testURIConflict2() {
+        // per-request and singleton resources with URI conflict
+        int initSize = processor.getResources().getSize();
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(URIConflictResource1.class);
+            }
+        });
+        Assert.assertEquals(initSize + 1, processor.getResources().getSize());
+        try {
+            processor.addApplication(new Application() {
+                @Override
+                public Set<Class<?>> getClasses() {
+                    return Collections.emptySet();
+                }
+
+                @Override
+                public Set<Object> getSingletons() {
+                    return Collections.<Object>singleton(new URIConflictResource2());
+                }
+            });
+        } catch (ResourcePublicationException e) {
+        }
+        Assert.assertEquals(initSize + 1, processor.getResources().getSize());
+    }
+
+    @Test
+    public void testURIConflict3() {
+        // per-request and singleton resources with URI conflict
+        int initSize = processor.getResources().getSize();
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new URIConflictResource2());
+            }
+        });
+        Assert.assertEquals(initSize + 1, processor.getResources().getSize());
+        try {
+            processor.addApplication(new Application() {
+                @Override
+                public Set<Class<?>> getClasses() {
+                    return Collections.<Class<?>>singleton(URIConflictResource1.class);
+                }
+            });
+        } catch (ResourcePublicationException e) {
+        }
+        Assert.assertEquals(initSize + 1, processor.getResources().getSize());
+    }
 }

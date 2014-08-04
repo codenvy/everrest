@@ -12,42 +12,42 @@ package org.everrest.groovy;
 
 import junit.framework.TestCase;
 
+import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.impl.RequestDispatcher;
-import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.tools.DependencySupplierImpl;
 import org.everrest.core.tools.ResourceLauncher;
 
 import java.lang.reflect.Constructor;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public abstract class BaseTest extends TestCase {
-    protected ProviderBinder providers;
-
-    protected ResourceBinderImpl resources;
-
-    protected RequestHandlerImpl requestHandler;
-
-    protected ResourceLauncher launcher;
-
+    protected ProviderBinder          providers;
+    protected ResourceBinderImpl      resources;
+    protected DependencySupplierImpl  dependencySupplier;
+    protected EverrestProcessor       processor;
+    protected ResourceLauncher        launcher;
     protected GroovyResourcePublisher groovyPublisher;
 
-    protected DependencySupplierImpl dependencies;
-
     protected void setUp() throws Exception {
-        this.resources = new ResourceBinderImpl();
-        this.dependencies = new DependencySupplierImpl();
+        resources = new ResourceBinderImpl();
+        // reset embedded providers to be sure it is clean
         Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
         c.setAccessible(true);
         ProviderBinder.setInstance(c.newInstance());
-        this.providers = ProviderBinder.getInstance();
-        this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), dependencies, null);
-        this.launcher = new ResourceLauncher(requestHandler);
-        this.groovyPublisher = new GroovyResourcePublisher(resources, dependencies);
+        providers = new ApplicationProviderBinder();
+        providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
+        resources.addResource("/async", AsynchronousJobService.class, null);
+        dependencySupplier = new DependencySupplierImpl();
+        processor = new EverrestProcessor(resources, providers, dependencySupplier, new EverrestConfiguration(), null);
+        launcher = new ResourceLauncher(processor);
+        groovyPublisher = new GroovyResourcePublisher(resources, dependencySupplier);
     }
 
     @Override

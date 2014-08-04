@@ -19,19 +19,16 @@ import java.net.URL;
  * {@link ScriptFinder#find(URLFilter, URL)}.
  * </p>
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface URLFilter {
-
     /**
      * Tests whether or not the specified URL should be included in URL list.
      *
      * @param url
      *         URL to be tested
      * @return <code>true</code> if specified URL must be include in result set
-     *         of URLs and <code>false</code> otherwise
+     * of URLs and <code>false</code> otherwise
      */
     boolean accept(URL url);
-
 }

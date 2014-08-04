@@ -16,17 +16,21 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.Ranges;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class PartialContentTest extends BaseTest {
 
@@ -51,18 +55,23 @@ public class PartialContentTest extends BaseTest {
 
     private static final byte[] contentBytes = contentString.getBytes();
 
+    @Test
     public void testPartialContent() throws Exception {
-        registry(Resource1.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource1.class);
+            }
+        });
         MultivaluedMap<String, String> headers = new MultivaluedMapImpl();
         headers.putSingle("range", "bytes=2-5");
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a", "", headers, null, writer, null);
         MultivaluedMap<String, Object> responseHeaders = writer.getHeaders();
-        assertEquals("4", responseHeaders.getFirst("content-length"));
-        assertEquals("bytes 2-5/18", responseHeaders.getFirst("content-range"));
-        assertEquals("bytes", responseHeaders.getFirst("accept-ranges"));
-        assertEquals(" be ", new String(writer.getBody()));
-        unregistry(Resource1.class);
+        Assert.assertEquals("4", responseHeaders.getFirst("content-length"));
+        Assert.assertEquals("bytes 2-5/18", responseHeaders.getFirst("content-range"));
+        Assert.assertEquals("bytes", responseHeaders.getFirst("accept-ranges"));
+        Assert.assertEquals(" be ", new String(writer.getBody()));
     }
 
 }

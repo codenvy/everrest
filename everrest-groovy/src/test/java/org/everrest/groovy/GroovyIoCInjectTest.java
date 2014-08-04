@@ -16,8 +16,7 @@ import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 import java.io.InputStream;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GroovyIoCInjectTest extends BaseTest {
 
@@ -37,12 +36,12 @@ public class GroovyIoCInjectTest extends BaseTest {
     }
 
     public void testComponentPerRequest() throws Exception {
-        dependencies.addComponent(Component1.class, new Component1());
+        dependencySupplier.addComponent(Component1.class, new Component1());
         iocComponentTest(false, new BaseResourceId("g1"));
     }
 
     public void testComponentSingleton() throws Exception {
-        dependencies.addComponent(Component1.class, new Component1());
+        dependencySupplier.addComponent(Component1.class, new Component1());
         iocComponentTest(true, new BaseResourceId("g2"));
     }
 
@@ -50,10 +49,11 @@ public class GroovyIoCInjectTest extends BaseTest {
         int initSize = resources.getSize();
         assertEquals(0, groovyPublisher.resources.size());
 
-        if (singleton)
+        if (singleton) {
             groovyPublisher.publishSingleton(script, resourceId, null, null, null);
-        else
+        } else {
             groovyPublisher.publishPerRequest(script, resourceId, null, null, null);
+        }
 
         assertEquals(initSize + 1, resources.getSize());
         assertEquals(1, groovyPublisher.resources.size());

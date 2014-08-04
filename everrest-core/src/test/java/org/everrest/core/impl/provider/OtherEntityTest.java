@@ -14,6 +14,8 @@ import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -23,6 +25,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -37,30 +40,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.Collections;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class OtherEntityTest extends BaseTest {
-
-    public void setUp() throws Exception {
-        super.setUp();
-    }
 
     @Path("/")
     public static class Resource1 {
         @POST
         @Path("bytes")
         public void m1(byte[] b) {
-            assertEquals("to be or not to be", new String(b));
+            Assert.assertEquals("to be or not to be", new String(b));
         }
 
         @POST
         @Path("string")
         public void m2(String s) {
-            assertEquals("to be or not to be", s);
+            Assert.assertEquals("to be or not to be", s);
         }
 
         @POST
@@ -68,7 +68,7 @@ public class OtherEntityTest extends BaseTest {
         public void m3(InputStream in) throws IOException {
             byte[] b = new byte[1024];
             int r = in.read(b);
-            assertEquals("to be or not to be", new String(b, 0, r));
+            Assert.assertEquals("to be or not to be", new String(b, 0, r));
         }
 
         @POST
@@ -76,15 +76,15 @@ public class OtherEntityTest extends BaseTest {
         public void m4(Reader rd) throws IOException {
             char[] c = new char[1024];
             int r = rd.read(c);
-            assertEquals("to be or not to be", new String(c, 0, r));
+            Assert.assertEquals("to be or not to be", new String(c, 0, r));
         }
 
         @POST
         @Path("dom")
         @Consumes("application/xml")
         public void m5(DOMSource dom) throws Exception {
-            assertEquals("root", dom.getNode().getFirstChild().getNodeName());
-            assertEquals("hello world", dom.getNode().getFirstChild().getFirstChild().getTextContent());
+            Assert.assertEquals("root", dom.getNode().getFirstChild().getNodeName());
+            Assert.assertEquals("hello world", dom.getNode().getFirstChild().getFirstChild().getTextContent());
         }
 
         @POST
@@ -92,9 +92,9 @@ public class OtherEntityTest extends BaseTest {
         @Consumes("application/xml")
         public void m6(SAXSource sax) throws Exception {
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(sax.getInputSource());
-            assertEquals("root", doc.getDocumentElement().getNodeName());
-            assertEquals("data", doc.getDocumentElement().getFirstChild().getNodeName());
-            assertEquals("hello world", doc.getDocumentElement().getFirstChild().getTextContent());
+            Assert.assertEquals("root", doc.getDocumentElement().getNodeName());
+            Assert.assertEquals("data", doc.getDocumentElement().getFirstChild().getNodeName());
+            Assert.assertEquals("hello world", doc.getDocumentElement().getFirstChild().getTextContent());
         }
 
         @POST
@@ -102,46 +102,151 @@ public class OtherEntityTest extends BaseTest {
         @Consumes("application/xml")
         public void m7(StreamSource ss) throws Exception {
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ss.getInputStream());
-            assertEquals("root", doc.getDocumentElement().getNodeName());
-            assertEquals("data", doc.getDocumentElement().getFirstChild().getNodeName());
-            assertEquals("hello world", doc.getDocumentElement().getFirstChild().getTextContent());
+            Assert.assertEquals("root", doc.getDocumentElement().getNodeName());
+            Assert.assertEquals("data", doc.getDocumentElement().getFirstChild().getNodeName());
+            Assert.assertEquals("hello world", doc.getDocumentElement().getFirstChild().getTextContent());
         }
     }
 
-    private static final String XML_DATA =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<root><data>hello world</data></root>";
+    private static final String XML_DATA = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<root><data>hello world</data></root>";
 
-    public void testEntityPatameter() throws Exception {
-        Resource1 r1 = new Resource1();
-        registry(r1);
+    @Test
+    public void testBytesEntityParameter() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
-
         byte[] data = "to be or not to be".getBytes("UTF-8");
         h.putSingle("content-length", "" + data.length);
-
-        // next types allowed for any content-type
-        //    h.putSingle("content-type", "application/octet-stream");
-        assertEquals(204, launcher.service("POST", "/bytes", "", h, data, null).getStatus());
-
-        assertEquals(204, launcher.service("POST", "/string", "", h, data, null).getStatus());
-
-        assertEquals(204, launcher.service("POST", "/stream", "", h, data, null).getStatus());
-
-        assertEquals(204, launcher.service("POST", "/reader", "", h, data, null).getStatus());
-
-        // next types required application/xml, text/xml or
-        // application/xhtml+xml content-type
-        h.putSingle("content-type", "application/xml");
-        data = XML_DATA.getBytes("UTF-8");
-        h.putSingle("content-length", "" + data.length);
-        assertEquals(204, launcher.service("POST", "/dom", "", h, data, null).getStatus());
-
-        assertEquals(204, launcher.service("POST", "/sax", "", h, data, null).getStatus());
-
-        assertEquals(204, launcher.service("POST", "/ss", "", h, data, null).getStatus());
-
-        unregistry(r1);
+        Assert.assertEquals(204, launcher.service("POST", "/bytes", "", h, data, null).getStatus());
     }
+
+    @Test
+    public void testStringEntityParameter() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        byte[] data = "to be or not to be".getBytes("UTF-8");
+        h.putSingle("content-length", "" + data.length);
+        Assert.assertEquals(204, launcher.service("POST", "/string", "", h, data, null).getStatus());
+    }
+
+    @Test
+    public void testStreamEntityParameter() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        byte[] data = "to be or not to be".getBytes("UTF-8");
+        h.putSingle("content-length", "" + data.length);
+        Assert.assertEquals(204, launcher.service("POST", "/stream", "", h, data, null).getStatus());
+    }
+
+    @Test
+    public void testReaderEntityParameter() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        byte[] data = "to be or not to be".getBytes("UTF-8");
+        h.putSingle("content-length", "" + data.length);
+        Assert.assertEquals(204, launcher.service("POST", "/reader", "", h, data, null).getStatus());
+    }
+
+    @Test
+    public void testDomEntityParameter() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+
+        h.putSingle("content-type", "application/xml");
+        byte[] data = XML_DATA.getBytes("UTF-8");
+        h.putSingle("content-length", "" + data.length);
+        Assert.assertEquals(204, launcher.service("POST", "/dom", "", h, data, null).getStatus());
+    }
+
+    @Test
+    public void testSaxSourceEntityParameter() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        h.putSingle("content-type", "application/xml");
+        byte[] data = XML_DATA.getBytes("UTF-8");
+        h.putSingle("content-length", "" + data.length);
+        Assert.assertEquals(204, launcher.service("POST", "/sax", "", h, data, null).getStatus());
+    }
+
+    @Test
+    public void testStreamSourceEntityParameter() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        h.putSingle("content-type", "application/xml");
+        byte[] data = XML_DATA.getBytes("UTF-8");
+        h.putSingle("content-length", "" + data.length);
+        Assert.assertEquals(204, launcher.service("POST", "/ss", "", h, data, null).getStatus());
+    }
+
 
     @Path("/")
     public static class Resource2 {
@@ -209,85 +314,197 @@ public class OtherEntityTest extends BaseTest {
         @Path("response")
         public Response m9() throws Exception {
             String data = "to be or not to be";
-            return Response.ok(data, "text/plain").header(HttpHeaders.CONTENT_LENGTH, data.getBytes("UTF-8").length)
-                           .build();
+            return Response.ok(data, "text/plain").header(HttpHeaders.CONTENT_LENGTH, data.getBytes("UTF-8").length).build();
         }
     }
 
-    public void testReturn() throws Exception {
-        Resource2 r2 = new Resource2();
-        registry(r2);
+    @Test
+    public void testReturnBytes() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
 
         h.putSingle("accept", "text/plain");
         ContainerResponse response = launcher.service("GET", "/bytes", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/octet-stream", response.getContentType().toString());
-        assertEquals("to be or not to be".getBytes("UTF-8").length + "", writer.getHeaders().getFirst(
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("text/plain", response.getContentType().toString());
+        Assert.assertEquals("to be or not to be".getBytes("UTF-8").length + "", writer.getHeaders().getFirst(
                 HttpHeaders.CONTENT_LENGTH).toString());
-        assertEquals("to be or not to be", new String(writer.getBody()));
+        Assert.assertEquals("to be or not to be", new String(writer.getBody()));
+    }
 
-        writer.reset();
-        response = launcher.service("GET", "/string", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("text/plain", response.getContentType().toString());
-        assertEquals("to be or not to be", new String(writer.getBody()));
+    @Test
+    public void testReturnString() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        writer.reset();
-        response = launcher.service("GET", "/stream", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/octet-stream", response.getContentType().toString());
-        assertEquals("to be or not to be", new String(writer.getBody()));
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
 
-        writer.reset();
-        response = launcher.service("GET", "/reader", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("text/plain", response.getContentType().toString());
-        assertEquals("to be or not to be", new String(writer.getBody()));
+        h.putSingle("accept", "text/plain");
+        ContainerResponse response = launcher.service("GET", "/string", "", h, null, writer, null);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("text/plain", response.getContentType().toString());
+        Assert.assertEquals("to be or not to be", new String(writer.getBody()));
+    }
 
+    @Test
+    public void testReturnStream() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+
+        h.putSingle("accept", "text/plain");
+        ContainerResponse response = launcher.service("GET", "/stream", "", h, null, writer, null);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("text/plain", response.getContentType().toString());
+        Assert.assertEquals("to be or not to be", new String(writer.getBody()));
+    }
+
+    @Test
+    public void testReturnReader() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+
+        h.putSingle("accept", "text/plain");
+        ContainerResponse response = launcher.service("GET", "/reader", "", h, null, writer, null);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("text/plain", response.getContentType().toString());
+        Assert.assertEquals("to be or not to be", new String(writer.getBody()));
+    }
+
+    @Test
+    public void testReturnDom() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+        h.putSingle("accept", "application/xml");
         Pattern pattern = Pattern.compile("(<\\?xml .*\\?>)");
         String xml = pattern.matcher(XML_DATA).replaceFirst("");
-
-        h.putSingle("accept", "application/xml");
-        writer.reset();
-        response = launcher.service("GET", "/dom", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/xml", response.getContentType().toString());
+        ContainerResponse response = launcher.service("GET", "/dom", "", h, null, writer, null);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("application/xml", response.getContentType().toString());
         String result = new String(writer.getBody());
         result = pattern.matcher(result).replaceFirst("");
-        assertEquals(xml, result);
+        Assert.assertEquals(xml, result);
+    }
 
-        writer.reset();
-        response = launcher.service("GET", "/sax", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/xml", response.getContentType().toString());
-        result = new String(writer.getBody());
+    @Test
+    public void testReturnSax() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+        Pattern pattern = Pattern.compile("(<\\?xml .*\\?>)");
+        String xml = pattern.matcher(XML_DATA).replaceFirst("");
+        ContainerResponse response = launcher.service("GET", "/sax", "", h, null, writer, null);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("application/xml", response.getContentType().toString());
+        String result = new String(writer.getBody());
         result = pattern.matcher(result).replaceFirst("");
-        assertEquals(xml, result);
+        Assert.assertEquals(xml, result);
+    }
 
-        writer.reset();
-        response = launcher.service("GET", "/ss", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/xml", response.getContentType().toString());
-        result = new String(writer.getBody());
-        result = pattern.matcher(result).replaceFirst("");
-        assertEquals(xml, result);
+    @Test
+    public void testReturnStreamingOutput() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        writer.reset();
-        response = launcher.service("GET", "/so", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/octet-stream", response.getContentType().toString());
-        assertEquals("to be or not to be", new String(writer.getBody()));
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+        ContainerResponse response = launcher.service("GET", "/so", "", h, null, writer, null);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("application/octet-stream", response.getContentType().toString());
+        Assert.assertEquals("to be or not to be", new String(writer.getBody()));
+    }
 
-        writer.reset();
-        response = launcher.service("GET", "/response", "", h, null, writer, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("text/plain", response.getContentType().toString());
-        assertEquals("to be or not to be".getBytes("UTF-8").length + "", writer.getHeaders().getFirst(
-                HttpHeaders.CONTENT_LENGTH).toString());
-        assertEquals("to be or not to be", new String(writer.getBody()));
+    @Test
+    public void testReturnResponse() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        unregistry(r2);
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+        ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+        h.putSingle("accept", "text/plain");
+        ContainerResponse response = launcher.service("GET", "/response", "", h, null, writer, null);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("text/plain", response.getContentType().toString());
+        Assert.assertEquals("to be or not to be".getBytes("UTF-8").length + "",
+                            writer.getHeaders().getFirst(HttpHeaders.CONTENT_LENGTH).toString());
+        Assert.assertEquals("to be or not to be", new String(writer.getBody()));
     }
 }

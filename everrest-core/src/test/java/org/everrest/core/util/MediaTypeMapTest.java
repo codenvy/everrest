@@ -10,17 +10,18 @@
  *******************************************************************************/
 package org.everrest.core.util;
 
-import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Iterator;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class MediaTypeMapTest extends BaseTest {
+public class MediaTypeMapTest {
 
+    @Test
     public void testSort() {
         MediaTypeMap<Object> m = new MediaTypeMap<Object>();
         m.put(new MediaType(), "*/*");
@@ -32,13 +33,12 @@ public class MediaTypeMapTest extends BaseTest {
         m.put(new MediaType("application", "atom+*"), "application/atom+*");
         System.out.println(m.values());
         Iterator<Object> values = m.values().iterator();
-        assertEquals("text/plain", values.next());
-        assertEquals("text/xml", values.next());
-        assertEquals("application/atom+*", values.next());
-        assertEquals("application/*+xml", values.next());
-        assertEquals("application/*", values.next());
-        assertEquals("text/*", values.next());
-        assertEquals("*/*", values.next());
+        Assert.assertEquals("text/plain", values.next());
+        Assert.assertEquals("text/xml", values.next());
+        Assert.assertEquals("application/atom+*", values.next());
+        Assert.assertEquals("application/*+xml", values.next());
+        Assert.assertEquals("application/*", values.next());
+        Assert.assertEquals("text/*", values.next());
+        Assert.assertEquals("*/*", values.next());
     }
-
 }

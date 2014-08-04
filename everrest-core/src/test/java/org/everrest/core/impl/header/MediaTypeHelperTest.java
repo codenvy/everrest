@@ -10,97 +10,109 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 
 /**
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class MediaTypeHelperTest extends BaseTest {
+public class MediaTypeHelperTest {
 
+    @Test
     public void testMatchWildcard() {
         MediaType one = new MediaType("application", "xml");
         MediaType two = new MediaType("*", "*");
-        assertFalse(MediaTypeHelper.isMatched(one, two));
-        assertTrue(MediaTypeHelper.isMatched(two, one));
+        Assert.assertFalse(MediaTypeHelper.isMatched(one, two));
+        Assert.assertTrue(MediaTypeHelper.isMatched(two, one));
     }
 
+    @Test
     public void testMatchWildcardType() {
         MediaType one = new MediaType("application", "xml");
         MediaType two = new MediaType("*", "bla-bla");
-        assertFalse(MediaTypeHelper.isMatched(one, two));
-        assertTrue(MediaTypeHelper.isMatched(two, one));
+        Assert.assertFalse(MediaTypeHelper.isMatched(one, two));
+        Assert.assertTrue(MediaTypeHelper.isMatched(two, one));
     }
 
+    @Test
     public void testMatchWildcardSubtype() {
         MediaType one = new MediaType("application", "xml");
         MediaType two = new MediaType("application", "*");
-        assertFalse(MediaTypeHelper.isMatched(one, two));
-        assertTrue(MediaTypeHelper.isMatched(two, one));
+        Assert.assertFalse(MediaTypeHelper.isMatched(one, two));
+        Assert.assertTrue(MediaTypeHelper.isMatched(two, one));
     }
 
+    @Test
     public void testMatchPrefixWildcardSubtype() {
         MediaType one = new MediaType("application", "*+xml");
         MediaType two = new MediaType("application", "xml");
-        assertTrue(MediaTypeHelper.isMatched(one, two));
-        assertFalse(MediaTypeHelper.isMatched(two, one));
+        Assert.assertTrue(MediaTypeHelper.isMatched(one, two));
+        Assert.assertFalse(MediaTypeHelper.isMatched(two, one));
     }
 
+    @Test
     public void testMatchSuffixWildcardType() {
         MediaType one = new MediaType("application", "atom+*");
         MediaType two = new MediaType("application", "atom+xml");
-        assertTrue(MediaTypeHelper.isMatched(one, two));
-        assertFalse(MediaTypeHelper.isMatched(two, one));
+        Assert.assertTrue(MediaTypeHelper.isMatched(one, two));
+        Assert.assertFalse(MediaTypeHelper.isMatched(two, one));
     }
 
+    @Test
     public void testMatchBothExtSubtypes() {
         MediaType one = new MediaType("application", "atom+xml");
         MediaType two = new MediaType("application", "xhtml+xml");
-        assertFalse(MediaTypeHelper.isMatched(one, two));
-        assertFalse(MediaTypeHelper.isMatched(two, one));
+        Assert.assertFalse(MediaTypeHelper.isMatched(one, two));
+        Assert.assertFalse(MediaTypeHelper.isMatched(two, one));
     }
 
+    @Test
     public void testCompatibleWildcard() {
         MediaType one = new MediaType("application", "xml");
         MediaType two = new MediaType("*", "*");
-        assertTrue(MediaTypeHelper.isCompatible(one, two));
-        assertTrue(MediaTypeHelper.isCompatible(two, one));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(one, two));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(two, one));
     }
 
+    @Test
     public void testCompatibleWildcardType() {
         MediaType one = new MediaType("application", "xml");
         MediaType two = new MediaType("*", "bla-bla");
-        assertTrue(MediaTypeHelper.isCompatible(one, two));
-        assertTrue(MediaTypeHelper.isCompatible(two, one));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(one, two));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(two, one));
     }
 
+    @Test
     public void testCompatibleWildcardSubtype() {
         MediaType one = new MediaType("application", "xml");
         MediaType two = new MediaType("application", "*");
-        assertTrue(MediaTypeHelper.isCompatible(one, two));
-        assertTrue(MediaTypeHelper.isCompatible(two, one));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(one, two));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(two, one));
     }
 
+    @Test
     public void testCompatiblePrefixWildcardSubtype() {
         MediaType one = new MediaType("application", "*+xml");
         MediaType two = new MediaType("application", "xml");
-        assertTrue(MediaTypeHelper.isCompatible(one, two));
-        assertTrue(MediaTypeHelper.isCompatible(two, one));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(one, two));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(two, one));
     }
 
+    @Test
     public void testCompatibleSuffixWildcardType() {
         MediaType one = new MediaType("application", "atom+*");
         MediaType two = new MediaType("application", "atom+xml");
-        assertTrue(MediaTypeHelper.isCompatible(one, two));
-        assertTrue(MediaTypeHelper.isCompatible(two, one));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(one, two));
+        Assert.assertTrue(MediaTypeHelper.isCompatible(two, one));
     }
 
+    @Test
     public void testCompatibleBothExtSubtypes() {
         MediaType one = new MediaType("application", "atom+xml");
         MediaType two = new MediaType("application", "xhtml+xml");
-        assertFalse(MediaTypeHelper.isCompatible(one, two));
-        assertFalse(MediaTypeHelper.isCompatible(two, one));
+        Assert.assertFalse(MediaTypeHelper.isCompatible(one, two));
+        Assert.assertFalse(MediaTypeHelper.isCompatible(two, one));
     }
 }

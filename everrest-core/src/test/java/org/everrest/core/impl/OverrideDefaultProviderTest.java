@@ -12,6 +12,8 @@ package org.everrest.core.impl;
 
 import org.everrest.core.impl.provider.IOHelper;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,10 +33,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class ApplicationProviderTest extends BaseTest {
+public class OverrideDefaultProviderTest extends BaseTest {
 
     // Register this provider in ApplicationProvider , it should 'override' default String provider.
     @Provider
@@ -70,7 +71,7 @@ public class ApplicationProviderTest extends BaseTest {
     public static class Resource1 {
         @POST
         public String m(String s) {
-            assertEquals(invertedMessage, s);
+            Assert.assertEquals(invertedMessage, s);
             return s;
         }
     }
@@ -79,17 +80,21 @@ public class ApplicationProviderTest extends BaseTest {
 
     private static final String invertedMessage = new StringBuilder(message).reverse().toString();
 
-    public void setUp() throws Exception {
-        super.setUp();
-        providers.addMessageBodyWriter(StringInvertor.class);
-    }
+//    public void setUp() throws Exception {
+//        super.setUp();
+//        processor.addApplication(new Application() {
+//            @Override
+//            public Set<Class<?>> getClasses() {
+//                return Collections.<Class<?>>singleton(StringInvertor.class);
+//            }
+//        });
+//    }
 
+    @Test
     public void testApplicationProvider() throws Exception {
-        ApplicationPublisher deployer = new ApplicationPublisher(resources, providers);
-        deployer.publish(new Application() {
-            Set<Class<?>> classes = new HashSet<Class<?>>();
-
-            Set<Object> instances = new HashSet<Object>();
+        processor.addApplication(new Application() {
+            Set<Class<?>> classes = new HashSet<>();
+            Set<Object> instances = new HashSet<>();
 
             {
                 classes.add(Resource1.class);
@@ -107,9 +112,8 @@ public class ApplicationProviderTest extends BaseTest {
 
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("POST", "/", "", null, message.getBytes(), writer, null);
-        assertEquals(200, response.getStatus());
+        Assert.assertEquals(200, response.getStatus());
         // After twice reversing response string must be primordial
-        assertEquals(message, new String(writer.getBody()));
+        Assert.assertEquals(message, new String(writer.getBody()));
     }
-
 }

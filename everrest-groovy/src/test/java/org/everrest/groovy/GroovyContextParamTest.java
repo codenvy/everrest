@@ -19,9 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GroovyContextParamTest.java 2647 2010-06-17 08:39:29Z aparfonov
- *          $
+ * @author andrew00x
  */
 public class GroovyContextParamTest extends BaseTest {
 
@@ -52,15 +50,12 @@ public class GroovyContextParamTest extends BaseTest {
 
         EnvironmentContext envctx = new EnvironmentContext();
 
-        HttpServletRequest httpRequest =
-                new MockHttpServletRequest("http://localhost:8080/context/a/b", null, 0, "GET", null);
+        HttpServletRequest httpRequest = new MockHttpServletRequest("http://localhost:8080/context/a/b", null, 0, "GET", null);
         envctx.put(HttpServletRequest.class, httpRequest);
 
         ContainerResponse resp =
-                launcher.service("GET", "http://localhost:8080/context/a/b", "http://localhost:8080/context", null, null,
-                                 writer, envctx);
+                launcher.service("GET", "http://localhost:8080/context/a/b", "http://localhost:8080/context", null, null, writer, envctx);
         assertEquals(200, resp.getStatus());
         assertEquals("GET\n/context/a/b", new String(writer.getBody()));
     }
-
 }

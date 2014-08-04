@@ -34,9 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: GroovyEverrestServletContextInitializer.java 77 2010-10-26
- *          15:20:15Z andrew00x $
+ * @author andrew00x
  */
 public class GroovyEverrestServletContextInitializer extends EverrestServletContextInitializer {
     private static final Logger LOG = Logger.getLogger(GroovyEverrestServletContextInitializer.class);
@@ -87,18 +85,12 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
             try {
                 applicationClass = classLoaderProvider.getGroovyClassLoader().loadClass(groovyApplicationFQN, true, false);
                 groovyApplication = (Application)applicationClass.newInstance();
-            } catch (CompilationFailedException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (CompilationFailedException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         } else if (scan) {
             try {
-                final Set<Class<?>> scanned = new HashSet<Class<?>>();
+                final Set<Class<?>> scanned = new HashSet<>();
                 final Class[] jaxrsAnnotations = new Class[]{Path.class, Provider.class, Filter.class};
                 final URLFilter filter = new URLFilter() {
                     public boolean accept(URL url) {

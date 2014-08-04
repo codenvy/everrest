@@ -10,38 +10,38 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.util.Locale;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class LanguageTest extends BaseTest {
-
+public class LanguageTest {
+    @Test
     public void testFromString() {
         String header = "en-GB";
         Locale locale = Language.getLocale(header);
-        assertEquals("en", locale.getLanguage());
-        assertEquals("GB", locale.getCountry());
+        Assert.assertEquals("en", locale.getLanguage());
+        Assert.assertEquals("GB", locale.getCountry());
 
         header = "en-US,      en-GB";
         locale = Language.getLocale(header);
-        assertEquals("en", locale.getLanguage());
-        assertEquals("US", locale.getCountry());
+        Assert.assertEquals("en", locale.getLanguage());
+        Assert.assertEquals("US", locale.getCountry());
     }
 
+    @Test
     public void testToString() {
         HeaderDelegate<Locale> delegate = RuntimeDelegate.getInstance().createHeaderDelegate(Locale.class);
         Locale locale = new Locale("");
-        assertNull(delegate.toString(locale));
+        Assert.assertNull(delegate.toString(locale));
         locale = new Locale("*");
-        assertNull(delegate.toString(locale));
+        Assert.assertNull(delegate.toString(locale));
         locale = new Locale("en", "GB");
-        assertEquals("en-gb", delegate.toString(locale));
+        Assert.assertEquals("en-gb", delegate.toString(locale));
     }
-
 }

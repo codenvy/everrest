@@ -12,24 +12,25 @@ package org.everrest.core.impl;
 
 import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * Created by The eXo Platform SAS. <br/>
- * Date: 24 Dec 2009
- *
- * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
- * @version $Id: WebApplicationExceptionTest.java
+ * @author Max Shaposhnik
  */
 public class ExceptionsTest extends BaseTest {
 
     @Path("a")
     public static class Resource1 {
-
         @GET
         @Path("0")
         public void m0() throws WebApplicationException {
@@ -61,77 +62,69 @@ public class ExceptionsTest extends BaseTest {
         public Response m4() throws Exception {
             return Response.status(500).entity(errorMessage).type("text/plain").build();
         }
-
     }
 
     private static String errorMessage = "test-error-message";
 
-    private Resource1 resource;
-
+    @Before
     public void setUp() throws Exception {
         super.setUp();
-        resource = new Resource1();
-        registry(resource);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
     }
 
-    public void tearDown() throws Exception {
-        unregistry(resource);
-        super.tearDown();
-    }
-
-    public void testErrorResponse() throws Exception {
+    @Test public void testErrorResponse() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/4", "", null, null, writer, null);
-        assertEquals(500, response.getStatus());
+        Assert.assertEquals(500, response.getStatus());
         String entity = new String(writer.getBody());
-        assertEquals(errorMessage, entity);
-        assertNotNull(/*response*/writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
+        Assert.assertEquals(errorMessage, entity);
+        Assert.assertNotNull(/*response*/writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
-    public void testUncheckedException() throws Exception {
+    @Test public void testUncheckedException() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
 
         ContainerResponse response = launcher.service("GET", "/a/3", "", null, null, writer, null);
-        assertEquals(500, response.getStatus());
+        Assert.assertEquals(500, response.getStatus());
         String entity = new String(writer.getBody());
-        assertEquals("Runtime exception", entity);
-        assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
-
-        //      try
-        //      {
-        //         service("GET", "/a/3", "", null, null, writer);
-        //         fail("UnhandledException should be throw by RequstHandlerImpl");
-        //      }
-        //      catch (UnhandledException e)
-        //      {
-        //         // OK
-        //      }
+        Assert.assertEquals("Runtime exception", entity);
+        Assert.assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
-    public void testWebApplicationExceptionWithCause() throws Exception {
+    @Test public void testWebApplicationExceptionWithCause() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/0", "", null, null, writer, null);
-        assertEquals(500, response.getStatus());
+        Assert.assertEquals(500, response.getStatus());
         String entity = new String(writer.getBody());
-        assertEquals(new Exception(errorMessage).toString(), entity);
-        assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
+        Assert.assertEquals(new Exception(errorMessage).toString(), entity);
+        Assert.assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
-    public void testWebApplicationExceptionWithoutCause() throws Exception {
+    @Test public void testWebApplicationExceptionWithoutCause() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/2", "", null, null, writer, null);
-        assertEquals(500, response.getStatus());
-        assertNull(response.getEntity());
-        assertNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
+        Assert.assertEquals(500, response.getStatus());
+        Assert.assertNull(response.getEntity());
+        Assert.assertNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
+    @Test
     public void testWebApplicationExceptionWithResponse() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/1", "", null, null, writer, null);
-        assertEquals(500, response.getStatus());
+        Assert.assertEquals(500, response.getStatus());
         String entity = new String(writer.getBody());
-        assertEquals(errorMessage, entity);
-        assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
+        Assert.assertEquals(errorMessage, entity);
+        Assert.assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
-
 }

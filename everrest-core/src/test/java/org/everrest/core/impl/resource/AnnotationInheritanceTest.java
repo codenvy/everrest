@@ -11,18 +11,19 @@
 package org.everrest.core.impl.resource;
 
 import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * Created by The eXo Platform SAS. <br/>
- * Date: 23 Jan 2009
- *
- * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
- * @version $Id: AnnotationInheritanceTest.java
+ * @author Dmytro Katayev
  */
 public class AnnotationInheritanceTest extends BaseTest {
 
@@ -69,33 +70,49 @@ public class AnnotationInheritanceTest extends BaseTest {
         super.setUp();
     }
 
+    @Test
     public void testFailedInheritance() {
         try {
             new AbstractResourceDescriptorImpl(Resource3.class);
-            fail("Should be failed here, equivocality annotation on method m0");
+            Assert.fail("Should be failed here, equivocality annotation on method m0");
         } catch (RuntimeException e) {
         }
     }
 
-    public void testAnnotationsInheritance() throws Exception {
-        Resource1 resource1 = new Resource1();
-        Resource2 resource2 = new Resource2();
+    @Test
+    public void testAnnotationsInheritance1() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        registry(resource1);
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+        Assert.assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
+        Assert.assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
+        Assert.assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/a", "", null, null, null).getContentType());
+    }
 
-        assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
-        assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
-        assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/a", "", null, null, null).getContentType());
+    @Test
+    public void testAnnotationsInheritance2() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        unregistry(resource1);
-
-        registry(resource2);
-        assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
-        assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
-        assertEquals(MediaType.APPLICATION_ATOM_XML_TYPE, launcher.service("GET", "/a", "", null, null, null)
-                                                                  .getContentType());
-        unregistry(resource2);
-
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource2());
+            }
+        });
+        Assert.assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
+        Assert.assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
+        Assert.assertEquals(MediaType.APPLICATION_ATOM_XML_TYPE, launcher.service("GET", "/a", "", null, null, null).getContentType());
     }
 
 }

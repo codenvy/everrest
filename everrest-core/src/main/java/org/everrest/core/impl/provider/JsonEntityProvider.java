@@ -45,8 +45,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Provider
 @Consumes({MediaType.APPLICATION_JSON})

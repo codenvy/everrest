@@ -15,8 +15,7 @@ import java.net.URL;
 /**
  * Folder with Groovy sources.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class SourceFolder extends ClassPathEntry {
     public SourceFolder(URL path) {

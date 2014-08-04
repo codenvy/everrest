@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.BaseTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -23,28 +25,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class StringEntityProviderTest extends BaseTest {
-    private static final String TEST_CYR = "\u041f\u0440\u0438\u0432\u0456\u0442";
-
+public class StringEntityProviderTest {
+    private String    testString;
     private MediaType mediaType;
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-        Map<String, String> p = new HashMap<String, String>(1);
+        testString = "\u041f\u0440\u0438\u0432\u0456\u0442";
+        Map<String, String> p = new HashMap<>(1);
         p.put("charset", "windows-1251");
         mediaType = new MediaType("text", "plain", p);
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testRead() throws IOException {
-        MessageBodyReader reader = providers.getMessageBodyReader(String.class, null, null, mediaType);
-        byte[] data = TEST_CYR.getBytes("windows-1251");
+        MessageBodyReader reader = new StringEntityProvider();
+        byte[] data = testString.getBytes("windows-1251");
         InputStream in = new ByteArrayInputStream(data);
         String res = (String)reader.readFrom(String.class, String.class, null, mediaType, null, in);
-        assertTrue(TEST_CYR.equals(res));
+        Assert.assertTrue(testString.equals(res));
 
         // not set character set then UTF-8 should be used
         mediaType = new MediaType("text", "plain");
@@ -52,26 +54,27 @@ public class StringEntityProviderTest extends BaseTest {
         res = (String)reader.readFrom(String.class, null, null, mediaType, null, in);
         System.out.println(getClass().getName() + " : " + res);
         // string is wrong encoded
-        assertFalse(TEST_CYR.equals(res));
+        Assert.assertFalse(testString.equals(res));
     }
 
+    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void testWrite() throws IOException {
-        MessageBodyWriter writer = providers.getMessageBodyWriter(String.class, null, null, mediaType);
+        MessageBodyWriter writer = new StringEntityProvider();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.writeTo(TEST_CYR, String.class, String.class, null, mediaType, null, out);
+        writer.writeTo(testString, String.class, String.class, null, mediaType, null, out);
         String res = out.toString("windows-1251");
         System.out.println(getClass().getName() + " : " + res);
-        assertTrue(TEST_CYR.equals(res));
+        Assert.assertTrue(testString.equals(res));
 
         out.reset();
 
         // not set character set then UTF-8 should be used
         mediaType = new MediaType("text", "plain");
-        writer.writeTo(TEST_CYR, String.class, String.class, null, mediaType, null, out);
+        writer.writeTo(testString, String.class, String.class, null, mediaType, null, out);
         res = out.toString("windows-1251");
         System.out.println(res);
         // string is wrong encoded
-        assertFalse(TEST_CYR.equals(res));
+        Assert.assertFalse(testString.equals(res));
     }
 }

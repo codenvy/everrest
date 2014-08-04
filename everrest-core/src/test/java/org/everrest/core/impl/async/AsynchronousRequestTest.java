@@ -16,16 +16,20 @@ import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayInputStream;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class AsynchronousRequestTest extends BaseTest {
     @Path("a")
@@ -88,106 +92,141 @@ public class AsynchronousRequestTest extends BaseTest {
 
     //
 
+    @Test
     public void testRunJob() throws Exception {
-        registry(Resource1.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource1.class);
+            }
+        });
         ContainerResponse response = launcher.service("GET", "/a?async=true", "", null, null, null);
-        assertEquals(202, response.getStatus());
+        Assert.assertEquals(202, response.getStatus());
         String jobUrl = (String)response.getEntity();
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         response = getAsynchronousResponse(jobUrl, writer);
-        assertEquals(200, response.getStatus());
-        assertEquals("asynchronous response", new String(writer.getBody()));
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("asynchronous response", new String(writer.getBody()));
         // Try one more time. Job must be removed from pool so expected result is 404.
         response = launcher.service("GET", jobUrl, "", null, null, null);
-        assertEquals(404, response.getStatus());
-        unregistry(Resource1.class);
+        Assert.assertEquals(404, response.getStatus());
     }
 
+    @Test
     public void testListJobsJson() throws Exception {
-        registry(Resource1.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource1.class);
+            }
+        });
         ContainerResponse response = launcher.service("GET", "/a?async=true", "", null, null, null);
-        assertEquals(202, response.getStatus());
+        Assert.assertEquals(202, response.getStatus());
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle("accept", "application/json");
         ByteArrayContainerResponseWriter w = new ByteArrayContainerResponseWriter();
         response = launcher.service("GET", "/async", "", h, null, w, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/json", response.getContentType().toString());
-        unregistry(Resource1.class);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("application/json", response.getContentType().toString());
     }
 
+    @Test
     public void testListJobsPlainText() throws Exception {
-        registry(Resource1.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource1.class);
+            }
+        });
         ContainerResponse response = launcher.service("GET", "/a?async=true", "", null, null, null);
-        assertEquals(202, response.getStatus());
+        Assert.assertEquals(202, response.getStatus());
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle("accept", "text/plain");
         ByteArrayContainerResponseWriter w = new ByteArrayContainerResponseWriter();
         response = launcher.service("GET", "/async", "", h, null, w, null);
-        assertEquals(200, response.getStatus());
-        assertEquals("text/plain", response.getContentType().toString());
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("text/plain", response.getContentType().toString());
         System.out.print(new String(w.getBody()));
-        unregistry(Resource1.class);
     }
 
+    @Test
     public void testRemoveJob() throws Exception {
-        registry(Resource1.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource1.class);
+            }
+        });
         ContainerResponse response = launcher.service("GET", "/a?async=true", "", null, null, null);
-        assertEquals(202, response.getStatus());
+        Assert.assertEquals(202, response.getStatus());
         String jobUrl = (String)response.getEntity();
         response = launcher.service("DELETE", jobUrl, "", null, null, null);
-        assertEquals(204, response.getStatus());
+        Assert.assertEquals(204, response.getStatus());
         // check job
         response = launcher.service("GET", jobUrl, "", null, null, null);
-        assertEquals(404, response.getStatus());
-        unregistry(Resource1.class);
+        Assert.assertEquals(404, response.getStatus());
     }
 
+    @Test
     public void testMimeTypeResolving() throws Exception {
-        registry(Resource2.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource2.class);
+            }
+        });
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         h.putSingle("accept", "application/json");
         ContainerResponse response = launcher.service("GET", "/b/sub?async=true", "", h, null, null);
-        assertEquals(202, response.getStatus());
+        Assert.assertEquals(202, response.getStatus());
         String jobUrl = (String)response.getEntity();
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         response = getAsynchronousResponse(jobUrl, writer);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/json", response.getContentType().toString());
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("application/json", response.getContentType().toString());
         JsonParser parser = new JsonParser();
         parser.parse(new ByteArrayInputStream(writer.getBody()));
         Msg msg = ObjectBuilder.createObject(Msg.class, parser.getJsonObject());
-        assertEquals("to be or not to be", msg.getMessage());
-        unregistry(Resource2.class);
+        Assert.assertEquals("to be or not to be", msg.getMessage());
     }
 
+    @Test
     public void testProcessExceptions() throws Exception {
-        registry(Resource3.class);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource3.class);
+            }
+        });
         ContainerResponse response = launcher.service("GET", "/c?async=true", "", null, null, null);
-        assertEquals(202, response.getStatus());
+        Assert.assertEquals(202, response.getStatus());
         String jobUrl = (String)response.getEntity();
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         response = getAsynchronousResponse(jobUrl, writer);
-        assertEquals(500, response.getStatus());
-        assertEquals("text/plain", response.getContentType().toString());
-        assertEquals("test process exceptions in asynchronous mode", new String(writer.getBody()));
-        unregistry(Resource3.class);
+        Assert.assertEquals(500, response.getStatus());
+        Assert.assertEquals("text/plain", response.getContentType().toString());
+        Assert.assertEquals("test process exceptions in asynchronous mode", new String(writer.getBody()));
     }
 
-    public void testWithLocators() throws Exception {
-        registry(Resource4.class);
+    @Test
+    public void testWithLocator() throws Exception {
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.<Class<?>>singleton(Resource4.class);
+            }
+        });
         ContainerResponse response = launcher.service("GET", "/d/sub?async=true", "", null, null, null);
-        assertEquals(202, response.getStatus());
+        Assert.assertEquals(202, response.getStatus());
         String jobUrl = (String)response.getEntity();
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         response = getAsynchronousResponse(jobUrl, writer);
-        assertEquals(200, response.getStatus());
-        assertEquals("application/json", response.getContentType().toString());
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("application/json", response.getContentType().toString());
         JsonParser parser = new JsonParser();
         parser.parse(new ByteArrayInputStream(writer.getBody()));
         Msg msg = ObjectBuilder.createObject(Msg.class, parser.getJsonObject());
-        assertEquals("to be or not to be", msg.getMessage());
-        unregistry(Resource4.class);
+        Assert.assertEquals("to be or not to be", msg.getMessage());
     }
 
     private ContainerResponse getAsynchronousResponse(String jobUrl, ByteArrayContainerResponseWriter writer) throws Exception {

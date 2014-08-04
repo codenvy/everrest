@@ -11,25 +11,24 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.impl.BaseTest;
-import org.everrest.core.impl.method.MethodExceptionTest.UncheckedException;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * Created by The eXo Platform SAS. <br/>
- * Date: 24 Dec 2009
- *
- * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
- * @version $Id: WebApplicationExceptionTest.java
+ * @author Max Shaposhnik
  */
 public class WebApplicationExceptionTest extends BaseTest {
 
     @Path("/a")
     public static class Resource1 {
-
         @GET
         @Path("/0")
         public void m0() throws WebApplicationException {
@@ -42,26 +41,27 @@ public class WebApplicationExceptionTest extends BaseTest {
         public Response m1() throws WebApplicationException {
             throw new WebApplicationException(500);
         }
-
-        @GET
-        @Path("/2")
-        public void m2() throws Exception {
-            throw new UncheckedException("Unchecked exception");
-        }
-
     }
 
+    @Test
     public void testExceptionMessage() throws Exception {
-        Resource1 resource = new Resource1();
-        registry(resource);
+        processor.addApplication(new Application() {
+            @Override
+            public Set<Class<?>> getClasses() {
+                return Collections.emptySet();
+            }
 
-        assertEquals(500, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.<Object>singleton(new Resource1());
+            }
+        });
+
+        Assert.assertEquals(500, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
+        Assert. assertEquals(null, launcher.service("GET", "/a/1", "", null, null, null).getEntity());
+
+        Assert.assertEquals(500, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
         String entity = (String)launcher.service("GET", "/a/0", "", null, null, null).getEntity();
-        assertTrue(entity.indexOf("testmsg") > 0);
-
-        assertEquals(500, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
-        assertEquals(null, launcher.service("GET", "/a/1", "", null, null, null).getEntity());
-        unregistry(resource);
+        Assert.assertTrue(entity.indexOf("testmsg") > 0);
     }
-
 }

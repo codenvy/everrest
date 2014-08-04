@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.ComponentLifecycleScope;
-import org.everrest.core.impl.BaseTest;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.resource.ResourceMethodMap;
 import org.everrest.core.resource.SubResourceLocatorDescriptor;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -30,35 +30,38 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class ResourceDescriptorValidatorTest extends BaseTest {
+public class ResourceDescriptorValidatorTest {
 
+    @Test
     public void testAbstractResourceDescriptorValidator() {
-        AbstractResourceDescriptor resource =new AbstractResourceDescriptorImpl(Resource2.class);
+        AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(Resource2.class);
         try {
             resource.accept(ResourceDescriptorValidator.getInstance());
-            fail("Exception should be here");
+            Assert.fail("Exception should be here");
         } catch (RuntimeException e) {
         }
     }
 
+    @Test
     public void testResourceMethodDescriptorValidator() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(Resource3.class);
         for (List<ResourceMethodDescriptor> l : resource.getResourceMethods().values()) {
             ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
             for (ResourceMethodDescriptor rmd : l) {
                 Method m = rmd.getMethod();
-                if (m == null) // maybe null for OPTIONS
+                // maybe null for OPTIONS
+                if (m == null) {
                     continue;
+                }
                 String mn = rmd.getMethod().getName();
-                if ("m1".equals(mn))
+                if ("m1".equals(mn)) {
                     rmd.accept(validator);
-                else {
+                } else {
                     try {
                         rmd.accept(validator);
-                        fail("Exception should be here");
+                        Assert.fail("Exception should be here");
                     } catch (RuntimeException e) {
                     }
                 }
@@ -66,6 +69,7 @@ public class ResourceDescriptorValidatorTest extends BaseTest {
         }
     }
 
+    @Test
     public void testSubResourceMethodDescriptorValidator() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(Resource4.class);
         ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
@@ -73,12 +77,12 @@ public class ResourceDescriptorValidatorTest extends BaseTest {
             for (List<SubResourceMethodDescriptor> l : srmm.values()) {
                 for (SubResourceMethodDescriptor srmd : l) {
                     String mn = srmd.getMethod().getName();
-                    if ("m1".equals(mn) || "m3".equals(mn))
+                    if ("m1".equals(mn) || "m3".equals(mn)) {
                         srmd.accept(validator);
-                    else {
+                    } else {
                         try {
                             srmd.accept(validator);
-                            fail("Exception should be here");
+                            Assert.fail("Exception should be here");
                         } catch (RuntimeException e) {
                         }
                     }
@@ -87,17 +91,18 @@ public class ResourceDescriptorValidatorTest extends BaseTest {
         }
     }
 
+    @Test
     public void testSubResourceLocatorDescriptorValidator() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(Resource5.class);
         ResourceDescriptorValidator validator = ResourceDescriptorValidator.getInstance();
         for (SubResourceLocatorDescriptor rmd : resource.getSubResourceLocators().values()) {
             String mn = rmd.getMethod().getName();
-            if ("m1".equals(mn))
+            if ("m1".equals(mn)) {
                 rmd.accept(validator);
-            else {
+            } else {
                 try {
                     rmd.accept(validator);
-                    fail("Exception should be here");
+                    Assert.fail("Exception should be here");
                 } catch (RuntimeException e) {
                 }
             }
@@ -195,5 +200,4 @@ public class ResourceDescriptorValidatorTest extends BaseTest {
             // wrong
         }
     }
-
 }

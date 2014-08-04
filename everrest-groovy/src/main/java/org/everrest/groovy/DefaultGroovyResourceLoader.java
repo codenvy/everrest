@@ -23,8 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader {
     private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
@@ -55,7 +54,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader {
                 return false;
             }
         });
-        locks = new ConcurrentHashMap<String, FileNameLock>();
+        locks = new ConcurrentHashMap<>();
     }
 
     public DefaultGroovyResourceLoader(URL root) throws MalformedURLException {

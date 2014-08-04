@@ -22,14 +22,12 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GroovyApplicationTest extends BaseTest {
 
     protected ApplicationPublisher applicationPublisher;
-
-    protected GroovyClassLoader groovyClassLoader;
+    protected GroovyClassLoader    groovyClassLoader;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -66,9 +64,10 @@ public class GroovyApplicationTest extends BaseTest {
         Set<Class<?>> classes = application.getClasses();
         assertNotNull(classes);
         assertEquals(2, classes.size());
-        java.util.List<String> l = new ArrayList<String>(2);
-        for (Class<?> c : classes)
+        java.util.List<String> l = new ArrayList<>(2);
+        for (Class<?> c : classes) {
             l.add(c.getName());
+        }
         assertTrue(l.contains("org.everrest.A"));
         assertTrue(l.contains("org.everrest.B"));
     }

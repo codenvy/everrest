@@ -31,6 +31,7 @@ import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.core.tools.WebApplicationDeclaredRoles;
 import org.everrest.core.util.Logger;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
@@ -55,7 +56,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
     private static final Logger LOG = Logger.getLogger(ApplicationContextImpl.class);
 
     /** {@link ThreadLocal} ApplicationContext. */
-    private static ThreadLocal<ApplicationContext> current = new ThreadLocal<ApplicationContext>();
+    private static ThreadLocal<ApplicationContext> current = new ThreadLocal<>();
 
     /** @return current ApplicationContext. */
     public static ApplicationContext getCurrent() {
@@ -73,64 +74,45 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
     }
 
     /** See {@link GenericContainerRequest}. */
-    protected GenericContainerRequest request;
-
+    protected GenericContainerRequest  request;
     /** See {@link ContainerResponse}. */
     protected GenericContainerResponse response;
-
     /** Providers. */
-    protected ProviderBinder providers;
-
-    protected DependencySupplier depInjector;
-
+    protected ProviderBinder           providers;
+    protected DependencySupplier       depInjector;
     /** Values of template parameters. */
-    private List<String> parameterValues = new ArrayList<String>();
-
+    private List<String> parameterValues    = new ArrayList<>();
     /** List of matched resources. */
-    private List<Object> matchedResources = new ArrayList<Object>();
-
+    private List<Object> matchedResources   = new ArrayList<>();
     /** List of not decoded matched URIs. */
-    private List<String> encodedMatchedURIs = new ArrayList<String>();
-
+    private List<String> encodedMatchedURIs = new ArrayList<>();
     /** List of decoded matched URIs. */
-    private List<String> matchedURIs = new ArrayList<String>();
-
+    private List<String> matchedURIs        = new ArrayList<>();
     /** Mutable runtime attributes. */
-    private Map<String, Object> attributes;
-
+    private       Map<String, Object>            attributes;
     /** Properties. */
-    private Map<String, String> properties;
-
+    private       Map<String, String>            properties;
     /** Absolute path, full requested URI without query string and fragment. */
-    private URI absolutePath;
-
+    private       URI                            absolutePath;
     /** Decoded relative path. */
-    private String path;
-
+    private       String                         path;
     /** Not decoded relative path. */
-    private String encodedPath;
-
+    private       String                         encodedPath;
     /** Not decoded path template parameters. */
-    private MultivaluedMap<String, String> encodedPathParameters;
-
+    private       MultivaluedMap<String, String> encodedPathParameters;
     /** Decoded path template parameters. */
-    private MultivaluedMap<String, String> pathParameters;
-
+    private       MultivaluedMap<String, String> pathParameters;
     /** List of not decoded path segments. */
-    private List<PathSegment> encodedPathSegments;
-
+    private       List<PathSegment>              encodedPathSegments;
     /** Decoded path segments. */
-    private List<PathSegment> pathSegments;
-
+    private       List<PathSegment>              pathSegments;
     /** Not decoded query parameters. */
-    private MultivaluedMap<String, String> encodedQueryParameters;
-
+    private       MultivaluedMap<String, String> encodedQueryParameters;
     /** Decoded query parameters. */
-    private MultivaluedMap<String, String> queryParameters;
-
-    private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
-
-    private SecurityContext asynchronousSecurityContext;
+    private       MultivaluedMap<String, String> queryParameters;
+    private final MethodInvokerDecoratorFactory  methodInvokerDecoratorFactory;
+    private       SecurityContext                asynchronousSecurityContext;
+    private       Application                    application;
 
     /**
      * Constructs new instance of ApplicationContext.
@@ -185,7 +167,6 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         if (absolutePath != null) {
             return absolutePath;
         }
-
         return absolutePath = getRequestUriBuilder().replaceQuery(null).fragment(null).build();
     }
 
@@ -198,7 +179,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
     /** {@inheritDoc} */
     @Override
     public Map<String, Object> getAttributes() {
-        return attributes == null ? attributes = new HashMap<String, Object>() : attributes;
+        return attributes == null ? attributes = new HashMap<>() : attributes;
     }
 
     /** {@inheritDoc} */
@@ -275,8 +256,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         // Never use AsynchronousMethodInvoker for process SubResourceLocatorDescriptor.
         // Locators can't be processed in asynchronous mode since it is not end point of request.
         if (isAsynchronous() && methodDescriptor instanceof ResourceMethodDescriptor) {
-            ContextResolver<AsynchronousJobPool> asyncJobsResolver =
-                    getProviders().getContextResolver(AsynchronousJobPool.class, null);
+            ContextResolver<AsynchronousJobPool> asyncJobsResolver = getProviders().getContextResolver(AsynchronousJobPool.class, null);
             if (asyncJobsResolver == null) {
                 throw new IllegalStateException("Asynchronous jobs feature is not configured properly. ");
             }
@@ -309,16 +289,12 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         if (encodedPath == null) {
             encodedPath = getAbsolutePath().getRawPath().substring(getBaseUri().getRawPath().length());
         }
-
         if (decode) {
             if (path != null) {
                 return path;
             }
-
             return path = UriComponent.decode(encodedPath, UriComponent.PATH);
-
         }
-
         return encodedPath;
     }
 
@@ -334,12 +310,10 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         if (encodedPathParameters == null) {
             throw new IllegalStateException("Path template variables not initialized yet.");
         }
-
         if (decode) {
             if (pathParameters == null) {
                 pathParameters = new MultivaluedMapImpl();
             }
-
             if (pathParameters.size() != encodedPathParameters.size()) {
                 for (String key : encodedPathParameters.keySet()) {
                     if (!pathParameters.containsKey(key)) {
@@ -350,7 +324,6 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
             }
             return pathParameters;
         }
-
         return encodedPathParameters;
     }
 
@@ -366,14 +339,13 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         if (decode) {
             return pathSegments != null ? pathSegments : (pathSegments = UriComponent.parsePathSegments(getPath(), true));
         }
-        return encodedPathSegments != null ? encodedPathSegments : (encodedPathSegments =
-                UriComponent.parsePathSegments(getPath(), false));
+        return encodedPathSegments != null ? encodedPathSegments : (encodedPathSegments = UriComponent.parsePathSegments(getPath(), false));
     }
 
     /** {@inheritDoc} */
     @Override
     public Map<String, String> getProperties() {
-        return properties == null ? properties = new HashMap<String, String>() : properties;
+        return properties == null ? properties = new HashMap<>() : properties;
     }
 
     /** {@inheritDoc} */
@@ -453,7 +425,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
                                                                                 null, request.getAuthenticationScheme(),
                                                                                 request.isSecure());
                     } else {
-                        Set<String> userRoles = new LinkedHashSet<String>();
+                        Set<String> userRoles = new LinkedHashSet<>();
                         for (String declaredRole : declaredRoles.getDeclaredRoles()) {
                             if (request.isUserInRole(declaredRole)) {
                                 userRoles.add(declaredRole);
@@ -488,11 +460,9 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         if (encodedPathParameters == null) {
             encodedPathParameters = new MultivaluedMapImpl();
         }
-
         for (int i = 0; i < parameterNames.size(); i++) {
             encodedPathParameters.add(parameterNames.get(i), parameterValues.get(i));
         }
-
     }
 
     /** {@inheritDoc} */
@@ -508,6 +478,15 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
                || Boolean.parseBoolean(request.getRequestHeaders().getFirst("x-everrest-async"));
     }
 
+    @Override
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
     /** @see org.everrest.core.Lifecycle#start() */
     @Override
     public final void start() {
@@ -518,8 +497,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
     @Override
     public final void stop() {
         @SuppressWarnings("unchecked")
-        List<LifecycleComponent> perRequest =
-                (List<LifecycleComponent>)getAttributes().get("org.everrest.lifecycle.PerRequest");
+        List<LifecycleComponent> perRequest = (List<LifecycleComponent>)getAttributes().get("org.everrest.lifecycle.PerRequest");
         if (perRequest != null && perRequest.size() > 0) {
             for (LifecycleComponent c : perRequest) {
                 try {

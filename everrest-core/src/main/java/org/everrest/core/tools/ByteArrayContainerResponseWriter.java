@@ -22,9 +22,7 @@ import java.io.IOException;
 /**
  * Mock object that can be used for any tests.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- * @see ContainerResponseWriter
+ * @author andrew00x
  */
 public class ByteArrayContainerResponseWriter implements ContainerResponseWriter {
     /** Message body. */
