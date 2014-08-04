@@ -91,11 +91,11 @@ public class EverrestConfiguration {
     protected final Map<String, Object> properties;
 
     public EverrestConfiguration() {
-        properties = new HashMap<String, Object>();
+        properties = new HashMap<>();
     }
 
     public EverrestConfiguration(EverrestConfiguration other) {
-        properties = new HashMap<String, Object>(other.properties);
+        properties = new HashMap<>(other.properties);
     }
 
     public boolean isCheckSecurity() {

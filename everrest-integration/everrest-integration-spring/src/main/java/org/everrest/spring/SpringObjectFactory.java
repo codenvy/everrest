@@ -19,11 +19,9 @@ import org.springframework.beans.factory.BeanFactory;
 import java.util.List;
 
 /**
- * Spring container object factory obtains instance of bean form Spring
- * container by <code>name</code>.
+ * Spring container object factory obtains instance of bean form Spring container by <code>name</code>.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
     protected final BeanFactory beanFactory;

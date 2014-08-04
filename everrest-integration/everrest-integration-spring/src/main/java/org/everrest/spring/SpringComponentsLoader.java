@@ -51,8 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * This loader registers any bean annotated with &#64;Path, &#64;Provider or &#64;Filter in the EverRest framework.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class SpringComponentsLoader implements BeanFactoryPostProcessor, HandlerMapping {
     private static abstract class _Lifecycle implements org.springframework.context.Lifecycle {

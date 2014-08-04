@@ -14,6 +14,9 @@
                xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
                xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
     <component>
+        <type>org.everrest.exoplatform.StartableApplication</type>
+    </component>
+    <component>
         <type>org.everrest.sample.exoplatform.BookStorage</type>
     </component>
     <component>
