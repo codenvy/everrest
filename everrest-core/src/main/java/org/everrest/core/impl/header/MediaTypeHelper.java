@@ -76,10 +76,12 @@ public final class MediaTypeHelper {
             next = (type == null) ? MediaTypeHelper.DEFAULT_TYPE : type;
         }
 
+        @Override
         public boolean hasNext() {
             return next != null;
         }
 
+        @Override
         public MediaType next() {
             if (next == null) {
                 throw new NoSuchElementException();
@@ -89,6 +91,7 @@ public final class MediaTypeHelper {
             return type;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -140,6 +143,7 @@ public final class MediaTypeHelper {
      * Method that explicitly list of media types is sorted before a method that list * / *.
      */
     public static final Comparator<MediaType> MEDIA_TYPE_COMPARATOR = new Comparator<MediaType>() {
+        @Override
         public int compare(MediaType mediaType1, MediaType mediaType2) {
             String type1 = mediaType1.getType();
             String subType1 = mediaType1.getSubtype();
@@ -375,7 +379,7 @@ public final class MediaTypeHelper {
      * @param checkMe
      *         type to be checked
      * @return <code>true</code> if type <code>checkMe</code> is matched to <code>pattern</code> and <code>false</code>
-     *         otherwise
+     * otherwise
      */
     public static boolean isMatched(MediaType pattern, MediaType checkMe) {
         if (pattern == null || checkMe == null) {

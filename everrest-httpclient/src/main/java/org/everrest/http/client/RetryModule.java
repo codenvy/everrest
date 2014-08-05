@@ -65,11 +65,13 @@ class RetryModule implements HTTPClientModule, GlobalConstants {
     // Methods
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int requestHandler(Request req, Response[] resp) {
         return REQ_CONTINUE;
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase1Handler(Response resp, RoRequest roreq) throws IOException, ModuleException {
         try {
             resp.getStatusCode();
@@ -186,6 +188,7 @@ class RetryModule implements HTTPClientModule, GlobalConstants {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int responsePhase2Handler(Response resp, Request req) {
         // reset any stuff we might have set previously
         req.delay_entity = 0;
@@ -196,10 +199,12 @@ class RetryModule implements HTTPClientModule, GlobalConstants {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase3Handler(Response resp, RoRequest req) {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void trailerHandler(Response resp, RoRequest req) {
     }
 

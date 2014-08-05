@@ -34,7 +34,7 @@ public class MatrixParameterResolver extends ParameterResolver<MatrixParam> {
         this.matrixParam = matrixParam;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         String param = matrixParam.value();

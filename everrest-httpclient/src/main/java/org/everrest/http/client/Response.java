@@ -256,6 +256,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * @throws IOException
      *         If any exception occurs on the socket.
      */
+    @Override
     public final int getStatusCode() throws IOException {
         if (!got_headers)
             getHeaders(true);
@@ -268,6 +269,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * @throws IOException
      *         If any exception occurs on the socket.
      */
+    @Override
     public final String getReasonLine() throws IOException {
         if (!got_headers)
             getHeaders(true);
@@ -280,6 +282,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * @throws IOException
      *         If any exception occurs on the socket.
      */
+    @Override
     public final String getVersion() throws IOException {
         if (!got_headers)
             getHeaders(true);
@@ -351,6 +354,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * @throws IOException
      *         If any exception occurs on the socket.
      */
+    @Override
     public String getHeader(String hdr) throws IOException {
         if (!got_headers)
             getHeaders(true);
@@ -369,6 +373,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * @throws IOException
      *         if any exception occurs on the socket.
      */
+    @Override
     public int getHeaderAsInt(String hdr) throws IOException, NumberFormatException {
         String val = getHeader(hdr);
         if (val == null)
@@ -393,6 +398,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      *         If the header cannot be parsed as a
      *         date or time.
      */
+    @Override
     public Date getHeaderAsDate(String hdr) throws IOException, IllegalArgumentException {
         String raw_date = getHeader(hdr);
         if (raw_date == null)
@@ -459,6 +465,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * @throws IOException
      *         If any exception occurs on the socket.
      */
+    @Override
     public String getTrailer(String trailer) throws IOException {
         if (!got_trailers)
             getTrailers();
@@ -477,6 +484,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * @throws IOException
      *         if any exception occurs on the socket.
      */
+    @Override
     public int getTrailerAsInt(String trailer) throws IOException, NumberFormatException {
         String val = getTrailer(trailer);
         if (val == null)
@@ -504,6 +512,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      *         If the header cannot be parsed as a
      *         date or time.
      */
+    @Override
     public Date getTrailerAsDate(String trailer) throws IOException, IllegalArgumentException {
         String raw_date = getTrailer(trailer);
         if (raw_date == null)
@@ -568,11 +577,12 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      * any unread data remaining on the stream and then closes it.
      *
      * @return an array containing the data (body) returned. If no data was
-     *         returned then it's set to a zero-length array.
+     * returned then it's set to a zero-length array.
      * @throws IOException
      *         If any io exception occured while reading the data
      * @see #getInputStream()
      */
+    @Override
     public synchronized byte[] getData() throws IOException {
         if (!got_headers)
             getHeaders(true);
@@ -609,6 +619,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
      *         If any exception occurs on the socket.
      * @see #getData()
      */
+    @Override
     public synchronized InputStream getInputStream() throws IOException {
         if (!got_headers)
             getHeaders(true);
@@ -1312,6 +1323,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable {
     }
 
     /** @return a clone of this request object */
+    @Override
     public Object clone() {
         Response cl;
         try {

@@ -35,12 +35,14 @@ import java.nio.charset.Charset;
  */
 @Provider
 public class ReaderEntityProvider implements EntityProvider<Reader> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == Reader.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Reader readFrom(Class<Reader> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException {
         String cs = mediaType != null ? mediaType.getParameters().get("charset") : null;
@@ -56,17 +58,20 @@ public class ReaderEntityProvider implements EntityProvider<Reader> {
         return new InputStreamReader(entityStream, charset);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(Reader t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return Reader.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(Reader t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         Writer out = new OutputStreamWriter(entityStream);

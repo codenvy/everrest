@@ -40,7 +40,7 @@ public class StringEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testRead() throws IOException {
         MessageBodyReader reader = new StringEntityProvider();
         byte[] data = testString.getBytes("windows-1251");
@@ -58,7 +58,7 @@ public class StringEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testWrite() throws IOException {
         MessageBodyWriter writer = new StringEntityProvider();
         ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -20,13 +20,14 @@ import java.util.List;
  * @version $Id$
  */
 public class CookieHeaderDelegate extends AbstractHeaderDelegate<Cookie> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<Cookie> support() {
         return Cookie.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Cookie fromString(String header) {
         if (header == null) {
             throw new IllegalArgumentException();
@@ -41,7 +42,8 @@ public class CookieHeaderDelegate extends AbstractHeaderDelegate<Cookie> {
         return null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(Cookie cookie) {
         StringBuilder sb = new StringBuilder();
 

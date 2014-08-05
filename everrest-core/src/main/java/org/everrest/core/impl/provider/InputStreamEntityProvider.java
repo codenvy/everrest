@@ -29,12 +29,14 @@ import java.lang.reflect.Type;
  */
 @Provider
 public class InputStreamEntityProvider implements EntityProvider<InputStream> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == InputStream.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public InputStream readFrom(Class<InputStream> type,
                                 Type genericType,
                                 Annotation[] annotations,
@@ -51,17 +53,19 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream> {
     }
 
 
-    /** {@inheritDoc} */
+    @Override
     public long getSize(InputStream t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return InputStream.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(InputStream t,
                         Class<?> type,
                         Type genericType,

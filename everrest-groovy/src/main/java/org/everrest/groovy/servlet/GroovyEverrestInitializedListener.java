@@ -23,11 +23,13 @@ import javax.ws.rs.core.Application;
  */
 public class GroovyEverrestInitializedListener implements ServletContextListener {
 
-    /** {@inheritDoc} */
+
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void contextInitialized(ServletContextEvent event) {
         ServletContext sctx = event.getServletContext();
         EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());

@@ -40,19 +40,19 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream {
         return buf;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void reset() {
         count = 0;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public int size() {
         return count;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public byte[] toByteArray() {
         byte[] newBuf = new byte[count];
@@ -60,19 +60,19 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream {
         return newBuf;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         return new String(buf, 0, count);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString(String charsetName) throws UnsupportedEncodingException {
         return new String(buf, 0, count, charsetName);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void write(byte[] b) {
         if (b.length == 0) {
@@ -86,7 +86,7 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream {
         count = pos;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void write(byte[] b, int off, int len) {
         if (len == 0) {
@@ -103,7 +103,7 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream {
         count = pos;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void write(int b) {
         int pos = count + 1;
@@ -114,7 +114,7 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream {
         count = pos;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void writeTo(OutputStream out) throws IOException {
         out.write(buf, 0, count);

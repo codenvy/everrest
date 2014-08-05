@@ -38,7 +38,6 @@ public class GroovyBeanTest extends JsonTest {
                                                                                 .toString());
     }
 
-    @SuppressWarnings("rawtypes")
     public void testSerializeGroovyBean1() throws Exception {
         GroovyClassLoader cl = new GroovyClassLoader();
         Class c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("BookStorage.groovy"));
@@ -56,7 +55,7 @@ public class GroovyBeanTest extends JsonTest {
         assertFalse(iterator.hasNext());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testRestoreGroovyBean1() throws Exception {
         GroovyClassLoader cl = new GroovyClassLoader();
         Class c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("BookStorage.groovy"));

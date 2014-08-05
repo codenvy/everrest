@@ -69,7 +69,8 @@ public class AcceptLanguage extends Language implements QualityValue {
 
     // QualityValue
 
-    /** {@inheritDoc} */
+
+    @Override
     public float getQvalue() {
         return qValue;
     }

@@ -22,18 +22,20 @@ import java.util.Map;
  *          aparfonov $
  */
 public class CacheControlHeaderDelegate extends AbstractHeaderDelegate<CacheControl> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<CacheControl> support() {
         return CacheControl.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public CacheControl fromString(String header) {
         throw new UnsupportedOperationException("CacheControl used only for response headers.");
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(CacheControl header) {
         StringBuilder buff = new StringBuilder();
         if (!header.isPrivate()) {

@@ -23,30 +23,30 @@ public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>> {
     //override putAll since in java8 in doesn't use method put.
     @Override
     public void putAll(Map<? extends String, ? extends List<T>> m) {
-        for (Map.Entry<? extends String, ? extends  List<T>> e : m.entrySet()) {
+        for (Map.Entry<? extends String, ? extends List<T>> e : m.entrySet()) {
             put(e.getKey(), e.getValue());
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean containsKey(Object key) {
         return super.containsKey(getKey(key));
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<T> get(Object key) {
         return getList(getKey(key));
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<T> put(String key, List<T> value) {
         return super.put(getKey(key), value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<T> remove(Object key) {
         return super.remove(getKey(key));

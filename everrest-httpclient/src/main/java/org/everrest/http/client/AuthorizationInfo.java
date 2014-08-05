@@ -319,7 +319,7 @@ public class AuthorizationInfo implements Cloneable {
      * @param resp
      *         the full response
      * @return a structure containing the requested info, or null if either no
-     *         AuthHandler is set or the user canceled the request.
+     * AuthHandler is set or the user canceled the request.
      * @throws AuthSchemeNotImplException
      *         if this is thrown by the
      *         AuthHandler.
@@ -684,7 +684,7 @@ public class AuthorizationInfo implements Cloneable {
      * @param req
      *         the Request
      * @return an AuthorizationInfo containing the info for the best match, or
-     *         null if none found.
+     * null if none found.
      */
     static AuthorizationInfo findBest(RoRequest req) {
         String path = Util.getPath(req.getRequestURI());
@@ -1124,6 +1124,7 @@ public class AuthorizationInfo implements Cloneable {
     }
 
     /** @return a clone of this AuthorizationInfo using a deep copy */
+    @Override
     public Object clone() {
         AuthorizationInfo ai;
         try {

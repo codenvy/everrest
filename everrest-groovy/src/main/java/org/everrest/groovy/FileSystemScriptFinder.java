@@ -24,7 +24,8 @@ import java.util.List;
  * @author andrew00x
  */
 public class FileSystemScriptFinder implements ScriptFinder {
-    /** {@inheritDoc} */
+
+    @Override
     public URL[] find(URLFilter filter, URL root) throws MalformedURLException {
         // Be sure protocol is supported.
         if ("file".equals(root.getProtocol())) {

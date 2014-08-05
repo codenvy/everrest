@@ -24,8 +24,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public final class RestComponentResolver {
 
@@ -38,7 +37,7 @@ public final class RestComponentResolver {
         this.providers = providers;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void addSingleton(Object instance) {
         Class clazz = instance.getClass();
         if (clazz.getAnnotation(Provider.class) != null) {
@@ -73,7 +72,7 @@ public final class RestComponentResolver {
 
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void addPerRequest(Class clazz) {
         if (clazz.getAnnotation(Provider.class) != null) {
             // per-request provider

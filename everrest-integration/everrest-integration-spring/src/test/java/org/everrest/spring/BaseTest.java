@@ -39,8 +39,8 @@ public abstract class BaseTest {
     @Autowired
     protected ConfigurableListableBeanFactory factory;
 
-    protected EverrestProcessor               processor;
-    protected ResourceLauncher                launcher;
+    protected EverrestProcessor processor;
+    protected ResourceLauncher  launcher;
 
     @Before
     public void start() throws Exception {

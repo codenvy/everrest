@@ -19,18 +19,20 @@ import java.net.URI;
  * @version $Id$
  */
 public class URIHeaderDelegate extends AbstractHeaderDelegate<URI> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<URI> support() {
         return URI.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public URI fromString(String header) {
         return URI.create(header);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(URI uri) {
         return uri.toASCIIString();
     }

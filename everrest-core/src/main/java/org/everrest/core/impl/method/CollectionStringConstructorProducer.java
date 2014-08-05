@@ -39,7 +39,7 @@ public final class CollectionStringConstructorProducer extends BaseCollectionPro
         this.constructor = constructor;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     protected Object createValue(String value) throws Exception {
         if (value == null) {

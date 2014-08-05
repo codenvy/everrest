@@ -37,6 +37,7 @@ class InMemoryFileItem implements FileItem {
             super(size);
         }
 
+        @Override
         public void write(byte b[], int off, int len) {
             if (len == 0) {
                 return;
@@ -53,6 +54,7 @@ class InMemoryFileItem implements FileItem {
             count = newCount;
         }
 
+        @Override
         public void write(int b) {
             int newCount = count + 1;
             if (newCount > buf.length) {
@@ -100,14 +102,16 @@ class InMemoryFileItem implements FileItem {
         this.maxSize = maxSize;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void delete() {
         if (bout != null) {
             bout.delete();
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public byte[] get() {
         if (bout == null) {
             return EMPTY_DATA;
@@ -115,27 +119,32 @@ class InMemoryFileItem implements FileItem {
         return bout.getByteArray();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getContentType() {
         return contentType;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getFieldName() {
         return fieldName;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(get());
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getName() {
         return fileName;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public OutputStream getOutputStream() {
         if (bout == null) {
             bout = new _ByteArrayOutputStream(maxSize);
@@ -143,42 +152,50 @@ class InMemoryFileItem implements FileItem {
         return bout;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize() {
         return get().length;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getString() {
         return new String(get());
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getString(String encoding) throws UnsupportedEncodingException {
         return new String(get(), encoding);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isFormField() {
         return isFormField;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isInMemory() {
         return true;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setFieldName(String name) {
         this.fieldName = name;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setFormField(boolean state) {
         isFormField = state;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void write(File file) throws Exception {
         throw new UnsupportedOperationException();
     }

@@ -49,7 +49,8 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
     @Context
     private HttpServletRequest httpRequest;
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (type == Iterator.class) {
             try {
@@ -64,7 +65,8 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
         return false;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     @SuppressWarnings("unchecked")
     public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type,
                                        Type genericType,
@@ -84,18 +86,21 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(Iterator<FileItem> t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         // output is not supported
         return false;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(Iterator<FileItem> t,
                         Class<?> type,
                         Type genericType,

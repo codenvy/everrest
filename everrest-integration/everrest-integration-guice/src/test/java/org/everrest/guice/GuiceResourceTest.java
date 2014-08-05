@@ -11,7 +11,6 @@
 package org.everrest.guice;
 
 import com.google.inject.Binder;
-import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 
@@ -104,7 +103,7 @@ public class GuiceResourceTest extends BaseTest {
         Module module = new Module() {
             public void configure(Binder binder) {
                 binder.bind(Resource.class);
-                binder.bind(new PathKey<Resource>(Resource.class, "/a/b/c")).to((Resource.class));
+                binder.bind(new PathKey<>(Resource.class, "/a/b/c")).to((Resource.class));
                 binder.bind(MessageProvider.class).in(Singleton.class);
             }
         };

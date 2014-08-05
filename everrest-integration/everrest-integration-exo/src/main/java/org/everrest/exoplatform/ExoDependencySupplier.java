@@ -35,7 +35,6 @@ public class ExoDependencySupplier extends BaseDependencySupplier {
         return getProvider(ExoContainerContext.getCurrentContainer(), actualType);
     }
 
-    @SuppressWarnings({"rawtypes"})
     private javax.inject.Provider<?> getProvider(final ExoContainer container, final Type entryType) {
         List injectionProviders = container.getComponentInstancesOfType(javax.inject.Provider.class);
         if (injectionProviders != null && !injectionProviders.isEmpty()) {

@@ -49,20 +49,20 @@ public final class StartableApplication extends Application implements Startable
         container = containerContext.getContainer();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Set<Class<?>> getClasses() {
         return cls;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Set<Object> getSingletons() {
         return singletons;
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+
+    @SuppressWarnings({"unchecked"})
     @Override
     public void start() {
         Collection adapters = container.getComponentAdapters();
@@ -102,7 +102,7 @@ public final class StartableApplication extends Application implements Startable
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void stop() {
     }

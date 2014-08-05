@@ -24,7 +24,8 @@ import javax.ws.rs.ext.ExceptionMapper;
  *          $
  */
 public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
-    /** {@inheritDoc} */
+
+    @Override
     public Response toResponse(Exception exception) {
         String message = exception.getMessage();
         if (message == null) {

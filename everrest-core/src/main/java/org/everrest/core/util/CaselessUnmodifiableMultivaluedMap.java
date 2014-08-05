@@ -44,45 +44,48 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
 
     /** Read only set of map's entries. */
     class ReadOnlyEntrySet extends EntrySet {
-        /** {@inheritDoc} */
+
         @Override
         public void clear() {
             throw new UnsupportedOperationException("clear");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public Iterator<java.util.Map.Entry<String, List<T>>> iterator() {
             return new Iterator<Entry<String, List<T>>>() {
                 private Iterator<Entry<CaselessStringWrapper, List<T>>> i = m.entrySet().iterator();
 
+                @Override
                 public boolean hasNext() {
                     return i.hasNext();
                 }
 
+                @Override
                 public Entry<String, List<T>> next() {
                     return new ReadOnlyEntryAdapter(i.next());
                 }
 
+                @Override
                 public void remove() {
                     throw new UnsupportedOperationException("remove");
                 }
             };
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean remove(Object o) {
             throw new UnsupportedOperationException("remove");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean removeAll(Collection<?> c) {
             throw new UnsupportedOperationException("remove");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean retainAll(Collection<?> c) {
             throw new UnsupportedOperationException("retainAll");
@@ -91,45 +94,48 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
 
     /** Read only set of map's keys. */
     class ReadOnlyKeySet extends KeySet {
-        /** {@inheritDoc} */
+
         @Override
         public void clear() {
             throw new UnsupportedOperationException("clear");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public Iterator<String> iterator() {
             return new Iterator<String>() {
                 private Iterator<CaselessStringWrapper> i = m.keySet().iterator();
 
+                @Override
                 public boolean hasNext() {
                     return i.hasNext();
                 }
 
+                @Override
                 public String next() {
                     return i.next().getString();
                 }
 
+                @Override
                 public void remove() {
                     throw new UnsupportedOperationException("remove");
                 }
             };
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean remove(Object o) {
             throw new UnsupportedOperationException("remove");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean removeAll(Collection<?> c) {
             throw new UnsupportedOperationException("removeAll");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean retainAll(Collection<?> c) {
             throw new UnsupportedOperationException("retainAll");
@@ -175,7 +181,7 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
         return entries;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<T> get(Object key) {
         List<T> list = super.get(key);

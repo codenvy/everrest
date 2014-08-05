@@ -156,7 +156,7 @@ public class MockServletContext implements ServletContext {
                 File dir = new File(url.getPath());
                 if (dir.isDirectory()) {
                     File[] arr = dir.listFiles();
-                    if (arr!=null) {
+                    if (arr != null) {
                         for (int i = 0; i < arr.length; i++) {
                             File tmp = arr[i];
                             if (!tmp.isDirectory()) {

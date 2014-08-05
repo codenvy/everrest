@@ -17,18 +17,20 @@ import org.everrest.core.header.AbstractHeaderDelegate;
  * @version $Id$
  */
 public class StringHeaderDelegate extends AbstractHeaderDelegate<String> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<String> support() {
         return String.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String fromString(String value) {
         return value;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(String value) {
         return value;
     }

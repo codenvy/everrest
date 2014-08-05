@@ -29,12 +29,14 @@ import java.lang.reflect.Type;
  */
 @Provider
 public class ByteEntityProvider implements EntityProvider<byte[]> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == byte[].class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public byte[] readFrom(Class<byte[]> type,
                            Type genericType,
                            Annotation[] annotations,
@@ -55,17 +57,20 @@ public class ByteEntityProvider implements EntityProvider<byte[]> {
         return out.toByteArray();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(byte[] t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return t.length;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == byte[].class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(byte[] t,
                         Class<?> type,
                         Type genericType,

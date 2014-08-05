@@ -22,8 +22,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class FormParameterResolver extends ParameterResolver<FormParam> {
     /** Form generic type. */
@@ -40,8 +39,8 @@ public class FormParameterResolver extends ParameterResolver<FormParam> {
         this.formParam = formParam;
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+
+    @SuppressWarnings({"unchecked"})
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         String param = this.formParam.value();

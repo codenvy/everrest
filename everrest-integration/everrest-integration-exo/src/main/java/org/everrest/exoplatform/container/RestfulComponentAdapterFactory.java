@@ -30,7 +30,6 @@ public final class RestfulComponentAdapterFactory implements ComponentAdapterFac
         this.delegate = delegate;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public ComponentAdapter createComponentAdapter(Object componentKey, Class componentImplementation, Parameter[] parameters)
             throws PicoIntrospectionException, AssignabilityRegistrationException, NotConcreteRegistrationException {

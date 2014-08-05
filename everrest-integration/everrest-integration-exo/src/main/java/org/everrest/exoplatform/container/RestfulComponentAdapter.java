@@ -93,9 +93,9 @@ public class RestfulComponentAdapter implements ComponentAdapter {
         if (clazz.isAnnotationPresent(Path.class)) {
             objectModel = instance == null ? new AbstractResourceDescriptorImpl(clazz) : new AbstractResourceDescriptorImpl(instance);
         } else if (clazz.isAnnotationPresent(Provider.class)) {
-            objectModel = instance == null ? new ProviderDescriptorImpl(clazz):new ProviderDescriptorImpl(instance);
+            objectModel = instance == null ? new ProviderDescriptorImpl(clazz) : new ProviderDescriptorImpl(instance);
         } else if (clazz.isAnnotationPresent(Filter.class)) {
-            objectModel = instance == null ? new FilterDescriptorImpl(clazz):new FilterDescriptorImpl(instance);
+            objectModel = instance == null ? new FilterDescriptorImpl(clazz) : new FilterDescriptorImpl(instance);
         } else {
             throw new IllegalArgumentException("Incorrect type or instance " + clazz + ". ");
         }
@@ -128,6 +128,7 @@ public class RestfulComponentAdapter implements ComponentAdapter {
         DependencySupplier dependencies = context.getDependencySupplier();
         try {
             context.setDependencySupplier(new BaseDependencySupplier() {
+                @Override
                 public Object getComponent(Class<?> type) {
                     Object object = container.getComponentInstanceOfType(type);
                     if (object != null) {
@@ -172,9 +173,8 @@ public class RestfulComponentAdapter implements ComponentAdapter {
 
     //
 
-    @SuppressWarnings("rawtypes")
-    private static final Class[] KNOWN_INTERFACES = new Class[]{MessageBodyReader.class, MessageBodyWriter.class,
-                                                                ExceptionMapper.class, ContextResolver.class};
+    private static final Class[] KNOWN_INTERFACES =
+            new Class[]{MessageBodyReader.class, MessageBodyWriter.class, ExceptionMapper.class, ContextResolver.class};
 
     private static ParameterizedType[] getImplementedInterfaces(Class<?> type) {
         if (type.isAnnotationPresent(Provider.class)) {

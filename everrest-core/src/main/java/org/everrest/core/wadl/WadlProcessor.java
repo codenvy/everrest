@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.wadl;
 
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.AbstractResourceDescriptor;

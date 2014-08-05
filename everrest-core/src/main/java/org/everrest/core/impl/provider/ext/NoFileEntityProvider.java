@@ -32,14 +32,14 @@ import java.lang.reflect.Type;
  */
 @Provider
 public class NoFileEntityProvider extends FileEntityProvider {
-    /** {@inheritDoc} */
+
     @Override
     public long getSize(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
                 "File is not supported as method's parameter.").type(MediaType.TEXT_PLAIN).build());
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public File readFrom(Class<File> type,
                          Type genericType,
@@ -51,7 +51,7 @@ public class NoFileEntityProvider extends FileEntityProvider {
                 "File is not supported as method's parameter.").type(MediaType.TEXT_PLAIN).build());
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void writeTo(File t,
                         Class<?> type,

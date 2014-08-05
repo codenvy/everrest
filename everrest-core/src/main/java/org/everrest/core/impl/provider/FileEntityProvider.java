@@ -31,12 +31,14 @@ import java.lang.reflect.Type;
  */
 @Provider
 public class FileEntityProvider implements EntityProvider<File> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == File.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public File readFrom(Class<File> type,
                          Type genericType,
                          Annotation[] annotations,
@@ -53,17 +55,20 @@ public class FileEntityProvider implements EntityProvider<File> {
         return f;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return t.length();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return File.class.isAssignableFrom(type); // more flexible then '=='
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         InputStream in = new FileInputStream(t);

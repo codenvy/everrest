@@ -25,7 +25,7 @@ public interface DependencyNameDetector {
      * @param parameter
      *         the Parameter
      * @return name of <code>parameter</code> or <code>null</code> if name can't be detected by particular
-     *         DependencyNameDetector
+     * DependencyNameDetector
      */
     String getName(Parameter parameter);
 }

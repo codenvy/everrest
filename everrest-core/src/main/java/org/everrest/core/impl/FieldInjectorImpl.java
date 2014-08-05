@@ -119,42 +119,50 @@ public class FieldInjectorImpl implements FieldInjector {
         return setter;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation getAnnotation() {
         return annotation;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation[] getAnnotations() {
         return annotations;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getDefaultValue() {
         return defaultValue;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Class<?> getParameterClass() {
         return jField.getType();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Type getGenericType() {
         return jField.getGenericType();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isEncoded() {
         return encoded;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getName() {
         return jField.getName();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void inject(Object resource, ApplicationContext context) {
         try {
             Object value = null;
@@ -189,12 +197,13 @@ public class FieldInjectorImpl implements FieldInjector {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitFieldInjector(this);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[ FieldInjectorImpl: ");

@@ -61,7 +61,7 @@ public interface RoRequest {
 
     /**
      * @return true if the modules or handlers for this request may popup windows
-     *         or otherwise interact with the user
+     * or otherwise interact with the user
      */
     public boolean allowUI();
 }

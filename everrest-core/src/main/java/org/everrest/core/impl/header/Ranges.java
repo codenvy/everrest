@@ -76,7 +76,7 @@ public final class Ranges {
          * @param length
          *         total length of content
          * @return <code>true</code> if range is valid and <code>false</code>
-         *         otherwise
+         * otherwise
          */
         public boolean validate(long length) {
             // Range set as bytes:-100 - take 100 bytes from the end.

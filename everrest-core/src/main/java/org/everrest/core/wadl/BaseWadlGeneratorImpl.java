@@ -39,17 +39,20 @@ import java.util.SortedSet;
  */
 public class BaseWadlGeneratorImpl implements WadlGenerator {
 
-    /** {@inheritDoc} */
+
+    @Override
     public Application createApplication() {
         return new Application();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Resources createResources() {
         return new Resources();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public org.everrest.core.wadl.research.Resource createResource(AbstractResourceDescriptor rd) {
         if (rd.isRootResource()) {
             return createResource(rd.getPathValue().getPath());
@@ -57,7 +60,8 @@ public class BaseWadlGeneratorImpl implements WadlGenerator {
         return createResource((String)null);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public org.everrest.core.wadl.research.Resource createResource(String path) {
         org.everrest.core.wadl.research.Resource wadlResource = new org.everrest.core.wadl.research.Resource();
         if (path != null) {
@@ -66,7 +70,8 @@ public class BaseWadlGeneratorImpl implements WadlGenerator {
         return wadlResource;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public org.everrest.core.wadl.research.Method createMethod(ResourceMethodDescriptor rmd) {
         String httpMethod = rmd.getHttpMethod();
         // Ignore HEAD methods currently.
@@ -103,31 +108,36 @@ public class BaseWadlGeneratorImpl implements WadlGenerator {
         return wadlMethod;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public org.everrest.core.wadl.research.Request createRequest() {
         return new org.everrest.core.wadl.research.Request();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public org.everrest.core.wadl.research.Response createResponse() {
         return new org.everrest.core.wadl.research.Response();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public RepresentationType createRequestRepresentation(MediaType mediaType) {
         RepresentationType wadlRepresentation = new RepresentationType();
         wadlRepresentation.setMediaType(mediaType.toString());
         return wadlRepresentation;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public RepresentationType createResponseRepresentation(MediaType mediaType) {
         RepresentationType wadlRepresentation = new RepresentationType();
         wadlRepresentation.setMediaType(mediaType.toString());
         return wadlRepresentation;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Param createParam(MethodParameter methodParameter) {
         Param wadlParameter = null;
         Annotation annotation = methodParameter.getAnnotation();

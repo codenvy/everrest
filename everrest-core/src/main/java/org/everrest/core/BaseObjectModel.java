@@ -16,8 +16,8 @@ import org.everrest.core.impl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseObjectModel implements ObjectModel {
@@ -77,22 +77,22 @@ public abstract class BaseObjectModel implements ObjectModel {
         this.fields = new ArrayList<>();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Class<?> getObjectClass() {
         return clazz;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public List<ConstructorDescriptor> getConstructorDescriptors() {
         return constructors;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public List<FieldInjector> getFieldInjectors() {
         return fields;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public MultivaluedMap<String, String> getProperties() {
         if (properties == null) {
             properties = new MultivaluedMapImpl();
@@ -100,7 +100,7 @@ public abstract class BaseObjectModel implements ObjectModel {
         return properties;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public List<String> getProperty(String key) {
         if (properties != null) {
             return properties.get(key);

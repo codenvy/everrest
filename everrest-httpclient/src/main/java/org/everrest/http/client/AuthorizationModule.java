@@ -103,6 +103,7 @@ class AuthorizationModule implements HTTPClientModule {
     // Methods
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int requestHandler(Request req, Response[] resp) throws IOException, AuthSchemeNotImplException {
         HTTPConnection con = req.getConnection();
         AuthorizationHandler auth_handler = AuthorizationInfo.getAuthHandler();
@@ -241,6 +242,7 @@ class AuthorizationModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase1Handler(Response resp, RoRequest req) throws IOException {
       /*
        * If auth info successful update path list. Note: if we preemptively sent
@@ -276,6 +278,7 @@ class AuthorizationModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int responsePhase2Handler(Response resp, Request req) throws IOException, AuthSchemeNotImplException {
         // Let the AuthHandler handle any Authentication headers.
 
@@ -361,10 +364,12 @@ class AuthorizationModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase3Handler(Response resp, RoRequest req) {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void trailerHandler(Response resp, RoRequest req) throws IOException {
         // Let the AuthHandler handle any Authentication headers.
 

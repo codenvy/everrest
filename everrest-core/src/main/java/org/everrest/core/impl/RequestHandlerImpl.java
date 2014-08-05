@@ -48,8 +48,9 @@ public class RequestHandlerImpl implements RequestHandler {
         this.dispatcher = dispatcher;
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+
+    @Override
+    @SuppressWarnings({"unchecked"})
     public void handleRequest(GenericContainerRequest request, GenericContainerResponse response)
             throws UnhandledException, IOException {
         final ApplicationContext context = ApplicationContextImpl.getCurrent();

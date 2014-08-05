@@ -32,7 +32,7 @@ public class HeaderParameterResolver extends ParameterResolver<HeaderParam> {
         this.headerParam = headerParam;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         String param = this.headerParam.value();

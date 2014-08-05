@@ -46,7 +46,7 @@ public class SourceEntityProviderTest {
         data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>to be or not to be</message></root>".getBytes("UTF-8");
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testReadStreamSourceEntityProvider() throws Exception {
         MessageBodyReader reader = new StreamSourceEntityProvider();
@@ -60,7 +60,7 @@ public class SourceEntityProviderTest {
         System.out.println(out.toString("UTF-8"));
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testWriteStreamSourceEntityProvider() throws Exception {
         StreamSource src = new StreamSource(new ByteArrayInputStream(data));
@@ -71,7 +71,7 @@ public class SourceEntityProviderTest {
         System.out.println(out.toString("UTF-8"));
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testReadSAXSourceEntityProvider() throws Exception {
         MessageBodyReader reader = new SAXSourceEntityProvider();
@@ -84,7 +84,7 @@ public class SourceEntityProviderTest {
         System.out.println(out.toString("UTF-8"));
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testWriteSAXSourceEntityProvider() throws Exception {
         SAXSource src = new SAXSource(new InputSource(new ByteArrayInputStream(data)));
@@ -95,7 +95,7 @@ public class SourceEntityProviderTest {
         System.out.println(out.toString("UTF-8"));
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testReadDOMSourceEntityProvider() throws Exception {
         MessageBodyReader reader = new DOMSourceEntityProvider();
@@ -109,7 +109,7 @@ public class SourceEntityProviderTest {
         Assert.assertEquals("to be or not to be", root.getFirstChild().getTextContent());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testWriteDOMSourceEntityProvider() throws Exception {
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(data));

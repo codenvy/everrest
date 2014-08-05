@@ -23,13 +23,14 @@ import java.util.Map;
  *          aparfonov $
  */
 public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptLanguage> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<AcceptLanguage> support() {
         return AcceptLanguage.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public AcceptLanguage fromString(String header) {
         if (header == null) {
             throw new IllegalArgumentException();
@@ -72,7 +73,8 @@ public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptL
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(AcceptLanguage language) {
         throw new UnsupportedOperationException("Accepted language header used only for request.");
     }

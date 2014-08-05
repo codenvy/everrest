@@ -271,6 +271,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      * @throws ProtocolException
      *         if already connected.
      */
+    @Override
     public void setRequestMethod(String method) throws ProtocolException {
         if (connected)
             throw new ProtocolException("Already connected!");
@@ -287,6 +288,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *
      * @return the http method.
      */
+    @Override
     public String getRequestMethod() {
         return method;
     }
@@ -296,6 +298,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *
      * @return the http response code returned.
      */
+    @Override
     public int getResponseCode() throws IOException {
         if (!connected)
             connect();
@@ -313,6 +316,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *
      * @return the http response message returned with the response code.
      */
+    @Override
     public String getResponseMessage() throws IOException {
         if (!connected)
             connect();
@@ -331,6 +335,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *         the of the header.
      * @return the value of the header, or null if no such header was returned.
      */
+    @Override
     public String getHeaderField(String name) {
         try {
             if (!connected)
@@ -352,6 +357,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *         the default value to return in case of an error.
      * @return the value of the header, or null if no such header was returned.
      */
+    @Override
     public int getHeaderFieldInt(String name, int def) {
         try {
             if (!connected)
@@ -374,6 +380,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *         the default value to return in case of an error.
      * @return the value of the header, or def in case of an error.
      */
+    @Override
     public long getHeaderFieldDate(String name, long def) {
         try {
             if (!connected)
@@ -395,6 +402,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *         which header to return.
      * @return the header name, or null if not that many headers.
      */
+    @Override
     public String getHeaderFieldKey(int n) {
         if (hdr_keys == null)
             fill_hdr_arrays();
@@ -413,6 +421,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *         which header to return.
      * @return the header value, or null if not that many headers.
      */
+    @Override
     public String getHeaderField(int n) {
         if (hdr_values == null)
             fill_hdr_arrays();
@@ -464,6 +473,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *         if input not enabled.
      * @see java.net.URLConnection#setDoInput(boolean)
      */
+    @Override
     public InputStream getInputStream() throws IOException {
         if (!doInput)
             throw new ProtocolException("Input not enabled! (use setDoInput(true))");
@@ -488,10 +498,11 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      * This method will not cause a connection to be initiated.
      *
      * @return an InputStream, or null if either the connection hasn't been
-     *         established yet or no error occured
+     * established yet or no error occured
      * @see java.net.HttpURLConnection#getErrorStream()
      * @since V0.3-1
      */
+    @Override
     public InputStream getErrorStream() {
         try {
             if (!doInput || !connected || resp.getStatusCode() < 300 || resp.getHeaderAsInt("Content-length") <= 0)
@@ -524,6 +535,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      * @see java.net.URLConnection#setDoOutput(boolean)
      * @see HTTPClient.HttpOutputStream
      */
+    @Override
     public synchronized OutputStream getOutputStream() throws IOException {
         if (connected)
             throw new ProtocolException("Already connected!");
@@ -569,6 +581,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *
      * @return the final url, or null if any exception occured.
      */
+    @Override
     public URL getURL() {
         if (connected) {
             try {
@@ -587,6 +600,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      * @param time
      *         the number of milliseconds since 1970.
      */
+    @Override
     public void setIfModifiedSince(long time) {
         super.setIfModifiedSince(time);
         setRequestProperty("If-Modified-Since", Util.httpDate(new Date(time)));
@@ -600,6 +614,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      * @param value
      *         the value for the header.
      */
+    @Override
     public void setRequestProperty(String name, String value) {
 
         if (log.isDebugEnabled())
@@ -624,6 +639,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *         the name of the header.
      * @return the value part of the header, or null if no such header.
      */
+    @Override
     public String getRequestProperty(String name) {
         for (int idx = 0; idx < headers.length; idx++) {
             if (headers[idx].getName().equalsIgnoreCase(name))
@@ -681,6 +697,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      * @param set
      *         enables automatic redirection handling if true.
      */
+    @Override
     public void setInstanceFollowRedirects(boolean set) {
         if (connected)
             throw new IllegalStateException("Already connected!");
@@ -690,8 +707,9 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     /**
      * @return true if automatic redirection handling for this instance is
-     *         enabled.
+     * enabled.
      */
+    @Override
     public boolean getInstanceFollowRedirects() {
         return do_redir;
     }
@@ -700,6 +718,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      * Connects to the server (if connection not still kept alive) and issues the
      * request.
      */
+    @Override
     public synchronized void connect() throws IOException {
         if (connected)
             return;
@@ -731,6 +750,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
     }
 
     /** Closes all the connections to this server. */
+    @Override
     public void disconnect() {
         if (log.isDebugEnabled())
             log.debug(urlString + " Disconnecting ...");
@@ -743,6 +763,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
      *
      * @return true if an http proxy is being used.
      */
+    @Override
     public boolean usingProxy() {
         return (con.getProxyHost() != null);
     }

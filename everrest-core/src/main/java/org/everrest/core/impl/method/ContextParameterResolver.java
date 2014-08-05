@@ -34,7 +34,7 @@ public class ContextParameterResolver extends ParameterResolver<Context> {
         // @Context annotation has not value.
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         Class<?> parameterClass = parameter.getParameterClass();

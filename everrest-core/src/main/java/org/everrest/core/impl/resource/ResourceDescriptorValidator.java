@@ -78,6 +78,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor {
      * produces annotation. Path annotation is required for root resource.
      * {@inheritDoc}
      */
+    @Override
     public void visitAbstractResourceDescriptor(AbstractResourceDescriptor ard) {
 
         if (ard.isRootResource() && ard.getPathValue().getPath().length() == 0) {
@@ -115,6 +116,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor {
      * Resource class which has not path annotation. This method MUST have at
      * least one annotation (HTTP method, e.g. GET). {@inheritDoc}
      */
+    @Override
     public void visitResourceMethodDescriptor(ResourceMethodDescriptor rmd) {
         checkMethodParameters(rmd);
     }
@@ -125,6 +127,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor {
      * annotation. This method can not directly process the request but it can
      * produces object that will handle the request. {@inheritDoc}
      */
+    @Override
     public void visitSubResourceLocatorDescriptor(SubResourceLocatorDescriptor srld) {
         if (srld.getPathValue().getPath().length() == 0) {
             String msg = "Path value is empty for method " + srld.getMethod().getName() + " in resource class "
@@ -139,6 +142,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor {
      * method which annotated with path annotation and has HTTP method
      * annotation. This method can process the request directly. {@inheritDoc}
      */
+    @Override
     public void visitSubResourceMethodDescriptor(SubResourceMethodDescriptor srmd) {
         if (srmd.getPathValue().getPath().length() == 0) {
             String msg = "Path value is null or empty for method " + srmd.getMethod().getName() + " in resource class "
@@ -217,7 +221,6 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor {
      * @param type
      *         generic type
      */
-    @SuppressWarnings("rawtypes")
     private void checkFormParam(Class clazz, Type type) {
         if ((MultivaluedMap.class == clazz) && (type instanceof ParameterizedType)) {
             Type[] actualTypes = ((ParameterizedType)type).getActualTypeArguments();
@@ -232,22 +235,26 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor {
         throw new RuntimeException(msg);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void visitConstructorInjector(ConstructorDescriptor ci) {
         // currently nothing to do, should be already valid
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void visitFieldInjector(FieldInjector fi) {
         // currently nothing to do, should be already valid
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void visitFilterDescriptor(FilterDescriptor fd) {
         checkObjectModel(fd);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void visitProviderDescriptor(ProviderDescriptor pd) {
         checkObjectModel(pd);
     }

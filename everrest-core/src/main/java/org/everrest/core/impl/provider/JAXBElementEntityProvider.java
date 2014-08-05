@@ -51,12 +51,14 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
         this.providers = providers;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == JAXBElement.class && genericType instanceof ParameterizedType;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
                                    Type genericType,
                                    Annotation[] annotations,
@@ -80,17 +82,20 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(JAXBElement<?> t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return JAXBElement.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(JAXBElement<?> t,
                         Class<?> type,
                         Type genericType,

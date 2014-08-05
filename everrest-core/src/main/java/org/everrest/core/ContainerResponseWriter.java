@@ -40,6 +40,5 @@ public interface ContainerResponseWriter {
      * @throws IOException
      *         if any i/o error occurs
      */
-    void writeBody(GenericContainerResponse response, @SuppressWarnings("rawtypes") MessageBodyWriter entityWriter)
-            throws IOException;
+    void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException;
 }

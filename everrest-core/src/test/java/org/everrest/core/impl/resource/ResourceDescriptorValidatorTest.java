@@ -126,7 +126,6 @@ public class ResourceDescriptorValidatorTest {
             // OK
         }
 
-        @SuppressWarnings("rawtypes")
         @POST
         public void m2(@FormParam("a") String t, MultivaluedMap entity) {
             // wrong ?
@@ -163,7 +162,6 @@ public class ResourceDescriptorValidatorTest {
             // OK
         }
 
-        @SuppressWarnings("rawtypes")
         @POST
         @Path("c/d/e")
         public void m4(@FormParam("a") String t, MultivaluedMap entity) {

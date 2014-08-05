@@ -31,7 +31,7 @@ public interface ExtMultivaluedMap<K, V> extends MultivaluedMap<K, V> {
      * @param key
      *         key
      * @return never null even any value not found in the map, return empty list
-     *         instead
+     * instead
      */
     List<V> getList(K key);
 

@@ -29,61 +29,61 @@ public class DoubleValue extends NumericValue {
         this.value = value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean isDouble() {
         return true;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String getStringValue() {
         return Double.toString(value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public byte getByteValue() {
         return (byte)value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public short getShortValue() {
         return (short)value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public int getIntValue() {
         return (int)value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public long getLongValue() {
         return (long)value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public float getFloatValue() {
         return (float)value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public double getDoubleValue() {
         return value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         return getStringValue();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void writeTo(JsonWriter writer) throws JsonException {
         writer.writeValue(value);

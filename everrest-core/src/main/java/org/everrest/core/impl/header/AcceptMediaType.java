@@ -89,7 +89,8 @@ public class AcceptMediaType extends MediaType implements QualityValue {
 
     // QualityValue
 
-    /** {@inheritDoc} */
+
+    @Override
     public float getQvalue() {
         return qValue;
     }

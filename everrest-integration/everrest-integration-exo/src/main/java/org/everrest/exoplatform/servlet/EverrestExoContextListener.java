@@ -114,6 +114,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
             return container;
         }
 
+        @Override
         public void contextDestroyed(ServletContextEvent sce) {
             if (container != null) {
                 container.stop();

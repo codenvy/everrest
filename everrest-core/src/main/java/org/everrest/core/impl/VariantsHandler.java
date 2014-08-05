@@ -76,6 +76,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public MediaType getValue(Variant variant) {
                     return variant.getMediaType();
                 }
@@ -83,6 +84,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public boolean isCompatible(AcceptMediaType accept, MediaType fromVariant) {
                     return accept.isCompatible(fromVariant);
                 }
@@ -100,6 +102,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public Locale getValue(Variant variant) {
                     return variant.getLanguage();
                 }
@@ -107,6 +110,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public boolean isCompatible(AcceptLanguage accept, Locale fromVariant) {
                     return accept.isCompatible(new Language(fromVariant));
                 }
@@ -124,6 +128,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public String getValue(Variant variant) {
                     MediaType m = variant.getMediaType();
                     return (m != null) ? m.getParameters().get("charset") : null;
@@ -132,6 +137,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public boolean isCompatible(AcceptToken accept, String fromVariant) {
                     return accept.isCompatible(new Token(fromVariant));
                 }
@@ -149,6 +155,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public String getValue(Variant variant) {
                     return variant.getEncoding();
                 }
@@ -156,6 +163,7 @@ public final class VariantsHandler {
                 /**
                  * {@inheritDoc}
                  */
+                @Override
                 public boolean isCompatible(AcceptToken accept, String fromVariant) {
                     return accept.isCompatible(new Token(fromVariant));
                 }

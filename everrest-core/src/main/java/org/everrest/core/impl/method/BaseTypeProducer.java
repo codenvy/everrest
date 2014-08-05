@@ -34,7 +34,8 @@ public abstract class BaseTypeProducer implements TypeProducer {
      */
     protected abstract Object createValue(String value) throws Exception;
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception {
 
         String value = values.getFirst(param);

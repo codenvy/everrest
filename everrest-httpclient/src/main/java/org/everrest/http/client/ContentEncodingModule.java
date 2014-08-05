@@ -53,6 +53,7 @@ class ContentEncodingModule implements HTTPClientModule {
     // Methods
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int requestHandler(Request req, Response[] resp) throws ModuleException {
         // parse Accept-Encoding header
 
@@ -117,15 +118,18 @@ class ContentEncodingModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase1Handler(Response resp, RoRequest req) {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int responsePhase2Handler(Response resp, Request req) {
         return RSP_CONTINUE;
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase3Handler(Response resp, RoRequest req) throws IOException, ModuleException {
         String ce = resp.getHeader("Content-Encoding");
         if (ce == null || req.getMethod().equals("HEAD") || resp.getStatusCode() == 206)
@@ -181,6 +185,7 @@ class ContentEncodingModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void trailerHandler(Response resp, RoRequest req) {
     }
 }

@@ -44,7 +44,7 @@ public interface WSConnection {
      * @param channel
      *         channel name
      * @return <code>true</code> if this connection is subscribed to channel successfully and <code>false</code> if
-     *         connection already subscribed to specified channel
+     * connection already subscribed to specified channel
      * @see WSConnectionContext#sendMessage(org.everrest.websockets.message.ChannelBroadcastMessage)
      */
     boolean subscribeToChannel(String channel);
@@ -55,7 +55,7 @@ public interface WSConnection {
      * @param channel
      *         channel name
      * @return <code>true</code> if this connection is unsubscribed from channel successfully and <code>false</code> if
-     *         connection is not subscribed to specified channel
+     * connection is not subscribed to specified channel
      * @see WSConnectionContext#sendMessage(org.everrest.websockets.message.ChannelBroadcastMessage)
      */
     boolean unsubscribeFromChannel(String channel);

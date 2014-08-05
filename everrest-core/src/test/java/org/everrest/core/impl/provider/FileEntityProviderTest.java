@@ -31,7 +31,7 @@ import java.util.Arrays;
 public class FileEntityProviderTest extends BaseTest {
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testRead() throws Exception {
         MessageBodyReader reader = new FileEntityProvider();
         Assert.assertTrue(reader.isReadable(File.class, null, null, null));
@@ -52,7 +52,7 @@ public class FileEntityProviderTest extends BaseTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testWrite() throws Exception {
         MessageBodyWriter writer = new FileEntityProvider();
         Assert.assertTrue(writer.isWriteable(File.class, null, null, null));

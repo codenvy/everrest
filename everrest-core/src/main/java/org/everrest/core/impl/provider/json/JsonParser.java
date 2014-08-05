@@ -43,7 +43,7 @@ public class JsonParser {
         stack = new JsonStack<JsonToken>();
     }
 
-    /** {@inheritDoc} */
+
     public void parse(Reader reader) throws JsonException {
         pushbackReader = new PushbackReader(reader);
         eventHandler.reset();
@@ -63,7 +63,7 @@ public class JsonParser {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void parse(InputStream stream) throws JsonException {
         parse(new InputStreamReader(stream, JsonUtils.DEFAULT_CHARSET));
     }

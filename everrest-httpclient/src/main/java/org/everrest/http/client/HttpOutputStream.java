@@ -278,6 +278,7 @@ public class HttpOutputStream extends OutputStream {
      *         if any exception is thrown by the socket
      * @see #write(byte[], int, int)
      */
+    @Override
     public void write(int b) throws IOException, IllegalAccessError {
         byte[] tmp = {(byte)b};
         write(tmp, 0, 1);
@@ -302,6 +303,7 @@ public class HttpOutputStream extends OutputStream {
      *         if this stream has not been associated with
      *         a request yet
      */
+    @Override
     public synchronized void write(byte[] buf, int off, int len) throws IOException, IllegalAccessError {
         if (req == null)
             throw new IllegalAccessError("Stream not associated with a request");
@@ -344,6 +346,7 @@ public class HttpOutputStream extends OutputStream {
      *         if this stream has not been associated with
      *         a request yet.
      */
+    @Override
     public synchronized void close() throws IOException, IllegalAccessError {
         if (req == null)
             throw new IllegalAccessError("Stream not associated with a request");

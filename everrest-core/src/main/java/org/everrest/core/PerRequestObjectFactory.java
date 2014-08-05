@@ -40,7 +40,7 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
         this.model = model;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Object getInstance(ApplicationContext context) {
         ConstructorDescriptor inj = model.getConstructorDescriptors().get(0);
         Object object = inj.createInstance(context);
@@ -70,7 +70,7 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
         }
     }
 
-    /** {@inheritDoc} */
+    @Override
     public T getObjectModel() {
         return model;
     }

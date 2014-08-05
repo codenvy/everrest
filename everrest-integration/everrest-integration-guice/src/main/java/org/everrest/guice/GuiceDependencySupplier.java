@@ -15,8 +15,7 @@ import com.google.inject.Injector;
 import org.everrest.core.BaseDependencySupplier;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GuiceDependencySupplier extends BaseDependencySupplier {
     private final Injector injector;
@@ -25,7 +24,7 @@ public class GuiceDependencySupplier extends BaseDependencySupplier {
         this.injector = injector;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Object getComponent(Class<?> type) {
         return injector.getInstance(type);
     }

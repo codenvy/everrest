@@ -160,7 +160,7 @@ public class ContainerResponse implements GenericContainerResponse {
     /** See {@link Response}, {@link ResponseBuilder}. */
     private Response response;
 
-    /** {@inheritDoc} */
+
     @Override
     public void setResponse(Response response) {
         this.response = response;
@@ -177,7 +177,6 @@ public class ContainerResponse implements GenericContainerResponse {
             entity = response.getEntity();
 
             if (entity instanceof GenericEntity) {
-                @SuppressWarnings("rawtypes")
                 GenericEntity ge = (GenericEntity)entity;
                 entity = ge.getEntity();
                 entityType = ge.getType();
@@ -196,13 +195,13 @@ public class ContainerResponse implements GenericContainerResponse {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Response getResponse() {
         return response;
     }
 
-    /** {@inheritDoc} */
+
     @SuppressWarnings("unchecked")
     @Override
     public void writeResponse() throws IOException {
@@ -238,7 +237,6 @@ public class ContainerResponse implements GenericContainerResponse {
             getHttpHeaders().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
         }
 
-        @SuppressWarnings("rawtypes")
         MessageBodyWriter entityWriter = context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
 
         if (entityWriter == null) {
@@ -281,6 +279,7 @@ public class ContainerResponse implements GenericContainerResponse {
         OutputListener headersWriter = new OutputListener() {
             private boolean done;
 
+            @Override
             public void onChange(java.util.EventObject event) throws IOException {
                 if (!done) {
                     done = true;
@@ -297,31 +296,31 @@ public class ContainerResponse implements GenericContainerResponse {
         headersWriter.onChange(null); // Be sure headers were written.
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MediaType getContentType() {
         return contentType;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Type getEntityType() {
         return entityType;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Object getEntity() {
         return entity;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MultivaluedMap<String, Object> getHttpHeaders() {
         return headers;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public int getStatus() {
         return status;

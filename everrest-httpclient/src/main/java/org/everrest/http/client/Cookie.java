@@ -432,7 +432,7 @@ public class Cookie implements Serializable {
 
     /**
      * @return true if the cookie should be discarded at the end of the session;
-     *         false otherwise
+     * false otherwise
      */
     public boolean discard() {
         return (expires == null);

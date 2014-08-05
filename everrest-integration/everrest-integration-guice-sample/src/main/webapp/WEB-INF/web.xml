@@ -12,7 +12,7 @@
 
 -->
 <web-app id="WebApp_ID" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd"  version="3.0">
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" version="3.0">
     <listener>
         <listener-class>org.everrest.sample.guice.BookServiceBootstrap</listener-class>
     </listener>

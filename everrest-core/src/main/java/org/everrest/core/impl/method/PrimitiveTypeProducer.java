@@ -85,7 +85,7 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer {
         this.defaultDefaultValue = PRIMITIVE_TYPE_DEFAULTS.get(clazz.getName());
     }
 
-    /** {@inheritDoc} */
+
     @Override
     protected Object createValue(String value) throws Exception {
 
@@ -101,7 +101,7 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer {
         return method.invoke(null, value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception {
         String value = values.getFirst(param);

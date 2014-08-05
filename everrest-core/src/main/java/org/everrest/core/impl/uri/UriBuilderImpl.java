@@ -50,7 +50,7 @@ public class UriBuilderImpl extends UriBuilder {
     public UriBuilderImpl() {
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public URI buildFromMap(Map<String, ?> values) {
         encode();
@@ -71,7 +71,7 @@ public class UriBuilderImpl extends UriBuilder {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public URI buildFromEncodedMap(Map<String, ?> values) {
         encode();
@@ -92,7 +92,7 @@ public class UriBuilderImpl extends UriBuilder {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public URI build(Object... values) {
         encode();
@@ -113,7 +113,7 @@ public class UriBuilderImpl extends UriBuilder {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public URI buildFromEncoded(Object... values) {
         encode();
@@ -214,7 +214,7 @@ public class UriBuilderImpl extends UriBuilder {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder clone() {
         return new UriBuilderImpl(this);
@@ -236,21 +236,21 @@ public class UriBuilderImpl extends UriBuilder {
         this.fragment = cloned.fragment;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder fragment(String fragment) {
         this.fragment = fragment == null ? null : UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder host(String host) {
         this.host = host == null ? null : UriComponent.recognizeEncode(host, UriComponent.HOST, true);
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder matrixParam(String name, Object... values) {
         if (name == null) {
@@ -273,7 +273,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder path(String p) {
         if (p == null) {
@@ -301,8 +301,8 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+
+    @SuppressWarnings({"unchecked"})
     @Override
     public UriBuilder path(Class resource) {
         if (resource == null) {
@@ -317,7 +317,7 @@ public class UriBuilderImpl extends UriBuilder {
         return path(((Path)annotation).value());
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder path(Method method) {
         if (method == null) {
@@ -327,8 +327,7 @@ public class UriBuilderImpl extends UriBuilder {
         return p == null ? this : path(p.value());
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings("rawtypes")
+
     @Override
     public UriBuilder path(Class resource, String method) {
         if (resource == null) {
@@ -361,7 +360,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder port(int port) {
         if (port < -1) {
@@ -371,7 +370,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder queryParam(String name, Object... values) {
         if (name == null) {
@@ -398,7 +397,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder replaceMatrixParam(String name, Object... values) {
         if (name == null) {
@@ -446,7 +445,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder replaceMatrix(String matrix) {
         // Search ';' which goes after '/' at final path segment.
@@ -469,7 +468,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder replacePath(String p) {
         path.setLength(0);
@@ -479,7 +478,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder replaceQueryParam(String name, Object... values) {
         if (name == null) {
@@ -524,7 +523,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder replaceQuery(String queryString) {
         query.setLength(0);
@@ -536,14 +535,14 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder scheme(String schema) {
         this.schema = schema != null ? UriComponent.validate(schema, UriComponent.SCHEME, true) : null;
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder schemeSpecificPart(String ssp) {
         if (ssp == null) {
@@ -581,7 +580,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder segment(String... segments) {
         if (segments == null) {
@@ -595,7 +594,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder uri(URI uri) {
         if (uri == null) {
@@ -635,7 +634,7 @@ public class UriBuilderImpl extends UriBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder userInfo(String userInfo) {
         this.userInfo = userInfo != null ? UriComponent.recognizeEncode(userInfo, UriComponent.USER_INFO, true) : null;

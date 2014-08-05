@@ -22,17 +22,17 @@ public interface ObjectModel {
 
     /**
      * @return collections constructor, MAY return empty collection or null if
-     *         object is singleton. There is no setter for this to add new
-     *         ConstructorInjector use
-     *         <code>ObjectModel.getConstructorDescriptors().add(ConstructorInjector)</code>
+     * object is singleton. There is no setter for this to add new
+     * ConstructorInjector use
+     * <code>ObjectModel.getConstructorDescriptors().add(ConstructorInjector)</code>
      */
     List<ConstructorDescriptor> getConstructorDescriptors();
 
     /**
      * @return collections of object fields, MAY return empty collection or null
-     *         if object is singleton. There is no setter for this to add new
-     *         ConstructorInjector use
-     *         <code>ObjectModel.getFieldInjectors().add(FieldInjector)</code>
+     * if object is singleton. There is no setter for this to add new
+     * ConstructorInjector use
+     * <code>ObjectModel.getFieldInjectors().add(FieldInjector)</code>
      */
     List<FieldInjector> getFieldInjectors();
 
@@ -51,7 +51,7 @@ public interface ObjectModel {
      * Optional attributes.
      *
      * @return all properties. If there is no any optional attributes then empty
-     *         map returned never <code>null</code>
+     * map returned never <code>null</code>
      */
     MultivaluedMap<String, String> getProperties();
 

@@ -34,7 +34,8 @@ import javax.ws.rs.core.Application;
  * @author andrew00x
  */
 public class EverrestInitializedListener implements ServletContextListener {
-    /** {@inheritDoc} */
+
+    @Override
     public void contextDestroyed(ServletContextEvent sce) {
         makeFileCollectorDestroyer().stopFileCollector();
         ServletContext ctx = sce.getServletContext();
@@ -48,7 +49,8 @@ public class EverrestInitializedListener implements ServletContextListener {
         return new FileCollectorDestroyer();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext ctx = sce.getServletContext();
         DependencySupplier dependencySupplier = (DependencySupplier)ctx.getAttribute(DependencySupplier.class.getName());

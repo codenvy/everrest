@@ -116,6 +116,7 @@ public final class Request implements RoRequest, Cloneable {
     // Methods
 
     /** @return the HTTPConnection this request is associated with */
+    @Override
     public HTTPConnection getConnection() {
         return connection;
     }
@@ -129,6 +130,7 @@ public final class Request implements RoRequest, Cloneable {
     }
 
     /** @return the request method */
+    @Override
     public String getMethod() {
         return method;
     }
@@ -142,6 +144,7 @@ public final class Request implements RoRequest, Cloneable {
     }
 
     /** @return the request-uri */
+    @Override
     public String getRequestURI() {
         return req_uri;
     }
@@ -170,6 +173,7 @@ public final class Request implements RoRequest, Cloneable {
     }
 
     /** @return the headers making up this request */
+    @Override
     public NVPair[] getHeaders() {
         return headers;
     }
@@ -186,6 +190,7 @@ public final class Request implements RoRequest, Cloneable {
     }
 
     /** @return the body of this request */
+    @Override
     public byte[] getData() {
         return data;
     }
@@ -199,6 +204,7 @@ public final class Request implements RoRequest, Cloneable {
     }
 
     /** @return the output stream on which the body is written */
+    @Override
     public HttpOutputStream getStream() {
         return stream;
     }
@@ -213,8 +219,9 @@ public final class Request implements RoRequest, Cloneable {
 
     /**
      * @return true if the modules or handlers for this request may popup windows
-     *         or otherwise interact with the user
+     * or otherwise interact with the user
      */
+    @Override
     public boolean allowUI() {
         return allow_ui;
     }
@@ -229,6 +236,7 @@ public final class Request implements RoRequest, Cloneable {
     }
 
     /** @return a clone of this request object */
+    @Override
     public Object clone() {
         Request cl;
         try {

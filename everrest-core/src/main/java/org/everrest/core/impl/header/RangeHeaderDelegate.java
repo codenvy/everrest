@@ -20,13 +20,14 @@ import java.util.List;
  * @version $Id$
  */
 public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<Ranges> support() {
         return Ranges.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Ranges fromString(String value) throws IllegalArgumentException {
         if (value == null) {
             throw new IllegalArgumentException("null");
@@ -59,7 +60,8 @@ public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges> {
         return new Ranges(r);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(Ranges value) {
         throw new UnsupportedOperationException();
     }

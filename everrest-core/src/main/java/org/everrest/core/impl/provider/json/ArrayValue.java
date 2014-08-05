@@ -23,31 +23,31 @@ public class ArrayValue extends JsonValue {
     /** List of children. */
     private final List<JsonValue> children = new ArrayList<JsonValue>();
 
-    /** {@inheritDoc} */
+
     @Override
     public void addElement(JsonValue child) {
         children.add(child);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean isArray() {
         return true;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Iterator<JsonValue> getElements() {
         return children.iterator();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public int size() {
         return children.size();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -64,7 +64,7 @@ public class ArrayValue extends JsonValue {
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void writeTo(JsonWriter writer) throws JsonException {
         writer.writeStartArray();

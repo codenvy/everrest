@@ -39,7 +39,7 @@ public class JsonEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testRead() throws Exception {
         MessageBodyReader reader = new JsonEntityProvider();
         Assert.assertTrue(reader.isReadable(Bean.class, Bean.class, null, mediaType));
@@ -52,7 +52,7 @@ public class JsonEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testWrite() throws Exception {
         MessageBodyWriter writer = new JsonEntityProvider();
         Assert.assertTrue(writer.isWriteable(Bean.class, Bean.class, null, mediaType));

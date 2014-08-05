@@ -23,13 +23,14 @@ import java.util.Map.Entry;
  *          $
  */
 public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<MediaType> support() {
         return MediaType.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public MediaType fromString(String header) {
         if (header == null) {
             throw new IllegalArgumentException();
@@ -68,7 +69,8 @@ public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType> {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(MediaType mime) {
         StringBuilder sb = new StringBuilder();
         sb.append(mime.getType()).append('/').append(mime.getSubtype());

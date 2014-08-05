@@ -88,7 +88,6 @@ public class CaselessMultivaluedMapTest {
         Assert.assertEquals(1, map.size());
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void testEntrySet() {
         Set<Entry<String, List<String>>> entries = map.entrySet();

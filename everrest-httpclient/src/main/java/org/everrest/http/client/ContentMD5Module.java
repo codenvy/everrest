@@ -59,20 +59,24 @@ class ContentMD5Module implements HTTPClientModule {
     // Methods
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int requestHandler(Request req, Response[] resp) {
         return REQ_CONTINUE;
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase1Handler(Response resp, RoRequest req) {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int responsePhase2Handler(Response resp, Request req) {
         return RSP_CONTINUE;
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase3Handler(Response resp, RoRequest req) throws IOException, ModuleException {
         if (req.getMethod().equals("HEAD"))
             return;
@@ -100,6 +104,7 @@ class ContentMD5Module implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void trailerHandler(Response resp, RoRequest req) {
     }
 }
@@ -111,6 +116,7 @@ class VerifyMD5 implements HashVerifier {
         this.resp = resp;
     }
 
+    @Override
     public void verifyHash(byte[] hash, long len) throws IOException {
         String hdr;
         try {

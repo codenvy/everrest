@@ -67,10 +67,10 @@ public interface AuthorizationHandler {
      * @param resp
      *         the full response.
      * @return the authorization info to use when retrying the request, or null
-     *         if the request is not to be retried. The necessary info includes
-     *         the host, port, scheme and realm as given in the
-     *         <var>challenge</var> parameter, plus either the basic cookie or
-     *         any necessary params.
+     * if the request is not to be retried. The necessary info includes
+     * the host, port, scheme and realm as given in the
+     * <var>challenge</var> parameter, plus either the basic cookie or
+     * any necessary params.
      * @throws AuthSchemeNotImplException
      *         if the authorization scheme in the
      *         challenge cannot be handled.
@@ -102,7 +102,7 @@ public interface AuthorizationHandler {
      *         the full 401 response received, or null if we are preemptively
      *         sending the info.
      * @return the authorization info to be sent with the request, or null if
-     *         none is to be sent.
+     * none is to be sent.
      * @throws AuthSchemeNotImplException
      *         if the authorization scheme in the
      *         info cannot be handled.
@@ -153,7 +153,7 @@ public interface AuthorizationHandler {
      *         if an exception occurs during the reading of the
      *         trailers.
      * @see #handleAuthHeaders(HTTPClient.Response, HTTPClient.RoRequest,
-     *      HTTPClient.AuthorizationInfo, HTTPClient.AuthorizationInfo)
+     * HTTPClient.AuthorizationInfo, HTTPClient.AuthorizationInfo)
      */
     void handleAuthTrailers(Response resp, RoRequest req, AuthorizationInfo prev, AuthorizationInfo prxy)
             throws IOException;

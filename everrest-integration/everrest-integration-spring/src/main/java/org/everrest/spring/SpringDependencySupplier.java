@@ -17,12 +17,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 /**
- * Implementation of DependencySupplier that obtain dependencies from Spring IoC
- * container.
+ * Implementation of DependencySupplier that obtain dependencies from Spring IoC container.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: SpringDependencySupplier.java 88 2010-11-11 11:22:12Z andrew00x
- *          $
+ * @author andrew00x
  */
 public final class SpringDependencySupplier extends BaseDependencySupplier implements BeanFactoryAware {
     private BeanFactory beanFactory;

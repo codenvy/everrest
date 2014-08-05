@@ -30,12 +30,12 @@ public final class CaselessStringWrapper {
         return string;
     }
 
-    /** {@inheritDoc} */
+
     public String toString() {
         return string == null ? "null" : string;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -49,7 +49,7 @@ public final class CaselessStringWrapper {
                || caselessString != null && caselessString.equals(other.caselessString);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public int hashCode() {
         return caselessString == null ? 0 : caselessString.hashCode();

@@ -83,6 +83,7 @@ class BufferedInputStream extends FilterInputStream {
      * @throws IOException
      *         if thrown by the underlying stream
      */
+    @Override
     public int read() throws IOException {
         if (pos >= end)
             fillBuff();
@@ -103,6 +104,7 @@ class BufferedInputStream extends FilterInputStream {
      * @throws IOException
      *         if thrown by the underlying stream
      */
+    @Override
     public int read(byte[] buf, int off, int len) throws IOException {
         if (len <= 0)
             return 0;
@@ -135,6 +137,7 @@ class BufferedInputStream extends FilterInputStream {
      * @throws IOException
      *         if thrown by the underlying stream
      */
+    @Override
     public long skip(long n) throws IOException {
         if (n <= 0)
             return 0;
@@ -181,6 +184,7 @@ class BufferedInputStream extends FilterInputStream {
      *         if the buffer is empty and the underlying stream
      *         has been closed
      */
+    @Override
     public int available() throws IOException {
         int avail = end - pos;
         if (avail == 0)
@@ -216,7 +220,7 @@ class BufferedInputStream extends FilterInputStream {
      * @param search_cmp
      *         the compiled info of the search string
      * @return how many bytes past the end of the boundary we went; -1 if we
-     *         haven't gone passed it yet.
+     * haven't gone passed it yet.
      */
     int pastEnd(byte[] search, int[] search_cmp) {
         int idx = Util.findStr(search, search_cmp, buffer, mark_pos, pos);

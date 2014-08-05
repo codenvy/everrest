@@ -40,8 +40,9 @@ public class ServletContainerResponseWriter implements ContainerResponseWriter {
         this.servletResponse = response;
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+
+    @Override
+    @SuppressWarnings({"unchecked"})
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
         if (servletResponse.isCommitted()) {
             return;
@@ -55,7 +56,7 @@ public class ServletContainerResponseWriter implements ContainerResponseWriter {
         }
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void writeHeaders(GenericContainerResponse response) throws IOException {
         if (servletResponse.isCommitted()) {
             return;

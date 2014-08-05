@@ -19,13 +19,14 @@ import java.util.Locale;
  * @version $Id$
  */
 public class LocaleHeaderDelegate extends AbstractHeaderDelegate<Locale> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<Locale> support() {
         return Locale.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Locale fromString(String header) {
         if (header == null) {
             throw new IllegalArgumentException();
@@ -46,7 +47,8 @@ public class LocaleHeaderDelegate extends AbstractHeaderDelegate<Locale> {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(Locale locale) {
         String lan = locale.getLanguage();
         // For output if language does not set correctly then ignore it.

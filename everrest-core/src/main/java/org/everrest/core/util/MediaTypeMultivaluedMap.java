@@ -26,8 +26,9 @@ public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements
      * @param mediaType
      *         MediaType
      * @return List of ProviderFactory if no value mapped to the specified key
-     *         then empty list will be returned instead null
+     * then empty list will be returned instead null
      */
+    @Override
     public List<V> getList(MediaType mediaType) {
         List<V> list = get(mediaType);
         if (list == null) {
@@ -40,6 +41,7 @@ public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements
         return list;
     }
 
+    @Override
     public void add(MediaType mediaType, V value) {
         if (value == null) {
             return;
@@ -48,11 +50,13 @@ public class MediaTypeMultivaluedMap<V> extends MediaTypeMap<List<V>> implements
         list.add(value);
     }
 
+    @Override
     public V getFirst(MediaType mime) {
         List<V> list = get(mime);
         return list != null && list.size() > 0 ? list.get(0) : null;
     }
 
+    @Override
     public void putSingle(MediaType mediaType, V value) {
         if (value == null) {
             remove(mediaType);

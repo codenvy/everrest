@@ -22,9 +22,7 @@ import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ParameterResolverFactory.java 292 2009-10-19 07:03:07Z
- *          aparfonov $
+ * @author andrew00x
  */
 public final class ParameterResolverFactory {
     /**
@@ -34,7 +32,6 @@ public final class ParameterResolverFactory {
      *         JAX-RS annotation
      * @return ParameterResolver
      */
-    @SuppressWarnings("rawtypes")
     public static ParameterResolver createParameterResolver(Annotation annotation) {
         Class clazz = annotation.annotationType();
         if (clazz == CookieParam.class) {

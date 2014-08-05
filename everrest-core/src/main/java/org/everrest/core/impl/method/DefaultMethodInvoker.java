@@ -38,11 +38,10 @@ import java.util.List;
 /**
  * Invoker for Resource Method, Sub-Resource Method and SubResource Locator.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class DefaultMethodInvoker implements MethodInvoker {
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public static Object[] makeMethodParameters(GenericMethodResource methodResource, ApplicationContext context) {
         Object[] params = new Object[methodResource.getMethodParameters().size()];
         int i = 0;
@@ -134,7 +133,8 @@ public class DefaultMethodInvoker implements MethodInvoker {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(DefaultMethodInvoker.class);
 
-    /** {@inheritDoc} */
+
+    @Override
     public final Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context) {
         beforeInvokeMethod(methodResource, methodResource, context);
         Object[] params = makeMethodParameters(methodResource, context);

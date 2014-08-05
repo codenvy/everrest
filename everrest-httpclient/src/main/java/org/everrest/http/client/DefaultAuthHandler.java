@@ -88,6 +88,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
      * For Digest authentication we need to set the uri, response and opaque
      * parameters. For "Basic" and "SOCKS5" nothing is done.
      */
+    @Override
     public AuthorizationInfo fixupAuthInfo(AuthorizationInfo info, RoRequest req, AuthorizationInfo challenge,
                                            RoResponse resp) throws AuthSchemeNotImplException {
         // nothing to do for Basic and SOCKS5 schemes
@@ -118,6 +119,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
      *         if the authentication scheme in the
      *         challenge cannot be handled.
      */
+    @Override
     public AuthorizationInfo getAuthorization(AuthorizationInfo challenge, RoRequest req, RoResponse resp)
             throws AuthSchemeNotImplException, IOException {
         AuthorizationInfo cred;
@@ -193,6 +195,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
      * We handle the "Authentication-Info" and "Proxy-Authentication-Info"
      * headers here.
      */
+    @Override
     public void handleAuthHeaders(Response resp, RoRequest req, AuthorizationInfo prev, AuthorizationInfo prxy)
             throws IOException {
         String auth_info = resp.getHeader("Authentication-Info");
@@ -216,6 +219,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
      * We handle the "Authentication-Info" and "Proxy-Authentication-Info"
      * trailers here.
      */
+    @Override
     public void handleAuthTrailers(Response resp, RoRequest req, AuthorizationInfo prev, AuthorizationInfo prxy)
             throws IOException {
         String auth_info = resp.getTrailer("Authentication-Info");
@@ -1039,6 +1043,7 @@ class VerifyRspAuth implements HashVerifier, GlobalConstants {
         this.resp = resp;
     }
 
+    @Override
     public void verifyHash(byte[] hash, long len) throws IOException {
         String auth_info = resp.getHeader(hdr);
         if (auth_info == null)
@@ -1119,6 +1124,7 @@ class VerifyDigest implements HashVerifier, GlobalConstants {
         this.resp = resp;
     }
 
+    @Override
     public void verifyHash(byte[] hash, long len) throws IOException {
         String auth_info = resp.getHeader(hdr);
         if (auth_info == null)
@@ -1169,6 +1175,7 @@ class SimpleAuthPopup implements AuthorizationPrompter {
      *
      * @return the username/password pair
      */
+    @Override
     public NVPair getUsernamePassword(AuthorizationInfo challenge, boolean forProxy) {
         String line1, line2, line3;
 
@@ -1266,6 +1273,7 @@ class SimpleAuthPopup implements AuthorizationPrompter {
 
         /** our event handlers */
         private class Ok implements ActionListener {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 done = OK;
                 synchronized (BasicAuthBox.this) {
@@ -1275,6 +1283,7 @@ class SimpleAuthPopup implements AuthorizationPrompter {
         }
 
         private class Clear implements ActionListener {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 user.setText("");
                 pass.setText("");
@@ -1283,6 +1292,7 @@ class SimpleAuthPopup implements AuthorizationPrompter {
         }
 
         private class Cancel implements ActionListener {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 done = CANCEL;
                 synchronized (BasicAuthBox.this) {
@@ -1292,6 +1302,7 @@ class SimpleAuthPopup implements AuthorizationPrompter {
         }
 
         private class Close extends WindowAdapter {
+            @Override
             public void windowClosing(WindowEvent we) {
                 new Cancel().actionPerformed(null);
             }
@@ -1365,6 +1376,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter {
      *
      * @return the username/password pair
      */
+    @Override
     public NVPair getUsernamePassword(AuthorizationInfo challenge, boolean forProxy) {
         String user, pass;
 

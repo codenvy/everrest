@@ -14,8 +14,7 @@ import org.everrest.core.BaseDependencySupplier;
 import org.everrest.pico.servlet.EverrestPicoFilter;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class PicoDependencySupplier extends BaseDependencySupplier {
     @Override

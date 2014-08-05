@@ -43,16 +43,19 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         }
 
         /** Case insensitive key. {@inheritDoc}. */
+        @Override
         public CaselessStringWrapper getKey() {
             return key;
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public List<T> getValue() {
             return value;
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public List<T> setValue(List<T> value) {
             List<T> old = this.value;
             this.value = value;
@@ -69,21 +72,24 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         }
 
         /** Restore original String key of this entry. {@inheritDoc}. */
+        @Override
         public String getKey() {
             return entry.getKey().getString();
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public List<T> getValue() {
             return entry.getValue();
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public List<T> setValue(List<T> value) {
             return entry.setValue(value);
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public String toString() {
             return getKey() + "=" + getValue();
@@ -91,20 +97,20 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
     }
 
     class EntrySet extends AbstractSet<Entry<String, List<T>>> {
-        /** {@inheritDoc} */
+
         @Override
         public boolean addAll(Collection<? extends Entry<String, List<T>>> c) {
             throw new UnsupportedOperationException("addAll");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public void clear() {
             m.clear();
         }
 
-        /** {@inheritDoc} */
-        @SuppressWarnings({"unchecked", "rawtypes"})
+
+        @SuppressWarnings({"unchecked"})
         @Override
         public boolean contains(Object o) {
             if (!(o instanceof Entry)) {
@@ -118,28 +124,31 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
                    && m.entrySet().contains(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public Iterator<Entry<String, List<T>>> iterator() {
             return new Iterator<Entry<String, List<T>>>() {
                 private Iterator<Entry<CaselessStringWrapper, List<T>>> i = m.entrySet().iterator();
 
+                @Override
                 public boolean hasNext() {
                     return i.hasNext();
                 }
 
+                @Override
                 public Entry<String, List<T>> next() {
                     return new EntryAdapter(i.next());
                 }
 
+                @Override
                 public void remove() {
                     i.remove();
                 }
             };
         }
 
-        /** {@inheritDoc} */
-        @SuppressWarnings({"unchecked", "rawtypes"})
+
+        @SuppressWarnings({"unchecked"})
         @Override
         public boolean remove(Object o) {
             if (!(o instanceof Entry)) {
@@ -153,7 +162,8 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
                    && m.entrySet().remove(new CaselessEntry(new CaselessStringWrapper((String)k), (List)v));
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public int size() {
             return m.size();
         }
@@ -162,19 +172,19 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
 
     class KeySet extends AbstractSet<String> {
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean addAll(Collection<? extends String> c) {
             throw new UnsupportedOperationException("addAll");
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public void clear() {
             m.clear();
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean contains(Object o) {
             if (o == null) {
@@ -183,26 +193,30 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
             return o instanceof String && m.keySet().contains(new CaselessStringWrapper((String)o));
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public Iterator<String> iterator() {
             return new Iterator<String>() {
                 private Iterator<CaselessStringWrapper> i = m.keySet().iterator();
 
+                @Override
                 public boolean hasNext() {
                     return i.hasNext();
                 }
 
+                @Override
                 public String next() {
                     return i.next().getString();
                 }
 
+                @Override
                 public void remove() {
                     i.remove();
                 }
             };
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public boolean remove(Object o) {
             if (o == null) {
@@ -211,7 +225,8 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
             return o instanceof String && m.keySet().remove(new CaselessStringWrapper((String)o));
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public int size() {
             return m.size();
         }
@@ -234,7 +249,8 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
             super(m);
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public void add(CaselessStringWrapper key, T value) {
             if (value == null) {
                 return;
@@ -243,13 +259,15 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
             list.add(value);
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public T getFirst(CaselessStringWrapper key) {
             List<T> list = get(key);
             return list != null && list.size() > 0 ? list.get(0) : null;
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public List<T> getList(CaselessStringWrapper key) {
             List<T> list = get(key);
             if (list == null) {
@@ -259,7 +277,8 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
             return list;
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public void putSingle(CaselessStringWrapper key, T value) {
             if (value == null) {
                 remove(key);
@@ -296,17 +315,20 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void add(String key, T value) {
         m.add(new CaselessStringWrapper(key), value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void clear() {
         m.clear();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean containsKey(Object key) {
         if (key == null) {
             return m.containsKey(new CaselessStringWrapper(null));
@@ -314,12 +336,14 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         return key instanceof String && m.containsKey(new CaselessStringWrapper((String)key));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean containsValue(Object value) {
         return m.containsValue(value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Set<Entry<String, List<T>>> entrySet() {
         if (entries == null) {
             entries = new EntrySet();
@@ -327,7 +351,8 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         return entries;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<T> get(Object key) {
         if (key == null) {
             return m.get(new CaselessStringWrapper(null));
@@ -338,12 +363,14 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         return m.get(new CaselessStringWrapper((String)key));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public T getFirst(String key) {
         return m.getFirst(new CaselessStringWrapper(key));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<T> getList(String key) {
         CaselessStringWrapper caselessKey = new CaselessStringWrapper(key);
         List<T> list = m.get(caselessKey);
@@ -354,12 +381,14 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         return list;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isEmpty() {
         return m.isEmpty();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Set<String> keySet() {
         if (keys == null) {
             keys = new KeySet();
@@ -367,12 +396,14 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         return keys;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<T> put(String key, List<T> value) {
         return m.put(new CaselessStringWrapper(key), value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void putAll(Map<? extends String, ? extends List<T>> m) {
         for (String key : m.keySet()) {
             List<T> values = m.get(key);
@@ -382,12 +413,14 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void putSingle(String key, T value) {
         m.putSingle(new CaselessStringWrapper(key), value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<T> remove(Object key) {
         if (key == null) {
             return m.remove(new CaselessStringWrapper(null));
@@ -398,12 +431,14 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
         return m.remove(new CaselessStringWrapper((String)key));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public int size() {
         return m.size();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Collection<List<T>> values() {
         return m.values();
     }

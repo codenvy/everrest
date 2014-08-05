@@ -16,7 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Factory of Groovy class loader. It can provide preset GroovyClassLoader instance or customized instance of GroovyClassLoader able resolve
+ * Factory of Groovy class loader. It can provide preset GroovyClassLoader instance or customized instance of GroovyClassLoader able
+ * resolve
  * additional Groovy source files.
  *
  * @author andrew00x

@@ -113,6 +113,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
 
     //
 
+    @Override
     public Long getId() {
         return id;
     }

@@ -26,12 +26,14 @@ import java.lang.reflect.Type;
  */
 @Provider
 public class StringEntityProvider implements EntityProvider<String> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == String.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String readFrom(Class<String> type,
                            Type genericType,
                            Annotation[] annotations,
@@ -41,18 +43,21 @@ public class StringEntityProvider implements EntityProvider<String> {
         return IOHelper.readString(entityStream, mediaType == null ? null : mediaType.getParameters().get("charset"));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(String t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         //    return t.length();
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == String.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(String t,
                         Class<?> type,
                         Type genericType,

@@ -42,7 +42,7 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
     private EverrestProcessor           processor;
     private MessageConverter            messageConverter;
     private WebApplicationDeclaredRoles webApplicationRoles;
-    private Executor executor;
+    private Executor                    executor;
 
     @Override
     public void init() throws ServletException {

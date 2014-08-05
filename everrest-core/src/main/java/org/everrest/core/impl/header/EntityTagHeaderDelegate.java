@@ -20,13 +20,14 @@ import javax.ws.rs.core.EntityTag;
  *          $
  */
 public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<EntityTag> support() {
         return EntityTag.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public EntityTag fromString(String header) {
         if (header == null) {
             throw new IllegalArgumentException();
@@ -48,7 +49,8 @@ public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag> {
         return new EntityTag(value, isWeak);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(EntityTag entityTag) {
         StringBuilder sb = new StringBuilder();
         if (entityTag.isWeak()) {

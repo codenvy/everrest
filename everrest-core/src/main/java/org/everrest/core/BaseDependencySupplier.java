@@ -56,7 +56,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier {
         });
     }
 
-    /** {@inheritDoc} */
+    @Override
     public final Object getComponent(Parameter parameter) {
         boolean injectable = false;
         if (parameter instanceof FieldInjector) {
@@ -92,7 +92,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier {
      * @param name
      *         of dependency
      * @return object of required type or null if instance described by
-     *         <code>name</code> may not be produced
+     * <code>name</code> may not be produced
      * @throws RuntimeException
      *         if any error occurs while creating instance
      *         of <code>name</code>
@@ -107,7 +107,7 @@ public abstract class BaseDependencySupplier implements DependencySupplier {
      * @param clazz
      *         class to be checked
      * @return <code>true</code> if <code>clazz</code> is javax.inject.Provider and
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     protected final boolean isProvider(Class<?> clazz) {
         return javax.inject.Provider.class == clazz;

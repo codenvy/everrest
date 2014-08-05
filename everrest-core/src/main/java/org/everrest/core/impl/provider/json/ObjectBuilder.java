@@ -346,7 +346,7 @@ public class ObjectBuilder {
      * @throws JsonException
      *         if any errors occurs.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public static <T> T createObject(Class<T> clazz, JsonValue jsonValue) throws JsonException {
         if (jsonValue == null || jsonValue.isNull()) {
             return null;

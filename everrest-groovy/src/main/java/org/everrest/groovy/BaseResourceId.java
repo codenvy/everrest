@@ -25,24 +25,21 @@ public class BaseResourceId implements ResourceId {
         this.id = id;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public String getId() {
         return id;
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         return obj != null && getClass() == obj.getClass() && id.equals(((BaseResourceId)obj).id);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return id.hashCode();
     }
 
-    /** {@inheritDoc} */
     public String toString() {
         return getClass().getSimpleName() + '(' + id + ')';
     }

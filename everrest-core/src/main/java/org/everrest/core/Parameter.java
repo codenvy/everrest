@@ -26,9 +26,9 @@ public interface Parameter {
 
     /**
      * @return <i>main</i> annotation. It mind this annotation describe which
-     *         value will be used for initialize parameter, e. g.
-     *         {@link javax.ws.rs.PathParam}, {@link javax.ws.rs.QueryParam},
-     *         etc.
+     * value will be used for initialize parameter, e. g.
+     * {@link javax.ws.rs.PathParam}, {@link javax.ws.rs.QueryParam},
+     * etc.
      */
     Annotation getAnnotation();
 

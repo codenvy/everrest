@@ -17,6 +17,7 @@ import java.io.InputStream;
  * @author andrew00x
  */
 public final class EmptyInputStream extends InputStream {
+    @Override
     public int read() throws IOException {
         return -1;
     }

@@ -35,11 +35,13 @@ public class EverrestServlet extends HttpServlet {
 
     protected EverrestProcessor processor;
 
+    @Override
     public void init() throws ServletException {
         processor = (EverrestProcessor)getServletConfig().getServletContext().getAttribute(EverrestProcessor.class.getName());
         webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
     }
 
+    @Override
     public void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
                                                                                                  ServletException {
         EnvironmentContext env = new EnvironmentContext();

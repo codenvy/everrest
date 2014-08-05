@@ -229,7 +229,7 @@ public class Util {
      * @param search
      *         the search string (same as the first argument to findStr()).
      * @return an array of distances (to be passed as the second argument to
-     *         findStr()).
+     * findStr()).
      */
     final static int[] compile_search(byte[] search) {
         int[] cmp = {0, 1, 0, 1, 0, 1};
@@ -282,7 +282,7 @@ public class Util {
      *         the position at which to end the search in <var>str</var>,
      *         noninclusive.
      * @return the position in <var>str</var> where <var>search</var> was found,
-     *         or -1 if not found.
+     * or -1 if not found.
      */
     final static int findStr(byte[] search, int[] cmp, byte[] str, int beg, int end) {
         int c1f = cmp[0], c1l = cmp[1], d1 = c1l - c1f, c2f = cmp[2], c2l = cmp[3], d2 = c2l - c2f, c3f = cmp[4], c3l =
@@ -334,7 +334,7 @@ public class Util {
      * @param str
      *         the string do dequote
      * @return the string do with all quoted characters replaced by their true
-     *         value.
+     * value.
      */
     public final static String dequoteString(String str) {
         if (str.indexOf('\\') == -1)
@@ -364,7 +364,7 @@ public class Util {
      * @param qlist
      *         the list of characters to quote
      * @return the string do with all characters replaced by their quoted
-     *         version.
+     * version.
      */
     public final static String quoteString(String str, String qlist) {
         char[] list = qlist.toCharArray();
@@ -400,7 +400,7 @@ public class Util {
      * @param header
      *         the value part of the header.
      * @return a Vector containing all the elements; each entry is an instance of
-     *         <var>HttpHeaderElement</var>.
+     * <var>HttpHeaderElement</var>.
      * @throws ParseException
      *         if the syntax rules are violated.
      * @see #parseHeader(java.lang.String, boolean)
@@ -438,7 +438,7 @@ public class Util {
      * @param dequote
      *         if true all quoted strings are dequoted.
      * @return a Vector containing all the elements; each entry is an instance of
-     *         <var>HttpHeaderElement</var>.
+     * <var>HttpHeaderElement</var>.
      * @throws ParseException
      *         if the above syntax rules are violated.
      * @see HTTPClient.HttpHeaderElement
@@ -709,7 +709,7 @@ public class Util {
      * @param pos
      *         the position to start looking
      * @return the position of the first space character, or the length of the
-     *         string if not found
+     * string if not found
      */
     final static int findSpace(char[] str, int pos) {
         int len = str.length;
@@ -727,7 +727,7 @@ public class Util {
      * @param pos
      *         the position to start looking
      * @return the position of the first non-token character, or the length of
-     *         the string if not found
+     * the string if not found
      */
     final static int skipToken(char[] str, int pos) {
         int len = str.length;

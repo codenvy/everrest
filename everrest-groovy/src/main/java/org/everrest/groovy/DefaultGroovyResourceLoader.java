@@ -46,6 +46,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader {
             }
         }
         resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>(maxEntries + 1, 1.0f, true) {
+            @Override
             protected boolean removeEldestEntry(Map.Entry<String, URL> eldest) {
                 if (size() > maxEntries) {
                     locks.remove(eldest.getKey());
@@ -61,7 +62,8 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader {
         this(new URL[]{root});
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public final URL loadGroovySource(String filename) throws MalformedURLException {
         String[] sourceFileExtensions = getSourceFileExtensions();
         URL resource = null;

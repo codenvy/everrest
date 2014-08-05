@@ -71,6 +71,7 @@ class MD5InputStream extends FilterInputStream {
         }
     }
 
+    @Override
     public synchronized int read() throws IOException {
         int b = in.read();
         if (b != -1)
@@ -82,6 +83,7 @@ class MD5InputStream extends FilterInputStream {
         return b;
     }
 
+    @Override
     public synchronized int read(byte[] buf, int off, int len) throws IOException {
         int num = in.read(buf, off, len);
         if (num > 0)
@@ -93,6 +95,7 @@ class MD5InputStream extends FilterInputStream {
         return num;
     }
 
+    @Override
     public synchronized long skip(long num) throws IOException {
         byte[] tmp = new byte[(int)num];
         int got = read(tmp, 0, (int)num);
@@ -113,6 +116,7 @@ class MD5InputStream extends FilterInputStream {
      *         IOException, or if the expected digest and the calculated
      *         digest don't match.
      */
+    @Override
     public synchronized void close() throws IOException {
         while (skip(10000) > 0) ;
         real_close();

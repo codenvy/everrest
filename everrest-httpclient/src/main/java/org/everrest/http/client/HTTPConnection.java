@@ -2086,8 +2086,8 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      *         if true removes all modules (except for the retry module)
      * @see #removeModule(java.lang.Class)
      * @deprecated This is not really needed anymore; in V0.2 request were
-     *             synchronous and therefore to do pipelining you needed to
-     *             disable the processing of responses.
+     * synchronous and therefore to do pipelining you needed to
+     * disable the processing of responses.
      */
     public void setRawMode(boolean raw) {
         // Don't remove the retry module
@@ -2252,7 +2252,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      *         to the end of the list (-1 means the last element, -2 the second to
      *         last element, etc).
      * @return true if module was successfully added; false if the module is
-     *         already in the list.
+     * already in the list.
      * @throws ArrayIndexOutOfBoundsException
      *         if <var>pos</var> > list-size or
      *         if <var>pos</var> < -(list-size).
@@ -2304,7 +2304,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      *         to the end of the list (-1 means the last element, -2 the second to
      *         last element, etc).
      * @return true if module was successfully added; false if the module is
-     *         already in the list.
+     * already in the list.
      * @throws ArrayIndexOutOfBoundsException
      *         if <var>pos</var> > list-size or
      *         if <var>pos</var> < -(list-size).
@@ -2427,7 +2427,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      * Returns the current context.
      *
      * @return the current context, or the default context if
-     *         <code>setContext()</code> hasn't been invoked
+     * <code>setContext()</code> hasn't been invoked
      * @see #setContext(java.lang.Object)
      */
     public Object getContext() {
@@ -2462,7 +2462,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      * @param passw
      *         the password
      * @see AuthorizationInfo#addDigestAuthorization(java.lang.String, int,
-     *      java.lang.String, java.lang.String, java.lang.String)
+     * java.lang.String, java.lang.String, java.lang.String)
      */
     public void addDigestAuthorization(String realm, String user, String passwd) {
         AuthorizationInfo.addDigestAuthorization(Host, Port, realm, user, passwd, getContext());
@@ -2483,7 +2483,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      * @param passw
      *         the password
      * @see AuthorizationInfo#addBasicAuthorization(java.lang.String, int,
-     *      java.lang.String, java.lang.String, java.lang.String)
+     * java.lang.String, java.lang.String, java.lang.String)
      */
     public void addBasicAuthorization(String realm, String user, String passwd) {
         AuthorizationInfo.addBasicAuthorization(Host, Port, realm, user, passwd, getContext());
@@ -3534,7 +3534,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      * @param timeout
      *         the timeout
      * @return the proxy's last response if unsuccessful, or null if tunnel
-     *         successfuly established
+     * successfuly established
      * @throws IOException
      * @throws ModuleException
      */
@@ -3642,8 +3642,8 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      * @param hdr_buf
      *         the buffer onto which to write the headers
      * @return an array of headers; the first element contains the the value of
-     *         the Connection or Proxy-Connectin header, the second element the
-     *         value of the Expect header.
+     * the Connection or Proxy-Connectin header, the second element the
+     * value of the Expect header.
      * @throws IOException
      *         if writing on <var>hdr_buf</var> generates an an
      *         IOException, or if an error occurs during parsing of a header
@@ -3984,6 +3984,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             close = false;
         }
 
+        @Override
         public void run() {
             try {
                 if (Socks_client != null)
@@ -4042,6 +4043,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             super(os);
         }
 
+        @Override
         public void write(byte[] b, int off, int len) throws IOException {
             while (len > CHUNK_SIZE) {
                 out.write(b, off, CHUNK_SIZE);

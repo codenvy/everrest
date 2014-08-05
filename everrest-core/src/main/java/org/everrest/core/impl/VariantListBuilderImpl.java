@@ -38,7 +38,7 @@ public class VariantListBuilderImpl extends VariantListBuilder {
     /** List of {@link Variant}. */
     private List<Variant> variants;
 
-    /** {@inheritDoc} */
+
     @Override
     public VariantListBuilder add() {
         if (variants == null) {
@@ -72,27 +72,27 @@ public class VariantListBuilderImpl extends VariantListBuilder {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<Variant> build() {
         return variants == null ? variants = new ArrayList<Variant>() : variants;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public VariantListBuilder encodings(String... encs) {
         Collections.addAll(encodings, encs);
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public VariantListBuilder languages(Locale... langs) {
         Collections.addAll(languages, langs);
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public VariantListBuilder mediaTypes(MediaType... mediaTypes) {
         Collections.addAll(this.mediaTypes, mediaTypes);

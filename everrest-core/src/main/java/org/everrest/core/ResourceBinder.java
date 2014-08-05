@@ -169,7 +169,7 @@ public interface ResourceBinder {
      * @param parameterValues
      *         see {@link ApplicationContext#getParameterValues()}
      * @return root resource matched to <code>requestPath</code> or
-     *         <code>null</code>
+     * <code>null</code>
      */
     ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues);
 
@@ -179,7 +179,7 @@ public interface ResourceBinder {
      * @param clazz
      *         root resource class
      * @return removed resource or <code>null</code> if resource of specified
-     *         class not found
+     * class not found
      */
     ObjectFactory<AbstractResourceDescriptor> removeResource(Class<?> clazz);
 
@@ -190,7 +190,7 @@ public interface ResourceBinder {
      * @param path
      *         root resource path
      * @return removed resource or <code>null</code> if resource for specified
-     *         template not found
+     * template not found
      */
     ObjectFactory<AbstractResourceDescriptor> removeResource(String path);
 

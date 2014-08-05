@@ -340,7 +340,8 @@ public class RequestDispatcher {
 
         if (context instanceof Lifecycle) {
             @SuppressWarnings("unchecked")
-            List<LifecycleComponent> perRequest = (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
+            List<LifecycleComponent> perRequest =
+                    (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
             if (perRequest == null) {
                 perRequest = new LinkedList<>();
                 context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
@@ -385,7 +386,6 @@ public class RequestDispatcher {
      * Process result of invoked method, and set {@link javax.ws.rs.core.Response} parameters dependent of returned
      * object.
      *
-     *
      * @param o
      *         result of invoked method
      * @param request
@@ -411,7 +411,7 @@ public class RequestDispatcher {
         if (o == null || o.getClass() == void.class || o.getClass() == Void.class) {
             response.setResponse(Response.noContent().build());
         } else if (o instanceof AsynchronousJob) {
-            final String internalJobUri  = ((AsynchronousJob)o).getJobURI();
+            final String internalJobUri = ((AsynchronousJob)o).getJobURI();
             final String externalJobUri = context.getBaseUriBuilder().path(internalJobUri).build().toString();
             response.setResponse(Response.status(Response.Status.ACCEPTED)
                                          .header(HttpHeaders.LOCATION, externalJobUri)

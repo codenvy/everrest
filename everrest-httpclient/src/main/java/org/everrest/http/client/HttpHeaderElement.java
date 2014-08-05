@@ -110,7 +110,7 @@ public class HttpHeaderElement {
      * @param obj
      *         the object to compare with
      * @return true if <var>obj</var> is an HttpHeaderElement with the same name
-     *         as this element.
+     * as this element.
      */
     public boolean equals(Object obj) {
         if ((obj != null) && (obj instanceof HttpHeaderElement)) {
@@ -123,7 +123,7 @@ public class HttpHeaderElement {
 
     /**
      * @return a string containing the HttpHeaderElement formatted as it would
-     *         appear in a header
+     * appear in a header
      */
     public String toString() {
         StringBuffer buf = new StringBuffer();

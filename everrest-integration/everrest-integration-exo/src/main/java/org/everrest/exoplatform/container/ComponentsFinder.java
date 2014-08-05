@@ -159,7 +159,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             this.mediaType = mediaType;
         }
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings({"unchecked"})
         @Override
         public Object traverse(Object container) {
             components.clear();
@@ -213,7 +213,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             this.mediaType = mediaType;
         }
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings({"unchecked"})
         @Override
         public Object traverse(Object container) {
             components.clear();

@@ -78,37 +78,43 @@ public class MethodParameterImpl implements org.everrest.core.method.MethodParam
         this.encoded = encoded;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation[] getAnnotations() {
         return additional;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation getAnnotation() {
         return annotation;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isEncoded() {
         return encoded;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getDefaultValue() {
         return defaultValue;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Type getGenericType() {
         return type;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Class<?> getParameterClass() {
         return clazz;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[ MethodParameter: ");

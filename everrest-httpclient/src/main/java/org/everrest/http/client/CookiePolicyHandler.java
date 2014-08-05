@@ -54,7 +54,7 @@ public interface CookiePolicyHandler {
      * @param resp
      *         the response which is trying to set the cookie
      * @return true if this cookie should be accepted, false if it is to be
-     *         rejected.
+     * rejected.
      */
     boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp);
 

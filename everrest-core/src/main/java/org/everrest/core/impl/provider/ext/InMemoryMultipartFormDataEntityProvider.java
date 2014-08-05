@@ -41,7 +41,7 @@ public class InMemoryMultipartFormDataEntityProvider extends MultipartFormDataEn
     @Context
     private HttpServletRequest httpRequest;
 
-    /** {@inheritDoc} */
+
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type, Type genericType, Annotation[] annotations,

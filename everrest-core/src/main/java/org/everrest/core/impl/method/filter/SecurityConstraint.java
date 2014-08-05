@@ -41,6 +41,7 @@ public class SecurityConstraint implements MethodInvokerFilter {
      * @see DenyAll
      * @see RolesAllowed
      */
+    @Override
     public void accept(GenericMethodResource method) throws WebApplicationException {
         for (Annotation a : method.getAnnotations()) {
             Class<?> aClass = a.annotationType();

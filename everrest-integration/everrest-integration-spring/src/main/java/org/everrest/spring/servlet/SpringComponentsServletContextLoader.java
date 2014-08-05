@@ -13,8 +13,8 @@ package org.everrest.spring.servlet;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestApplication;
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.spring.SpringComponentsLoader;
 import org.springframework.web.context.ServletContextAware;
@@ -41,12 +41,11 @@ public class SpringComponentsServletContextLoader extends SpringComponentsLoader
         super(resources, providers, configuration, dependencies);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
     }
 
-    /** @see org.everrest.spring.SpringComponentsLoader#makeEverrestApplication() */
     @Override
     protected EverrestApplication makeEverrestApplication() {
         EverrestApplication everrest = super.makeEverrestApplication();
@@ -57,5 +56,4 @@ public class SpringComponentsServletContextLoader extends SpringComponentsLoader
         }
         return everrest;
     }
-
 }

@@ -38,7 +38,7 @@ public final class CollectionStringValueOfProducer extends BaseCollectionProduce
         this.valueOfMethod = valueOfMethod;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     protected Object createValue(String value) throws Exception {
         if (value == null) {

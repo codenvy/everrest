@@ -24,7 +24,8 @@ import java.util.List;
 public class MultivaluedMapImpl extends HashMap<String, List<String>> implements ExtMultivaluedMap<String, String> {
     private static final long serialVersionUID = -6066678602537059655L;
 
-    /** {@inheritDoc} */
+
+    @Override
     public void add(String key, String value) {
         if (value == null) {
             return;
@@ -33,13 +34,15 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
         list.add(value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getFirst(String key) {
         List<String> list = get(key);
         return list != null && list.size() > 0 ? list.get(0) : null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void putSingle(String key, String value) {
         if (value == null) {
             remove(key);
@@ -50,7 +53,8 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
         list.add(value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<String> getList(String key) {
         List<String> list = get(key);
         if (list == null) {

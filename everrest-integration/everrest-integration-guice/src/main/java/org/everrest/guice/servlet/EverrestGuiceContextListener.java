@@ -74,7 +74,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         super.contextInitialized(sce);
@@ -109,7 +109,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         makeFileCollectorDestroyer().stopFileCollector();
@@ -124,7 +124,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         return new FileCollectorDestroyer();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     protected final Injector getInjector() {
         return Guice.createInjector(Stage.PRODUCTION, createModules());
@@ -185,7 +185,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         return (Injector)servletContext.getAttribute(Injector.class.getName());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected void processBindings(Injector injector, EverrestApplication everrest) {
         ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         for (Binding<?> binding : injector.getBindings().values()) {

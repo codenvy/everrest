@@ -46,7 +46,7 @@ public class InputStreamEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testRead() throws Exception {
         MessageBodyReader reader = new InputStreamEntityProvider();
         Assert.assertTrue(reader.isReadable(InputStream.class, null, null, null));
@@ -62,7 +62,7 @@ public class InputStreamEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testWrite() throws Exception {
         MessageBodyWriter writer = new InputStreamEntityProvider();
         Assert.assertTrue(writer.isWriteable(InputStream.class, null, null, null));

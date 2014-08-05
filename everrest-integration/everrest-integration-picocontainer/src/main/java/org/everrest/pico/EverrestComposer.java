@@ -45,11 +45,10 @@ import javax.ws.rs.ext.Provider;
 import java.util.Collection;
 
 /**
- * Register components of containers with different webapp scopes (application, session, request) in EverRest framework
- * if they are annotated with &#64;Path, &#64;Provider or &#64;Filter annotation.
+ * Register components of containers with different webapp scopes (application, session, request) in EverRest framework if they are
+ * annotated with &#64;Path, &#64;Provider or &#64;Filter annotation.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  * @see WebappComposer
  */
 public class EverrestComposer implements WebappComposer {
@@ -65,7 +64,6 @@ public class EverrestComposer implements WebappComposer {
             processor.start();
         }
 
-        /** @see org.picocontainer.Disposable#dispose() */
         @Override
         public void stop() {
             processor.stop();
@@ -79,7 +77,6 @@ public class EverrestComposer implements WebappComposer {
             this.fileCollectorDestroyer = fileCollectorDestroyer;
         }
 
-        /** @see org.picocontainer.Disposable#dispose() */
         @Override
         public void dispose() {
             fileCollectorDestroyer.stopFileCollector();
@@ -92,6 +89,7 @@ public class EverrestComposer implements WebappComposer {
 
     protected EverrestProcessor processor;
 
+    @Override
     public final void composeApplication(MutablePicoContainer container, ServletContext servletContext) {
         String applicationScript = servletContext.getInitParameter("application-script");
         if (applicationScript == null) {
@@ -176,6 +174,7 @@ public class EverrestComposer implements WebappComposer {
         return new FileCollectorDestroyer();
     }
 
+    @Override
     public final void composeSession(MutablePicoContainer container) {
         if (isResourceAvailable(sessionScript)) {
             scriptedComposer.composeSession(container);
@@ -187,6 +186,7 @@ public class EverrestComposer implements WebappComposer {
         processor.addApplication(sesEverrest);
     }
 
+    @Override
     public final void composeRequest(MutablePicoContainer container) {
         if (isResourceAvailable(requestScript)) {
             scriptedComposer.composeRequest(container);

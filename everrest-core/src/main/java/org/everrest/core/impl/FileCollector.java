@@ -36,6 +36,7 @@ public final class FileCollector {
 
     private final File store;
     private final Thread cleaner = new Thread() {
+        @Override
         public void run() {
             clean();
         }

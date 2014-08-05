@@ -68,8 +68,8 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
         }
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+
+    @SuppressWarnings({"unchecked"})
     @Override
     public Application getApplication() {
         final String groovyApplicationFQN = getParameter(EVERREST_GROOVY_APPLICATION);
@@ -93,6 +93,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                 final Set<Class<?>> scanned = new HashSet<>();
                 final Class[] jaxrsAnnotations = new Class[]{Path.class, Provider.class, Filter.class};
                 final URLFilter filter = new URLFilter() {
+                    @Override
                     public boolean accept(URL url) {
                         return url.getPath().endsWith(".groovy");
                     }
@@ -131,6 +132,7 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                     }
                 }
                 groovyApplication = new Application() {
+                    @Override
                     public Set<Class<?>> getClasses() {
                         return scanned;
                     }

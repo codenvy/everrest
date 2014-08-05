@@ -19,8 +19,7 @@ import org.everrest.pico.servlet.EverrestPicoFilter;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
 
@@ -30,7 +29,7 @@ public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T
         this.model = model;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Object getInstance(ApplicationContext context) {
         Class<?> clazz = model.getObjectClass();
         Object component = EverrestPicoFilter.getComponent(clazz);
@@ -47,7 +46,7 @@ public class PicoObjectFactory<T extends ObjectModel> implements ObjectFactory<T
         return component;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public T getObjectModel() {
         return model;
     }

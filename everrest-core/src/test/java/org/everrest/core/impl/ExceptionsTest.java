@@ -82,7 +82,8 @@ public class ExceptionsTest extends BaseTest {
         });
     }
 
-    @Test public void testErrorResponse() throws Exception {
+    @Test
+    public void testErrorResponse() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/4", "", null, null, writer, null);
         Assert.assertEquals(500, response.getStatus());
@@ -91,7 +92,8 @@ public class ExceptionsTest extends BaseTest {
         Assert.assertNotNull(/*response*/writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
-    @Test public void testUncheckedException() throws Exception {
+    @Test
+    public void testUncheckedException() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
 
         ContainerResponse response = launcher.service("GET", "/a/3", "", null, null, writer, null);
@@ -101,7 +103,8 @@ public class ExceptionsTest extends BaseTest {
         Assert.assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
-    @Test public void testWebApplicationExceptionWithCause() throws Exception {
+    @Test
+    public void testWebApplicationExceptionWithCause() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/0", "", null, null, writer, null);
         Assert.assertEquals(500, response.getStatus());
@@ -110,7 +113,8 @@ public class ExceptionsTest extends BaseTest {
         Assert.assertNotNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
-    @Test public void testWebApplicationExceptionWithoutCause() throws Exception {
+    @Test
+    public void testWebApplicationExceptionWithoutCause() throws Exception {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/2", "", null, null, writer, null);
         Assert.assertEquals(500, response.getStatus());

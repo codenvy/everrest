@@ -45,7 +45,7 @@ class EverrestResponseWriter implements ContainerResponseWriter {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
         if (committed) {
             return;

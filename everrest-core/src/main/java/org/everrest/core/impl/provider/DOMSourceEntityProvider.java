@@ -47,12 +47,14 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource> {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(DOMSourceEntityProvider.class);
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == DOMSource.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public DOMSource readFrom(Class<DOMSource> type,
                               Type genericType,
                               Annotation[] annotations,
@@ -77,17 +79,20 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource> {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(DOMSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return DOMSource.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(DOMSource t,
                         Class<?> type,
                         Type genericType,

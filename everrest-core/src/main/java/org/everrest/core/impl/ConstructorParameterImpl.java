@@ -71,37 +71,43 @@ public class ConstructorParameterImpl implements ConstructorParameter {
         this.encoded = encoded;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation getAnnotation() {
         return annotation;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation[] getAnnotations() {
         return additional;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getDefaultValue() {
         return defaultValue;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Class<?> getParameterClass() {
         return clazz;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Type getGenericType() {
         return type;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isEncoded() {
         return encoded;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[ ConstructorParameterImpl : ");

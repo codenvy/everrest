@@ -68,7 +68,7 @@ public class JAXBEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testReadJAXBElement() throws Exception {
         Class<?> type = JAXBElement.class;
         Type genericType = ParameterizedTypeImpl.newParameterizedType(JAXBElement.class, Book.class);
@@ -82,7 +82,7 @@ public class JAXBEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testWriteJAXBElement() throws Exception {
         Class<?> type = JAXBElement.class;
         Type genericType = ParameterizedTypeImpl.newParameterizedType(JAXBElement.class, Book.class);
@@ -96,7 +96,7 @@ public class JAXBEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testReadJAXBObject() throws Exception {
         MessageBodyReader reader = new JAXBObjectEntityProvider(ProviderBinder.getInstance());
         Assert.assertTrue(reader.isReadable(Book.class, Book.class, null, mediaType));
@@ -107,7 +107,7 @@ public class JAXBEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testWriteJAXBObject() throws Exception {
         MessageBodyWriter writer = new JAXBObjectEntityProvider(ProviderBinder.getInstance());
         Assert.assertTrue(writer.isWriteable(Book.class, Book.class, null, mediaType));

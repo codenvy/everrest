@@ -337,7 +337,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
      * @return a collection containing all the ComponentAdapters of the specified type and annotated with <code>annotation</code> inside
      * this container.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     public List<ComponentAdapter> getComponentAdaptersOfType(Class componentType, Class<? extends Annotation> annotation) {
         List<ComponentAdapter> adapters = getComponentAdaptersOfType(componentType);
         if (adapters.size() > 0) {

@@ -19,7 +19,8 @@ public class MockPrincipal implements java.security.Principal {
         this.username = username;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getName() {
         return username;
     }

@@ -116,37 +116,44 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
         processMethods();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitAbstractResourceDescriptor(this);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public PathValue getPathValue() {
         return path;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public ResourceMethodMap<ResourceMethodDescriptor> getResourceMethods() {
         return resourceMethods;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public SubResourceLocatorMap getSubResourceLocators() {
         return subResourceLocators;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public SubResourceMethodMap getSubResourceMethods() {
         return subResourceMethods;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public UriPattern getUriPattern() {
         return uriPattern;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isRootResource() {
         return path != null;
     }
@@ -286,7 +293,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                         defaultValue = ((DefaultValue)a).value();
                     } else {
                         LOG.debug("Method parameter of resource " + toString() + ", method " + method.getName()
-                                 + " contains unknown or not valid JAX-RS annotation " + a.toString() + ". It will be ignored.");
+                                  + " contains unknown or not valid JAX-RS annotation " + a.toString() + ". It will be ignored.");
                     }
                 }
 
@@ -574,7 +581,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
         return a;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[ AbstractResourceDescriptorImpl: ");

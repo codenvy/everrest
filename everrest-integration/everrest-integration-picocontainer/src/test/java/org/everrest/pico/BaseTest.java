@@ -62,6 +62,7 @@ public abstract class BaseTest {
         picoFilter.setAppContainer(appContainer);
         picoFilter.setSessionContainer(sesContainer);
         picoFilter.setRequestContainer(reqContainer);
+        picoFilter.initAdditionalScopedComponents(sesContainer, reqContainer);
 
         DependencySupplier dependencies = (DependencySupplier)servletContext.getAttribute(DependencySupplier.class.getName());
         ResourceBinder resources = (ResourceBinder)servletContext.getAttribute(ResourceBinder.class.getName());

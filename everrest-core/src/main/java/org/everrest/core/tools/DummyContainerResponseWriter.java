@@ -20,17 +20,16 @@ import java.io.IOException;
  * Mock object than can be used for any test when we don't care about response
  * entity at all.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: DummyContainerResponseWriter.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * @author andrew00x
  */
 public class DummyContainerResponseWriter implements ContainerResponseWriter {
-    /** {@inheritDoc} */
-    @SuppressWarnings({"rawtypes"})
+
+    @Override
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeHeaders(GenericContainerResponse response) throws IOException {
     }
 }

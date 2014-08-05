@@ -25,7 +25,8 @@ import javax.ws.rs.core.Response;
  *          aparfonov $
  */
 public class OptionsRequestMethodInvoker implements MethodInvoker {
-    /** {@inheritDoc} */
+
+    @Override
     public Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context) {
         Application wadlApplication =
                 new WadlProcessor().process(genericMethodResource.getParentResource(), context.getBaseUri());

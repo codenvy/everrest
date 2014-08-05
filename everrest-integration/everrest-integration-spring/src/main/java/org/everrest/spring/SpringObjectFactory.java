@@ -36,7 +36,8 @@ public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory
         this.beanFactory = beanFactory;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object getInstance(ApplicationContext context) {
         Object bean = beanFactory.getBean(name);
         List<FieldInjector> fieldInjectors = model.getFieldInjectors();
@@ -50,7 +51,8 @@ public class SpringObjectFactory<T extends ObjectModel> implements ObjectFactory
         return bean;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public T getObjectModel() {
         return model;
     }

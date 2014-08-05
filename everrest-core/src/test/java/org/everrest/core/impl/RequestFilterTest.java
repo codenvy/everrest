@@ -44,10 +44,10 @@ public class RequestFilterTest extends BaseTest {
     @Filter
     public static class RequestFilter1 implements RequestFilter {
         @Context
-        private UriInfo uriInfo;
+        private UriInfo            uriInfo;
         @Context
-        private HttpHeaders httpHeaders;
-        private Providers providers;
+        private HttpHeaders        httpHeaders;
+        private Providers          providers;
         private HttpServletRequest httpRequest;
 
         public RequestFilter1(@Context Providers providers, @Context HttpServletRequest httpRequest) {

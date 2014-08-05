@@ -54,7 +54,7 @@ public class JsonWriter {
         this(new OutputStreamWriter(out, JsonUtils.DEFAULT_CHARSET));
     }
 
-    /** {@inheritDoc} */
+
     public void writeStartObject() throws JsonException {
         JsonToken token = stack.peek();
         // Object can be stated after key with followed ':' or as array item.
@@ -79,7 +79,7 @@ public class JsonWriter {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void writeEndObject() throws JsonException {
         try {
             JsonToken token = stack.pop();
@@ -95,7 +95,7 @@ public class JsonWriter {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void writeStartArray() throws JsonException {
         JsonToken token = stack.peek();
         //if (token != JsonToken.key && token != JsonToken.array)
@@ -120,7 +120,7 @@ public class JsonWriter {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void writeEndArray() throws JsonException {
         JsonToken token = stack.pop();
         try {
@@ -135,7 +135,7 @@ public class JsonWriter {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void writeKey(String key) throws JsonException {
         if (key == null) {
             throw new JsonException("Key is null.");
@@ -159,27 +159,27 @@ public class JsonWriter {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void writeString(String value) throws JsonException {
         write(JsonUtils.getJsonString(value));
     }
 
-    /** {@inheritDoc} */
+
     public void writeValue(long value) throws JsonException {
         write(Long.toString(value));
     }
 
-    /** {@inheritDoc} */
+
     public void writeValue(double value) throws JsonException {
         write(Double.toString(value));
     }
 
-    /** {@inheritDoc} */
+
     public void writeValue(boolean value) throws JsonException {
         write(Boolean.toString(value));
     }
 
-    /** {@inheritDoc} */
+
     public void writeNull() throws JsonException {
         write("null");
     }
@@ -212,7 +212,7 @@ public class JsonWriter {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void flush() throws JsonException {
         try {
             writer.flush();
@@ -221,7 +221,7 @@ public class JsonWriter {
         }
     }
 
-    /** {@inheritDoc} */
+
     public void close() throws JsonException {
         try {
             writer.close();

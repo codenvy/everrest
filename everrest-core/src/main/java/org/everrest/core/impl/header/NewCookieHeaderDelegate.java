@@ -20,18 +20,20 @@ import javax.ws.rs.core.NewCookie;
  *          $
  */
 public class NewCookieHeaderDelegate extends AbstractHeaderDelegate<NewCookie> {
-    /** {@inheritDoc} */
+
     @Override
     public Class<NewCookie> support() {
         return NewCookie.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public NewCookie fromString(String header) {
         throw new UnsupportedOperationException("NewCookie used only for response headers.");
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String toString(NewCookie cookie) {
         StringBuilder sb = new StringBuilder();
         sb.append(cookie.getName()).append('=').append(HeaderHelper.addQuotesIfHasWhitespace(cookie.getValue()));

@@ -40,12 +40,14 @@ import java.lang.reflect.Type;
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class SAXSourceEntityProvider implements EntityProvider<SAXSource> {
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == SAXSource.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public SAXSource readFrom(Class<SAXSource> type,
                               Type genericType,
                               Annotation[] annotations,
@@ -55,17 +57,20 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource> {
         return new SAXSource(new InputSource(entityStream));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(SAXSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return SAXSource.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(SAXSource t,
                         Class<?> type,
                         Type genericType,

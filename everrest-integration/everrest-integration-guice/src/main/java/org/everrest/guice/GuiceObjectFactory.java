@@ -20,8 +20,7 @@ import org.everrest.core.ObjectModel;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
     protected final T model;
@@ -33,7 +32,7 @@ public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<
         this.provider = provider;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Object getInstance(ApplicationContext context) {
         Object object = provider.get();
         List<FieldInjector> fieldInjectors = model.getFieldInjectors();
@@ -47,7 +46,7 @@ public class GuiceObjectFactory<T extends ObjectModel> implements ObjectFactory<
         return object;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public T getObjectModel() {
         return model;
     }

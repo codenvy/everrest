@@ -63,6 +63,7 @@ public abstract class BaseCollectionProducer implements TypeProducer {
      * <i>defaultValue</i> will be used, in this case Collection will contains
      * single element. {@inheritDoc}
      */
+    @Override
     public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception {
         List<String> list = values.get(param);
         if (list != null) {

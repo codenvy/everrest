@@ -33,7 +33,7 @@ public abstract class MethodInvokerDecorator implements MethodInvoker {
 
     /**
      * @see org.everrest.core.method.MethodInvoker#invokeMethod(java.lang.Object,
-     *      org.everrest.core.resource.GenericMethodResource, org.everrest.core.ApplicationContext)
+     * org.everrest.core.resource.GenericMethodResource, org.everrest.core.ApplicationContext)
      */
     @Override
     public Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context) {

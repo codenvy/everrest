@@ -397,8 +397,9 @@ public class Cookie2 extends Cookie {
 
     /**
      * @return true if the cookie should be discarded at the end of the session;
-     *         false otherwise
+     * false otherwise
      */
+    @Override
     public boolean discard() {
         return discard;
     }
@@ -408,6 +409,7 @@ public class Cookie2 extends Cookie {
      *         the request to be sent
      * @return true if this cookie should be sent with the request
      */
+    @Override
     protected boolean sendWith(RoRequest req) {
         HTTPConnection con = req.getConnection();
 
@@ -430,6 +432,7 @@ public class Cookie2 extends Cookie {
                                                                                         con.getProtocol().equals("shttp")));
     }
 
+    @Override
     protected String toExternalForm() {
         StringBuffer cookie = new StringBuffer();
 

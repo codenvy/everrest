@@ -58,19 +58,19 @@ public final class ResponseImpl extends Response {
         this.headers = headers;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Object getEntity() {
         return entity;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MultivaluedMap<String, Object> getMetadata() {
         return headers;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public int getStatus() {
         return status;
@@ -151,7 +151,7 @@ public final class ResponseImpl extends Response {
             this.cookies.putAll(other.cookies);
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public Response build() {
             MultivaluedMap<String, Object> m = new OutputHeadersMap(headers);
@@ -174,27 +174,27 @@ public final class ResponseImpl extends Response {
             cookies.clear();
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder cacheControl(CacheControl cacheControl) {
             headers.putSingle(HttpHeaders.CACHE_CONTROL, cacheControl);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder clone() {
             return new ResponseBuilderImpl(this);
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder contentLocation(URI location) {
             headers.putSingle(HttpHeaders.CONTENT_LOCATION, location);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder cookie(NewCookie... cookies) {
             if (cookies == null) {
@@ -209,21 +209,21 @@ public final class ResponseImpl extends Response {
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder entity(Object entity) {
             this.entity = entity;
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder expires(Date expires) {
             headers.putSingle(HttpHeaders.EXPIRES, expires);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder header(String name, Object value) {
             if (HEADER_TO_ENUM.get(new CaselessStringWrapper(name)) != null) {
@@ -238,70 +238,70 @@ public final class ResponseImpl extends Response {
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder language(String language) {
             headers.putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder language(Locale language) {
             headers.putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder lastModified(Date lastModified) {
             headers.putSingle(HttpHeaders.LAST_MODIFIED, lastModified);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder location(URI location) {
             headers.putSingle(HttpHeaders.LOCATION, location);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder status(int status) {
             this.status = status;
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder tag(EntityTag tag) {
             headers.putSingle(HttpHeaders.ETAG, tag);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder tag(String tag) {
             headers.putSingle(HttpHeaders.ETAG, tag);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder type(MediaType type) {
             headers.putSingle(HttpHeaders.CONTENT_TYPE, type);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder type(String type) {
             headers.putSingle(HttpHeaders.CONTENT_TYPE, type);
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder variant(Variant variant) {
             type(variant.getMediaType());
@@ -312,7 +312,7 @@ public final class ResponseImpl extends Response {
             return this;
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public ResponseBuilder variants(List<Variant> variants) {
             if (variants.isEmpty()) {

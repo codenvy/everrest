@@ -38,7 +38,7 @@ public class PathValue {
         return path;
     }
 
-    /** {@inheritDoc} */
+
     public String toString() {
         return "( " + path + " )";
     }

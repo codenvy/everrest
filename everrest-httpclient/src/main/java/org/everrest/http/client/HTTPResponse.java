@@ -224,7 +224,7 @@ public class HTTPResponse implements HTTPClientModuleConstants {
      *         if any module encounters an exception.
      * @see #getHeader(java.lang.String)
      * @deprecated This method is a remnant of V0.1; use
-     *             <code>getHeader("Server")</code> instead.
+     * <code>getHeader("Server")</code> instead.
      */
     public final String getServer() throws IOException, ModuleException {
         if (!initialized)
@@ -502,7 +502,7 @@ public class HTTPResponse implements HTTPClientModuleConstants {
      * instead.
      *
      * @return an array containing the data (body) returned. If no data was
-     *         returned then it's set to a zero-length array.
+     * returned then it's set to a zero-length array.
      * @throws IOException
      *         If any io exception occured while reading the data
      * @throws ModuleException
@@ -541,7 +541,7 @@ public class HTTPResponse implements HTTPClientModuleConstants {
      * getData()}, the caveats of that method apply here as well.
      *
      * @return the body as a String. If no data was returned then an empty string
-     *         is returned.
+     * is returned.
      * @throws IOException
      *         If any io exception occured while reading the data,
      *         or if the content is not text
@@ -700,7 +700,7 @@ public class HTTPResponse implements HTTPClientModuleConstants {
      * intialized from the last Response.
      *
      * @return true if a new request was generated. This is used for internal
-     *         subrequests only
+     * subrequests only
      * @throws IOException
      *         if any handler throws an IOException.
      * @throws ModuleException

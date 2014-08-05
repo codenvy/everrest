@@ -81,10 +81,10 @@ import java.util.Vector;
  * @author Ronald Tschal�r
  * @version 0.3-3 06/05/2001
  * @see <a
- *      href="http://home.netscape.com/newsref/std/cookie_spec.html">Netscape's
- *      cookie spec</a>
+ * href="http://home.netscape.com/newsref/std/cookie_spec.html">Netscape's
+ * cookie spec</a>
  * @see <a href="http://www.ietf.org/rfc/rfc2965.txt">HTTP State Management *
- *      Mechanism spec< /a>
+ * Mechanism spec< /a>
  * @since V0.3
  */
 @SuppressWarnings("deprecation")
@@ -119,6 +119,7 @@ public class CookieModule implements HTTPClientModule {
             // the nearest thing to atexit() I know of...
 
             cookieSaver = new Object() {
+                @Override
                 public void finalize() {
                     saveCookies();
                 }
@@ -209,6 +210,7 @@ public class CookieModule implements HTTPClientModule {
     // Methods
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int requestHandler(Request req, Response[] resp) {
         // First remove any Cookie headers we might have set for a previous
         // request
@@ -320,6 +322,7 @@ public class CookieModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase1Handler(Response resp, RoRequest req) throws IOException {
         String set_cookie = resp.getHeader("Set-Cookie");
         String set_cookie2 = resp.getHeader("Set-Cookie2");
@@ -336,15 +339,18 @@ public class CookieModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int responsePhase2Handler(Response resp, Request req) {
         return RSP_CONTINUE;
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase3Handler(Response resp, RoRequest req) {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void trailerHandler(Response resp, RoRequest req) throws IOException {
         String set_cookie = resp.getTrailer("Set-Cookie");
         String set_cookie2 = resp.getTrailer("Set-Cookie2");
@@ -614,6 +620,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler {
      *         the response
      * @return true if we accept this cookie.
      */
+    @Override
     public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
         String server = req.getConnection().getHost();
         if (server.indexOf('.') == -1)
@@ -652,6 +659,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler {
      *
      * @return true
      */
+    @Override
     public boolean sendCookie(Cookie cookie, RoRequest req) {
         return true;
     }
@@ -827,12 +835,14 @@ class BasicCookieBox extends Frame {
         constr.gridwidth = GridBagConstraints.REMAINDER;
     }
 
+    @Override
     public Dimension getMaximumSize() {
         return new Dimension(screen.width * 3 / 4, screen.height * 3 / 4);
     }
 
     /** our event handlers */
     private class Accept implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent ae) {
             accept = true;
             accept_domain = false;
@@ -843,6 +853,7 @@ class BasicCookieBox extends Frame {
     }
 
     private class Reject implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent ae) {
             accept = false;
             accept_domain = false;
@@ -853,6 +864,7 @@ class BasicCookieBox extends Frame {
     }
 
     private class AcceptDomain implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent ae) {
             accept = true;
             accept_domain = true;
@@ -863,6 +875,7 @@ class BasicCookieBox extends Frame {
     }
 
     private class RejectDomain implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent ae) {
             accept = false;
             accept_domain = true;
@@ -873,6 +886,7 @@ class BasicCookieBox extends Frame {
     }
 
     private class Close extends WindowAdapter {
+        @Override
         public void windowClosing(WindowEvent we) {
             new Reject().actionPerformed(null);
         }
@@ -999,6 +1013,7 @@ class BasicCookieBox extends Frame {
 
 /** A simple separator element. */
 class Separator extends Panel {
+    @Override
     public void paint(Graphics g) {
         int w = getSize().width, h = getSize().height / 2;
 
@@ -1008,6 +1023,7 @@ class Separator extends Panel {
         g.drawLine(2, h, w - 2, h);
     }
 
+    @Override
     public Dimension getMinimumSize() {
         return new Dimension(4, 2);
     }

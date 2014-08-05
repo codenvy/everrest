@@ -101,7 +101,7 @@ class CIHashtable extends Hashtable {
      * @param value
      *         the object to be associated with the key
      * @return the object previously associated with the key, or null if there
-     *         was none.
+     * was none.
      * @see java.util.Hashtable.put(Object, Object)
      */
     public Object put(String key, Object value) {
@@ -140,6 +140,7 @@ class CIHashtable extends Hashtable {
      * @return the requested Enumerator
      * @see java.util.Hashtable.keys(Object)
      */
+    @Override
     public Enumeration keys() {
         return new CIHashtableEnumeration(super.keys());
     }
@@ -157,10 +158,12 @@ final class CIHashtableEnumeration implements Enumeration {
         HTEnum = en;
     }
 
+    @Override
     public boolean hasMoreElements() {
         return HTEnum.hasMoreElements();
     }
 
+    @Override
     public Object nextElement() {
         Object tmp = HTEnum.nextElement();
         if (tmp instanceof CIString)

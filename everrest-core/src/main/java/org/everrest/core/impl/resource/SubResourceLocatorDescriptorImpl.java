@@ -74,47 +74,55 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
         this.additional = additional;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public PathValue getPathValue() {
         return path;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public UriPattern getUriPattern() {
         return uriPattern;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitSubResourceLocatorDescriptor(this);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Method getMethod() {
         return method;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<MethodParameter> getMethodParameters() {
         return parameters;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public AbstractResourceDescriptor getParentResource() {
         return parentResource;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Class<?> getResponseType() {
         return getMethod().getReturnType();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation[] getAnnotations() {
         return additional;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");

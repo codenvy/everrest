@@ -57,7 +57,8 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
                 }
             };
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<T> getList(String httpMethod) {
         List<T> l = get(httpMethod);
         if (l == null) {
@@ -67,7 +68,8 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
         return l;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void add(String httpMethod, T resourceMethod) {
         if (resourceMethod == null) {
             return;
@@ -76,13 +78,15 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
         l.add(resourceMethod);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public T getFirst(String httpMethod) {
         List<T> l = getList(httpMethod);
         return l != null && l.size() > 0 ? l.get(0) : null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void putSingle(String httpMethod, T resourceMethod) {
         if (resourceMethod == null) {
             return;

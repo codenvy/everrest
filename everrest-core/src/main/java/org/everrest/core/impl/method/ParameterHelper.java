@@ -177,7 +177,7 @@ public class ParameterHelper {
      *         class for discovering to have constructor with single string
      *         argument
      * @return constructor or null if class has not constructor with single
-     *         string argument
+     * string argument
      */
     static Constructor<?> getStringConstructor(Class<?> clazz) {
         try {

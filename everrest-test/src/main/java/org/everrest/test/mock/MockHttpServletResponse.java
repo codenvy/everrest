@@ -93,7 +93,8 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return new String(stream.toByteArray());
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void flushBuffer() throws IOException {
         if (bufferCount > 0) {
             try {
@@ -104,106 +105,126 @@ public class MockHttpServletResponse implements HttpServletResponse {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public int getBufferSize() {
         return (buffer.length);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public ServletOutputStream getOutputStream() throws IOException {
         return this.output;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public PrintWriter getWriter() throws IOException {
         return this.writer;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isCommitted() {
         return false;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void reset() {
         bufferCount = 0;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void resetBuffer() {
         bufferCount = 0;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void addCookie(Cookie cookie) {
         cookies.add(cookie);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void addDateHeader(String name, long value) {
         addHeader(name, format.format(new Date(value)));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void addHeader(String name, String value) {
         headers.get(name).add(value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void addIntHeader(String name, int value) {
         addHeader(name, "" + value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean containsHeader(String name) {
         return (headers.get(name) != null);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String encodeRedirectURL(String url) {
         return url;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String encodeRedirectUrl(String url) {
         return url;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String encodeURL(String url) {
         return url;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String encodeUrl(String url) {
         return url;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void sendError(int status) throws IOException {
         sendError(status, "");
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void sendError(int status, String message) throws IOException {
         this.status = status;
         this.message = message;
         resetBuffer();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void sendRedirect(String location) throws IOException {
         resetBuffer();
         setStatus(SC_MOVED_TEMPORARILY);
         setHeader("Location", location);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setDateHeader(String name, long value) {
         setHeader(name, format.format(new Date(value)));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setHeader(String name, String value) {
         List<String> values = new ArrayList<String>();
         values.add(value);
@@ -219,17 +240,20 @@ public class MockHttpServletResponse implements HttpServletResponse {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setIntHeader(String name, int value) {
         setHeader(name, "" + value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setStatus(int status) {
         this.status = status;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setStatus(int status, String message) {
         this.status = status;
         this.message = message;
@@ -255,17 +279,20 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return new ArrayList<String>(headers.keySet());
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getCharacterEncoding() {
         return encoding == null ? "UTF-8" : encoding;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Locale getLocale() {
         return locale;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setBufferSize(int size) {
         if (buffer.length >= size) {
             return;
@@ -273,18 +300,21 @@ public class MockHttpServletResponse implements HttpServletResponse {
         buffer = new byte[size];
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setContentLength(int length) {
         this.contentLength = length;
 
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setContentType(String type) {
         this.contentType = type;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
@@ -305,16 +335,19 @@ public class MockHttpServletResponse implements HttpServletResponse {
             this.baos = baos;
         }
 
-        /** {@inheritDoc} */
+
+        @Override
         public void write(int i) throws IOException {
             baos.write(i);
         }
     }
 
+    @Override
     public String getContentType() {
         return contentType;
     }
 
+    @Override
     public void setCharacterEncoding(String encoding) {
         this.encoding = encoding;
     }

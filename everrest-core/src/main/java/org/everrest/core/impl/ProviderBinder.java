@@ -164,7 +164,7 @@ public class ProviderBinder implements Providers {
      * @param clazz
      *         class of implementation ContextResolver
      */
-    public void addContextResolver(@SuppressWarnings("rawtypes") Class<? extends ContextResolver> clazz) {
+    public void addContextResolver(Class<? extends ContextResolver> clazz) {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz);
             descriptor.accept(rdv);
@@ -180,7 +180,6 @@ public class ProviderBinder implements Providers {
      * @param instance
      *         ContextResolver instance
      */
-    @SuppressWarnings("rawtypes")
     public void addContextResolver(ContextResolver instance) {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(instance);
@@ -197,7 +196,7 @@ public class ProviderBinder implements Providers {
      * @param clazz
      *         class of implementation ExceptionMapper
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void addExceptionMapper(Class<? extends ExceptionMapper> clazz) {
         try {
             addExceptionMapper(new PerRequestObjectFactory(new ProviderDescriptorImpl(clazz)));
@@ -212,7 +211,7 @@ public class ProviderBinder implements Providers {
      * @param instance
      *         ExceptionMapper instance
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void addExceptionMapper(ExceptionMapper instance) {
         try {
             addExceptionMapper(new SingletonObjectFactory(new ProviderDescriptorImpl(instance), instance));
@@ -227,7 +226,7 @@ public class ProviderBinder implements Providers {
      * @param clazz
      *         class of implementation MessageBodyReader
      */
-    public void addMessageBodyReader(@SuppressWarnings("rawtypes") Class<? extends MessageBodyReader> clazz) {
+    public void addMessageBodyReader(Class<? extends MessageBodyReader> clazz) {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz);
             descriptor.accept(rdv);
@@ -243,7 +242,7 @@ public class ProviderBinder implements Providers {
      * @param instance
      *         MessageBodyReader instance
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void addMessageBodyReader(MessageBodyReader instance) {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(instance);
@@ -260,7 +259,7 @@ public class ProviderBinder implements Providers {
      * @param clazz
      *         class of implementation MessageBodyWriter
      */
-    public void addMessageBodyWriter(@SuppressWarnings("rawtypes") Class<? extends MessageBodyWriter> clazz) {
+    public void addMessageBodyWriter(Class<? extends MessageBodyWriter> clazz) {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(clazz);
             descriptor.accept(rdv);
@@ -276,7 +275,6 @@ public class ProviderBinder implements Providers {
      * @param instance
      *         MessageBodyWriter instance
      */
-    @SuppressWarnings("rawtypes")
     public void addMessageBodyWriter(MessageBodyWriter instance) {
         try {
             ProviderDescriptor descriptor = new ProviderDescriptorImpl(instance);
@@ -399,22 +397,26 @@ public class ProviderBinder implements Providers {
         return doGetAcceptableWriterMediaTypes(type, genericType, annotations);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType) {
         return doGetContextResolver(contextType, mediaType);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type) {
         return doGetExceptionMapper(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return doGetMessageBodyReader(type, genericType, annotations, mediaType);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
                                                          MediaType mediaType) {
         return doGetMessageBodyWriter(type, genericType, annotations, mediaType);
@@ -448,34 +450,34 @@ public class ProviderBinder implements Providers {
     }
 
     public void addContextResolver(ObjectFactory<ProviderDescriptor> contextResolverFactory) {
-            for (Type type : contextResolverFactory.getObjectModel().getObjectClass().getGenericInterfaces()) {
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType pt = (ParameterizedType)type;
-                    if (ContextResolver.class == pt.getRawType()) {
-                        Type[] typeArguments = pt.getActualTypeArguments();
-                        if (typeArguments.length > 1) {
-                            throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
-                        }
+        for (Type type : contextResolverFactory.getObjectModel().getObjectClass().getGenericInterfaces()) {
+            if (type instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType)type;
+                if (ContextResolver.class == pt.getRawType()) {
+                    Type[] typeArguments = pt.getActualTypeArguments();
+                    if (typeArguments.length > 1) {
+                        throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
+                    }
 
-                        Class<?> aclazz = (Class<?>)typeArguments[0];
-                        MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(aclazz);
+                    Class<?> aclazz = (Class<?>)typeArguments[0];
+                    MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(aclazz);
 
-                        if (pm == null) {
-                            pm = new MediaTypeMap<>();
-                            contextResolvers.put(aclazz, pm);
-                        }
+                    if (pm == null) {
+                        pm = new MediaTypeMap<>();
+                        contextResolvers.put(aclazz, pm);
+                    }
 
-                        for (MediaType mime : contextResolverFactory.getObjectModel().produces()) {
-                            if (pm.get(mime) != null) {
-                                throw new RuntimeException("ContextResolver for " + aclazz.getName() + " and media type " + mime
-                                                           + " already registered.");
-                            } else {
-                                pm.put(mime, contextResolverFactory);
-                            }
+                    for (MediaType mime : contextResolverFactory.getObjectModel().produces()) {
+                        if (pm.get(mime) != null) {
+                            throw new RuntimeException("ContextResolver for " + aclazz.getName() + " and media type " + mime
+                                                       + " already registered.");
+                        } else {
+                            pm.put(mime, contextResolverFactory);
                         }
                     }
                 }
             }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -502,9 +504,9 @@ public class ProviderBinder implements Providers {
         // supports, see method MessageBodyReader.isReadable. So here does not
         // check is reader for the same Java and media type already exists.
         // Let it be under developer's control.
-            for (MediaType mime : readerFactory.getObjectModel().consumes()) {
-                readProviders.getList(mime).add(readerFactory);
-            }
+        for (MediaType mime : readerFactory.getObjectModel().consumes()) {
+            readProviders.getList(mime).add(readerFactory);
+        }
     }
 
     public void addMessageBodyWriter(ObjectFactory<ProviderDescriptor> writerFactory) {
@@ -512,9 +514,9 @@ public class ProviderBinder implements Providers {
         // supports, see method MessageBodyWriter#isWriteable. So here does not
         // check is writer for the same Java and media type already exists.
         // Let it be under developer's control.
-            for (MediaType mime : writerFactory.getObjectModel().produces()) {
-                writeProviders.getList(mime).add(writerFactory);
-            }
+        for (MediaType mime : writerFactory.getObjectModel().produces()) {
+            writeProviders.getList(mime).add(writerFactory);
+        }
     }
 
     public void addMethodInvokerFilter(ObjectFactory<FilterDescriptor> filterFactory) {
@@ -529,24 +531,24 @@ public class ProviderBinder implements Providers {
         responseFilters.getList(filterFactory.getObjectModel().getUriPattern()).add(filterFactory);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected List<MediaType> doGetAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations) {
         List<MediaType> l = new ArrayList<>();
         Map<Class, MessageBodyWriter> instanceCache = new HashMap<>();
-            for (Map.Entry<MediaType, List<ObjectFactory<ProviderDescriptor>>> e : writeProviders.entrySet()) {
-                MediaType mime = e.getKey();
-                for (ObjectFactory pf : e.getValue()) {
-                    Class clazz = pf.getObjectModel().getObjectClass();
-                    MessageBodyWriter writer = instanceCache.get(clazz);
-                    if (writer == null) {
-                        writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
-                        instanceCache.put(clazz, writer);
-                    }
-                    if (writer.isWriteable(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE)) {
-                        l.add(mime);
-                    }
+        for (Map.Entry<MediaType, List<ObjectFactory<ProviderDescriptor>>> e : writeProviders.entrySet()) {
+            MediaType mime = e.getKey();
+            for (ObjectFactory pf : e.getValue()) {
+                Class clazz = pf.getObjectModel().getObjectClass();
+                MessageBodyWriter writer = instanceCache.get(clazz);
+                if (writer == null) {
+                    writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+                    instanceCache.put(clazz, writer);
+                }
+                if (writer.isWriteable(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE)) {
+                    l.add(mime);
                 }
             }
+        }
         if (l.size() > 1) {
             Collections.sort(l, MediaTypeHelper.MEDIA_TYPE_COMPARATOR);
         }
@@ -554,16 +556,16 @@ public class ProviderBinder implements Providers {
     }
 
     protected <T> ContextResolver<T> doGetContextResolver(Class<T> contextType, MediaType mediaType) {
-            MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(contextType);
-            ContextResolver<T> resolver = null;
-            if (pm != null) {
-                MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
-                while (mrange.hasNext() && resolver == null) {
-                    MediaType actual = mrange.next();
-                    resolver = doGetContextResolver(pm, actual);
-                }
+        MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(contextType);
+        ContextResolver<T> resolver = null;
+        if (pm != null) {
+            MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
+            while (mrange.hasNext() && resolver == null) {
+                MediaType actual = mrange.next();
+                resolver = doGetContextResolver(pm, actual);
             }
-            return resolver;
+        }
+        return resolver;
     }
 
     /**
@@ -585,7 +587,6 @@ public class ProviderBinder implements Providers {
 
     @SuppressWarnings("unchecked")
     protected <T extends Throwable> ExceptionMapper<T> doGetExceptionMapper(Class<T> type) {
-        @SuppressWarnings("rawtypes")
         ObjectFactory pf = exceptionMappers.get(type);
         if (pf != null) {
             return (ExceptionMapper<T>)pf.getInstance(ApplicationContextImpl.getCurrent());
@@ -609,25 +610,25 @@ public class ProviderBinder implements Providers {
      *         entity content type
      * @return message body reader or null if no one was found.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected <T> MessageBodyReader<T> doGetMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
                                                               MediaType mediaType) {
         MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
         Map<Class, MessageBodyReader> instanceCache = new HashMap<>();
-            while (mrange.hasNext()) {
-                MediaType actual = mrange.next();
-                for (ObjectFactory pf : readProviders.getList(actual)) {
-                    Class<?> clazz = pf.getObjectModel().getObjectClass();
-                    MessageBodyReader reader = instanceCache.get(clazz);
-                    if (reader == null) {
-                        reader = (MessageBodyReader)pf.getInstance(ApplicationContextImpl.getCurrent());
-                        instanceCache.put(clazz, reader);
-                    }
-                    if (reader.isReadable(type, genericType, annotations, actual)) {
-                        return reader;
-                    }
+        while (mrange.hasNext()) {
+            MediaType actual = mrange.next();
+            for (ObjectFactory pf : readProviders.getList(actual)) {
+                Class<?> clazz = pf.getObjectModel().getObjectClass();
+                MessageBodyReader reader = instanceCache.get(clazz);
+                if (reader == null) {
+                    reader = (MessageBodyReader)pf.getInstance(ApplicationContextImpl.getCurrent());
+                    instanceCache.put(clazz, reader);
+                }
+                if (reader.isReadable(type, genericType, annotations, actual)) {
+                    return reader;
                 }
             }
+        }
         return null;
     }
 
@@ -647,25 +648,25 @@ public class ProviderBinder implements Providers {
      *         content type in which entity should be represented
      * @return message body writer or null if no one was found.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected <T> MessageBodyWriter<T> doGetMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
                                                               MediaType mediaType) {
         MediaTypeHelper.MediaTypeRange mrange = new MediaTypeHelper.MediaTypeRange(mediaType);
         Map<Class, MessageBodyWriter> instanceCache = new HashMap<>();
-            while (mrange.hasNext()) {
-                MediaType actual = mrange.next();
-                for (ObjectFactory pf : writeProviders.getList(actual)) {
-                    Class<?> clazz = pf.getObjectModel().getObjectClass();
-                    MessageBodyWriter writer = instanceCache.get(clazz);
-                    if (writer == null) {
-                        writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
-                        instanceCache.put(clazz, writer);
-                    }
-                    if (writer.isWriteable(type, genericType, annotations, actual)) {
-                        return writer;
-                    }
+        while (mrange.hasNext()) {
+            MediaType actual = mrange.next();
+            for (ObjectFactory pf : writeProviders.getList(actual)) {
+                Class<?> clazz = pf.getObjectModel().getObjectClass();
+                MessageBodyWriter writer = instanceCache.get(clazz);
+                if (writer == null) {
+                    writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
+                    instanceCache.put(clazz, writer);
+                }
+                if (writer.isWriteable(type, genericType, annotations, actual)) {
+                    return writer;
                 }
             }
+        }
         return null;
     }
 

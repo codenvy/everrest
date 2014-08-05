@@ -24,6 +24,7 @@ import org.picocontainer.web.PicoServletContainerFilter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
@@ -32,8 +33,7 @@ import javax.ws.rs.ext.Providers;
 import java.lang.reflect.Type;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @SuppressWarnings("serial")
 public class EverrestPicoFilter extends PicoServletContainerFilter {
@@ -44,6 +44,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(HttpHeaders.class, HttpHeaders.class);
         }
 
+        @Override
         public HttpHeaders getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null) {
@@ -52,10 +53,12 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return context.getHttpHeaders();
         }
 
+        @Override
         public String getDescriptor() {
             return "HttpHeaders";
         }
 
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -65,6 +68,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(InitialProperties.class, InitialProperties.class);
         }
 
+        @Override
         public InitialProperties getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null) {
@@ -73,10 +77,12 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return context.getInitialProperties();
         }
 
+        @Override
         public String getDescriptor() {
             return "InitialProperties";
         }
 
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -86,6 +92,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(Providers.class, Providers.class);
         }
 
+        @Override
         public Providers getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null) {
@@ -94,10 +101,12 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return context.getProviders();
         }
 
+        @Override
         public String getDescriptor() {
             return "Providers";
         }
 
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -107,6 +116,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(Request.class, Request.class);
         }
 
+        @Override
         public Request getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null) {
@@ -115,10 +125,12 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return context.getRequest();
         }
 
+        @Override
         public String getDescriptor() {
             return "Request";
         }
 
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -128,6 +140,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(SecurityContext.class, SecurityContext.class);
         }
 
+        @Override
         public SecurityContext getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null) {
@@ -136,10 +149,12 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return context.getSecurityContext();
         }
 
+        @Override
         public String getDescriptor() {
             return "SecurityContext";
         }
 
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -149,6 +164,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(ServletConfig.class, ServletConfig.class);
         }
 
+        @Override
         public ServletConfig getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
 
             EnvironmentContext context = EnvironmentContext.getCurrent();
@@ -158,10 +174,12 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return (ServletConfig)context.get(ServletConfig.class);
         }
 
+        @Override
         public String getDescriptor() {
             return "ServletConfig";
         }
 
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -171,6 +189,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(ServletContext.class, ServletContext.class);
         }
 
+        @Override
         public ServletContext getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
 
             EnvironmentContext context = EnvironmentContext.getCurrent();
@@ -180,10 +199,12 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return (ServletContext)context.get(ServletContext.class);
         }
 
+        @Override
         public String getDescriptor() {
             return "ServletContext";
         }
 
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -193,6 +214,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             super(UriInfo.class, UriInfo.class);
         }
 
+        @Override
         public UriInfo getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
             if (context == null) {
@@ -201,10 +223,36 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             return context.getUriInfo();
         }
 
+        @Override
         public String getDescriptor() {
             return "UriInfo";
         }
 
+        @Override
+        public void verify(PicoContainer container) throws PicoCompositionException {
+        }
+    }
+
+    public static class ApplicationInjector extends AbstractAdapter<Application> {
+        public ApplicationInjector() {
+            super(Application.class, Application.class);
+        }
+
+        @Override
+        public Application getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
+            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            if (context == null) {
+                throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+            }
+            return context.getApplication();
+        }
+
+        @Override
+        public String getDescriptor() {
+            return "Application";
+        }
+
+        @Override
         public void verify(PicoContainer container) throws PicoCompositionException {
         }
     }
@@ -286,8 +334,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
     }
 
     @Override
-    protected void initAdditionalScopedComponents(MutablePicoContainer sessionContainer,
-                                                  MutablePicoContainer reqContainer) {
+    public void initAdditionalScopedComponents(MutablePicoContainer sessionContainer, MutablePicoContainer reqContainer) {
         // Add injectors for some components required by JAX-RS resources and providers.
 
         // NOTE: Still have issue with injected components via constructors. JAX-RS
@@ -303,20 +350,23 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         reqContainer.as(Characteristics.NO_CACHE).addAdapter(new RequestInjector());
         reqContainer.as(Characteristics.NO_CACHE).addAdapter(new SecurityContextInjector());
         reqContainer.as(Characteristics.NO_CACHE).addAdapter(new UriInfoInjector());
+        reqContainer.as(Characteristics.NO_CACHE).addAdapter(new ApplicationInjector());
         reqContainer.as(Characteristics.NO_CACHE).addAdapter(new ServletConfigInjector());
         reqContainer.as(Characteristics.NO_CACHE).addAdapter(new ServletContextInjector());
     }
 
+    @Override
     public void setAppContainer(MutablePicoContainer container) {
         currentAppContainer.set(container);
     }
 
+    @Override
     public void setRequestContainer(MutablePicoContainer container) {
         currentRequestContainer.set(container);
     }
 
+    @Override
     public void setSessionContainer(MutablePicoContainer container) {
         currentSessionContainer.set(container);
     }
-
 }

@@ -33,8 +33,8 @@ public interface ObjectFactory<T extends ObjectModel> {
 
     /**
      * @return any extension of {@link ObjectModel}. That must allows create
-     *         object instance and initialize object's fields for per-request
-     *         resources
+     * object instance and initialize object's fields for per-request
+     * resources
      */
     T getObjectModel();
 

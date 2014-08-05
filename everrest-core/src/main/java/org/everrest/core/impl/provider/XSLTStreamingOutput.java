@@ -47,6 +47,7 @@ public class XSLTStreamingOutput implements StreamingOutput {
     }
 
     /** {@inheritDoc} . */
+    @Override
     public void write(OutputStream output) throws IOException {
         try {
             Transformer transformer = templates.newTransformer();

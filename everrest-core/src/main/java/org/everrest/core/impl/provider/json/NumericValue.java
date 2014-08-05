@@ -16,7 +16,7 @@ package org.everrest.core.impl.provider.json;
  */
 public abstract class NumericValue extends JsonValue {
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean isNumeric() {
         return true;

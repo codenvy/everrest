@@ -35,12 +35,14 @@ import java.lang.reflect.Type;
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class StreamSourceEntityProvider implements EntityProvider<StreamSource> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == StreamSource.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public StreamSource readFrom(Class<StreamSource> type,
                                  Type genericType,
                                  Annotation[] annotations,
@@ -50,17 +52,20 @@ public class StreamSourceEntityProvider implements EntityProvider<StreamSource> 
         return new StreamSource(entityStream);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(StreamSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return StreamSource.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(StreamSource t,
                         Class<?> type,
                         Type genericType,

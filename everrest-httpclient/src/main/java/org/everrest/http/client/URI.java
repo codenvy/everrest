@@ -788,7 +788,7 @@ public class URI {
 
     /**
      * @return true if the scheme should be parsed according to the generic-URI
-     *         syntax
+     * syntax
      */
     public static boolean usesGenericSyntax(String scheme) {
         return usesGenericSyntax.containsKey(scheme.trim().toLowerCase());
@@ -796,8 +796,8 @@ public class URI {
 
     /**
      * @return true if the scheme should be parsed according to a
-     *         semi-generic-URI syntax
-     *         &lt;scheme&tgt;://&lt;hostport&gt;/&lt;opaque&gt;
+     * semi-generic-URI syntax
+     * &lt;scheme&tgt;://&lt;hostport&gt;/&lt;opaque&gt;
      */
     public static boolean usesSemiGenericSyntax(String scheme) {
         return usesSemiGenericSyntax.containsKey(scheme.trim().toLowerCase());
@@ -885,7 +885,7 @@ public class URI {
      * schemes.
      *
      * @see <A HREF="http://www.ics.uci.edu/pub/ietf/uri/rfc2396.txt">rfc-2396<
-     *      /A>
+     * /A>
      */
     public boolean isGenericURI() {
         return (type == GENERIC);
@@ -1004,7 +1004,7 @@ public class URI {
 
     /**
      * @return a string representation of this URI suitable for use in links,
-     *         headers, etc.
+     * headers, etc.
      */
     public String toExternalForm() {
         return stringify(false);
@@ -1025,7 +1025,7 @@ public class URI {
 
     /**
      * @return true if <var>other</var> is either a URI or URL and it matches the
-     *         current URI
+     * current URI
      */
     public boolean equals(Object other) {
         if (other instanceof URI) {
@@ -1354,7 +1354,7 @@ public class URI {
      * @param reserved
      *         the characters which may not be unescaped, or null
      * @return the unescaped string, or the original string if unescaping would
-     *         throw a ParseException
+     * throw a ParseException
      * @see #unescape(java.lang.String, java.util.BitSet)
      */
     private static final String unescapeNoPE(String str, BitSet reserved) {

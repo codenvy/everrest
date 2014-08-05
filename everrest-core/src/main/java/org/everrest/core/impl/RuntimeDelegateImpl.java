@@ -38,8 +38,7 @@ import java.util.Map;
  */
 public class RuntimeDelegateImpl extends RuntimeDelegate {
     /** HeaderDelegate cache. */
-    @SuppressWarnings("rawtypes")
-    private final Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
+    private final Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<>();
 
     /**
      * Should be used only once for initialize.
@@ -78,26 +77,26 @@ public class RuntimeDelegateImpl extends RuntimeDelegate {
         throw new UnsupportedOperationException("End Points is not supported");
     }
 
-    /** {@inheritDoc} */
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type) {
         return headerDelegates.get(type);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public ResponseBuilder createResponseBuilder() {
         return new ResponseImpl.ResponseBuilderImpl();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder createUriBuilder() {
         return new UriBuilderImpl();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public VariantListBuilder createVariantListBuilder() {
         return new VariantListBuilderImpl();

@@ -37,12 +37,14 @@ import java.lang.reflect.Type;
 @Provider
 public class DataSourceEntityProvider implements EntityProvider<DataSource> {
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == DataSource.class;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public DataSource readFrom(Class<DataSource> type,
                                Type genericType,
                                Annotation[] annotations,
@@ -54,17 +56,20 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
         return createDataSource(entityStream, m);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(DataSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return DataSource.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(DataSource t, Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
@@ -157,7 +162,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
             }
         }
 
-        /** {@inheritDoc} */
+
         @Override
         public String getContentType() {
             return mimeType;

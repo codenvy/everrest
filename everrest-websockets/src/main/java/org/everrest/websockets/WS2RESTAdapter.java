@@ -112,6 +112,7 @@ class WS2RESTAdapter implements WSMessageReceiver {
             doSendMessage(response);
         }
         executor.execute(new Runnable() {
+            @Override
             public void run() {
                 try {
                     ByteArrayInputStream data = null;

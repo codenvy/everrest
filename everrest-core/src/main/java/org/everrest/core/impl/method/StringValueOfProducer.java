@@ -28,7 +28,7 @@ public final class StringValueOfProducer extends BaseTypeProducer {
         this.valueOfMethod = valueOfMethod;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     protected Object createValue(String value) throws Exception {
         if (value == null) {

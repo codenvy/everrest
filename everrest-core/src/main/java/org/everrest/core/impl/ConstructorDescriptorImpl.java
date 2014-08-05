@@ -51,7 +51,8 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor {
 
     /** Compare two ConstructorDescriptor in number parameters order. */
     private static class ConstructorComparator implements Comparator<ConstructorDescriptor> {
-        /** {@inheritDoc} */
+
+        @Override
         public int compare(ConstructorDescriptor o1, ConstructorDescriptor o2) {
             int r = o2.getParameters().size() - o1.getParameters().size();
             if (r == 0) {
@@ -120,7 +121,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor {
                         defaultValue = ((DefaultValue)a).value();
                     } else {
                         LOG.debug("Constructor parameter contains unknown or not valid JAX-RS annotation " + a
-                                 + ". It will be ignored. ");
+                                  + ". It will be ignored. ");
                     }
                 }
 
@@ -139,22 +140,26 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitConstructorInjector(this);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Constructor<?> getConstructor() {
         return constructor;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<ConstructorParameter> getParameters() {
         return parameters;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object createInstance(ApplicationContext context) {
         Object[] p = new Object[parameters.size()];
         int i = 0;
@@ -242,7 +247,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[ ConstructorInjectorImpl: ");

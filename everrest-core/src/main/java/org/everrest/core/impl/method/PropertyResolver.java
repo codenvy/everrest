@@ -32,7 +32,8 @@ public class PropertyResolver extends ParameterResolver<Property> {
         this.property = property;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         if (parameter.getParameterClass() != String.class) {
             throw new IllegalArgumentException(

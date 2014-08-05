@@ -78,6 +78,7 @@ class RedirectionModule implements HTTPClientModule {
     // Methods
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int requestHandler(Request req, Response[] resp) {
         HTTPConnection con = req.getConnection();
         URI new_loc, cur_loc;
@@ -149,6 +150,7 @@ class RedirectionModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase1Handler(Response resp, RoRequest req) throws IOException {
         int sts = resp.getStatusCode();
         if (sts < 301 || sts > 307 || sts == 304) {
@@ -158,6 +160,7 @@ class RedirectionModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public int responsePhase2Handler(Response resp, Request req) throws IOException {
       /* handle various response status codes until satisfied */
 
@@ -380,10 +383,12 @@ class RedirectionModule implements HTTPClientModule {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void responsePhase3Handler(Response resp, RoRequest req) {
     }
 
     /** Invoked by the HTTPClient. */
+    @Override
     public void trailerHandler(Response resp, RoRequest req) {
     }
 

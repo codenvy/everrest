@@ -32,7 +32,7 @@ public class QueryParameterResolver extends ParameterResolver<QueryParam> {
         this.queryParam = queryParam;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         String param = this.queryParam.value();

@@ -49,12 +49,14 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object> {
         this.providers = providers;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.getAnnotation(XmlRootElement.class) != null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object readFrom(Class<Object> type,
                            Type genericType,
                            Annotation[] annotations,
@@ -75,17 +77,20 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object> {
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.getAnnotation(XmlRootElement.class) != null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(Object t,
                         Class<?> type,
                         Type genericType,

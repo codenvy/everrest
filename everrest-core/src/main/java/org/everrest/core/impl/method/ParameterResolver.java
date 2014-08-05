@@ -28,7 +28,7 @@ public abstract class ParameterResolver<T> {
      * @param context
      *         See {@link ApplicationContext}
      * @return newly created instance of class
-     *         {@link MethodParameterImpl#getParameterClass()}
+     * {@link MethodParameterImpl#getParameterClass()}
      * @throws Exception
      *         if any errors occurs
      */

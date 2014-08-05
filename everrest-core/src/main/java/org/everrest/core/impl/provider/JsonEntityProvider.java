@@ -79,15 +79,15 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
         return true;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         // say as support all objects
         //return Object.class.isAssignableFrom(type);
         return isSupported(type);
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
+    @Override
     public T readFrom(Class<T> type,
                       Type genericType,
                       Annotation[] annotations,
@@ -126,20 +126,20 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
         }
     }
 
-    /** {@inheritDoc} */
+    @Override
     public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         // say as support all objects
         //return Object.class.isAssignableFrom(type);
         return isSupported(type);
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public void writeTo(T t,
                         Class<?> type,
                         Type genericType,

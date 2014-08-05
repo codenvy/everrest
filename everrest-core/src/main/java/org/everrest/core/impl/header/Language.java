@@ -99,7 +99,7 @@ public class Language {
                || this.toString().equalsIgnoreCase(other.toString());
     }
 
-    /** {@inheritDoc} */
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getPrimaryTag());

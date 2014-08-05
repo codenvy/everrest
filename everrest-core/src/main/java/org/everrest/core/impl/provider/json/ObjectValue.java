@@ -24,31 +24,31 @@ public class ObjectValue extends JsonValue {
     /** Children. */
     private final Map<String, JsonValue> children = new LinkedHashMap<String, JsonValue>();
 
-    /** {@inheritDoc} */
+
     @Override
     public void addElement(String key, JsonValue child) {
         children.put(key, child);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean isObject() {
         return true;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Iterator<String> getKeys() {
         return children.keySet().iterator();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public JsonValue getElement(String key) {
         return children.get(key);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringWriter w = new StringWriter();
@@ -61,7 +61,7 @@ public class ObjectValue extends JsonValue {
         return w.toString();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void writeTo(JsonWriter writer) throws JsonException {
         writer.writeStartObject();

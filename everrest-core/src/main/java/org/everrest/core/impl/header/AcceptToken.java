@@ -46,7 +46,8 @@ public class AcceptToken extends Token implements QualityValue {
 
     // QualityValue
 
-    /** {@inheritDoc} */
+
+    @Override
     public float getQvalue() {
         return qValue;
     }

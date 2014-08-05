@@ -650,15 +650,15 @@ public class Codecs {
      * @param dir
      *         the directory to create the files in.
      * @return an array of name/value pairs, one for each part; the name is the
-     *         'name' attribute given in the Content-Disposition header; the
-     *         value is either the name of the file if a filename attribute was
-     *         found, or the contents of the part.
+     * 'name' attribute given in the Content-Disposition header; the
+     * value is either the name of the file if a filename attribute was
+     * found, or the contents of the part.
      * @throws IOException
      *         If any file operation fails.
      * @throws ParseException
      *         If an error during parsing occurs.
      * @see #mpFormDataDecode(byte[], java.lang.String, java.lang.String,
-     *      HTTPClient.FilenameMangler)
+     * HTTPClient.FilenameMangler)
      */
     public final static NVPair[] mpFormDataDecode(byte[] data, String cont_type, String dir) throws IOException,
                                                                                                     ParseException {
@@ -721,9 +721,9 @@ public class Codecs {
      *         This is invoked just before each file is created and written,
      *         thereby allowing you to control the names of the files.
      * @return an array of name/value pairs, one for each part; the name is the
-     *         'name' attribute given in the Content-Disposition header; the
-     *         value is either the name of the file if a filename attribute was
-     *         found, or the contents of the part.
+     * 'name' attribute given in the Content-Disposition header; the
+     * value is either the name of the file if a filename attribute was
+     * found, or the contents of the part.
      * @throws IOException
      *         If any file operation fails.
      * @throws ParseException
@@ -883,7 +883,7 @@ public class Codecs {
      * @throws IOException
      *         If any file operation fails.
      * @see #mpFormDataEncode(HTTPClient.NVPair[], HTTPClient.NVPair[],
-     *      HTTPClient.NVPair[], HTTPClient.FilenameMangler)
+     * HTTPClient.NVPair[], HTTPClient.FilenameMangler)
      */
     public final static byte[] mpFormDataEncode(NVPair[] opts, NVPair[] files, NVPair[] ct_hdr) throws IOException {
         return mpFormDataEncode(opts, files, ct_hdr, null);
@@ -1160,6 +1160,7 @@ public class Codecs {
             super(null);
         }
 
+        @Override
         public void connect() {
         }
     }
@@ -1361,7 +1362,7 @@ public class Codecs {
      * @param input
      *         the stream from which to read the next chunk.
      * @return If this was a data chunk then it returns a byte[]; else it's the
-     *         footer and it returns a NVPair[] containing the footers.
+     * footer and it returns a NVPair[] containing the footers.
      * @throws ParseException
      *         If any exception during parsing occured.
      * @throws IOException

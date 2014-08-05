@@ -100,6 +100,7 @@ class StreamDemultiplexor implements GlobalConstants {
         cleanup = new Object() {
             private final SocketTimeout timer = StreamDemultiplexor.TimerThread;
 
+            @Override
             protected void finalize() {
                 timer.kill();
             }
@@ -680,6 +681,7 @@ class StreamDemultiplexor implements GlobalConstants {
     }
 
     /** A safety net to close the connection. */
+    @Override
     protected void finalize() throws Throwable {
         close((IOException)null, false);
         super.finalize();
@@ -818,6 +820,7 @@ class SocketTimeout extends Thread {
      * This timer is implemented by sleeping for 1 second and then checking the
      * timer list.
      */
+    @Override
     public void run() {
         TimeoutEntry marked = null;
 

@@ -37,6 +37,7 @@ public class ApplicationProviderBinder extends ProviderBinder {
         super();
     }
 
+    @Override
     protected void init() {
         // Do not add default providers.
     }

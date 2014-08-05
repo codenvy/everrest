@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * @author andrew00x
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class ExtendedGroovyClassLoader extends GroovyClassLoader {
     public static final String CODE_BASE = "/groovy/script/jaxrs";
 
@@ -216,7 +216,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
     /**
      * @see groovy.lang.GroovyClassLoader#createCompilationUnit(org.codehaus.groovy.control.CompilerConfiguration,
-     *      java.security.CodeSource)
+     * java.security.CodeSource)
      */
     @Override
     protected CompilationUnit createCompilationUnit(CompilerConfiguration config, CodeSource cs) {

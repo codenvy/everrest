@@ -28,13 +28,13 @@ public class StringValue extends JsonValue {
         this.value = value;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean isString() {
         return true;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String getStringValue() {
         return value;
@@ -84,13 +84,13 @@ public class StringValue extends JsonValue {
         return getNumberValue().doubleValue();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         return JsonUtils.getJsonString(value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void writeTo(JsonWriter writer) throws JsonException {
         writer.writeString(value);

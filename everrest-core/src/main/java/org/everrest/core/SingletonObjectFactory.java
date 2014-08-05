@@ -35,17 +35,19 @@ public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFact
         this.object = object;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object getInstance(ApplicationContext context) {
         return getInstance();
     }
 
-    /** {@inheritDoc} */
+
     public Object getInstance() {
         return object;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public T getObjectModel() {
         return model;
     }

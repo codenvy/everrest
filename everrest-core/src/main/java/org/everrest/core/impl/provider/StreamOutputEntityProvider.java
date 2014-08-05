@@ -29,13 +29,15 @@ import java.lang.reflect.Type;
  */
 @Provider
 public class StreamOutputEntityProvider implements EntityProvider<StreamingOutput> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         // input is not supported
         return false;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public StreamingOutput readFrom(Class<StreamingOutput> type,
                                     Type genericType,
                                     Annotation[] annotations,
@@ -46,17 +48,20 @@ public class StreamOutputEntityProvider implements EntityProvider<StreamingOutpu
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(StreamingOutput t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return StreamingOutput.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(StreamingOutput t,
                         Class<?> type,
                         Type genericType,

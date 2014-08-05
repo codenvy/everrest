@@ -133,16 +133,11 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
     protected SpringComponentsLoader() {
     }
 
-    /** @see org.springframework.web.servlet.HandlerMapping#getHandler(javax.servlet.http.HttpServletRequest) */
     @Override
     public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
         return new HandlerExecutionChain(processor);
     }
 
-    /**
-     * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(
-     *org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
-     */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         beanFactory.registerSingleton("org.everrest.lifecycle.SpringEverrestProcessorLifecycle",
@@ -200,6 +195,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
      */
     protected void addAutowiredDependencies(ConfigurableListableBeanFactory beanFactory) {
         beanFactory.registerResolvableDependency(HttpHeaders.class, new ObjectFactory<HttpHeaders>() {
+            @Override
             public HttpHeaders getObject() {
                 ApplicationContext context = ApplicationContextImpl.getCurrent();
                 if (context == null) {
@@ -209,6 +205,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             }
         });
         beanFactory.registerResolvableDependency(InitialProperties.class, new ObjectFactory<InitialProperties>() {
+            @Override
             public InitialProperties getObject() {
                 ApplicationContext context = ApplicationContextImpl.getCurrent();
                 if (context == null) {
@@ -218,6 +215,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             }
         });
         beanFactory.registerResolvableDependency(Request.class, new ObjectFactory<Request>() {
+            @Override
             public Request getObject() {
                 ApplicationContext context = ApplicationContextImpl.getCurrent();
                 if (context == null) {
@@ -227,6 +225,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             }
         });
         beanFactory.registerResolvableDependency(SecurityContext.class, new ObjectFactory<SecurityContext>() {
+            @Override
             public SecurityContext getObject() {
                 ApplicationContext context = ApplicationContextImpl.getCurrent();
                 if (context == null) {
@@ -236,12 +235,23 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
             }
         });
         beanFactory.registerResolvableDependency(UriInfo.class, new ObjectFactory<UriInfo>() {
+            @Override
             public UriInfo getObject() {
                 ApplicationContext context = ApplicationContextImpl.getCurrent();
                 if (context == null) {
                     throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
                 }
                 return context.getUriInfo();
+            }
+        });
+        beanFactory.registerResolvableDependency(javax.ws.rs.core.Application.class, new ObjectFactory<javax.ws.rs.core.Application>() {
+            @Override
+            public javax.ws.rs.core.Application getObject() {
+                ApplicationContext context = ApplicationContextImpl.getCurrent();
+                if (context == null) {
+                    throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
+                }
+                return context.getApplication();
             }
         });
     }

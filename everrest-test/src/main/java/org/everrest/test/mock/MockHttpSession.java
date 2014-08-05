@@ -34,41 +34,49 @@ public class MockHttpSession implements HttpSession {
     /** The is valid. */
     private boolean isValid = true;
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getCreationTime() {
         return 0L;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getId() {
         return "MockSessionId";
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getLastAccessedTime() {
         return 0L;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public ServletContext getServletContext() {
         return servletContext;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setMaxInactiveInterval(int i) {
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public int getMaxInactiveInterval() {
         return 0;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public HttpSessionContext getSessionContext() {
         return null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object getAttribute(String s) {
 
         if (!isValid) {
@@ -77,12 +85,14 @@ public class MockHttpSession implements HttpSession {
         return attributes.get(s);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Object getValue(String s) {
         return getAttribute(s);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Enumeration getAttributeNames() {
         if (!isValid) {
             throw new IllegalStateException("Cannot call getAttribute() on invalidated session");
@@ -90,7 +100,8 @@ public class MockHttpSession implements HttpSession {
         return new Vector<String>(attributes.keySet()).elements();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String[] getValueNames() {
         if (!isValid) {
             throw new IllegalStateException("Cannot call getAttribute() on invalidated session");
@@ -99,27 +110,32 @@ public class MockHttpSession implements HttpSession {
         return ((String[])attributes.keySet().toArray(results));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setAttribute(String s, Object o) {
         attributes.put(s, o);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void putValue(String s, Object o) {
         setAttribute(s, o);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void removeAttribute(String s) {
         attributes.remove(s);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void removeValue(String s) {
         removeAttribute(s);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void invalidate() {
         if (!isValid) {
             throw new IllegalStateException("Cannot call invalidate() on invalidated session");
@@ -127,7 +143,8 @@ public class MockHttpSession implements HttpSession {
         this.isValid = false;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isNew() {
         return false;
     }

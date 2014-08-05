@@ -35,8 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public final class HeaderHelper {
     /** Constructor. */
@@ -85,6 +84,7 @@ public final class HeaderHelper {
          * @see Comparator#compare(Object, Object)
          * @see QualityValue
          */
+        @Override
         public int compare(QualityValue o1, QualityValue o2) {
             float q1 = o1.getQvalue();
             float q2 = o2.getQvalue();
@@ -431,7 +431,7 @@ public final class HeaderHelper {
      *         HTTP header as Java type.
      * @return string representation of supplied type
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public static String getHeaderAsString(Object o) {
         HeaderDelegate hd = RuntimeDelegate.getInstance().createHeaderDelegate(o.getClass());
         if (hd != null) {

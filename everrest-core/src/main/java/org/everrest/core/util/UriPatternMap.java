@@ -13,8 +13,6 @@ package org.everrest.core.util;
 import org.everrest.core.ExtMultivaluedMap;
 import org.everrest.core.uri.UriPattern;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,8 +29,9 @@ public class UriPatternMap<V> extends ConcurrentHashMap<UriPattern, List<V>> imp
      * @param uriPattern
      *         the key
      * @return List of Object mapped to specified <tt>uriPattern</tt>. Method
-     *         never return null, empty List instead.
+     * never return null, empty List instead.
      */
+    @Override
     public List<V> getList(UriPattern uriPattern) {
         List<V> list = get(uriPattern);
         if (list == null) {
@@ -45,6 +44,7 @@ public class UriPatternMap<V> extends ConcurrentHashMap<UriPattern, List<V>> imp
         return list;
     }
 
+    @Override
     public void add(UriPattern uriPattern, V value) {
         if (value == null) {
             return;
@@ -53,11 +53,13 @@ public class UriPatternMap<V> extends ConcurrentHashMap<UriPattern, List<V>> imp
         list.add(value);
     }
 
+    @Override
     public V getFirst(UriPattern uriPattern) {
         List<V> list = getList(uriPattern);
         return list != null && list.size() > 0 ? list.get(0) : null;
     }
 
+    @Override
     public void putSingle(UriPattern uriPattern, V value) {
         if (value == null) {
             remove(uriPattern);

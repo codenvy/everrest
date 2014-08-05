@@ -80,7 +80,6 @@ public class RegisterComponentTest extends StandaloneBaseTest {
     }
 
     @Test
-    @SuppressWarnings("rawtypes")
     public void testRegisterProvider() throws Exception {
         restfulContainer.registerComponentImplementation("A", A.class);
         Assert.assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
@@ -89,7 +88,6 @@ public class RegisterComponentTest extends StandaloneBaseTest {
     }
 
     @Test
-    @SuppressWarnings("rawtypes")
     public void testRegisterResource() throws Exception {
         restfulContainer.registerComponentImplementation("X", X.class);
         Assert.assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());

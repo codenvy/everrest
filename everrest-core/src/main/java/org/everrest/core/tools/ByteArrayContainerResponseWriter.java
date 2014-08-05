@@ -33,8 +33,9 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
 
     private boolean committed;
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+
+    @Override
+    @SuppressWarnings({"unchecked"})
     public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
         if (committed) {
             return;
@@ -48,7 +49,8 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
         }
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeHeaders(GenericContainerResponse response) throws IOException {
         if (committed) {
             return;

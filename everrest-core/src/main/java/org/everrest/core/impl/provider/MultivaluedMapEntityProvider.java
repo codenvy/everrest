@@ -41,7 +41,8 @@ import java.util.Map;
 @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
 @Produces({MediaType.APPLICATION_FORM_URLENCODED})
 public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedMap<String, String>> {
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (type == MultivaluedMap.class) {
             try {
@@ -55,7 +56,8 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
         return false;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     @SuppressWarnings("unchecked")
     public MultivaluedMap<String, String> readFrom(Class<MultivaluedMap<String, String>> type,
                                                    Type genericType,
@@ -119,18 +121,21 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
         f.add(name, value);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getSize(MultivaluedMap<String, String> t, Class<?> type, Type genericType, Annotation[] annotations,
                         MediaType mediaType) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return MultivaluedMap.class.isAssignableFrom(type);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void writeTo(MultivaluedMap<String, String> t,
                         Class<?> type,
                         Type genericType,

@@ -27,25 +27,24 @@ public class CaseInsensetiveMap<T> extends java.util.HashMap<String, T> {
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public boolean containsKey(Object key) {
         return super.containsKey(getKey(key));
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public T get(Object key) {
         return super.get(getKey(key));
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public T put(String key, T value) {
         return super.put(getKey(key), value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public T remove(Object key) {
         return super.remove(getKey(key));

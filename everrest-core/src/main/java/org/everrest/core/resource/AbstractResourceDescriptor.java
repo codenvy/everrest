@@ -50,7 +50,7 @@ public interface AbstractResourceDescriptor extends ResourceDescriptor, ObjectMo
 
     /**
      * @return true if resource is root resource false otherwise. Root resource
-     *         is class which has own {@link javax.ws.rs.Path} annotation
+     * is class which has own {@link javax.ws.rs.Path} annotation
      */
     boolean isRootResource();
 

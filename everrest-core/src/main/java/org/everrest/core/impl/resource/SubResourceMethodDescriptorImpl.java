@@ -102,62 +102,73 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
         this.additional = additional;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<MediaType> consumes() {
         return consumes;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getHttpMethod() {
         return httpMethod;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<MediaType> produces() {
         return produces;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitSubResourceMethodDescriptor(this);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public PathValue getPathValue() {
         return path;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public UriPattern getUriPattern() {
         return uriPattern;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Method getMethod() {
         return method;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<MethodParameter> getMethodParameters() {
         return parameters;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public AbstractResourceDescriptor getParentResource() {
         return parentResource;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Class<?> getResponseType() {
         return getMethod().getReturnType();
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Annotation[] getAnnotations() {
         return additional;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");

@@ -38,7 +38,8 @@ public class UriPattern {
 
     /** URI pattern comparator. */
     private static final class UriPatternComparator implements Comparator<UriPattern> {
-        /** {@inheritDoc} */
+
+        @Override
         public int compare(UriPattern o1, UriPattern o2) {
             if (o1 == null && o2 == null) {
                 return 0;
@@ -139,12 +140,12 @@ public class UriPattern {
         this.pattern = Pattern.compile(this.regex);
     }
 
-    /** {@inheritDoc} */
+
     public boolean equals(Object obj) {
         return obj != null && obj.getClass() == getClass() && getRegex().equals(((UriPattern)obj).getRegex());
     }
 
-    /** {@inheritDoc} */
+
     public int hashCode() {
         int hash = 7;
         hash = hash * 31 + regex.hashCode();
@@ -233,7 +234,7 @@ public class UriPattern {
         return true;
     }
 
-    /** {@inheritDoc} */
+
     public String toString() {
         return regex;
     }

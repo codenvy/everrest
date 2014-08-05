@@ -61,14 +61,17 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
         }
     }
 
+    @Override
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitFilterDescriptor(this);
     }
 
+    @Override
     public PathValue getPathValue() {
         return path;
     }
 
+    @Override
     public UriPattern getUriPattern() {
         return uriPattern;
     }

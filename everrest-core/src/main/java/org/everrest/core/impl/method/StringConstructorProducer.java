@@ -32,7 +32,7 @@ public final class StringConstructorProducer extends BaseTypeProducer {
         this.constructor = constructor;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     protected Object createValue(String value) throws Exception {
         if (value == null) {

@@ -11,7 +11,6 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.BaseObjectModel;
-import org.everrest.core.ComponentLifecycleScope;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
@@ -22,9 +21,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ProviderDescriptorImpl.java 292 2009-10-19 07:03:07Z aparfonov
- *          $
+ * @author andrew00x
  */
 public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderDescriptor {
     /**
@@ -60,22 +57,25 @@ public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderD
         this.produces = MediaTypeHelper.createProducesList(providerClass.getAnnotation(Produces.class));
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void accept(ResourceDescriptorVisitor visitor) {
         visitor.visitProviderDescriptor(this);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<MediaType> consumes() {
         return consumes;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<MediaType> produces() {
         return produces;
     }
 
-    /** {@inheritDoc} */
+
     public String toString() {
         StringBuilder sb = new StringBuilder("[ ProviderDescriptorImpl: ");
         sb.append("provider class: ");

@@ -38,22 +38,26 @@ public class SimpleSecurityContext implements SecurityContext {
         this(null, null, null, secure);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getAuthenticationScheme() {
         return authenticationScheme;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public Principal getUserPrincipal() {
         return principal;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isSecure() {
         return secure;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean isUserInRole(String role) {
         return principal != null && userRoles.contains(role);
     }

@@ -27,9 +27,9 @@ import java.util.Arrays;
 public class ByteEntityProviderTest {
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testRead() throws Exception {
-        MessageBodyReader reader =  new ByteEntityProvider();
+        MessageBodyReader reader = new ByteEntityProvider();
         Assert.assertTrue(reader.isReadable(byte[].class, null, null, null));
         byte[] data = new byte[16];
         for (int i = 0; i < data.length; i++) {
@@ -43,7 +43,7 @@ public class ByteEntityProviderTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public void testWrite() throws Exception {
         MessageBodyWriter writer = new ByteEntityProvider();
         Assert.assertTrue(writer.isWriteable(byte[].class, null, null, null));

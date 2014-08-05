@@ -51,7 +51,7 @@ public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMe
         super(method, httpMethod, parameters, parentResource, consumes, produces, additional);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Class<?> getResponseType() {
         return Response.class;

@@ -65,6 +65,7 @@ public class EverrestServletContextInitializer {
             }
         } else if (scan) {
             application = new Application() {
+                @Override
                 public Set<Class<?>> getClasses() {
                     return new LinkedHashSet<Class<?>>(ComponentFinder.findComponents());
                 }

@@ -149,19 +149,20 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         this.methodInvokerDecoratorFactory = methodInvokerDecoratorFactory;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void addMatchedResource(Object resource) {
         matchedResources.add(0, resource);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void addMatchedURI(String uri) {
         encodedMatchedURIs.add(0, uri);
         matchedURIs.add(0, UriComponent.decode(uri, UriComponent.PATH_SEGMENT));
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public URI getAbsolutePath() {
         if (absolutePath != null) {
@@ -170,79 +171,79 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         return absolutePath = getRequestUriBuilder().replaceQuery(null).fragment(null).build();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder getAbsolutePathBuilder() {
         return UriBuilder.fromUri(getAbsolutePath());
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Map<String, Object> getAttributes() {
         return attributes == null ? attributes = new HashMap<>() : attributes;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public URI getBaseUri() {
         return request.getBaseUri();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder getBaseUriBuilder() {
         return UriBuilder.fromUri(getBaseUri());
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public GenericContainerRequest getContainerRequest() {
         return request;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public GenericContainerResponse getContainerResponse() {
         return response;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public DependencySupplier getDependencySupplier() {
         return depInjector;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public HttpHeaders getHttpHeaders() {
         return request;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public InitialProperties getInitialProperties() {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<Object> getMatchedResources() {
         return matchedResources;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<String> getMatchedURIs() {
         return getMatchedURIs(true);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<String> getMatchedURIs(boolean decode) {
         return decode ? matchedURIs : encodedMatchedURIs;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MethodInvoker getMethodInvoker(GenericMethodResource methodDescriptor) {
         String method = request.getMethod();
@@ -271,19 +272,19 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         return invoker;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<String> getParameterValues() {
         return parameterValues;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String getPath() {
         return getPath(true);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String getPath(boolean decode) {
         if (encodedPath == null) {
@@ -298,13 +299,13 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         return encodedPath;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MultivaluedMap<String, String> getPathParameters() {
         return getPathParameters(true);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MultivaluedMap<String, String> getPathParameters(boolean decode) {
         if (encodedPathParameters == null) {
@@ -327,13 +328,13 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         return encodedPathParameters;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<PathSegment> getPathSegments() {
         return getPathSegments(true);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public List<PathSegment> getPathSegments(boolean decode) {
         if (decode) {
@@ -342,19 +343,19 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         return encodedPathSegments != null ? encodedPathSegments : (encodedPathSegments = UriComponent.parsePathSegments(getPath(), false));
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Map<String, String> getProperties() {
         return properties == null ? properties = new HashMap<>() : properties;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String getProperty(String name) {
         return getProperties().get(name);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public ProviderBinder getProviders() {
         return providers;
@@ -369,13 +370,13 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         this.providers = providers;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MultivaluedMap<String, String> getQueryParameters() {
         return getQueryParameters(true);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
         if (decode) {
@@ -386,25 +387,25 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
                 UriComponent.parseQueryString(getRequestUri().getRawQuery(), false));
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Request getRequest() {
         return request;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public URI getRequestUri() {
         return request.getRequestUri();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriBuilder getRequestUriBuilder() {
         return UriBuilder.fromUri(getRequestUri());
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public SecurityContext getSecurityContext() {
         // We get security information from HttpServletRequest but we may be not able to do this is asynchronous mode.
@@ -442,19 +443,19 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         return request;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public UriInfo getUriInfo() {
         return this;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void setDependencySupplier(DependencySupplier depInjector) {
         this.depInjector = depInjector;
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void setParameterNames(List<String> parameterNames) {
         if (encodedPathParameters == null) {
@@ -465,13 +466,13 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void setProperty(String name, String value) {
         getProperties().put(name, value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean isAsynchronous() {
         return Boolean.parseBoolean(getQueryParameters().getFirst("async"))

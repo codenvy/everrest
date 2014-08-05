@@ -22,25 +22,22 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Provide cache for {@link JAXBContext}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Provider
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBContextResolver implements ContextResolver<JAXBContextResolver> {
     /** JAXBContext cache. */
-    @SuppressWarnings("rawtypes")
-    private final ConcurrentHashMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<Class, JAXBContext>();
+    private final ConcurrentHashMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<>();
 
-    /** {@inheritDoc} */
+    @Override
     public JAXBContextResolver getContext(Class<?> type) {
         return this;
     }
 
     /**
-     * Return JAXBContext according to supplied type. If no one context found
-     * then try create new context and save it in cache.
+     * Return JAXBContext according to supplied type. If no one context found then try create new context and save it in cache.
      *
      * @param clazz
      *         class to be bound
@@ -64,8 +61,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
      *         java class to be bound
      * @return JAXBContext
      * @throws JAXBException
-     *         if JAXBContext for supplied classes can't be created
-     *         in any reasons
+     *         if JAXBContext for supplied classes can't be created in any reasons
      */
     public JAXBContext createJAXBContext(Class<?> clazz) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
@@ -74,8 +70,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     }
 
     /**
-     * Add prepared JAXBContext that will be mapped to set of class. In this case
-     * this class works as cache for JAXBContexts.
+     * Add prepared JAXBContext that will be mapped to set of class. In this case this class works as cache for JAXBContexts.
      *
      * @param jaxbContext
      *         JAXBContext

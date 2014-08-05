@@ -46,7 +46,8 @@ public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplat
     /** XML entity resolver. */
     private EntityResolver resolver;
 
-    /** {@inheritDoc} */
+
+    @Override
     public XSLTTemplatesContextResolver getContext(Class<?> type) {
         return this;
     }
@@ -114,7 +115,7 @@ public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplat
      * @param name
      *         templates' name
      * @return templates or <code>null</code> if no templates mapped to given
-     *         name
+     * name
      */
     public Templates getTemplates(String name) {
         return templates.get(name);

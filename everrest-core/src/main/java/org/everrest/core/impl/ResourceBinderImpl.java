@@ -53,6 +53,7 @@ public class ResourceBinderImpl implements ResourceBinder {
                  * @see UriPattern
                  * @see UriPattern#URIPATTERN_COMPARATOR
                  */
+                @Override
                 public int compare(ObjectFactory<AbstractResourceDescriptor> o1, ObjectFactory<AbstractResourceDescriptor> o2) {
                     return UriPattern.URIPATTERN_COMPARATOR
                             .compare(o1.getObjectModel().getUriPattern(), o2.getObjectModel().getUriPattern());
@@ -71,6 +72,7 @@ public class ResourceBinderImpl implements ResourceBinder {
     public ResourceBinderImpl() {
     }
 
+    @Override
     public void addResource(Class<?> resourceClass, MultivaluedMap<String, String> properties) {
         Path path = resourceClass.getAnnotation(Path.class);
         if (path == null) {
@@ -105,6 +107,7 @@ public class ResourceBinderImpl implements ResourceBinder {
         return descriptor;
     }
 
+    @Override
     public void addResource(Object resource, MultivaluedMap<String, String> properties) {
         Path path = resource.getClass().getAnnotation(Path.class);
         if (path == null) {
@@ -132,6 +135,7 @@ public class ResourceBinderImpl implements ResourceBinder {
         return descriptor;
     }
 
+    @Override
     public void addResource(ObjectFactory<AbstractResourceDescriptor> resourceFactory) {
         UriPattern pattern = resourceFactory.getObjectModel().getUriPattern();
         lock.lock();
@@ -181,6 +185,7 @@ public class ResourceBinderImpl implements ResourceBinder {
      * @return root resource matched to <code>requestPath</code> or
      * <code>null</code>
      */
+    @Override
     public ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues) {
         ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
         List<ObjectFactory<AbstractResourceDescriptor>> myResources = resources;
@@ -205,18 +210,21 @@ public class ResourceBinderImpl implements ResourceBinder {
         return resourceFactory;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public List<ObjectFactory<AbstractResourceDescriptor>> getResources() {
         List<ObjectFactory<AbstractResourceDescriptor>> myResources = resources;
         return new ArrayList<>(myResources);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public int getSize() {
         List<ObjectFactory<AbstractResourceDescriptor>> myResources = resources;
         return myResources.size();
     }
 
+    @Override
     public ObjectFactory<AbstractResourceDescriptor> removeResource(Class<?> clazz) {
         lock.lock();
         try {
@@ -246,6 +254,7 @@ public class ResourceBinderImpl implements ResourceBinder {
         }
     }
 
+    @Override
     public ObjectFactory<AbstractResourceDescriptor> removeResource(String path) {
         lock.lock();
         try {

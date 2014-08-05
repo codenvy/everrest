@@ -37,7 +37,7 @@ public class SpringResourceTest extends BaseTest {
     public static class Resource {
         @GET
         public void m(Message m) {
-            assertEquals(mesageBody, m.getMessage());
+            assertEquals(messageBody, m.getMessage());
         }
     }
 
@@ -81,10 +81,10 @@ public class SpringResourceTest extends BaseTest {
         }
     }
 
-    private static final String mesageBody = "TEST SPRING BEAN";
+    private static final String messageBody = "TEST SPRING BEAN";
 
     @Test
     public void testResource() throws Exception {
-        assertEquals(204, launcher.service("GET", "/a", "", null, mesageBody.getBytes(), null).getStatus());
+        assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
     }
 }

@@ -111,6 +111,7 @@ final class RespInputStream extends InputStream implements GlobalConstants {
      * @throws IOException
      *         if any exception occured on the connection.
      */
+    @Override
     public synchronized int read() throws IOException {
         int rcvd = read(ch, 0, 1);
         if (rcvd == 1)
@@ -127,6 +128,7 @@ final class RespInputStream extends InputStream implements GlobalConstants {
      * @throws IOException
      *         if any exception occured on the connection.
      */
+    @Override
     public synchronized int read(byte[] b, int off, int len) throws IOException {
         if (closed)
             return -1;
@@ -165,6 +167,7 @@ final class RespInputStream extends InputStream implements GlobalConstants {
      * @throws IOException
      *         if any exception occured on the connection.
      */
+    @Override
     public synchronized long skip(long num) throws IOException {
         if (closed)
             return 0;
@@ -189,6 +192,7 @@ final class RespInputStream extends InputStream implements GlobalConstants {
      * @throws IOException
      *         if any exception occured on the connection.
      */
+    @Override
     public synchronized int available() throws IOException {
         if (closed)
             return 0;
@@ -206,6 +210,7 @@ final class RespInputStream extends InputStream implements GlobalConstants {
      *         any exception occured on the connection before or during
      *         close.
      */
+    @Override
     public synchronized void close() throws IOException {
         if (!closed) {
             closed = true;
@@ -229,6 +234,7 @@ final class RespInputStream extends InputStream implements GlobalConstants {
     }
 
     /** A safety net to clean up. */
+    @Override
     protected void finalize() throws Throwable {
         try {
             close();

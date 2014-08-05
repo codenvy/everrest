@@ -103,12 +103,14 @@ public final class PathSegmentImpl implements PathSegment {
         return new PathSegmentImpl(path, m);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public MultivaluedMap<String, String> getMatrixParameters() {
         return matrixParameters;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getPath() {
         return path;
     }

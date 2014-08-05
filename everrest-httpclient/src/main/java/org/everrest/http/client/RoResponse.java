@@ -173,7 +173,7 @@ public interface RoResponse {
      * any unread data remaining on the stream and then closes it.
      *
      * @return an array containing the data (body) returned. If no data was
-     *         returned then it's set to a zero-length array.
+     * returned then it's set to a zero-length array.
      * @throws IOException
      *         If any io exception occured while reading the data
      * @see #getInputStream()

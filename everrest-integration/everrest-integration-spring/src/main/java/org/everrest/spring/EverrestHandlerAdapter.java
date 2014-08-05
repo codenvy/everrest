@@ -38,12 +38,14 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
     private ServletConfig               servletConfig;
     private WebApplicationDeclaredRoles webApplicationRoles;
 
-    /** {@inheritDoc} */
+
+    @Override
     public long getLastModified(HttpServletRequest request, Object handler) {
         return -1;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         EnvironmentContext env = new EnvironmentContext();
@@ -59,18 +61,21 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
         return null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setServletConfig(ServletConfig servletConfig) {
         this.servletConfig = servletConfig;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
         webApplicationRoles = new WebApplicationDeclaredRoles(servletContext);
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public boolean supports(Object handler) {
         return handler instanceof EverrestProcessor;
     }

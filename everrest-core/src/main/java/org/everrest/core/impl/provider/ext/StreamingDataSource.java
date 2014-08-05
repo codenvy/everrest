@@ -34,22 +34,26 @@ public class StreamingDataSource implements DataSource {
         this.contentType = contentType;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getContentType() {
         return contentType;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public InputStream getInputStream() throws IOException {
         return stream;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public String getName() {
         return null;
     }
 
-    /** {@inheritDoc} */
+
+    @Override
     public OutputStream getOutputStream() throws IOException {
         throw new UnsupportedOperationException();
     }

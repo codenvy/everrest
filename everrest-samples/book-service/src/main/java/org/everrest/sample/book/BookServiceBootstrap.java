@@ -21,11 +21,13 @@ import javax.servlet.ServletContextListener;
 public class BookServiceBootstrap implements ServletContextListener {
     static final String BOOK_STORAGE_NAME = BookStorage.class.getName();
 
+    @Override
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext sctx = sce.getServletContext();
         sctx.removeAttribute(BOOK_STORAGE_NAME);
     }
 
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext sctx = sce.getServletContext();
         sctx.setAttribute(BOOK_STORAGE_NAME, new BookStorage());

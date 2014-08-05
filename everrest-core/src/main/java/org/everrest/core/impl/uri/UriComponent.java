@@ -535,7 +535,7 @@ public final class UriComponent {
      * @param p
      *         position of character in string
      * @return true is two characters after '%' represent percent-encoded
-     *         character false otherwise
+     * character false otherwise
      */
     public static boolean checkHexCharacters(String s, int p) {
         if (p > (s.length() - 3)) {
