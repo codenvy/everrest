@@ -191,7 +191,11 @@ public class WSClient {
                 @Override
                 public void run() {
                     try {
-                        socket = new Socket(target.getHost(), target.getPort());
+                        int port = target.getPort();
+                        if (port == -1) {
+                            port = 80;
+                        }
+                        socket = new Socket(target.getHost(), port);
                         in = socket.getInputStream();
                         out = socket.getOutputStream();
                         out.write(getHandshake());
