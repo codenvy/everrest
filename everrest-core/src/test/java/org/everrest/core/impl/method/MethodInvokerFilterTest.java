@@ -58,7 +58,8 @@ public class MethodInvokerFilterTest extends BaseTest {
             this.httpHeaders = httpHeaders;
         }
 
-        public void accept(GenericMethodResource genericMethodResource) {
+        @Override
+        public void accept(GenericMethodResource genericMethodResource, Object[] params) {
             if (uriInfo != null && httpHeaders != null && providers != null && httpRequest != null) {
                 if (genericMethodResource instanceof SubResourceMethodDescriptor) {
                     throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
@@ -74,7 +75,8 @@ public class MethodInvokerFilterTest extends BaseTest {
     @Filter
     @Path("b/c")
     public static class MethodInvokerFilter2 implements MethodInvokerFilter {
-        public void accept(GenericMethodResource genericMethodResource) {
+        @Override
+        public void accept(GenericMethodResource genericMethodResource, Object[] params) {
             System.out.println("MethodInvokerFilter2: >>>>>>>>>>>>");
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
         }

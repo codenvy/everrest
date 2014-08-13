@@ -25,24 +25,22 @@ import javax.ws.rs.core.SecurityContext;
 import java.lang.annotation.Annotation;
 
 /**
- * Contract of this class is constraint access to the resource method that
- * use JSR-250 security common annotations. See also https://jsr250.dev.java.net
+ * Contract of this class is constraint access to the resource method that use JSR-250 security common annotations. See also
+ * https://jsr250.dev.java.net
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Filter
 public class SecurityConstraint implements MethodInvokerFilter {
     /**
-     * Check does <tt>method</tt> contains one on of security annotations
-     * PermitAll, DenyAll, RolesAllowed.
+     * Check does <tt>method</tt> contains one on of security annotations PermitAll, DenyAll, RolesAllowed.
      *
      * @see PermitAll
      * @see DenyAll
      * @see RolesAllowed
      */
     @Override
-    public void accept(GenericMethodResource method) throws WebApplicationException {
+    public void accept(GenericMethodResource method, Object[] params) throws WebApplicationException {
         for (Annotation a : method.getAnnotations()) {
             Class<?> aClass = a.annotationType();
             if (aClass == PermitAll.class) {

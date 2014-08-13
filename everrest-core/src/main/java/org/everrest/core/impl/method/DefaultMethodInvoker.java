@@ -136,15 +136,15 @@ public class DefaultMethodInvoker implements MethodInvoker {
 
     @Override
     public final Object invokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context) {
-        beforeInvokeMethod(methodResource, methodResource, context);
         Object[] params = makeMethodParameters(methodResource, context);
+        beforeInvokeMethod(resource, methodResource, params, context);
         return invokeMethod(resource, methodResource, params, context);
     }
 
-    protected void beforeInvokeMethod(Object resource, GenericMethodResource methodResource, ApplicationContext context) {
+    protected void beforeInvokeMethod(Object resource, GenericMethodResource methodResource, Object[] params, ApplicationContext context) {
         for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getMethodInvokerFilters(context.getPath())) {
             MethodInvokerFilter f = (MethodInvokerFilter)factory.getInstance(context);
-            f.accept(methodResource);
+            f.accept(methodResource, params);
         }
     }
 

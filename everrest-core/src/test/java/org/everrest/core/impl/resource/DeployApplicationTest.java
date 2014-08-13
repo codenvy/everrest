@@ -35,8 +35,8 @@ import java.util.Set;
 public class DeployApplicationTest extends BaseTest {
 
     public static class Application1 extends javax.ws.rs.core.Application {
-        private final Set<Class<?>> classes    = new HashSet<Class<?>>();
-        private final Set<Object>   singletons = new HashSet<Object>();
+        private final Set<Class<?>> classes    = new HashSet<>();
+        private final Set<Object>   singletons = new HashSet<>();
 
         public Application1() {
             classes.add(Resource1.class);
@@ -56,6 +56,7 @@ public class DeployApplicationTest extends BaseTest {
             return classes;
         }
 
+        @Override
         public Set<Object> getSingletons() {
             return singletons;
         }
@@ -97,6 +98,7 @@ public class DeployApplicationTest extends BaseTest {
 
     @Provider
     public static class ExceptionMapper1 implements ExceptionMapper<RuntimeException> {
+        @Override
         public Response toResponse(RuntimeException exception) {
             return Response.status(200).entity(exception.getMessage()).build();
         }
@@ -104,6 +106,7 @@ public class DeployApplicationTest extends BaseTest {
 
     @Provider
     public static class ExceptionMapper2 implements ExceptionMapper<IllegalStateException> {
+        @Override
         public Response toResponse(IllegalStateException exception) {
             return Response.status(200).entity(exception.getMessage()).build();
         }
@@ -111,18 +114,21 @@ public class DeployApplicationTest extends BaseTest {
 
     @Filter
     public static class MethodInvokerFilter1 implements MethodInvokerFilter {
-        public void accept(GenericMethodResource genericMethodResource) {
+        @Override
+        public void accept(GenericMethodResource genericMethodResource, Object[] params) {
         }
     }
 
     @Filter
     public static class RequestFilter1 implements RequestFilter {
+        @Override
         public void doFilter(GenericContainerRequest request) {
         }
     }
 
     @Filter
     public static class ResponseFilter1 implements ResponseFilter {
+        @Override
         public void doFilter(GenericContainerResponse response) {
         }
     }
