@@ -491,7 +491,7 @@ public class WSClient {
     private void validateResponseHeaders() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String line = br.readLine();
-        if (!"HTTP/1.1 101 Switching Protocols".equals(line)) {
+        if (line != null && !line.startsWith("HTTP/1.1 101")) {
             throw new IOException("Invalid server response. Expected status is 101 'Switching Protocols'. ");
         }
 
