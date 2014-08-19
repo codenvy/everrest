@@ -10,22 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
-
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: NewCookieHeaderDelegate.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
+ * @author andrew00x
  */
-public class NewCookieHeaderDelegate extends AbstractHeaderDelegate<NewCookie> {
-
-    @Override
-    public Class<NewCookie> support() {
-        return NewCookie.class;
-    }
-
+public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<NewCookie> {
 
     @Override
     public NewCookie fromString(String header) {
@@ -35,6 +26,9 @@ public class NewCookieHeaderDelegate extends AbstractHeaderDelegate<NewCookie> {
 
     @Override
     public String toString(NewCookie cookie) {
+        if (cookie == null) {
+            throw new IllegalArgumentException();
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(cookie.getName()).append('=').append(HeaderHelper.addQuotesIfHasWhitespace(cookie.getValue()));
 

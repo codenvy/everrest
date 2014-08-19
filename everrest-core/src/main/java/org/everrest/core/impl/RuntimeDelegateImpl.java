@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
 import org.everrest.core.impl.header.AcceptLanguageHeaderDelegate;
 import org.everrest.core.impl.header.AcceptMediaTypeHeaderDelegate;
 import org.everrest.core.impl.header.CacheControlHeaderDelegate;
@@ -30,6 +29,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +68,34 @@ public class RuntimeDelegateImpl extends RuntimeDelegate {
         addHeaderDelegate(new RangeHeaderDelegate());
     }
 
-    public void addHeaderDelegate(AbstractHeaderDelegate<?> header) {
-        headerDelegates.put(header.support(), header);
+    public void addHeaderDelegate(HeaderDelegate<?> header) {
+        headerDelegates.put(getHeaderType(header), header);
+    }
+
+    private Class<?> getHeaderType(HeaderDelegate<?> headerDelegate) {
+        Class<?> eventType = null;
+        Class<?> clazz = headerDelegate.getClass();
+        while (clazz != null && eventType == null) {
+            for (Type type : clazz.getGenericInterfaces()) {
+                if (type instanceof ParameterizedType) {
+                    final ParameterizedType parameterizedType = (ParameterizedType)type;
+                    final Type rawType = parameterizedType.getRawType();
+                    if (HeaderDelegate.class == rawType) {
+                        final Type[] typeArguments = parameterizedType.getActualTypeArguments();
+                        if (typeArguments.length == 1) {
+                            if (typeArguments[0] instanceof Class) {
+                                eventType = (Class)typeArguments[0];
+                            }
+                        }
+                    }
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        if (eventType == null) {
+            throw new IllegalArgumentException(String.format("Unable determine type of headers processed by %s", headerDelegate));
+        }
+        return eventType;
     }
 
     /** End Points is not supported. {@inheritDoc} */

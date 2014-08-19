@@ -18,8 +18,7 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class AcceptMediaType extends MediaType implements QualityValue {
     /** Default accepted media type, it minds any content type is acceptable. */
@@ -33,8 +32,7 @@ public class AcceptMediaType extends MediaType implements QualityValue {
             RuntimeDelegate.getInstance().createHeaderDelegate(AcceptMediaType.class);
 
     /**
-     * Creates a new instance of AcceptedMediaType by parsing the supplied
-     * string.
+     * Creates a new instance of AcceptedMediaType by parsing the supplied string.
      *
      * @param header
      *         accepted media type string
@@ -44,18 +42,14 @@ public class AcceptMediaType extends MediaType implements QualityValue {
         return DELEGATE.fromString(header);
     }
 
-    /**
-     * Creates a new instance of MediaType, both type and sub-type are wildcards
-     * and set quality value to default quality value.
-     */
+    /** Creates a new instance of MediaType, both type and sub-type are wildcards and set quality value to default quality value. */
     public AcceptMediaType() {
         this.qValue = DEFAULT_QUALITY_VALUE;
     }
 
     /**
-     * Constructs AcceptedMediaType with supplied quality value. If map
-     * parameters is null or does not contains value with key 'q' then default
-     * quality value will be used.
+     * Constructs AcceptedMediaType with supplied quality value. If map parameters is null or does not contains value with key 'q' then
+     * default quality value will be used.
      *
      * @param type
      *         media type

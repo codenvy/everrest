@@ -10,28 +10,19 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
-
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: CacheControlHeaderDelegate.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * @author andrew00x
  */
-public class CacheControlHeaderDelegate extends AbstractHeaderDelegate<CacheControl> {
-
-    @Override
-    public Class<CacheControl> support() {
-        return CacheControl.class;
-    }
-
+public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegate<CacheControl> {
 
     @Override
     public CacheControl fromString(String header) {
-        throw new UnsupportedOperationException("CacheControl used only for response headers.");
+        throw new IllegalArgumentException("CacheControl used only for response headers.");
     }
 
 
@@ -88,8 +79,7 @@ public class CacheControlHeaderDelegate extends AbstractHeaderDelegate<CacheCont
     }
 
     /**
-     * Add single pair key=value to <code>StringBuilder</code> . If value contains
-     * whitespace then quotes will be added.
+     * Add single pair key=value to <code>StringBuilder</code> . If value contains whitespace then quotes will be added.
      *
      * @param buff
      *         the StringBuilder

@@ -10,25 +10,17 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
 import org.everrest.core.header.QualityValue;
 
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: AcceptLanguageHeaderDelegate.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * @author andrew00x
  */
-public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptLanguage> {
-
-    @Override
-    public Class<AcceptLanguage> support() {
-        return AcceptLanguage.class;
-    }
-
+public class AcceptLanguageHeaderDelegate implements RuntimeDelegate.HeaderDelegate<AcceptLanguage> {
 
     @Override
     public AcceptLanguage fromString(String header) {
@@ -76,6 +68,10 @@ public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptL
 
     @Override
     public String toString(AcceptLanguage language) {
-        throw new UnsupportedOperationException("Accepted language header used only for request.");
+        // Maybe reused as response header but need remove quality factor parameter.
+        if (language == null) {
+            throw new IllegalArgumentException();
+        }
+        return new Language(language.getLocale()).toString();
     }
 }

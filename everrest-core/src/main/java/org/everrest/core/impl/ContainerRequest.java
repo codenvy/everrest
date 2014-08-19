@@ -321,9 +321,8 @@ public class ContainerRequest implements GenericContainerRequest {
     public List<MediaType> getAcceptableMediaTypes() {
         if (acceptMediaType == null) {
             // 'extract' MediaType from AcceptMediaType
-            List<MediaType> t =
-                    new ArrayList<MediaType>(HeaderHelper.createAcceptedMediaTypeList(HeaderHelper
-                                                                                              .convertToString(getRequestHeader(ACCEPT))));
+            List<MediaType> t = new ArrayList<MediaType>(HeaderHelper.createAcceptedMediaTypeList(
+                    HeaderHelper.convertToString(getRequestHeader(ACCEPT))));
             acceptMediaType = Collections.unmodifiableList(t);
         }
 

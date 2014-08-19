@@ -10,25 +10,16 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
-
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MediaTypeHeaderDelegate.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
+ * @author andrew00x
  */
-public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType> {
-
-    @Override
-    public Class<MediaType> support() {
-        return MediaType.class;
-    }
-
+public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<MediaType> {
 
     @Override
     public MediaType fromString(String header) {
@@ -72,6 +63,9 @@ public class MediaTypeHeaderDelegate extends AbstractHeaderDelegate<MediaType> {
 
     @Override
     public String toString(MediaType mime) {
+        if (mime == null) {
+            throw new IllegalArgumentException();
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(mime.getType()).append('/').append(mime.getSubtype());
 

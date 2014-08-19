@@ -10,22 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
-
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: EntityTagHeaderDelegate.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
+ * @author andrew00x
  */
-public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag> {
-
-    @Override
-    public Class<EntityTag> support() {
-        return EntityTag.class;
-    }
-
+public class EntityTagHeaderDelegate implements RuntimeDelegate.HeaderDelegate<EntityTag> {
 
     @Override
     public EntityTag fromString(String header) {
@@ -52,6 +43,9 @@ public class EntityTagHeaderDelegate extends AbstractHeaderDelegate<EntityTag> {
 
     @Override
     public String toString(EntityTag entityTag) {
+        if (entityTag == null) {
+            throw new IllegalArgumentException();
+        }
         StringBuilder sb = new StringBuilder();
         if (entityTag.isWeak()) {
             sb.append('W').append('/');

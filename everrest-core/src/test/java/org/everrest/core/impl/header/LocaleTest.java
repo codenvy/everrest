@@ -20,7 +20,7 @@ import java.util.Locale;
 /**
  * @author andrew00x
  */
-public class LanguageTest {
+public class LocaleTest {
     @Test
     public void testFromString() {
         String header = "en-GB";

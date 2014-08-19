@@ -17,11 +17,9 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.util.Locale;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class AcceptLanguage extends Language implements QualityValue {
-
     /** Default accepted language, it minds any language is acceptable. */
     public static final AcceptLanguage DEFAULT = new AcceptLanguage(new Locale("*"));
 
@@ -69,10 +67,8 @@ public class AcceptLanguage extends Language implements QualityValue {
 
     // QualityValue
 
-
     @Override
     public float getQvalue() {
         return qValue;
     }
-
 }

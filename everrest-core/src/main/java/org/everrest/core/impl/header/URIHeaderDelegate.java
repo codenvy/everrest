@@ -10,30 +10,28 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
-
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.net.URI;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class URIHeaderDelegate extends AbstractHeaderDelegate<URI> {
-
-    @Override
-    public Class<URI> support() {
-        return URI.class;
-    }
-
+public class URIHeaderDelegate implements RuntimeDelegate.HeaderDelegate<URI> {
 
     @Override
     public URI fromString(String header) {
+        if (header == null) {
+            throw new IllegalArgumentException();
+        }
         return URI.create(header);
     }
 
 
     @Override
     public String toString(URI uri) {
+        if (uri == null) {
+            throw new IllegalArgumentException();
+        }
         return uri.toASCIIString();
     }
 }

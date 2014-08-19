@@ -10,22 +10,14 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
-
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges> {
-
-    @Override
-    public Class<Ranges> support() {
-        return Ranges.class;
-    }
-
+public class RangeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Ranges> {
 
     @Override
     public Ranges fromString(String value) throws IllegalArgumentException {
@@ -63,6 +55,6 @@ public class RangeHeaderDelegate extends AbstractHeaderDelegate<Ranges> {
 
     @Override
     public String toString(Ranges value) {
-        throw new UnsupportedOperationException();
+        throw new IllegalArgumentException("Range header used only in requests.");
     }
 }

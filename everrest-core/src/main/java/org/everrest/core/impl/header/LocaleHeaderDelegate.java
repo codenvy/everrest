@@ -10,21 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
-
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.Locale;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class LocaleHeaderDelegate extends AbstractHeaderDelegate<Locale> {
-
-    @Override
-    public Class<Locale> support() {
-        return Locale.class;
-    }
-
+public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Locale> {
 
     @Override
     public Locale fromString(String header) {
@@ -50,6 +42,9 @@ public class LocaleHeaderDelegate extends AbstractHeaderDelegate<Locale> {
 
     @Override
     public String toString(Locale locale) {
+        if (locale == null) {
+            throw new IllegalArgumentException();
+        }
         String lan = locale.getLanguage();
         // For output if language does not set correctly then ignore it.
         if (lan.isEmpty() || "*".equals(lan)) {

@@ -31,6 +31,7 @@ public class Language {
      * Constructs new instance of Language.
      *
      * @param locale
+     *         Locale
      * @see {@link Locale}
      */
     public Language(Locale locale) {
@@ -41,9 +42,8 @@ public class Language {
      * Create {@link Locale} from Language Tag string.
      *
      * @param language
-     *         string representation of Language Tag, See
-     *         {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}
-     *         .
+     *         string representation of Language Tag, See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10"
+     *         >HTTP/1.1 documentation</a>}.
      * @return {@link Locale}
      */
     public static Locale getLocale(String language) {
@@ -51,10 +51,8 @@ public class Language {
     }
 
     /**
-     * Get primary-tag of language tag, e. g. if Language tag 'en-gb' then 'en'
-     * is primary-tag. See
-     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}
-     * .
+     * Get primary-tag of language tag, e. g. if Language tag 'en-gb' then 'en' is primary-tag. See {@link <a
+     * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}.
      *
      * @return the primary-tag of Language tag
      */
@@ -63,10 +61,8 @@ public class Language {
     }
 
     /**
-     * Get sub-tag of language tag, e. g. if Language tag 'en-gb' then 'gb' is
-     * sub-tag. See
-     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}
-     * .
+     * Get sub-tag of language tag, e. g. if Language tag 'en-gb' then 'gb' is sub-tag. See {@link <a
+     * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}.
      *
      * @return the sub-tag of Language tag
      */
@@ -100,7 +96,7 @@ public class Language {
     }
 
 
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getPrimaryTag());
         if (!getSubTag().isEmpty()) {

@@ -10,19 +10,12 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.AbstractHeaderDelegate;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class StringHeaderDelegate extends AbstractHeaderDelegate<String> {
-
-    @Override
-    public Class<String> support() {
-        return String.class;
-    }
-
+public class StringHeaderDelegate implements RuntimeDelegate.HeaderDelegate<String> {
 
     @Override
     public String fromString(String value) {
