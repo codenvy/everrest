@@ -20,6 +20,7 @@ import org.everrest.core.RequestFilter;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.UnhandledException;
+import org.everrest.core.tools.WebApplicationErrorHandlers;
 import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
 
@@ -73,6 +74,11 @@ public class RequestHandlerImpl implements RequestHandler {
                 ((ResponseFilter)factory.getInstance(context)).doFilter(response);
             }
         } catch (Exception e) {
+            WebApplicationErrorHandlers handlers = (WebApplicationErrorHandlers)EnvironmentContext.getCurrent().get(WebApplicationErrorHandlers.class);
+            if (handlers != null && handlers.getExceptionHandlers().contains(e.getCause().getClass().getName())){
+                throw new UnhandledException(e.getCause());
+            }
+
             if (e instanceof WebApplicationException) {
                 Response errorResponse = ((WebApplicationException)e).getResponse();
 

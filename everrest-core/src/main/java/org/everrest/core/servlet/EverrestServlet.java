@@ -15,6 +15,7 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.tools.WebApplicationDeclaredRoles;
+import org.everrest.core.tools.WebApplicationErrorHandlers;
 import org.everrest.core.util.Logger;
 
 import javax.servlet.ServletConfig;
@@ -32,6 +33,7 @@ import java.io.IOException;
 public class EverrestServlet extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(EverrestServlet.class.getName());
     private WebApplicationDeclaredRoles webApplicationRoles;
+    private WebApplicationErrorHandlers webApplicationErrorHandlers;
 
     protected EverrestProcessor processor;
 
@@ -39,6 +41,7 @@ public class EverrestServlet extends HttpServlet {
     public void init() throws ServletException {
         processor = (EverrestProcessor)getServletConfig().getServletContext().getAttribute(EverrestProcessor.class.getName());
         webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
+        webApplicationErrorHandlers = new WebApplicationErrorHandlers(getServletContext());
     }
 
     @Override
@@ -51,6 +54,7 @@ public class EverrestServlet extends HttpServlet {
         final ServletContext servletContext = getServletContext();
         env.put(ServletContext.class, servletContext);
         env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
+        env.put(WebApplicationErrorHandlers.class, webApplicationErrorHandlers);
         try {
             ServletContainerRequest request = new ServletContainerRequest(httpRequest);
             ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
@@ -67,7 +71,7 @@ public class EverrestServlet extends HttpServlet {
             }
         } catch (UnhandledException e) {
             LOG.error(e.getMessage(), e);
-            throw new ServletException(e);
+            throw new ServletException(e.getCause());
         }
     }
 }
