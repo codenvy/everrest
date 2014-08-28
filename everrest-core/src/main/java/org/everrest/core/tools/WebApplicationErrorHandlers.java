@@ -30,7 +30,9 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
+ * Describes error-page references for web application in web.xml file.
  *
+ * @author Max Shaposhnik
  */
 public class WebApplicationErrorHandlers {
 
