@@ -27,28 +27,35 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Describes error-page references for web application in web.xml file.
  *
  * @author Max Shaposhnik
  */
-public class WebApplicationErrorHandlers {
+public class ErrorPages {
+    private final Map<Integer, String> errorCodes     = new HashMap<>();
+    private final Map<String, String>  exceptionTypes = new HashMap<>();
 
-    private final Set<String> exceptionHandlers;
-    private final Set<String> statusHandlers;
-
-    public WebApplicationErrorHandlers(ServletContext servletContext) {
-        Map<String, Set<String>> handlers = loadHandlers(servletContext);
-        this.exceptionHandlers = Collections.unmodifiableSet(handlers.get("exceptions"));
-        this.statusHandlers = Collections.unmodifiableSet(handlers.get("statuses"));
+    public ErrorPages(ServletContext servletContext) {
+        loadErrorPages(servletContext, errorCodes, exceptionTypes);
     }
 
-    protected Map<String,Set<String>> loadHandlers(ServletContext servletContext) throws UnhandledException {
+    public boolean hasErrorPage(int errorCode) {
+        return errorCodes.get(errorCode) != null;
+    }
+
+    public boolean hasErrorPage(String exceptionType) {
+        return exceptionTypes.get(exceptionType) != null;
+    }
+
+    protected void loadErrorPages(ServletContext servletContext, Map<Integer, String> errorCodes, Map<String, String> exceptionTypes)
+            throws UnhandledException {
         InputStream input = servletContext.getResourceAsStream("/WEB-INF/web.xml");
         if (input == null) {
-            return Collections.emptyMap();
+            return;
         }
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -57,34 +64,33 @@ public class WebApplicationErrorHandlers {
             XPath xpath = xpathFactory.newXPath();
             NodeList all = (NodeList)xpath.evaluate("/web-app/error-page", dom, XPathConstants.NODESET);
             int length = all.getLength();
-            Set<String>  exceptionHandlers = new LinkedHashSet<>();
-            Set<String>  statusHandlers = new LinkedHashSet<>();
-            for(int i=0; i<length ; i++) {
+            for (int i = 0; i < length; i++) {
                 Node errorPage = all.item(i);
-                if(errorPage.getNodeType() == Node.ELEMENT_NODE) {
+                if (errorPage.getNodeType() == Node.ELEMENT_NODE) {
                     Element errorElement = (Element)errorPage;
-                    NodeList  exceptionTypeList = errorElement.getElementsByTagName("exception-type");
-                    if (exceptionTypeList.getLength() != 0) {
-                        exceptionHandlers.add(exceptionTypeList.item(0).getTextContent());
+                    NodeList locationList = errorElement.getElementsByTagName("location");
+                    if (locationList.getLength() == 0) {
+                        continue;
+                    }
+                    String location = locationList.item(0).getTextContent();
+                    NodeList errorCodeList = errorElement.getElementsByTagName("error-code");
+                    if (errorCodeList.getLength() != 0) {
+                        Integer errorCode;
+                        try {
+                            errorCode = Integer.valueOf(errorCodeList.item(0).getTextContent());
+                        } catch (NumberFormatException e) {
+                            continue;
+                        }
+                        errorCodes.put(errorCode, location);
                     } else {
-                        NodeList  statusTypeList = errorElement.getElementsByTagName("error-code");
-                        if (statusTypeList.getLength() != 0) {
-                            statusHandlers.add(statusTypeList.item(0).getTextContent());
+                        NodeList exceptionTypeList = errorElement.getElementsByTagName("exception-type");
+                        if (exceptionTypeList.getLength() != 0) {
+                            exceptionTypes.put(exceptionTypeList.item(0).getTextContent(), location);
                         }
                     }
                 }
             }
-            Map<String, Set<String>> result = new HashMap<>(2);
-            result.put("exceptions", exceptionHandlers);
-            result.put("statuses", statusHandlers);
-            return  result;
-        } catch (ParserConfigurationException e) {
-            throw new UnhandledException(e);
-        } catch (SAXException e) {
-            throw new UnhandledException(e);
-        } catch (XPathExpressionException e) {
-            throw new UnhandledException(e);
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | SAXException | XPathExpressionException | IOException e) {
             throw new UnhandledException(e);
         } finally {
             try {
@@ -93,14 +99,4 @@ public class WebApplicationErrorHandlers {
             }
         }
     }
-
-    public Set<String> getExceptionHandlers() {
-        return exceptionHandlers;
-    }
-
-    public Set<String> getStatusHandlers() {
-        return statusHandlers;
-    }
-
-
 }

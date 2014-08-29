@@ -20,7 +20,7 @@ import org.everrest.core.RequestFilter;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.UnhandledException;
-import org.everrest.core.tools.WebApplicationErrorHandlers;
+import org.everrest.core.tools.ErrorPages;
 import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
 
@@ -74,10 +74,7 @@ public class RequestHandlerImpl implements RequestHandler {
                 ((ResponseFilter)factory.getInstance(context)).doFilter(response);
             }
         } catch (Exception e) {
-            WebApplicationErrorHandlers handlers = (WebApplicationErrorHandlers)EnvironmentContext.getCurrent().get(WebApplicationErrorHandlers.class);
-            if (handlers != null && handlers.getExceptionHandlers().contains(e.getCause().getClass().getName())){
-                throw new UnhandledException(e.getCause());
-            }
+            ErrorPages errorPages = (ErrorPages)EnvironmentContext.getCurrent().get(ErrorPages.class);
 
             if (e instanceof WebApplicationException) {
                 Response errorResponse = ((WebApplicationException)e).getResponse();
@@ -98,6 +95,12 @@ public class RequestHandlerImpl implements RequestHandler {
 
                 if (Tracer.isTracingEnabled()) {
                     Tracer.trace("WebApplicationException occurs, cause = (" + cause + ")");
+                }
+
+                if (errorPages != null
+                    && (errorPages.hasErrorPage(errorStatus) || (cause != null && errorPages.hasErrorPage(cause.getClass().getName())))) {
+                    // If error-page configured in web.xml let this page process error.
+                    throw new UnhandledException(e.getCause());
                 }
 
                 ExceptionMapper exceptionMapper = context.getProviders().getExceptionMapper(WebApplicationException.class);
@@ -126,6 +129,11 @@ public class RequestHandlerImpl implements RequestHandler {
 
                 if (Tracer.isTracingEnabled()) {
                     Tracer.trace("InternalException occurs, cause = (" + cause + ")");
+                }
+
+                if (errorPages != null && errorPages.hasErrorPage(cause.getClass().getName())) {
+                    // If error-page configured in web.xml let this page process error.
+                    throw new UnhandledException(e.getCause());
                 }
 
                 Class causeClazz = cause.getClass();
