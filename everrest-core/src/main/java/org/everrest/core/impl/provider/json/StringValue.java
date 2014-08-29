@@ -47,11 +47,7 @@ public class StringValue extends JsonValue {
 
     @Override
     public Number getNumberValue() {
-        try {
-            return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return Double.parseDouble(value);
     }
 
     @Override

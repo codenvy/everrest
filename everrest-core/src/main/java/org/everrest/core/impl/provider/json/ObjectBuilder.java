@@ -412,8 +412,24 @@ public class ObjectBuilder {
                             }
                         }
                     } catch (Exception e) {
-                        throw new JsonException("Unable restore parameter via method " + clazz.getName() + "#"
-                                                + setMethod.method.getName() + ". " + e.getMessage(), e);
+                        String msg = "Unable restore parameter via method " + clazz.getName() + "#" + setMethod.method.getName() + ". ";
+                        Throwable error = e;
+                        if (error instanceof JsonException) {
+                            StringBuilder b = new StringBuilder(msg);
+                            int indent = 4;
+                            do {
+                                b.append('\n');
+                                for (int i = 0; i < indent; i++) {
+                                    b.append(' ');
+                                }
+                                indent += 4;
+                                b.append(e.getMessage());
+                                error = error.getCause();
+                            } while (error instanceof JsonException);
+                            throw new JsonException(b.toString(), e);
+                        } else {
+                            throw new JsonException(msg + e.toString(), e);
+                        }
                     }
                 }
             }
