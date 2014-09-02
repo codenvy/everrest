@@ -155,11 +155,11 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
         /** Try remove file when object destroyed. {@inheritDoc} */
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
             File file = getFile();
             if (file.exists()) {
                 file.delete();
             }
+            super.finalize();
         }
 
 

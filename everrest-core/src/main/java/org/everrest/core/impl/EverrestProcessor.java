@@ -75,7 +75,7 @@ public final class EverrestProcessor implements Lifecycle {
             try {
                 methodInvokerDecoratorFactory = MethodInvokerDecoratorFactory.class.cast(
                         Thread.currentThread().getContextClassLoader().loadClass(decoratorFactoryClassName).newInstance());
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 throw new IllegalStateException("Cannot instantiate '" + decoratorFactoryClassName + "', : " + e, e);
             }
         } else {
