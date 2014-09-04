@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.everrest.core;
 
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.resource.GenericMethodResource;
@@ -126,4 +127,6 @@ public interface ApplicationContext extends UriInfo, InitialProperties {
     boolean isAsynchronous();
 
     Application getApplication();
+
+    EverrestConfiguration getEverrestConfiguration();
 }

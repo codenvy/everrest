@@ -12,7 +12,6 @@ package org.everrest.core.impl.provider;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.provider.EntityProvider;
 
 import javax.ws.rs.core.MediaType;
@@ -30,8 +29,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Provider
 public class ReaderEntityProvider implements EntityProvider<Reader> {
@@ -51,7 +49,7 @@ public class ReaderEntityProvider implements EntityProvider<Reader> {
         ApplicationContext context = ApplicationContextImpl.getCurrent();
         if (context.isAsynchronous()) {
             // If request is asynchronous spool content of stream to file or memory.
-            Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
+            int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
             return new InputStreamReader(IOHelper.bufferStream(entityStream, bufferSize), charset);
         }
 

@@ -19,75 +19,46 @@ import java.util.Map;
  * @author andrew00x
  */
 public class EverrestConfiguration {
-    public static final String EVERREST_HTTP_METHOD_OVERRIDE = "org.everrest.http.method.override";
-
-    public static final String EVERREST_NORMALIZE_URI = "org.everrest.normalize.uri";
-
-    public static final String EVERREST_CHECK_SECURITY = "org.everrest.security";
-
-    public static final String EVERREST_ASYNCHRONOUS = "org.everrest.asynchronous";
-
+    public static final String EVERREST_HTTP_METHOD_OVERRIDE      = "org.everrest.http.method.override";
+    public static final String EVERREST_NORMALIZE_URI             = "org.everrest.normalize.uri";
+    public static final String EVERREST_CHECK_SECURITY            = "org.everrest.security";
+    public static final String EVERREST_ASYNCHRONOUS              = "org.everrest.asynchronous";
     public static final String EVERREST_ASYNCHRONOUS_SERVICE_PATH = "org.everrest.asynchronous.service.path";
-
-    public static final String EVERREST_ASYNCHRONOUS_POOL_SIZE = "org.everrest.asynchronous.pool.size";
-
-    public static final String EVERREST_ASYNCHRONOUS_QUEUE_SIZE = "org.everrest.asynchronous.queue.size";
-
-    public static final String EVERREST_ASYNCHRONOUS_CACHE_SIZE = "org.everrest.asynchronous.cache.size";
-
-    public static final String EVERREST_ASYNCHRONOUS_JOB_TIMEOUT = "org.everrest.asynchronous.job.timeout";
-
-    public static final String METHOD_INVOKER_DECORATOR_FACTORY = MethodInvokerDecoratorFactory.class.getName();
-
+    public static final String EVERREST_ASYNCHRONOUS_POOL_SIZE    = "org.everrest.asynchronous.pool.size";
+    public static final String EVERREST_ASYNCHRONOUS_QUEUE_SIZE   = "org.everrest.asynchronous.queue.size";
+    public static final String EVERREST_ASYNCHRONOUS_CACHE_SIZE   = "org.everrest.asynchronous.cache.size";
+    public static final String EVERREST_ASYNCHRONOUS_JOB_TIMEOUT  = "org.everrest.asynchronous.job.timeout";
+    public static final String METHOD_INVOKER_DECORATOR_FACTORY   = MethodInvokerDecoratorFactory.class.getName();
     /**
-     * Max buffer size attribute name. Entities that has size greater then specified will be stored in temporary
-     * directory on file system during entity processing.
+     * Max buffer size configuration parameter. Entities that has size greater then specified will be stored in temporary directory on file
+     * system during entity processing.
      */
-    public static final String EVERREST_MAX_BUFFER_SIZE = "org.everrest.max.buffer.size";
+    public static final String EVERREST_MAX_BUFFER_SIZE           = "org.everrest.max.buffer.size";
 
-    public static final boolean defaultCheckSecurity = true;
 
-    public static final boolean defaultHttpMethodOverride = true;
-
-    public static final boolean defaultNormalizeUri = false;
-
-    public static final boolean defaultAsynchronousSupported = true;
-
-    public static final int defaultAsynchronousPoolSize = 10;
-
-    public static final String defaultAsynchronousServicePath = "/async";
-
-    public static final int defaultAsynchronousQueueSize = 100;
-
-    public static final int defaultAsynchronousCacheSize = 512;
-
-    public static final int defaultAsynchronousJobTimeout = 60;
-
+    public static final boolean defaultCheckSecurity           = true;
+    public static final boolean defaultHttpMethodOverride      = true;
+    public static final boolean defaultNormalizeUri            = false;
+    public static final boolean defaultAsynchronousSupported   = true;
+    public static final int     defaultAsynchronousPoolSize    = 10;
+    public static final String  defaultAsynchronousServicePath = "/async";
+    public static final int     defaultAsynchronousQueueSize   = 100;
+    public static final int     defaultAsynchronousCacheSize   = 512;
+    public static final int     defaultAsynchronousJobTimeout  = 60;
     /** Max buffer size attribute value. See {@link #EVERREST_MAX_BUFFER_SIZE}. */
-    public static final int defaultMaxBufferSize = 204800;
+    public static final int     defaultMaxBufferSize           = 204800;
 
-    //
 
-    protected boolean checkSecurity = defaultCheckSecurity;
-
-    protected boolean httpMethodOverride = defaultHttpMethodOverride;
-
-    protected boolean normalizeUri = defaultNormalizeUri;
-
-    protected boolean asynchronousSupported = defaultAsynchronousSupported;
-
-    protected int asynchronousPoolSize = defaultAsynchronousPoolSize;
-
-    protected int asynchronousQueueSize = defaultAsynchronousQueueSize;
-
-    protected int asynchronousCacheSize = defaultAsynchronousCacheSize;
-
-    protected int asynchronousJobTimeout = defaultAsynchronousJobTimeout;
-
-    protected int maxBufferSize = defaultMaxBufferSize;
-
-    protected String asynchronousServicePath = defaultAsynchronousServicePath;
-
+    protected boolean checkSecurity           = defaultCheckSecurity;
+    protected boolean httpMethodOverride      = defaultHttpMethodOverride;
+    protected boolean normalizeUri            = defaultNormalizeUri;
+    protected boolean asynchronousSupported   = defaultAsynchronousSupported;
+    protected int     asynchronousPoolSize    = defaultAsynchronousPoolSize;
+    protected int     asynchronousQueueSize   = defaultAsynchronousQueueSize;
+    protected int     asynchronousCacheSize   = defaultAsynchronousCacheSize;
+    protected int     asynchronousJobTimeout  = defaultAsynchronousJobTimeout;
+    protected int     maxBufferSize           = defaultMaxBufferSize;
+    protected String  asynchronousServicePath = defaultAsynchronousServicePath;
     protected final Map<String, Object> properties;
 
     public EverrestConfiguration() {
@@ -95,6 +66,16 @@ public class EverrestConfiguration {
     }
 
     public EverrestConfiguration(EverrestConfiguration other) {
+        this.asynchronousSupported = other.asynchronousSupported;
+        this.asynchronousCacheSize = other.asynchronousCacheSize;
+        this.asynchronousJobTimeout = other.asynchronousJobTimeout;
+        this.asynchronousPoolSize = other.asynchronousPoolSize;
+        this.asynchronousQueueSize = other.asynchronousQueueSize;
+        this.asynchronousServicePath = other.asynchronousServicePath;
+        this.checkSecurity = other.checkSecurity;
+        this.httpMethodOverride = other.httpMethodOverride;
+        this.maxBufferSize = other.maxBufferSize;
+        this.normalizeUri = other.normalizeUri;
         properties = new HashMap<>(other.properties);
     }
 

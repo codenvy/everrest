@@ -16,7 +16,6 @@ import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.provider.MultipartFormDataEntityProvider;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +31,7 @@ import java.lang.reflect.Type;
 import java.util.Iterator;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Provider
 @Consumes({"multipart/*"})
@@ -49,7 +47,7 @@ public class InMemoryMultipartFormDataEntityProvider extends MultipartFormDataEn
                                        InputStream entityStream) throws IOException {
         try {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
-            Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
+            int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
             FileItemFactory factory = new InMemoryItemFactory(bufferSize);
             FileUpload upload = new FileUpload(factory);
             return upload.parseRequest(httpRequest).iterator();

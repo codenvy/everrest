@@ -89,30 +89,32 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
     /** List of decoded matched URIs. */
     private List<String> matchedURIs        = new ArrayList<>();
     /** Mutable runtime attributes. */
-    private       Map<String, Object>            attributes;
+    private Map<String, Object>            attributes;
     /** Properties. */
-    private       Map<String, String>            properties;
+    private Map<String, String>            properties;
     /** Absolute path, full requested URI without query string and fragment. */
-    private       URI                            absolutePath;
+    private URI                            absolutePath;
     /** Decoded relative path. */
-    private       String                         path;
+    private String                         path;
     /** Not decoded relative path. */
-    private       String                         encodedPath;
+    private String                         encodedPath;
     /** Not decoded path template parameters. */
-    private       MultivaluedMap<String, String> encodedPathParameters;
+    private MultivaluedMap<String, String> encodedPathParameters;
     /** Decoded path template parameters. */
-    private       MultivaluedMap<String, String> pathParameters;
+    private MultivaluedMap<String, String> pathParameters;
     /** List of not decoded path segments. */
-    private       List<PathSegment>              encodedPathSegments;
+    private List<PathSegment>              encodedPathSegments;
     /** Decoded path segments. */
-    private       List<PathSegment>              pathSegments;
+    private List<PathSegment>              pathSegments;
     /** Not decoded query parameters. */
-    private       MultivaluedMap<String, String> encodedQueryParameters;
+    private MultivaluedMap<String, String> encodedQueryParameters;
     /** Decoded query parameters. */
-    private       MultivaluedMap<String, String> queryParameters;
-    private final MethodInvokerDecoratorFactory  methodInvokerDecoratorFactory;
-    private       SecurityContext                asynchronousSecurityContext;
-    private       Application                    application;
+    private MultivaluedMap<String, String> queryParameters;
+    private SecurityContext                asynchronousSecurityContext;
+    private Application                    application;
+    private EverrestConfiguration          config;
+
+    private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
 
     /**
      * Constructs new instance of ApplicationContext.
@@ -124,8 +126,7 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
      * @param providers
      *         See {@link ProviderBinder}
      */
-    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
-                                  ProviderBinder providers) {
+    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response, ProviderBinder providers) {
         this(request, response, providers, null);
     }
 
@@ -486,6 +487,15 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
 
     public void setApplication(Application application) {
         this.application = application;
+    }
+
+    @Override
+    public EverrestConfiguration getEverrestConfiguration() {
+        return config == null ? config = new EverrestConfiguration() : config;
+    }
+
+    public void setEverrestConfiguration(EverrestConfiguration config) {
+        this.config = config;
     }
 
     /** @see org.everrest.core.Lifecycle#start() */

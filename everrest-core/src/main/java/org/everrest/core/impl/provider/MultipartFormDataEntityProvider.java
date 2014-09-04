@@ -16,7 +16,6 @@ import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.provider.EntityProvider;
 
@@ -37,9 +36,7 @@ import java.util.Iterator;
 /**
  * Processing multipart data based on apache file-upload.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MultipartFormDataEntityProvider.java 497 2009-11-08 13:19:25Z
- *          aparfonov $
+ * @author andrew00x
  */
 @Provider
 @Consumes({"multipart/*"})
@@ -76,9 +73,8 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
                                        InputStream entityStream) throws IOException {
         try {
             ApplicationContext context = ApplicationContextImpl.getCurrent();
-            Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
-            DefaultFileItemFactory factory =
-                    new DefaultFileItemFactory(bufferSize, FileCollector.getInstance().getStore());
+            int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
+            DefaultFileItemFactory factory = new DefaultFileItemFactory(bufferSize, FileCollector.getInstance().getStore());
             FileUpload upload = new FileUpload(factory);
             return upload.parseRequest(httpRequest).iterator();
         } catch (FileUploadException e) {

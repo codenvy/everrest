@@ -12,7 +12,6 @@ package org.everrest.core.impl.provider;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.provider.EntityProvider;
 
@@ -103,7 +102,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
         byte[] buffer = new byte[8192];
 
         ApplicationContext context = ApplicationContextImpl.getCurrent();
-        Integer bufferSize = (Integer)context.getAttributes().get(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE);
+        int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
         ByteArrayOutputStream bout = new ByteArrayOutputStream(bufferSize);
 
         int bytes;

@@ -38,15 +38,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class EverrestProcessor implements Lifecycle {
     private static final Logger LOG = Logger.getLogger(EverrestProcessor.class.getName());
 
-    private final ResourceBinder     resources;
-    private final ProviderBinder     providers;
-    private final DependencySupplier dependencySupplier;
-    private final RequestHandler     requestHandler;
-    private final Deployer           deployer;
+    private final ResourceBinder        resources;
+    private final ProviderBinder        providers;
+    private final DependencySupplier    dependencySupplier;
+    private final RequestHandler        requestHandler;
+    private final Deployer              deployer;
+    private final EverrestConfiguration config;
 
-    private final boolean                       normalizeUriFeature;
-    private final boolean                       httpMethodOverrideFeature;
-    private final int                           maxBufferSize;
+    //    private final boolean                       normalizeUriFeature;
+//    private final boolean                       httpMethodOverrideFeature;
+//    private final int                           maxBufferSize;
     private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
 
     /**
@@ -63,14 +64,9 @@ public final class EverrestProcessor implements Lifecycle {
         this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources));
         properties = new ConcurrentHashMap<>();
 
-        if (config == null) {
-            config = new EverrestConfiguration();
-        }
+        this.config = config == null ? new EverrestConfiguration() : config;
 
-        httpMethodOverrideFeature = config.isHttpMethodOverride();
-        normalizeUriFeature = config.isNormalizeUri();
-        maxBufferSize = config.getMaxBufferSize();
-        String decoratorFactoryClassName = (String)config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
+        String decoratorFactoryClassName = (String)this.config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
         if (decoratorFactoryClassName != null) {
             try {
                 methodInvokerDecoratorFactory = MethodInvokerDecoratorFactory.class.cast(
@@ -115,16 +111,16 @@ public final class EverrestProcessor implements Lifecycle {
             context = new ApplicationContextImpl(request, response, providers, methodInvokerDecoratorFactory);
             context.getProperties().putAll(properties);
             context.setDependencySupplier(dependencySupplier);
-            context.getAttributes().put(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE, maxBufferSize);
             context.setApplication(deployer);
+            context.setEverrestConfiguration(new EverrestConfiguration(config));
             context.start();
             ApplicationContextImpl.setCurrent(context);
 
-            if (normalizeUriFeature) {
+            if (config.isNormalizeUri()) {
                 request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
             }
 
-            if (httpMethodOverrideFeature) {
+            if (config.isHttpMethodOverride()) {
                 String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
                 if (method != null) {
                     if (Tracer.isTracingEnabled()) {
