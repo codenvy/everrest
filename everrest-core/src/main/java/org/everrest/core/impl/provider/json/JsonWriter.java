@@ -18,8 +18,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class JsonWriter {
 
@@ -32,6 +31,10 @@ public class JsonWriter {
     /** Indicate is comma must be written before next object or value. */
     private boolean commaFirst;
 
+    private String currentKey;
+
+    private boolean writeNulls;
+
     /**
      * Constructs JsonWriter.
      *
@@ -40,8 +43,9 @@ public class JsonWriter {
      */
     public JsonWriter(Writer writer) {
         this.writer = writer;
-        this.stack = new JsonStack<JsonToken>();
+        this.stack = new JsonStack<>();
         this.commaFirst = false;
+        this.writeNulls = false;
     }
 
     /**
@@ -54,8 +58,16 @@ public class JsonWriter {
         this(new OutputStreamWriter(out, JsonUtils.DEFAULT_CHARSET));
     }
 
+    public final boolean isWriteNulls() {
+        return writeNulls;
+    }
+
+    public final void setWriteNulls(boolean writeNulls) {
+        this.writeNulls = writeNulls;
+    }
 
     public void writeStartObject() throws JsonException {
+        writeCurrentKey();
         JsonToken token = stack.peek();
         // Object can be stated after key with followed ':' or as array item.
         if (token != null && token != JsonToken.key && token != JsonToken.array) {
@@ -97,6 +109,7 @@ public class JsonWriter {
 
 
     public void writeStartArray() throws JsonException {
+        writeCurrentKey();
         JsonToken token = stack.peek();
         //if (token != JsonToken.key && token != JsonToken.array)
         if (token != null && token != JsonToken.key && token != JsonToken.array) {
@@ -141,47 +154,69 @@ public class JsonWriter {
             throw new JsonException("Key is null.");
         }
 
+        if (currentKey != null) {
+            throw new IllegalStateException();
+        }
+
         JsonToken token = stack.peek();
         if (token != JsonToken.object) {
             throw new JsonException("Syntax error. Unexpected characters '" + key + "'.");
+        }
+
+        currentKey = key;
+    }
+
+
+    private void writeCurrentKey() throws JsonException {
+        if (currentKey == null) {
+            return;
         }
         try {
             if (commaFirst) {
                 writer.write(',');
             }
             // create JSON representation for given string.
-            writer.write(JsonUtils.getJsonString(key));
+            writer.write(JsonUtils.getJsonString(currentKey));
             writer.write(':');
             commaFirst = false;
             stack.push(JsonToken.key);
+            currentKey = null;
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
     }
 
-
     public void writeString(String value) throws JsonException {
+        writeCurrentKey();
         write(JsonUtils.getJsonString(value));
     }
 
 
     public void writeValue(long value) throws JsonException {
+        writeCurrentKey();
         write(Long.toString(value));
     }
 
 
     public void writeValue(double value) throws JsonException {
+        writeCurrentKey();
         write(Double.toString(value));
     }
 
 
     public void writeValue(boolean value) throws JsonException {
+        writeCurrentKey();
         write(Boolean.toString(value));
     }
 
 
     public void writeNull() throws JsonException {
-        write("null");
+        if (writeNulls) {
+            writeCurrentKey();
+            write("null");
+        } else {
+            currentKey = null;
+        }
     }
 
     /**
