@@ -428,7 +428,6 @@ public class WSClient {
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
             LOG.error(e.getMessage(), e);
         }
 
