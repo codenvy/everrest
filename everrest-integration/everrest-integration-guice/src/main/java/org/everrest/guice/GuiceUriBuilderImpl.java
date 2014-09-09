@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.everrest.guice.uri;
+package org.everrest.guice;
 
 import org.everrest.core.impl.uri.UriBuilderImpl;
 

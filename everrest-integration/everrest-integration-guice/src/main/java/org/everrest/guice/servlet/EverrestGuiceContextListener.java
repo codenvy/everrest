@@ -43,7 +43,7 @@ import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
 import org.everrest.guice.GuiceObjectFactory;
 import org.everrest.guice.PathKey;
-import org.everrest.guice.impl.GuiceRuntimeDelegateImpl;
+import org.everrest.guice.GuiceRuntimeDelegateImpl;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -109,6 +109,8 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         servletContext.setAttribute(ResourceBinder.class.getName(), resources);
         servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
         servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
+        // use specific RuntimeDelegate instance which is able to work with guice rest service proxies.
+        // (need for interceptors functionality)
         RuntimeDelegate.setInstance(new GuiceRuntimeDelegateImpl());
     }
 

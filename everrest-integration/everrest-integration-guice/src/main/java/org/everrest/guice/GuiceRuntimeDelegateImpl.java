@@ -8,14 +8,15 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.everrest.guice.impl;
+package org.everrest.guice;
 
 import org.everrest.core.impl.RuntimeDelegateImpl;
-import org.everrest.guice.uri.GuiceUriBuilderImpl;
 
 import javax.ws.rs.core.UriBuilder;
 
 /**
+ * RuntimeDelegate implementation which provides adopted to guice proxies instance of UriBuilder.
+ *
  * @author Max Shaposhnik
  */
 public class GuiceRuntimeDelegateImpl extends RuntimeDelegateImpl {
