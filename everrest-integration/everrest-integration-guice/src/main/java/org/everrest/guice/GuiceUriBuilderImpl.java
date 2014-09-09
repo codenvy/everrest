@@ -59,7 +59,4 @@ public class GuiceUriBuilderImpl extends UriBuilderImpl {
     public UriBuilder clone() {
         return new GuiceUriBuilderImpl(this);
     }
-
-
-
 }
