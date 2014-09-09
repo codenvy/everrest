@@ -43,12 +43,14 @@ import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
 import org.everrest.guice.GuiceObjectFactory;
 import org.everrest.guice.PathKey;
+import org.everrest.guice.impl.GuiceRuntimeDelegateImpl;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,6 +109,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         servletContext.setAttribute(ResourceBinder.class.getName(), resources);
         servletContext.setAttribute(ApplicationProviderBinder.class.getName(), providers);
         servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
+        RuntimeDelegate.setInstance(new GuiceRuntimeDelegateImpl());
     }
 
 

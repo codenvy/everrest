@@ -226,7 +226,7 @@ public class UriBuilderImpl extends UriBuilder {
      * @param cloned
      *         current UriBuilder.
      */
-    private UriBuilderImpl(UriBuilderImpl cloned) {
+    protected UriBuilderImpl(UriBuilderImpl cloned) {
         this.schema = cloned.schema;
         this.userInfo = cloned.userInfo;
         this.host = cloned.host;
