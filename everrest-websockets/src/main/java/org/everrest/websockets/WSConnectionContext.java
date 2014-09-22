@@ -171,6 +171,29 @@ public class WSConnectionContext {
         connections.values().removeAll(toRemove);
     }
 
+    /**
+     * Close all connections associated with specified HTTP session Id.
+     *
+     * @param httpSessionId
+     *         HTTP session Id
+     * @param status
+     *         Status code
+     * @param message
+     *         Closing message
+     *
+     */
+    static void closeAll(String httpSessionId, int status, String message) {
+        final Collection<WSConnectionImpl> toRemove = getAll(httpSessionId);
+        for (WSConnectionImpl connection : toRemove) {
+            try {
+                connection.close(status, message);
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+        connections.values().removeAll(toRemove);
+    }
+
     private WSConnectionContext() {
     }
 }

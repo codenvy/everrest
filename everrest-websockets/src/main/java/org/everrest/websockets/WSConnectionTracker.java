@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
+import org.apache.catalina.websocket.Constants;
+
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -26,6 +28,6 @@ public final class WSConnectionTracker implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        WSConnectionContext.closeAll(se.getSession().getId());
+        WSConnectionContext.closeAll(se.getSession().getId(), Constants.STATUS_CLOSE_NORMAL, "Http session destroyed");
     }
 }
