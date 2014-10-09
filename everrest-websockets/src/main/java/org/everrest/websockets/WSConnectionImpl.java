@@ -25,7 +25,9 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -52,6 +54,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
     private final Set<String>             readOnlyChannels;
     private final AtomicBoolean connected   = new AtomicBoolean(false);
     private       int           closeStatus = 0;
+    private final Map<String, Object> attributes;
 
     WSConnectionImpl(HttpSession httpSession, MessageConverter messageConverter) {
         this.httpSession = httpSession;
@@ -59,6 +62,7 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
         this.messageReceivers = new CopyOnWriteArrayList<WSMessageReceiver>();
         this.channels = new CopyOnWriteArraySet<String>();
         this.readOnlyChannels = Collections.unmodifiableSet(channels);
+        this.attributes = new HashMap<>();
     }
 
     //
@@ -192,5 +196,20 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
                ", httpSession='" + httpSession.getId() + '\'' +
                ", channels=" + channels +
                '}';
+    }
+
+    @Override
+    public Object getAttribute(String name) {
+        return attributes.get(name);
+    }
+
+    @Override
+    public void setAttribute(String name, Object value) {
+        attributes.put(name, value);
+    }
+
+    @Override
+    public void removeAttribute(String name) {
+        attributes.remove(name);
     }
 }
