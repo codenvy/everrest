@@ -16,7 +16,7 @@
     <parent>
         <artifactId>everrest-parent</artifactId>
         <groupId>org.everrest</groupId>
-        <version>1.1.14</version>
+        <version>1.1.14.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>book-service</artifactId>
