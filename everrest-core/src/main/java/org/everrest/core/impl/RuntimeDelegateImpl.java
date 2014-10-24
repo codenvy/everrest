@@ -22,9 +22,11 @@ import org.everrest.core.impl.header.NewCookieHeaderDelegate;
 import org.everrest.core.impl.header.RangeHeaderDelegate;
 import org.everrest.core.impl.header.StringHeaderDelegate;
 import org.everrest.core.impl.header.URIHeaderDelegate;
+import org.everrest.core.impl.uri.LinkBuilderImpl;
 import org.everrest.core.impl.uri.UriBuilderImpl;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
@@ -109,6 +111,12 @@ public class RuntimeDelegateImpl extends RuntimeDelegate {
     @Override
     public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type) {
         return headerDelegates.get(type);
+    }
+
+
+    @Override
+    public Link.Builder createLinkBuilder() {
+        return new LinkBuilderImpl();
     }
 
 
