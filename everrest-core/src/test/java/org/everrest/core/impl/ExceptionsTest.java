@@ -118,8 +118,8 @@ public class ExceptionsTest extends BaseTest {
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse response = launcher.service("GET", "/a/2", "", null, null, writer, null);
         Assert.assertEquals(500, response.getStatus());
-        Assert.assertNull(response.getEntity());
-        Assert.assertNull(writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
+        Assert.assertEquals("HTTP 500 Internal Server Error", response.getEntity());
+        Assert.assertEquals("Error-Message", writer.getHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
     }
 
     @Test

@@ -103,23 +103,24 @@ public class RequestHandlerImpl implements RequestHandler {
                     throw new UnhandledException(e.getCause());
                 }
 
-                ExceptionMapper exceptionMapper = context.getProviders().getExceptionMapper(WebApplicationException.class);
-                if (errorResponse.getEntity() == null) {
-                    if (exceptionMapper != null) {
-                        if (Tracer.isTracingEnabled()) {
-                            Tracer.trace("Found ExceptionMapper for WebApplicationException = (" + exceptionMapper + ")");
-                        }
-
-                        errorResponse = exceptionMapper.toResponse(e);
-                    } else if (e.getMessage() != null) {
-                        errorResponse = createErrorResponse(errorStatus, e.getMessage());
-                    }
-                } else {
+                if (errorResponse.hasEntity()) {
                     if (errorResponse.getMetadata().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null) {
                         String jaxrsHeader = getJaxrsHeader(errorStatus);
                         if (jaxrsHeader != null) {
                             errorResponse.getMetadata().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
                         }
+                    }
+                } else {
+                    ExceptionMapper exceptionMapper = context.getProviders().getExceptionMapper(WebApplicationException.class);
+                    if (exceptionMapper != null) {
+                        if (Tracer.isTracingEnabled()) {
+                            Tracer.trace("Found ExceptionMapper for WebApplicationException = (" + exceptionMapper + ")");
+                        }
+                        errorResponse = exceptionMapper.toResponse(e);
+                    } else if (cause != null) {
+                        errorResponse = createErrorResponse(errorStatus, cause.toString());
+                    } else if (e.getMessage() != null) {
+                        errorResponse = createErrorResponse(errorStatus, e.getMessage());
                     }
                 }
 
