@@ -12,6 +12,7 @@ package org.everrest.websockets;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.tools.SimplePrincipal;
 import org.everrest.core.tools.SimpleSecurityContext;
@@ -36,6 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class EverrestWebSocketServlet extends WebSocketServlet {
     public static final String EVERREST_PROCESSOR_ATTRIBUTE = EverrestProcessor.class.getName();
     public static final String MESSAGE_CONVERTER_ATTRIBUTE  = MessageConverter.class.getName();
+    public static final String EVERREST_CONFIG_ATTRIBUTE    = EverrestConfiguration.class.getName();
 
     private static final AtomicLong sequence = new AtomicLong(1);
 
@@ -71,10 +73,14 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
     }
 
     protected Executor getExecutor() {
-        return Executors.newCachedThreadPool(new ThreadFactory() {
+        EverrestConfiguration everrestConfiguration = (EverrestConfiguration)getServletContext().getAttribute(EVERREST_CONFIG_ATTRIBUTE);
+        if (everrestConfiguration == null) {
+            everrestConfiguration = new EverrestConfiguration();
+        }
+        return Executors.newFixedThreadPool(everrestConfiguration.getAsynchronousPoolSize(), new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                final Thread t = new Thread(r, "everrest.WebSocket" + sequence.getAndIncrement());
+                final Thread t = new Thread(r, "everrest.WSServlet" + sequence.getAndIncrement());
                 t.setDaemon(true);
                 return t;
             }
