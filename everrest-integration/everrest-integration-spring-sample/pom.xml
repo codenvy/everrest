@@ -16,7 +16,7 @@
     <parent>
         <artifactId>everrest-parent</artifactId>
         <groupId>org.everrest</groupId>
-        <version>1.1.18-SNAPSHOT</version>
+        <version>1.1.18</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>everrest-integration-spring-sample</artifactId>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.everrest</groupId>
             <artifactId>everrest-integration-spring</artifactId>
-            <version>1.1.18-SNAPSHOT</version>
+            <version>1.1.18</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
