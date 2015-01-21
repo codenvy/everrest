@@ -39,8 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * does not support binary messages. If binary message received then connection will be closed with error status and
  * then UnsupportedOperationException will be thrown.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class WSConnectionImpl extends MessageInbound implements WSConnection {
     private static final AtomicLong counter = new AtomicLong(1);
@@ -55,14 +54,27 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
     private final AtomicBoolean connected   = new AtomicBoolean(false);
     private       int           closeStatus = 0;
     private final Map<String, Object> attributes;
+    private int readTimeout = -1; // StreamInbound.getReadTimeout()
 
     WSConnectionImpl(HttpSession httpSession, MessageConverter messageConverter) {
         this.httpSession = httpSession;
         this.messageConverter = messageConverter;
-        this.messageReceivers = new CopyOnWriteArrayList<WSMessageReceiver>();
-        this.channels = new CopyOnWriteArraySet<String>();
+        this.messageReceivers = new CopyOnWriteArrayList<>();
+        this.channels = new CopyOnWriteArraySet<>();
         this.readOnlyChannels = Collections.unmodifiableSet(channels);
         this.attributes = new HashMap<>();
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        if (isConnected()) {
+            throw new IllegalStateException("Connection is already established. ");
+        }
+        this.readTimeout = readTimeout;
+    }
+
+    @Override
+    public int getReadTimeout() {
+        return readTimeout;
     }
 
     //

@@ -44,10 +44,12 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
     private EverrestProcessor           processor;
     private MessageConverter            messageConverter;
     private WebApplicationDeclaredRoles webApplicationRoles;
+    private EverrestConfiguration       everrestConfiguration;
     private Executor                    executor;
 
     @Override
     public void init() throws ServletException {
+        everrestConfiguration = getEverrestConfiguration();
         processor = getEverrestProcessor();
         messageConverter = getMessageConverter();
         if (messageConverter == null) {
@@ -59,7 +61,9 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
 
     @Override
     protected StreamInbound createWebSocketInbound(String s, HttpServletRequest req) {
+        final EverrestConfiguration everrestConfiguration = getEverrestConfiguration();
         WSConnectionImpl connection = WSConnectionContext.open(req.getSession(), messageConverter);
+        connection.setReadTimeout(everrestConfiguration.getNumberProperty("org.everrest.websocket.readtimeout", -1).intValue());
         connection.registerMessageReceiver(new WS2RESTAdapter(connection, createSecurityContext(req), processor, executor));
         return connection;
     }
@@ -72,11 +76,20 @@ public class EverrestWebSocketServlet extends WebSocketServlet {
         return (MessageConverter)getServletContext().getAttribute(MESSAGE_CONVERTER_ATTRIBUTE);
     }
 
-    protected Executor getExecutor() {
-        EverrestConfiguration everrestConfiguration = (EverrestConfiguration)getServletContext().getAttribute(EVERREST_CONFIG_ATTRIBUTE);
-        if (everrestConfiguration == null) {
-            everrestConfiguration = new EverrestConfiguration();
+    protected EverrestConfiguration getEverrestConfiguration() {
+        EverrestConfiguration myEverrestConfiguration = this.everrestConfiguration;
+        if (myEverrestConfiguration == null) {
+            myEverrestConfiguration = (EverrestConfiguration)getServletContext().getAttribute(EVERREST_CONFIG_ATTRIBUTE);
+            if (myEverrestConfiguration == null) {
+                myEverrestConfiguration = new EverrestConfiguration();
+            }
+            this.everrestConfiguration = myEverrestConfiguration;
         }
+        return myEverrestConfiguration;
+    }
+
+    protected Executor getExecutor() {
+        final EverrestConfiguration everrestConfiguration = getEverrestConfiguration();
         return Executors.newFixedThreadPool(everrestConfiguration.getAsynchronousPoolSize(), new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {

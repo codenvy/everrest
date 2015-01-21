@@ -170,4 +170,36 @@ public class EverrestConfiguration {
             properties.put(name, value);
         }
     }
+
+    public String getStringProperty(String name) {
+        final Object property = getProperty(name);
+        return property instanceof String ? (String)property : null;
+    }
+
+    public String getStringProperty(String name, String def) {
+        String value = getStringProperty(name);
+        if (value == null) {
+            return def;
+        }
+        return value;
+    }
+
+    public boolean getBooleanProperty(String name, boolean def) {
+        String str = getStringProperty(name);
+        if (str != null) {
+            return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str) || "1".equals(str);
+        }
+        return def;
+    }
+
+    public Double getNumberProperty(String name, double def) {
+        String str = getStringProperty(name);
+        if (str != null) {
+            try {
+                return Double.parseDouble(str);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return def;
+    }
 }
