@@ -13,14 +13,19 @@ package org.everrest.guice;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provider;
+import com.google.inject.Provides;
 import com.google.inject.ProvisionException;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.EnvironmentContext;
+import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.servlet.EverrestServletContextInitializer;
 
+import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -138,5 +143,11 @@ public class EverrestModule implements Module {
         binder.bind(ServletConfig.class).toProvider(new ServletConfigProvider());
         binder.bind(UriInfo.class).toProvider(new UriInfoProvider());
         binder.bind(Application.class).toProvider(new ApplicationProvider());
+    }
+
+    @Provides
+    @Singleton
+    EverrestConfiguration everrestConfiguration(ServletContext servletContext) {
+        return new EverrestServletContextInitializer(servletContext).getConfiguration();
     }
 }

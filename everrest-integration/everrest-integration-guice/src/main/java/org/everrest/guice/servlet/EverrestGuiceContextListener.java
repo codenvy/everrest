@@ -81,12 +81,12 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     public void contextInitialized(ServletContextEvent sce) {
         super.contextInitialized(sce);
         ServletContext servletContext = sce.getServletContext();
-        EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
         ResourceBinderImpl resources = new ResourceBinderImpl();
         ApplicationProviderBinder providers = new ApplicationProviderBinder();
         Injector injector = getInjector(servletContext);
         DependencySupplier dependencySupplier = new GuiceDependencySupplier(injector);
-        EverrestConfiguration config = everrestInitializer.getConfiguration();
+        EverrestConfiguration config = injector.getInstance(EverrestConfiguration.class);
+        EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
         Application application = everrestInitializer.getApplication();
         EverrestApplication everrest = new EverrestApplication();
         if (config.isAsynchronousSupported()) {

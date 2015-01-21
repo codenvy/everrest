@@ -56,18 +56,14 @@ public class EverrestServletContextInitializer {
             try {
                 Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(applicationFQN);
                 application = (Application)cl.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         } else if (scan) {
             application = new Application() {
                 @Override
                 public Set<Class<?>> getClasses() {
-                    return new LinkedHashSet<Class<?>>(ComponentFinder.findComponents());
+                    return new LinkedHashSet<>(ComponentFinder.findComponents());
                 }
             };
         }
