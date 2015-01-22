@@ -63,11 +63,7 @@ public class WSConnectionContext {
             if (connection.getChannels().contains(channel)) {
                 try {
                     connection.sendMessage(output);
-                } catch (MessageConversionException e) {
-                    if (error == null) {
-                        error = e;
-                    }
-                } catch (IOException e) {
+                } catch (MessageConversionException | IOException e) {
                     if (error == null) {
                         error = e;
                     }

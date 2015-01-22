@@ -18,20 +18,10 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_POOL_SIZE;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_SERVICE_PATH;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_CHECK_SECURITY;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE;
-import static org.everrest.core.impl.EverrestConfiguration.EVERREST_NORMALIZE_URI;
-import static org.everrest.core.impl.EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY;
 
 /** @author andrew00x */
 public class EverrestServletContextInitializer {
@@ -84,18 +74,14 @@ public class EverrestServletContextInitializer {
 
     public EverrestConfiguration getConfiguration() {
         EverrestConfiguration config = new EverrestConfiguration();
-        config.setProperty(EVERREST_HTTP_METHOD_OVERRIDE, getParameter(EVERREST_HTTP_METHOD_OVERRIDE));
-        config.setProperty(EVERREST_NORMALIZE_URI, getParameter(EVERREST_NORMALIZE_URI));
-        config.setProperty(EVERREST_CHECK_SECURITY, getParameter(EVERREST_CHECK_SECURITY));
-        config.setProperty(EVERREST_ASYNCHRONOUS, getParameter(EVERREST_ASYNCHRONOUS));
-        config.setProperty(EVERREST_ASYNCHRONOUS_POOL_SIZE, getParameter(EVERREST_ASYNCHRONOUS_POOL_SIZE));
-        config.setProperty(EVERREST_ASYNCHRONOUS_SERVICE_PATH, getParameter(EVERREST_ASYNCHRONOUS_SERVICE_PATH));
-        config.setProperty(EVERREST_ASYNCHRONOUS_QUEUE_SIZE, getParameter(EVERREST_ASYNCHRONOUS_QUEUE_SIZE));
-        config.setProperty(EVERREST_ASYNCHRONOUS_CACHE_SIZE, getParameter(EVERREST_ASYNCHRONOUS_CACHE_SIZE));
-        config.setProperty(EVERREST_ASYNCHRONOUS_JOB_TIMEOUT, getParameter(EVERREST_ASYNCHRONOUS_JOB_TIMEOUT));
-        config.setProperty(EVERREST_MAX_BUFFER_SIZE, getParameter(EVERREST_MAX_BUFFER_SIZE));
-        config.setProperty(METHOD_INVOKER_DECORATOR_FACTORY, getParameter(METHOD_INVOKER_DECORATOR_FACTORY));
+        for (String parameterName : getParameterNames()) {
+            config.setProperty(parameterName, getParameter(parameterName));
+        }
         return config;
+    }
+
+    protected List<String> getParameterNames() {
+        return Collections.list(ctx.getInitParameterNames());
     }
 
     /**

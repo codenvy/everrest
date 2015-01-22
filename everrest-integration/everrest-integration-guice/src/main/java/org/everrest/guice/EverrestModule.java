@@ -172,6 +172,9 @@ public class EverrestModule implements Module {
         @Inject(optional = true)
         @Named(METHOD_INVOKER_DECORATOR_FACTORY)
         private String         methodInvokerDecoratorFactory;
+        @Inject(optional = true)
+        @Named("org.everrest.websocket.readtimeout")
+        private String         websocketReadTimeout;
         @Inject
         private ServletContext servletContext;
 
@@ -189,6 +192,7 @@ public class EverrestModule implements Module {
             setConfigurationPropertyIfNotNull(configuration, EVERREST_MAX_BUFFER_SIZE, maxBufferSize);
             setConfigurationPropertyIfNotNull(configuration, EVERREST_NORMALIZE_URI, normalizeUrl);
             setConfigurationPropertyIfNotNull(configuration, METHOD_INVOKER_DECORATOR_FACTORY, methodInvokerDecoratorFactory);
+            setConfigurationPropertyIfNotNull(configuration, "org.everrest.websocket.readtimeout", websocketReadTimeout);
             return configuration;
         }
 

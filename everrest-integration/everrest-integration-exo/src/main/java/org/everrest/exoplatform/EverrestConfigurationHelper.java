@@ -18,6 +18,8 @@ import org.exoplatform.container.xml.Property;
 import org.exoplatform.container.xml.ValueParam;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author andrew00x
@@ -37,6 +39,17 @@ public final class EverrestConfigurationHelper extends EverrestConfiguration {
                     }
                 }
                 return null;
+            }
+
+            @Override
+            protected List<String> getParameterNames() {
+                List<String> names = new LinkedList<>();
+                if (initParams != null) {
+                    for (Iterator<ValueParam> iterator = initParams.getValueParamIterator(); iterator.hasNext(); ) {
+                        names.add(iterator.next().getName());
+                    }
+                }
+                return names;
             }
         }.getConfiguration();
         if (initParams != null) {
