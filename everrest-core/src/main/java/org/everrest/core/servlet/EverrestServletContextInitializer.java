@@ -21,6 +21,18 @@ import javax.ws.rs.ext.Provider;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_POOL_SIZE;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_ASYNCHRONOUS_SERVICE_PATH;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_CHECK_SECURITY;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE;
+import static org.everrest.core.impl.EverrestConfiguration.EVERREST_NORMALIZE_URI;
+import static org.everrest.core.impl.EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY;
+
 /** @author andrew00x */
 public class EverrestServletContextInitializer {
     public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
@@ -72,40 +84,17 @@ public class EverrestServletContextInitializer {
 
     public EverrestConfiguration getConfiguration() {
         EverrestConfiguration config = new EverrestConfiguration();
-
-        config.setHttpMethodOverride(getBoolean(EverrestConfiguration.EVERREST_HTTP_METHOD_OVERRIDE,
-                                                EverrestConfiguration.defaultHttpMethodOverride));
-
-        config.setNormalizeUri(getBoolean(EverrestConfiguration.EVERREST_NORMALIZE_URI,
-                                          EverrestConfiguration.defaultNormalizeUri));
-
-        config.setCheckSecurity(getBoolean(EverrestConfiguration.EVERREST_CHECK_SECURITY,
-                                           EverrestConfiguration.defaultCheckSecurity));
-
-        config.setAsynchronousSupported(getBoolean(EverrestConfiguration.EVERREST_ASYNCHRONOUS,
-                                                   EverrestConfiguration.defaultAsynchronousSupported));
-
-        config.setAsynchronousPoolSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_POOL_SIZE,
-                                                 EverrestConfiguration.defaultAsynchronousPoolSize).intValue());
-
-        config.setAsynchronousServicePath(getParameter(EverrestConfiguration.EVERREST_ASYNCHRONOUS_SERVICE_PATH,
-                                                       EverrestConfiguration.defaultAsynchronousServicePath));
-
-        config.setAsynchronousQueueSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_QUEUE_SIZE,
-                                                  EverrestConfiguration.defaultAsynchronousQueueSize).intValue());
-
-        config.setAsynchronousCacheSize(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_CACHE_SIZE,
-                                                  EverrestConfiguration.defaultAsynchronousCacheSize).intValue());
-
-        config.setAsynchronousJobTimeout(getNumber(EverrestConfiguration.EVERREST_ASYNCHRONOUS_JOB_TIMEOUT,
-                                                   EverrestConfiguration.defaultAsynchronousJobTimeout).intValue());
-
-        config.setMaxBufferSize(getNumber(EverrestConfiguration.EVERREST_MAX_BUFFER_SIZE,
-                                          EverrestConfiguration.defaultMaxBufferSize).intValue());
-
-        config.setProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY,
-                           getParameter(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY));
-
+        config.setProperty(EVERREST_HTTP_METHOD_OVERRIDE, getParameter(EVERREST_HTTP_METHOD_OVERRIDE));
+        config.setProperty(EVERREST_NORMALIZE_URI, getParameter(EVERREST_NORMALIZE_URI));
+        config.setProperty(EVERREST_CHECK_SECURITY, getParameter(EVERREST_CHECK_SECURITY));
+        config.setProperty(EVERREST_ASYNCHRONOUS, getParameter(EVERREST_ASYNCHRONOUS));
+        config.setProperty(EVERREST_ASYNCHRONOUS_POOL_SIZE, getParameter(EVERREST_ASYNCHRONOUS_POOL_SIZE));
+        config.setProperty(EVERREST_ASYNCHRONOUS_SERVICE_PATH, getParameter(EVERREST_ASYNCHRONOUS_SERVICE_PATH));
+        config.setProperty(EVERREST_ASYNCHRONOUS_QUEUE_SIZE, getParameter(EVERREST_ASYNCHRONOUS_QUEUE_SIZE));
+        config.setProperty(EVERREST_ASYNCHRONOUS_CACHE_SIZE, getParameter(EVERREST_ASYNCHRONOUS_CACHE_SIZE));
+        config.setProperty(EVERREST_ASYNCHRONOUS_JOB_TIMEOUT, getParameter(EVERREST_ASYNCHRONOUS_JOB_TIMEOUT));
+        config.setProperty(EVERREST_MAX_BUFFER_SIZE, getParameter(EVERREST_MAX_BUFFER_SIZE));
+        config.setProperty(METHOD_INVOKER_DECORATOR_FACTORY, getParameter(METHOD_INVOKER_DECORATOR_FACTORY));
         return config;
     }
 
@@ -116,7 +105,7 @@ public class EverrestServletContextInitializer {
      *         parameter name
      * @return value of parameter with specified name
      */
-    public String getParameter(String name) {
+    protected String getParameter(String name) {
         String str = ctx.getInitParameter(name);
         if (str != null) {
             return str.trim();
@@ -124,7 +113,7 @@ public class EverrestServletContextInitializer {
         return null;
     }
 
-    public String getParameter(String name, String def) {
+    protected String getParameter(String name, String def) {
         String value = getParameter(name);
         if (value == null) {
             return def;
@@ -132,7 +121,7 @@ public class EverrestServletContextInitializer {
         return value;
     }
 
-    public boolean getBoolean(String name, boolean def) {
+    protected boolean getBoolean(String name, boolean def) {
         String str = getParameter(name);
         if (str != null) {
             return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str) || "1".equals(str);
@@ -140,7 +129,7 @@ public class EverrestServletContextInitializer {
         return def;
     }
 
-    public Double getNumber(String name, double def) {
+    protected Double getNumber(String name, double def) {
         String str = getParameter(name);
         if (str != null) {
             try {

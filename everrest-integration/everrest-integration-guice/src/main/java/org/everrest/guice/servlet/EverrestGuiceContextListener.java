@@ -150,7 +150,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     }
 
     /**
-     * Implementor can provide set of own {@link Module} for JAX-RS components.
+     * Implementation can provide set of own {@link Module} for JAX-RS components.
      * <p/>
      * <pre>
      * protected List&lt;Module&gt; getModules()

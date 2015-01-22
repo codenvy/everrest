@@ -14,10 +14,12 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 
+import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.provider.IOHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -52,6 +54,8 @@ public class GuiceResourceTest extends BaseTest {
 
     @Provider
     public static class MessageProvider implements MessageBodyReader<Message>, MessageBodyWriter<Message> {
+        @Inject
+        EverrestConfiguration cfg;
         public long getSize(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
             return -1;
         }

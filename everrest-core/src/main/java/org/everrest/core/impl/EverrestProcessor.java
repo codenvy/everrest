@@ -45,9 +45,6 @@ public final class EverrestProcessor implements Lifecycle {
     private final Deployer              deployer;
     private final EverrestConfiguration config;
 
-    //    private final boolean                       normalizeUriFeature;
-//    private final boolean                       httpMethodOverrideFeature;
-//    private final int                           maxBufferSize;
     private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
 
     /**
@@ -66,7 +63,7 @@ public final class EverrestProcessor implements Lifecycle {
 
         this.config = config == null ? new EverrestConfiguration() : config;
 
-        String decoratorFactoryClassName = (String)this.config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
+        String decoratorFactoryClassName = this.config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
         if (decoratorFactoryClassName != null) {
             try {
                 methodInvokerDecoratorFactory = MethodInvokerDecoratorFactory.class.cast(

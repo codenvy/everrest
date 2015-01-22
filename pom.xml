@@ -64,6 +64,7 @@
         <url>https://github.com/codenvy/everrest/</url>
     </scm>
     <properties>
+        <com.google.code.guice.version>3.0</com.google.code.guice.version>
         <commons-codec.version>1.6</commons-codec.version>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <commons-io.version>2.4</commons-io.version>

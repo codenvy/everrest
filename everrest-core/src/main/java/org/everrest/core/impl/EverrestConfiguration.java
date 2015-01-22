@@ -28,7 +28,7 @@ public class EverrestConfiguration {
     public static final String EVERREST_ASYNCHRONOUS_QUEUE_SIZE   = "org.everrest.asynchronous.queue.size";
     public static final String EVERREST_ASYNCHRONOUS_CACHE_SIZE   = "org.everrest.asynchronous.cache.size";
     public static final String EVERREST_ASYNCHRONOUS_JOB_TIMEOUT  = "org.everrest.asynchronous.job.timeout";
-    public static final String METHOD_INVOKER_DECORATOR_FACTORY   = MethodInvokerDecoratorFactory.class.getName();
+    public static final String METHOD_INVOKER_DECORATOR_FACTORY   = "org.everrest.core.impl.method.MethodInvokerDecoratorFactory";
     /**
      * Max buffer size configuration parameter. Entities that has size greater then specified will be stored in temporary directory on file
      * system during entity processing.
@@ -48,122 +48,97 @@ public class EverrestConfiguration {
     /** Max buffer size attribute value. See {@link #EVERREST_MAX_BUFFER_SIZE}. */
     public static final int     defaultMaxBufferSize           = 204800;
 
-
-    protected boolean checkSecurity           = defaultCheckSecurity;
-    protected boolean httpMethodOverride      = defaultHttpMethodOverride;
-    protected boolean normalizeUri            = defaultNormalizeUri;
-    protected boolean asynchronousSupported   = defaultAsynchronousSupported;
-    protected int     asynchronousPoolSize    = defaultAsynchronousPoolSize;
-    protected int     asynchronousQueueSize   = defaultAsynchronousQueueSize;
-    protected int     asynchronousCacheSize   = defaultAsynchronousCacheSize;
-    protected int     asynchronousJobTimeout  = defaultAsynchronousJobTimeout;
-    protected int     maxBufferSize           = defaultMaxBufferSize;
-    protected String  asynchronousServicePath = defaultAsynchronousServicePath;
-    protected final Map<String, Object> properties;
+    protected final Map<String, String> properties;
 
     public EverrestConfiguration() {
         properties = new HashMap<>();
     }
 
     public EverrestConfiguration(EverrestConfiguration other) {
-        this.asynchronousSupported = other.asynchronousSupported;
-        this.asynchronousCacheSize = other.asynchronousCacheSize;
-        this.asynchronousJobTimeout = other.asynchronousJobTimeout;
-        this.asynchronousPoolSize = other.asynchronousPoolSize;
-        this.asynchronousQueueSize = other.asynchronousQueueSize;
-        this.asynchronousServicePath = other.asynchronousServicePath;
-        this.checkSecurity = other.checkSecurity;
-        this.httpMethodOverride = other.httpMethodOverride;
-        this.maxBufferSize = other.maxBufferSize;
-        this.normalizeUri = other.normalizeUri;
         properties = new HashMap<>(other.properties);
     }
 
     public boolean isCheckSecurity() {
-        return checkSecurity;
+        return getBooleanProperty(EVERREST_CHECK_SECURITY, defaultCheckSecurity);
     }
 
     public void setCheckSecurity(boolean checkSecurity) {
-        this.checkSecurity = checkSecurity;
+        properties.put(EVERREST_CHECK_SECURITY, Boolean.toString(checkSecurity));
     }
 
     public boolean isHttpMethodOverride() {
-        return httpMethodOverride;
+        return getBooleanProperty(EVERREST_HTTP_METHOD_OVERRIDE, defaultHttpMethodOverride);
     }
 
     public void setHttpMethodOverride(boolean httpMethodOverride) {
-        this.httpMethodOverride = httpMethodOverride;
+        properties.put(EVERREST_HTTP_METHOD_OVERRIDE, Boolean.toString(httpMethodOverride));
     }
 
     public boolean isNormalizeUri() {
-        return normalizeUri;
+        return getBooleanProperty(EVERREST_NORMALIZE_URI, defaultNormalizeUri);
     }
 
     public void setNormalizeUri(boolean normalizeUri) {
-        this.normalizeUri = normalizeUri;
+        properties.put(EVERREST_NORMALIZE_URI, Boolean.toString(normalizeUri));
     }
 
     public boolean isAsynchronousSupported() {
-        return asynchronousSupported;
+        return getBooleanProperty(EVERREST_ASYNCHRONOUS, defaultAsynchronousSupported);
     }
 
     public void setAsynchronousSupported(boolean asynchronousSupported) {
-        this.asynchronousSupported = asynchronousSupported;
+        properties.put(EVERREST_ASYNCHRONOUS, Boolean.toString(asynchronousSupported));
     }
 
     public String getAsynchronousServicePath() {
-        return asynchronousServicePath;
+        return getProperty(EVERREST_ASYNCHRONOUS_SERVICE_PATH, defaultAsynchronousServicePath);
     }
 
     public void setAsynchronousServicePath(String servicePath) {
-        this.asynchronousServicePath = servicePath;
+        properties.put(EVERREST_ASYNCHRONOUS_SERVICE_PATH, servicePath);
     }
 
     public int getAsynchronousPoolSize() {
-        return asynchronousPoolSize;
+        return getNumberProperty(EVERREST_ASYNCHRONOUS_POOL_SIZE, defaultAsynchronousPoolSize).intValue();
     }
 
     public void setAsynchronousPoolSize(int asynchronousPoolSize) {
-        this.asynchronousPoolSize = asynchronousPoolSize;
+        properties.put(EVERREST_ASYNCHRONOUS_POOL_SIZE, Integer.toString(asynchronousPoolSize));
     }
 
     public int getAsynchronousQueueSize() {
-        return asynchronousQueueSize;
+        return getNumberProperty(EVERREST_ASYNCHRONOUS_QUEUE_SIZE, defaultAsynchronousQueueSize).intValue();
     }
 
     public void setAsynchronousQueueSize(int asynchronousQueueSize) {
-        this.asynchronousQueueSize = asynchronousQueueSize;
+        properties.put(EVERREST_ASYNCHRONOUS_QUEUE_SIZE, Integer.toString(asynchronousQueueSize));
     }
 
     public int getAsynchronousCacheSize() {
-        return asynchronousCacheSize;
+        return getNumberProperty(EVERREST_ASYNCHRONOUS_CACHE_SIZE, defaultAsynchronousCacheSize).intValue();
     }
 
     public void setAsynchronousCacheSize(int asynchronousCacheSize) {
-        this.asynchronousCacheSize = asynchronousCacheSize;
+        properties.put(EVERREST_ASYNCHRONOUS_CACHE_SIZE, Integer.toString(asynchronousCacheSize));
     }
 
     public int getAsynchronousJobTimeout() {
-        return asynchronousJobTimeout;
+        return getNumberProperty(EVERREST_ASYNCHRONOUS_JOB_TIMEOUT, defaultAsynchronousJobTimeout).intValue();
     }
 
     public void setAsynchronousJobTimeout(int asynchronousJobTimeout) {
-        this.asynchronousJobTimeout = asynchronousJobTimeout;
+        properties.put(EVERREST_ASYNCHRONOUS_JOB_TIMEOUT, Integer.toString(asynchronousJobTimeout));
     }
 
     public int getMaxBufferSize() {
-        return maxBufferSize;
+        return getNumberProperty(EVERREST_MAX_BUFFER_SIZE, defaultMaxBufferSize).intValue();
     }
 
     public void setMaxBufferSize(int maxBufferSize) {
-        this.maxBufferSize = maxBufferSize;
+        properties.put(EVERREST_MAX_BUFFER_SIZE, Integer.toString(maxBufferSize));
     }
 
-    public Object getProperty(String name) {
-        return properties.get(name);
-    }
-
-    public void setProperty(String name, Object value) {
+    public void setProperty(String name, String value) {
         if (value == null) {
             properties.remove(name);
         } else {
@@ -171,13 +146,12 @@ public class EverrestConfiguration {
         }
     }
 
-    public String getStringProperty(String name) {
-        final Object property = getProperty(name);
-        return property instanceof String ? (String)property : null;
+    public String getProperty(String name) {
+        return properties.get(name);
     }
 
-    public String getStringProperty(String name, String def) {
-        String value = getStringProperty(name);
+    public String getProperty(String name, String def) {
+        String value = getProperty(name);
         if (value == null) {
             return def;
         }
@@ -185,7 +159,7 @@ public class EverrestConfiguration {
     }
 
     public boolean getBooleanProperty(String name, boolean def) {
-        String str = getStringProperty(name);
+        String str = getProperty(name);
         if (str != null) {
             return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "on".equalsIgnoreCase(str) || "1".equals(str);
         }
@@ -193,7 +167,7 @@ public class EverrestConfiguration {
     }
 
     public Double getNumberProperty(String name, double def) {
-        String str = getStringProperty(name);
+        String str = getProperty(name);
         if (str != null) {
             try {
                 return Double.parseDouble(str);

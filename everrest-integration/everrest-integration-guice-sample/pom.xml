@@ -31,12 +31,12 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>${com.google.code.guice.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
-            <version>3.0</version>
+            <version>${com.google.code.guice.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
