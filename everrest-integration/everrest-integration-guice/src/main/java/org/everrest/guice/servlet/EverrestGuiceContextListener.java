@@ -39,6 +39,7 @@ import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
+import org.everrest.guice.EverrestConfigurationModule;
 import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
 import org.everrest.guice.GuiceObjectFactory;
@@ -142,6 +143,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
             all.add(servletModule);
         }
         all.add(new EverrestModule());
+        all.add(new EverrestConfigurationModule());
         List<Module> modules = getModules();
         if (modules != null && modules.size() > 0) {
             all.addAll(modules);
