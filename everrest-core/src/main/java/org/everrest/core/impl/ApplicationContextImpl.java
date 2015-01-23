@@ -234,6 +234,19 @@ public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
 
 
     @Override
+    public URI resolve(URI uri) {
+        return getBaseUri().resolve(uri);
+    }
+
+
+    @Override
+    public URI relativize(URI uri) {
+        URI requestUri = getRequestUri();
+        return requestUri.relativize(uri);
+    }
+
+
+    @Override
     public List<String> getMatchedURIs() {
         return getMatchedURIs(true);
     }

@@ -68,12 +68,12 @@ public final class UriComponent {
     private static final char[][][] ENCODED = new char[9][128][3];
 
     /** Array of legal characters for each component of URI. */
-    private static final int[][] ENCODING = new int[9][128];
+    private static final int[][] LEGAL = new int[9][128];
 
     // fill table
     static {
         for (int i = SCHEME; i <= SSP; i++) {
-            ENCODING[i] = new int[128];
+            LEGAL[i] = new int[128];
         }
 
       /* The letters of the basic Latin alphabet */
@@ -116,59 +116,59 @@ public final class UriComponent {
         subdelim[';'] = 1;
         subdelim['='] = 1;
 
-        set(alphabet, ENCODING[SCHEME]);
-        set(digit, ENCODING[SCHEME]);
-        ENCODING[SCHEME]['-'] = 1;
-        ENCODING[SCHEME]['+'] = 1;
-        ENCODING[SCHEME]['.'] = 1;
+        set(alphabet, LEGAL[SCHEME]);
+        set(digit, LEGAL[SCHEME]);
+        LEGAL[SCHEME]['-'] = 1;
+        LEGAL[SCHEME]['+'] = 1;
+        LEGAL[SCHEME]['.'] = 1;
 
-        set(unreserved, ENCODING[USER_INFO]);
-        set(subdelim, ENCODING[USER_INFO]);
-        ENCODING[USER_INFO][':'] = 1;
+        set(unreserved, LEGAL[USER_INFO]);
+        set(subdelim, LEGAL[USER_INFO]);
+        LEGAL[USER_INFO][':'] = 1;
 
-        set(unreserved, ENCODING[HOST]);
-        set(subdelim, ENCODING[HOST]);
+        set(unreserved, LEGAL[HOST]);
+        set(subdelim, LEGAL[HOST]);
 
-        set(digit, ENCODING[PORT]);
+        set(digit, LEGAL[PORT]);
 
-        set(unreserved, ENCODING[PATH_SEGMENT]);
-        set(subdelim, ENCODING[PATH_SEGMENT]);
-        ENCODING[PATH_SEGMENT][':'] = 1;
-        ENCODING[PATH_SEGMENT]['@'] = 1;
+        set(unreserved, LEGAL[PATH_SEGMENT]);
+        set(subdelim, LEGAL[PATH_SEGMENT]);
+        LEGAL[PATH_SEGMENT][':'] = 1;
+        LEGAL[PATH_SEGMENT]['@'] = 1;
 
-        set(unreserved, ENCODING[PATH]);
-        set(subdelim, ENCODING[PATH]);
-        ENCODING[PATH][':'] = 1;
-        ENCODING[PATH]['@'] = 1;
-        ENCODING[PATH]['/'] = 1;
+        set(unreserved, LEGAL[PATH]);
+        set(subdelim, LEGAL[PATH]);
+        LEGAL[PATH][':'] = 1;
+        LEGAL[PATH]['@'] = 1;
+        LEGAL[PATH]['/'] = 1;
 
-        set(unreserved, ENCODING[QUERY]);
-        ENCODING[QUERY]['-'] = 1;
-        ENCODING[QUERY]['.'] = 1;
-        ENCODING[QUERY]['_'] = 1;
-        ENCODING[QUERY]['~'] = 1;
-        ENCODING[QUERY]['!'] = 1;
-        ENCODING[QUERY]['$'] = 1;
-        ENCODING[QUERY]['\''] = 1;
-        ENCODING[QUERY]['('] = 1;
-        ENCODING[QUERY][')'] = 1;
-        ENCODING[QUERY]['*'] = 1;
-        ENCODING[QUERY][','] = 1;
-        ENCODING[QUERY][';'] = 1;
-        ENCODING[QUERY][':'] = 1;
-        ENCODING[QUERY]['@'] = 1;
-        ENCODING[QUERY]['?'] = 1;
-        ENCODING[QUERY]['/'] = 1;
+        set(unreserved, LEGAL[QUERY]);
+        LEGAL[QUERY]['-'] = 1;
+        LEGAL[QUERY]['.'] = 1;
+        LEGAL[QUERY]['_'] = 1;
+        LEGAL[QUERY]['~'] = 1;
+        LEGAL[QUERY]['!'] = 1;
+        LEGAL[QUERY]['$'] = 1;
+        LEGAL[QUERY]['\''] = 1;
+        LEGAL[QUERY]['('] = 1;
+        LEGAL[QUERY][')'] = 1;
+        LEGAL[QUERY]['*'] = 1;
+        LEGAL[QUERY][','] = 1;
+        LEGAL[QUERY][';'] = 1;
+        LEGAL[QUERY][':'] = 1;
+        LEGAL[QUERY]['@'] = 1;
+        LEGAL[QUERY]['?'] = 1;
+        LEGAL[QUERY]['/'] = 1;
 
-        System.arraycopy(ENCODING[QUERY], 0, ENCODING[FRAGMENT], 0, ENCODING[QUERY].length);
+        System.arraycopy(LEGAL[QUERY], 0, LEGAL[FRAGMENT], 0, LEGAL[QUERY].length);
 
-        set(unreserved, ENCODING[SSP]);
-        set(subdelim, ENCODING[SSP]);
-        set(gendelim, ENCODING[SSP]);
+        set(unreserved, LEGAL[SSP]);
+        set(subdelim, LEGAL[SSP]);
+        set(gendelim, LEGAL[SSP]);
 
         for (int i = SCHEME; i <= SSP; i++) {
             for (int j = 0; j < 128; j++) {
-                if (ENCODING[i][j] == 0) {
+                if (LEGAL[i][j] == 0) {
                     ENCODED[i][j] = new char[]{'%', HEX_DIGITS[j >> 4], HEX_DIGITS[j & 0x0F]};
                 }
             }
@@ -473,7 +473,7 @@ public final class UriComponent {
      * @return true if character must be encoded false otherwise
      */
     private static boolean needEncode(char ch, int component) {
-        int[] allowed = ENCODING[component];
+        int[] allowed = LEGAL[component];
         return allowed.length <= ch || allowed[ch] == 0;
     }
 
@@ -646,6 +646,149 @@ public final class UriComponent {
             }
         }
         return result;
+    }
+
+    public static UriBuilderImpl parseTemplate(String template) {
+        char[] c = template.toCharArray();
+        int l = c.length;
+        int n;
+        int p;
+        n = 0;
+        char[] empty = new char[0];
+        char[] illegal = new char[]{'/', '?', '#'};
+        boolean[] errFlag = new boolean[]{false};
+
+        p = find(c, n, l, illegal, ':', errFlag);
+        if (errFlag[0]) {
+            throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+        }
+        String scheme = null;
+        String userInfo = null;
+        String host = null;
+        String path = null;
+        String query = null;
+        String fragment = null;
+        int port = -1;
+        if (p < l) {
+            // 0 - 48
+            // 9 - 57
+            // A - 65
+            // Z - 90
+            // a - 97
+            // z - 122
+            if (c[n] != '{' && ((c[n] < 65 || c[n] > 90)) && ((c[n] < 97 || c[n] > 122))) {
+                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + n);
+            }
+            for (int i = 1; i < p; i++) {
+                if (LEGAL[SCHEME][c[i]] == 0 && c[i] != '{' && c[i] != '}') {
+                    throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + i);
+                }
+            }
+            scheme = template.substring(n, p);
+            p++;
+        }
+        n = p;
+        if (c[n] == '/' && c[n + 1] == '/') {
+            n += 2;
+        }
+        errFlag[0] = false;
+        p = find(c, n, l, empty, '/', errFlag);
+        if (errFlag[0]) {
+            throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+        }
+        if (p > n) {
+            errFlag[0] = false;
+            int x = find(c, n, p, illegal, '@', errFlag);
+            if (errFlag[0]) {
+                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+            }
+            if (x > n && x < p) {
+                userInfo = template.substring(n, x);
+                n = x + 1;
+            }
+            errFlag[0] = false;
+            x = find(c, n, p, illegal, ':', errFlag);
+            if (errFlag[0]) {
+                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+            }
+            if (x > n && x < p) {
+                host = template.substring(n, x);
+                port = Integer.parseInt(template.substring(x + 1, p));
+            } else {
+                host = template.substring(n, p);
+            }
+        }
+        n = p;
+        errFlag[0] = false;
+        p = find(c, n, l, empty, new char[]{'#', '?'}, errFlag);
+        if (errFlag[0]) {
+            throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+        }
+        if (p > n) {
+            path = template.substring(n, p);
+        }
+        n = p;
+        if (n < l) {
+            n++;
+            errFlag[0] = false;
+            p = find(c, n, l, empty, '?', errFlag);
+            if (errFlag[0]) {
+                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+            }
+            if (p > n) {
+                query = template.substring(n, p);
+            }
+            n = p;
+            if (n < l) {
+                n++;
+                errFlag[0] = false;
+                p = find(c, n, l, empty, '#', errFlag);
+                if (errFlag[0]) {
+                    throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+                }
+                if (p > n) {
+                    fragment = template.substring(n, p);
+                }
+            }
+        }
+        return (UriBuilderImpl)new UriBuilderImpl().scheme(scheme).userInfo(userInfo).host(host).port(port).replacePath(path)
+                                                   .replaceQuery(query).fragment(fragment);
+    }
+
+    private static int find(char[] c, int begin, int end, char[] illegal, char stop, boolean[] errFlag) {
+        for (int i = begin; i < end; i++) {
+            if (illegal.length > 0 && contains(illegal, c[i])) {
+                errFlag[0] = true;
+                return i;
+            }
+            if (c[i] == stop) {
+                return i;
+            }
+        }
+        return end;
+    }
+
+    private static int find(char[] c, int begin, int end, char[] illegal, char[] stop, boolean[] errFlag) {
+        for (int i = begin; i < end; i++) {
+            if (illegal.length > 0 && contains(illegal, c[i])) {
+                errFlag[0] = true;
+                return i;
+            }
+            if (stop.length > 0 && contains(stop, c[i])) {
+                return i;
+            }
+        }
+        return end;
+    }
+
+
+    private static boolean contains(char[] a, char test) {
+        for (int i = 0, l = a.length; i < l; i++) {
+            if (a[i] == test) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private UriComponent() {

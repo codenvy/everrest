@@ -19,11 +19,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class UriBuilderImpl extends UriBuilder {
     /** Scheme, e.g. http, https, etc. */
@@ -53,6 +53,9 @@ public class UriBuilderImpl extends UriBuilder {
 
     @Override
     public URI buildFromMap(Map<String, ?> values) {
+        if (values == null) {
+            throw new IllegalArgumentException("Null values aren't allowed");
+        }
         encode();
         String uri = UriPattern.createUriWithValues(
                 schema,
@@ -71,9 +74,17 @@ public class UriBuilderImpl extends UriBuilder {
         }
     }
 
+    @Override
+    public URI buildFromMap(Map<String, ?> values, boolean encodeSlashInPath) throws IllegalArgumentException, UriBuilderException {
+        return null;
+    }
+
 
     @Override
     public URI buildFromEncodedMap(Map<String, ?> values) {
+        if (values == null) {
+            throw new IllegalArgumentException("Null values aren't allowed");
+        }
         encode();
         String uri = UriPattern.createUriWithValues(
                 schema,
@@ -95,6 +106,9 @@ public class UriBuilderImpl extends UriBuilder {
 
     @Override
     public URI build(Object... values) {
+        if (values == null) {
+            throw new IllegalArgumentException("Null values aren't allowed");
+        }
         encode();
         String uri = UriPattern.createUriWithValues(
                 schema,
@@ -113,9 +127,20 @@ public class UriBuilderImpl extends UriBuilder {
         }
     }
 
+    @Override
+    public URI build(Object[] values, boolean encodeSlashInPath) throws IllegalArgumentException, UriBuilderException {
+        if (values == null) {
+            throw new IllegalArgumentException("Null values aren't allowed");
+        }
+        return null;
+    }
+
 
     @Override
     public URI buildFromEncoded(Object... values) {
+        if (values == null) {
+            throw new IllegalArgumentException("Null values aren't allowed");
+        }
         encode();
         String uri = UriPattern.createUriWithValues(
                 schema,
@@ -132,6 +157,21 @@ public class UriBuilderImpl extends UriBuilder {
         } catch (URISyntaxException e) {
             throw new UriBuilderException(e);
         }
+    }
+
+    @Override
+    public String toTemplate() {
+        return UriPattern.createUriWithValues(
+                schema,
+                userInfo,
+                host,
+                port,
+                path.toString(),
+                query.toString(),
+                fragment,
+                new Object[0],
+                false,
+                true);
     }
 
     /** Encode URI path, query and fragment components. */
@@ -241,6 +281,85 @@ public class UriBuilderImpl extends UriBuilder {
     public UriBuilder fragment(String fragment) {
         this.fragment = fragment == null ? null : UriComponent.encode(fragment, UriComponent.FRAGMENT, true);
         return this;
+    }
+
+    @Override
+    public UriBuilder resolveTemplate(String name, Object value) {
+        return resolveTemplate(name, value, false);
+    }
+
+    @Override
+    public UriBuilder resolveTemplate(String name, Object value, boolean encodeSlashInPath) {
+        if (name == null) {
+            throw new IllegalArgumentException("Null name of parameter isn't allowed");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Null value of parameter isn't allowed");
+        }
+
+        Map<String, Object> params = new HashMap<>(4);
+        if (encodeSlashInPath) {
+            params.put(name, UriComponent.encode(value.toString(), UriComponent.PATH_SEGMENT, false));
+        } else {
+            params.put(name, value);
+        }
+        return resolveTemplates(params);
+    }
+
+    @Override
+    public UriBuilder resolveTemplateFromEncoded(String name, Object value) {
+        return resolveTemplate(name, value, false);
+    }
+
+    @Override
+    public UriBuilder resolveTemplates(Map<String, Object> templateValues) {
+        return resolveTemplates(templateValues, false);
+    }
+
+    @Override
+    public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws IllegalArgumentException {
+        if (templateValues == null) {
+            throw new IllegalArgumentException("Null map isn't allowed");
+        }
+        if (templateValues.containsKey(null)) {
+            throw new IllegalArgumentException("Null names in map aren't allowed");
+        }
+        if (templateValues.containsValue(null)) {
+            throw new IllegalArgumentException("Null values in map aren't allowed");
+        }
+
+        if (encodeSlashInPath) {
+            for (Map.Entry<String, Object> entry : templateValues.entrySet()) {
+                entry.setValue(UriComponent.encode(entry.getValue().toString(), UriComponent.PATH_SEGMENT, false));
+            }
+        }
+
+        UriBuilderImpl resolved = UriComponent.parseTemplate(
+                UriPattern.createUriWithValues(
+                        schema,
+                        userInfo,
+                        host,
+                        port,
+                        path.toString(),
+                        query.toString(),
+                        fragment,
+                        templateValues,
+                        false,
+                        true)
+                                                            );
+        this.schema = resolved.schema;
+        this.userInfo = resolved.userInfo;
+        this.host = resolved.host;
+        this.port = resolved.port;
+        this.path = new StringBuilder(resolved.path);
+        this.query = new StringBuilder(resolved.query);
+        this.fragment = resolved.fragment;
+        return this;
+    }
+
+    @Override
+    public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) {
+        return resolveTemplates(templateValues, false);
     }
 
 
@@ -632,6 +751,14 @@ public class UriBuilderImpl extends UriBuilder {
         }
 
         return this;
+    }
+
+    @Override
+    public UriBuilder uri(String uriTemplate) {
+        if (uriTemplate == null) {
+            throw new IllegalArgumentException("URI template is null");
+        }
+        return uri(URI.create(uriTemplate));
     }
 
 

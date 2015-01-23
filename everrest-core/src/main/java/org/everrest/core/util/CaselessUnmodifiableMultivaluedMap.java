@@ -20,22 +20,18 @@ import java.util.Set;
 /**
  * Case insensitive read-only MultivaluedMap.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMap<T> {
     private static final long serialVersionUID = -7195370974690531404L;
 
     /** Read only implementation of java.util.Map.Entry. */
-    class ReadOnlyEntryAdapter extends EntryAdapter {
+    static class ReadOnlyEntryAdapter<T> extends EntryAdapter<T> {
         public ReadOnlyEntryAdapter(Entry<CaselessStringWrapper, List<T>> entry) {
             super(entry);
         }
 
-        /**
-         * Value may not be updated via this method. UnsupportedOperationException
-         * will be throwing.
-         */
+        /** Value may not be updated via this method. UnsupportedOperationException will be throwing. */
         @Override
         public List<T> setValue(List<T> value) {
             throw new UnsupportedOperationException("setValue");
@@ -44,12 +40,10 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
 
     /** Read only set of map's entries. */
     class ReadOnlyEntrySet extends EntrySet {
-
         @Override
         public void clear() {
             throw new UnsupportedOperationException("clear");
         }
-
 
         @Override
         public Iterator<java.util.Map.Entry<String, List<T>>> iterator() {
@@ -63,7 +57,7 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
 
                 @Override
                 public Entry<String, List<T>> next() {
-                    return new ReadOnlyEntryAdapter(i.next());
+                    return new ReadOnlyEntryAdapter<>(i.next());
                 }
 
                 @Override
@@ -73,18 +67,15 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
             };
         }
 
-
         @Override
         public boolean remove(Object o) {
             throw new UnsupportedOperationException("remove");
         }
 
-
         @Override
         public boolean removeAll(Collection<?> c) {
             throw new UnsupportedOperationException("remove");
         }
-
 
         @Override
         public boolean retainAll(Collection<?> c) {
@@ -94,12 +85,10 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
 
     /** Read only set of map's keys. */
     class ReadOnlyKeySet extends KeySet {
-
         @Override
         public void clear() {
             throw new UnsupportedOperationException("clear");
         }
-
 
         @Override
         public Iterator<String> iterator() {
@@ -123,18 +112,15 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
             };
         }
 
-
         @Override
         public boolean remove(Object o) {
             throw new UnsupportedOperationException("remove");
         }
 
-
         @Override
         public boolean removeAll(Collection<?> c) {
             throw new UnsupportedOperationException("removeAll");
         }
-
 
         @Override
         public boolean retainAll(Collection<?> c) {
@@ -148,14 +134,13 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
         super();
     }
 
-    public CaselessUnmodifiableMultivaluedMap(int capasity) {
-        super(capasity);
+    public CaselessUnmodifiableMultivaluedMap(int capacity) {
+        super(capacity);
     }
 
     public CaselessUnmodifiableMultivaluedMap(Map<String, List<T>> m) {
         this(m.size());
-        for (Iterator<Entry<String, List<T>>> iterator = m.entrySet().iterator(); iterator.hasNext(); ) {
-            Entry<String, List<T>> e = iterator.next();
+        for (Entry<String, List<T>> e : m.entrySet()) {
             this.m.put(new CaselessStringWrapper(e.getKey()), Collections.unmodifiableList(e.getValue()));
         }
     }
@@ -228,6 +213,24 @@ public class CaselessUnmodifiableMultivaluedMap<T> extends CaselessMultivaluedMa
     @Override
     public List<T> remove(Object key) {
         throw new UnsupportedOperationException("remove");
+    }
+
+    /** Adding new values is not supported. */
+    @Override
+    public void addAll(String key, T... newValues) {
+        throw new UnsupportedOperationException("addAll");
+    }
+
+    /** Adding new values is not supported. */
+    @Override
+    public void addAll(String key, List<T> valueList) {
+        throw new UnsupportedOperationException("addAll");
+    }
+
+    /** Adding new values is not supported. */
+    @Override
+    public void addFirst(String key, T value) {
+        throw new UnsupportedOperationException("addFirst");
     }
 
     /** Unmodifiable collection of map's values. */

@@ -270,6 +270,12 @@ public class ContainerRequest implements GenericContainerRequest {
 
     }
 
+    @Override
+    public ResponseBuilder evaluatePreconditions() {
+        List<String> ifMatch = getRequestHeader(IF_MATCH);
+        return (ifMatch == null || ifMatch.isEmpty()) ? null : Response.status(Response.Status.PRECONDITION_FAILED);
+    }
+
 
     @Override
     public String getMethod() {
@@ -300,7 +306,7 @@ public class ContainerRequest implements GenericContainerRequest {
         if (acceptLanguage == null) {
             List<AcceptLanguage> l =
                     HeaderHelper.createAcceptedLanguageList(HeaderHelper.convertToString(getRequestHeader(ACCEPT_LANGUAGE)));
-            List<Locale> t = new ArrayList<Locale>(l.size());
+            List<Locale> t = new ArrayList<>(l.size());
             // extract Locales from AcceptLanguage
             for (AcceptLanguage al : l) {
                 t.add(al.getLocale());
@@ -333,7 +339,7 @@ public class ContainerRequest implements GenericContainerRequest {
     @Override
     public Map<String, Cookie> getCookies() {
         if (cookies == null) {
-            Map<String, Cookie> t = new HashMap<String, Cookie>();
+            Map<String, Cookie> t = new HashMap<>();
 
             for (String ch : getCookieHeaders()) {
                 List<Cookie> l = HeaderHelper.parseCookies(ch);
@@ -346,6 +352,18 @@ public class ContainerRequest implements GenericContainerRequest {
         }
 
         return cookies;
+    }
+
+    @Override
+    public Date getDate() {
+        String date = getRequestHeaders().getFirst(DATE);
+        return date == null ? null : HeaderHelper.parseDateHeader(date);
+    }
+
+    @Override
+    public int getLength() {
+        String length = getRequestHeaders().getFirst(CONTENT_LENGTH);
+        return length == null ? -1 : Integer.parseInt(length);
     }
 
 
@@ -372,6 +390,11 @@ public class ContainerRequest implements GenericContainerRequest {
     @Override
     public List<String> getRequestHeader(String name) {
         return httpHeaders.get(name);
+    }
+
+    @Override
+    public String getHeaderString(String name) {
+        return HeaderHelper.convertToString(getRequestHeader(name));
     }
 
 

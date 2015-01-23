@@ -14,26 +14,24 @@ import org.everrest.core.ExtMultivaluedMap;
 import org.everrest.core.impl.header.MediaTypeHelper;
 
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
+import javax.ws.rs.core.MultivaluedHashMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashMap<String, List<T>> implements
-                                                                                                    ExtMultivaluedMap<String, T> {
+public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends MultivaluedHashMap<String, T>
+        implements ExtMultivaluedMap<String, T> {
     private static final long serialVersionUID = 8930689464134153848L;
 
     /**
-     * Compare list of media types. Each list should be already sorted by
-     * {@link MediaTypeHelper#MEDIA_TYPE_COMPARATOR}. So it is enough to compare
-     * only last media types in the list. Last media types is the least precise.
+     * Compare list of media types. Each list should be already sorted by {@link MediaTypeHelper#MEDIA_TYPE_COMPARATOR}. So it is enough to
+     * compare only last media types in the list. Last media types is the least precise.
      */
     private static final Comparator<ResourceMethodDescriptor> RESOURCE_METHOD_COMPARATOR =
             new Comparator<ResourceMethodDescriptor>() {
@@ -62,38 +60,10 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
     public List<T> getList(String httpMethod) {
         List<T> l = get(httpMethod);
         if (l == null) {
-            l = new ArrayList<T>();
+            l = new LinkedList<>();
             put(httpMethod, l);
         }
         return l;
-    }
-
-
-    @Override
-    public void add(String httpMethod, T resourceMethod) {
-        if (resourceMethod == null) {
-            return;
-        }
-        List<T> l = getList(httpMethod);
-        l.add(resourceMethod);
-    }
-
-
-    @Override
-    public T getFirst(String httpMethod) {
-        List<T> l = getList(httpMethod);
-        return l != null && l.size() > 0 ? l.get(0) : null;
-    }
-
-
-    @Override
-    public void putSingle(String httpMethod, T resourceMethod) {
-        if (resourceMethod == null) {
-            return;
-        }
-        List<T> l = getList(httpMethod);
-        l.clear();
-        l.add(resourceMethod);
     }
 
     /** Sort each collections in map. */
@@ -109,7 +79,7 @@ public class ResourceMethodMap<T extends ResourceMethodDescriptor> extends HashM
      * @return collection of method names
      */
     public Collection<String> getAllow() {
-        List<String> allowed = new ArrayList<String>();
+        List<String> allowed = new LinkedList<>();
         for (Map.Entry<String, List<T>> e : entrySet()) {
             if (!e.getValue().isEmpty()) {
                 allowed.add(e.getKey());

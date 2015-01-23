@@ -138,7 +138,7 @@ public class ProviderBinder implements Providers {
             new ConcurrentHashMap<>();
 
     /** Context resolvers. */
-    protected final Map<Class<?>, MediaTypeMap<ObjectFactory<ProviderDescriptor>>> contextResolvers = new HashMap<>();
+    protected final ConcurrentMap<Class<?>, MediaTypeMap<ObjectFactory<ProviderDescriptor>>> contextResolvers = new ConcurrentHashMap<>();
 
     /** Request filters, see {@link RequestFilter}. */
     protected final UriPatternMap<ObjectFactory<FilterDescriptor>> requestFilters = new UriPatternMap<>();
@@ -459,17 +459,20 @@ public class ProviderBinder implements Providers {
                         throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
                     }
 
-                    Class<?> aclazz = (Class<?>)typeArguments[0];
-                    MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(aclazz);
+                    Class<?> clazz = (Class<?>)typeArguments[0];
+                    MediaTypeMap<ObjectFactory<ProviderDescriptor>> pm = contextResolvers.get(clazz);
 
                     if (pm == null) {
-                        pm = new MediaTypeMap<>();
-                        contextResolvers.put(aclazz, pm);
+                        MediaTypeMap<ObjectFactory<ProviderDescriptor>> newPm = new MediaTypeMap<>();
+                        pm = contextResolvers.putIfAbsent(clazz, newPm);
+                        if (pm == null) {
+                            pm = newPm;
+                        }
                     }
 
                     for (MediaType mime : contextResolverFactory.getObjectModel().produces()) {
                         if (pm.get(mime) != null) {
-                            throw new RuntimeException("ContextResolver for " + aclazz.getName() + " and media type " + mime
+                            throw new RuntimeException("ContextResolver for " + clazz.getName() + " and media type " + mime
                                                        + " already registered.");
                         } else {
                             pm.put(mime, contextResolverFactory);

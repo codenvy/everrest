@@ -57,8 +57,8 @@ public class ResponseImplTest {
     @Test
     public void testVariants() {
         List<Variant> vs = new ArrayList<>(3);
-        vs.add(new Variant(new MediaType("text", "xml"), null, null));
-        vs.add(new Variant(null, null, "KOI8-R"));
+        vs.add(new Variant(new MediaType("text", "xml"), (String)null, null));
+        vs.add(new Variant(null, (String)null, "KOI8-R"));
         vs.add(new Variant(null, new Locale("ru", "RU"), null));
         Response response = Response.ok().variants(vs).build();
         Assert.assertEquals("Accept,Accept-Language,Accept-Encoding", response.getMetadata().getFirst("vary"));
