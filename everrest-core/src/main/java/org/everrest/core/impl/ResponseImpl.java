@@ -120,7 +120,7 @@ public final class ResponseImpl extends Response {
     @Override
     public boolean hasEntity() {
         failIfClosed();
-        return false;
+        return entity != null;
     }
 
     @Override
@@ -561,11 +561,11 @@ public final class ResponseImpl extends Response {
 
         @Override
         public ResponseBuilder header(String name, Object value) {
-            if (HEADER_TO_ENUM.get(new CaselessStringWrapper(name)) != null) {
-                headers.putSingle(name, value);
+            if (value == null) {
+                headers.remove(name);
             } else {
-                if (value == null) {
-                    headers.remove(name);
+                if (HEADER_TO_ENUM.get(new CaselessStringWrapper(name)) != null) {
+                    headers.putSingle(name, value);
                 } else {
                     headers.add(name, value);
                 }

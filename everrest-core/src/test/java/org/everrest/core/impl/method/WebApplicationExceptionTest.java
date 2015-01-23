@@ -58,7 +58,7 @@ public class WebApplicationExceptionTest extends BaseTest {
         });
 
         Assert.assertEquals(500, launcher.service("GET", "/a/1", "", null, null, null).getStatus());
-        Assert.assertEquals(null, launcher.service("GET", "/a/1", "", null, null, null).getEntity());
+        Assert.assertEquals("HTTP 500 Internal Server Error", launcher.service("GET", "/a/1", "", null, null, null).getEntity());
 
         Assert.assertEquals(500, launcher.service("GET", "/a/0", "", null, null, null).getStatus());
         String entity = (String)launcher.service("GET", "/a/0", "", null, null, null).getEntity();
