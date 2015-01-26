@@ -96,7 +96,6 @@ public class EverrestConfigurationModule extends ServletModule {
             setConfigurationPropertyIfNotNull(configuration, EVERREST_NORMALIZE_URI, normalizeUrl);
             setConfigurationPropertyIfNotNull(configuration, METHOD_INVOKER_DECORATOR_FACTORY, methodInvokerDecoratorFactory);
             setConfigurationPropertyIfNotNull(configuration, "org.everrest.websocket.readtimeout", websocketReadTimeout);
-            System.err.println(configuration.getProperty(EVERREST_ASYNCHRONOUS));
             return configuration;
         }
 
