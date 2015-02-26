@@ -78,7 +78,7 @@
         <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-releases/</maven.releases.repo.url>
         <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
         <org.apache.tomcat.version>7.0.54</org.apache.tomcat.version>
-        <org.slf4j.version>1.7.7</org.slf4j.version>
+        <org.slf4j.version>1.7.6</org.slf4j.version>
     </properties>
     <dependencyManagement>
         <dependencies>
