@@ -191,9 +191,11 @@ public class ObjectBuilder {
                         case ARRAY_BOOLEAN:
                         case ARRAY_CHAR:
                         case ARRAY_STRING:
-                        case ARRAY_OBJECT:
                         case CLASS:
                             sourceCollection.add(createObjectKnownTypes(elementClass, v));
+                            break;
+                        case ARRAY_OBJECT:
+                            sourceCollection.add(createArray(elementClass, v));
                             break;
                         case COLLECTION:
                             sourceCollection.add(createCollection(elementClass, elementType, v));
@@ -310,9 +312,11 @@ public class ObjectBuilder {
                         case ARRAY_BOOLEAN:
                         case ARRAY_CHAR:
                         case ARRAY_STRING:
-                        case ARRAY_OBJECT:
                         case CLASS:
                             sourceMap.put(k, createObjectKnownTypes(valueClass, v));
+                            break;
+                        case ARRAY_OBJECT:
+                            sourceMap.put(k, createArray(valueClass, v));
                             break;
                         case COLLECTION:
                             sourceMap.put(k, createCollection(valueClass, valueType, v));
