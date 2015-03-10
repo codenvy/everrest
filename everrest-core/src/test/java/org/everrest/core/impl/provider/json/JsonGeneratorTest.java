@@ -12,6 +12,7 @@ package org.everrest.core.impl.provider.json;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -131,16 +132,22 @@ public class JsonGeneratorTest extends JsonTest {
         m.put("test", junitBook);
         mb.setHashMap((HashMap<String, Book>)m);
 
-        List<Book> l = new ArrayList<Book>();
-        l.add(junitBook);
-        l.add(csharpBook);
-        l.add(javaScriptBook);
+        Book[] books = new Book[3];
+        books[0] = junitBook;
+        books[1] = csharpBook;
+        books[2] = javaScriptBook;
 
         Map<String, List<Book>> hu = new HashMap<String, List<Book>>();
-        hu.put("1", l);
-        hu.put("2", l);
-        hu.put("3", l);
+        hu.put("1", Arrays.asList(books));
+        hu.put("2", Arrays.asList(books));
+        hu.put("3", Arrays.asList(books));
         mb.setMapList(hu);
+
+        Map<String, Book[]> arrayMap = new HashMap<String, Book[]>();
+        arrayMap.put("1", books);
+        arrayMap.put("2", books);
+        arrayMap.put("3", books);
+        mb.setMapArray(arrayMap);
 
         Map<String, String> str = new HashMap<String, String>();
         str.put("key1", "value1");
@@ -155,6 +162,9 @@ public class JsonGeneratorTest extends JsonTest {
         assertNotNull(jsonValue.getElement("mapList"));
         assertEquals("JUnit in Action",
                      jsonValue.getElement("mapList").getElement("3").getElements().next().getElement("title").getStringValue());
+        assertNotNull(jsonValue.getElement("mapArray"));
+        assertEquals("JUnit in Action",
+                     jsonValue.getElement("mapArray").getElement("3").getElements().next().getElement("title").getStringValue());
         // System.out.println(jsonValue);
     }
 

@@ -305,6 +305,18 @@ public class ObjectBuilderTest extends JsonTest {
         assertTrue(o.getMapList().get("JavaScript").equals(Arrays.asList(sourceCollection.get(2))));
     }
 
+    public void testMapMapArray() throws Exception {
+        JsonParser jsonParser = new JsonParser();
+        jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()
+                                                     .getResourceAsStream("MapTest.json")));
+        JsonValue jv = jsonParser.getJsonObject();
+        JavaMapBean o = ObjectBuilder.createObject(JavaMapBean.class, jv);
+
+        assertTrue(Arrays.equals(o.getMapArray().get("JUnit"), new Book[]{sourceCollection.get(0)}));
+        assertTrue(Arrays.equals(o.getMapArray().get("C#"), new Book[]{sourceCollection.get(1)}));
+        assertTrue(Arrays.equals(o.getMapArray().get("JavaScript"), new Book[]{sourceCollection.get(2)}));
+    }
+
     public void testMapMapMap() throws Exception {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader()

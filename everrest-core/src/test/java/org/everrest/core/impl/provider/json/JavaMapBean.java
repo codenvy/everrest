@@ -29,6 +29,8 @@ public class JavaMapBean {
     // --------------------------
     private Map<String, List<Book>> map_list;
 
+    private Map<String, Book[]> map_array;
+
     private Map<String, Map<String, Book>> map_map;
 
     public void setMapList(Map<String, List<Book>> hu) {
@@ -47,6 +49,16 @@ public class JavaMapBean {
 
     public Map<String, Map<String, Book>> getMapMap() {
         return map_map;
+    }
+
+    // --------------------------
+
+    public void setMapArray(Map<String, Book[]> hu) {
+        this.map_array = hu;
+    }
+
+    public Map<String, Book[]> getMapArray() {
+        return map_array;
     }
 
     // --------------------------
