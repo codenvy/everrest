@@ -411,7 +411,6 @@
                         <useReleaseProfile>false</useReleaseProfile>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <arguments>-Peverrest-release ${arguments}</arguments>
-                        <releaseProfiles>release</releaseProfiles>
                         <tagNameFormat>@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
