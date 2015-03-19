@@ -14,9 +14,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>maven-parent-pom</artifactId>
-        <groupId>com.codenvy</groupId>
-        <version>3.3.4</version>
+        <artifactId>oss-parent</artifactId>
+        <groupId>org.sonatype.oss</groupId>
+        <version>9</version>
         <relativePath />
     </parent>
     <groupId>org.everrest</groupId>
@@ -27,6 +27,12 @@
     <description>everREST is a project which provides a way to build RESTful applications
         using own complete implementation of JAX-RS specification (a.k.a JSR-311)</description>
     <url>https://github.com/codenvy/everrest</url>
+    <licenses>
+        <license>
+            <name>Eclipse Public License</name>
+            <url>http://www.eclipse.org/legal/epl-v10.html</url>
+        </license>
+    </licenses>
     <developers>
         <developer>
             <id>andrew00x</id>
@@ -37,13 +43,22 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>skabashnyuk</id>
+            <name>Sergey Kabashnyuk</name>
+            <email>ksmster@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
+    <prerequisites>
+        <maven>${maven.min.version}</maven>
+    </prerequisites>
     <modules>
         <module>everrest-test</module>
         <module>everrest-core</module>
         <module>everrest-groovy</module>
-        <module>everrest-httpclient</module>
-        <module>everrest-proxy</module>
         <module>everrest-integration/everrest-integration-exo</module>
         <module>everrest-integration/everrest-integration-picocontainer</module>
         <module>everrest-integration/everrest-integration-guice</module>
@@ -64,24 +79,56 @@
         <url>https://github.com/codenvy/everrest/</url>
     </scm>
     <properties>
+        <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
         <com.google.code.guice.version>3.0</com.google.code.guice.version>
         <commons-codec.version>1.6</commons-codec.version>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <commons-io.version>2.4</commons-io.version>
+        <gpg.useagent>true</gpg.useagent>
+        <groovy.version>1.7.6</groovy.version>
         <javax.annotation.version>1.0</javax.annotation.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.mail.version>1.4.4</javax.mail.version>
         <javax.servlet.version>3.0.1</javax.servlet.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
+        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
         <junit.version>4.11</junit.version>
-        <!-- Repositories URLs -->
-        <maven.releases.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-releases/</maven.releases.repo.url>
-        <maven.snapshots.repo.url>http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</maven.snapshots.repo.url>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.min.version>3.1.1</maven.min.version>
         <org.apache.tomcat.version>7.0.54</org.apache.tomcat.version>
         <org.slf4j.version>1.7.6</org.slf4j.version>
+        <org.springframework.version>3.0.3.RELEASE</org.springframework.version>
+        <version.dependency.plugin>2.10</version.dependency.plugin>
+        <version.enforcer.plugin>1.4</version.enforcer.plugin>
+        <version.gpg.plugin>1.5</version.gpg.plugin>
+        <version.javadoc.plugin>2.10.1</version.javadoc.plugin>
+        <version.sortpom.plugin>2.3.0</version.sortpom.plugin>
+        <version.source.plugin>2.4</version.source.plugin>
+        <version.war.plugin>2.5</version.war.plugin>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${ch.qos.logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${com.google.code.guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${com.google.code.guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-servlet</artifactId>
+                <version>${com.google.code.guice.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -91,6 +138,11 @@
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
                 <version>${commons-fileupload.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.annotation</groupId>
@@ -115,6 +167,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
                 <version>${javax.ws.rs.version}</version>
@@ -136,9 +193,14 @@
                 <version>${org.apache.tomcat.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-servlet-api</artifactId>
+                <version>${org.apache.tomcat.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
-                <version>1.7.6</version>
+                <version>${groovy.version}</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>ant</artifactId>
@@ -147,6 +209,10 @@
                     <exclusion>
                         <artifactId>ant-launcher</artifactId>
                         <groupId>org.apache.ant</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>junit</artifactId>
+                        <groupId>junit</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -167,6 +233,26 @@
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
+                <artifactId>everrest-integration-exo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.everrest</groupId>
+                <artifactId>everrest-integration-guice</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.everrest</groupId>
+                <artifactId>everrest-integration-picocontainer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.everrest</groupId>
+                <artifactId>everrest-integration-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.everrest</groupId>
                 <artifactId>everrest-proxy</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -181,15 +267,465 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.exoplatform.core</groupId>
+                <artifactId>exo.core.component.security.core</artifactId>
+                <version>2.4.4-GA</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>xpp3</artifactId>
+                        <groupId>xpp3</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-logging-api</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>exo.tool.framework.junit</artifactId>
+                        <groupId>org.exoplatform.tool</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.exoplatform.kernel</groupId>
+                <artifactId>exo.kernel.container</artifactId>
+                <version>2.3.4-GA</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>xpp3</artifactId>
+                        <groupId>xpp3</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-logging-api</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>exo.tool.framework.junit</artifactId>
+                        <groupId>org.exoplatform.tool</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.picocontainer</groupId>
+                <artifactId>picocontainer</artifactId>
+                <version>2.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.picocontainer.web</groupId>
+                <artifactId>picocontainer-web-core</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${org.slf4j.version}</version>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${org.springframework.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>picocontainer</groupId>
+                <artifactId>picocontainer</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>xpp3</groupId>
+                <artifactId>xpp3</artifactId>
+                <version>1.1.4c</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${version.enforcer.plugin}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.ceilfors.maven.plugin</groupId>
+                            <artifactId>enforcer-rules</artifactId>
+                            <version>1.2.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>animal-sniffer-enforcer-rule</artifactId>
+                            <version>1.14</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>extra-enforcer-rules</artifactId>
+                            <version>1.0-beta-3</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>com.google.code.sortpom</groupId>
+                    <artifactId>maven-sortpom-plugin</artifactId>
+                    <version>${version.sortpom.plugin}</version>
+                    <configuration>
+                        <expandEmptyElements>false</expandEmptyElements>
+                        <nrOfIndentSpace>4</nrOfIndentSpace>
+                        <createBackupFile>false</createBackupFile>
+                        <sortProperties>true</sortProperties>
+                        <sortDependencies>scope,groupId,artifactId</sortDependencies>
+                        <verifyFail>Stop</verifyFail>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${version.source.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Date>${maven.build.timestamp}</Date>
+                                <Implementation-URL>${project.url}</Implementation-URL>
+                                <SCM-URL>${project.scm.connection}</SCM-URL>
+                                <SCM-Revision>${buildNumber}</SCM-Revision>
+                                <Specification-Title>${product.name}</Specification-Title>
+                                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
+                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${version.javadoc.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Date>${maven.build.timestamp}</Date>
+                                <Implementation-URL>${project.url}</Implementation-URL>
+                                <SCM-URL>${project.scm.connection}</SCM-URL>
+                                <SCM-Revision>${buildNumber}</SCM-Revision>
+                                <Specification-Title>${product.name}</Specification-Title>
+                                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
+                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${version.dependency.plugin}</version>
+                    <configuration>
+                        <!-- Perfs improvements - PAR-191 -->
+                        <useJvmChmod>true</useJvmChmod>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${version.gpg.plugin}</version>
+                    <configuration>
+                        <passphrase>${gpg.passphrase}</passphrase>
+                        <useAgent>${gpg.useagent}</useAgent>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${version.war.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Date>${maven.build.timestamp}</Date>
+                                <Implementation-URL>${project.url}</Implementation-URL>
+                                <SCM-URL>${project.scm.connection}</SCM-URL>
+                                <SCM-Revision>${buildNumber}</SCM-Revision>
+                                <Specification-Title>${product.name}</Specification-Title>
+                                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
+                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>9.3.0.M2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${version.enforcer.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-java-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <message>To build this project JDK ${jdk.min.version} (or upper) is required. Please install it.</message>
+                                    <version>${jdk.min.version}</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-maven-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <message>To build this project Maven ${maven.min.version} (or upper) is required. Please install it.</message>
+                                    <version>${maven.min.version}</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>distribution-management-used</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireDepMgt>
+                                    <message>You are trying to use artifacts that are not in the list of allowed artifacts included in
+                                        dependencyManagement in maven-depmgt-pom or have different version.</message>
+                                    <checkVersion>true</checkVersion>
+                                    <ignoreScopes>
+                                        <ignoreScope>runtime</ignoreScope>
+                                    </ignoreScopes>
+                                </requireDepMgt>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>no-distribution-management-at-all</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <banDistributionManagement>
+                                    <allowRepository>true</allowRepository>
+                                    <allowSnapshotRepository>true</allowSnapshotRepository>
+                                    <allowSite>true</allowSite>
+                                </banDistributionManagement>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>dependency</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <DependencyConvergence />
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ban-bad-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <searchTransitive>true</searchTransitive>
+                                    <excludes>
+                                        <exclude>commons-logging:commons-logging</exclude>
+                                        <exclude>commons-logging:commons-logging-api</exclude>
+                                        <exclude>concurrent:concurrent</exclude>
+                                        <exclude>com.google.code.findbugs:annotations</exclude>
+                                        <exclude>javax.servlet:servlet-api</exclude>
+                                        <exclude>javax.xml:jaxrpc-api</exclude>
+                                        <exclude>javax.xml.soap:saaj-api</exclude>
+                                        <exclude>javax.xml.stream:stax-api</exclude>
+                                        <exclude>jboss:jboss-logging-spi</exclude>
+                                        <exclude>org.apache.xalan:serializer</exclude>
+                                        <exclude>org.apache.xalan:xalan</exclude>
+                                        <exclude>org.slf4j:slf4j-nop</exclude>
+                                        <exclude>org.slf4j:slf4j-jdk14</exclude>
+                                        <exclude>org.slf4j:slf4j-log4j12</exclude>
+                                        <exclude>org.slf4j:slf4j-log4j13</exclude>
+                                        <exclude>stax:stax-api</exclude>
+                                        <exclude>sun-jaxb:jaxb-api</exclude>
+                                        <exclude>trove:trove</exclude>
+                                        <exclude>woodstox:wstx-lgpl</exclude>
+                                        <exclude>xml-apis:xml-apis</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.sortpom</groupId>
+                <artifactId>maven-sortpom-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${version.source.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${version.javadoc.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${version.dependency.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>analyze</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <configuration>
+                            <failOnWarning>true</failOnWarning>
+                            <ignoreNonCompile>true</ignoreNonCompile>
+                            <outputXML>true</outputXML>
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>org.picocontainer.web:picocontainer-web-core:jar</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>com.google.inject.extensions:guice-servlet:jar</ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>codenvy-release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${version.gpg.plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

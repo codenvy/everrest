@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.everrest.sample.groovy
 
+import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
@@ -17,6 +18,8 @@ import javax.ws.rs.core.UriInfo
 
 @Path('books')
 class BookService {
+
+    @Inject
     BookStorage bookStorage
 
     @Path('{id}')
