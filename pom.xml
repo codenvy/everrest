@@ -78,6 +78,16 @@
         <tag>HEAD</tag>
         <url>https://github.com/codenvy/everrest/</url>
     </scm>
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
     <properties>
         <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
         <com.google.code.guice.version>3.0</com.google.code.guice.version>
