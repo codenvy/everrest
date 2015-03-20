@@ -1,5 +1,7 @@
 # Overview
 
+[![Build Status](https://travis-ci.org/codenvy/everrest.svg)](https://travis-ci.org/codenvy/everrest)
+
 EverRest project it is RESTful application framework along with complete JAX-RS (JSR-311) implementation. It is portable between different Servlet containers.
   - Easy integrate with [Spring Integration](https://github.com/codenvy/everrest/wiki/Spring Integration) ,  [Picocontainer Integration](https://github.com/codenvy/everrest/wiki/Picocontainer Integration) , [Guice Integration](https://github.com/codenvy/everrest/wiki/Guice Integration).
   - [WADL](https://github.com/codenvy/everrest/wiki/WADL)
