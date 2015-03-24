@@ -1,7 +1,6 @@
 language: java
 jdk:
 - oraclejdk7
-- oraclejdk8
 env:
   global:
   - secure: eW7mdNs8qxaNIW58lXIlJYBotD070W8h6nSgyHvzbWA/HdAa2gF9qyMqScTXCmxBB4bfj/jwpVhjoqqKL0Mn8XYuczb0ioxoJlaQ8MPyY72DPO9f8Ak9F5ihqX4549r4roUwK+ioQjbWvQtPisxlwWcQPEiHLz7ueT+Z4dpstCo=
@@ -9,4 +8,5 @@ env:
 
 # Actions to perform after the build.
 after_success:
-  - ./after_success.sh
+  - echo "<settings><servers><server><id>ossrh</id><username>\${env.OSSRH_USER}</username><password>\${env.OSSRH_PASS}</password></server></servers></settings>" > ~/settings.xml
+  - mvn deploy --settings ~/settings.xml
