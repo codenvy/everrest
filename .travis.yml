@@ -7,10 +7,15 @@ env:
   - secure: eW7mdNs8qxaNIW58lXIlJYBotD070W8h6nSgyHvzbWA/HdAa2gF9qyMqScTXCmxBB4bfj/jwpVhjoqqKL0Mn8XYuczb0ioxoJlaQ8MPyY72DPO9f8Ak9F5ihqX4549r4roUwK+ioQjbWvQtPisxlwWcQPEiHLz7ueT+Z4dpstCo=
   - secure: XFLJ+IbShd7P6b+V/cjk5Tlpc31pKSuIjQK9WaOBFblmBIilh2YjVZE3WgZrcbfgSKY2prxVTlefOYgydprCvZSYeVWbtvKW84iGl6HopgDCcTwahGyV4iXYUE6ZkAu2cUwroJwDWObUvlnEE2edD3Ng1ZCO8VzKhOi+qCMSqL0=
 
-# Actions to perform after the build.
 after_success:
-  - echo "<settings><servers><server><id>sonatype-nexus-snapshots</id><username>\${env.CI_DEPLOY_USERNAME}</username><password>\${env.CI_DEPLOY_PASSWORD}</password></server><server><id>release</id><username>\${env.OSSRH_USER}</username><password>\${env.OSSRH_PASS}</password></server></servers></settings>" > ~/settings.xml
-  - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn deploy --settings ~/settings.xml; fi
+  - .buildscript/deploy_snapshot.sh
+
+branches:
+  except:
+    - gh-pages
+
+sudo: false
+
 cache:
   directories:
     - $HOME/.m2
