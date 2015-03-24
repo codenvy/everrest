@@ -45,6 +45,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -78,13 +79,15 @@ public class ResourceDescriptorTest {
         try {
             new AbstractResourceDescriptorImpl(Resource5.class);
             Assert.fail(
-                    "Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
+                    "Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces " +
+                    "annotation");
         } catch (RuntimeException e) {
         }
         try {
             new AbstractResourceDescriptorImpl(Resource6.class);
             Assert.fail(
-                    "Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces annotation");
+                    "Should be failed here, resource has two methods that have tha same HTTP method, path, consumes and produces " +
+                    "annotation");
         } catch (RuntimeException e) {
         }
         try {
@@ -403,7 +406,7 @@ public class ResourceDescriptorTest {
     @Test
     public void testFields() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(SampleResource.class);
-        List<FieldInjector> fields = resource.getFieldInjectors();
+        List<FieldInjector> fields = filterFiledInjectors(resource.getFieldInjectors());
         Assert.assertEquals(1, fields.size());
         FieldInjector f = fields.get(0);
         Assert.assertEquals(String.class, f.getParameterClass());
@@ -656,7 +659,20 @@ public class ResourceDescriptorTest {
     @Test
     public void testInitializeFieldSuperClass() {
         AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(EndResource.class);
-        Assert.assertEquals(6, resource.getFieldInjectors().size());
+        Assert.assertEquals(6, filterFiledInjectors(resource.getFieldInjectors()).size());
+    }
+
+    /**
+     * Filter fields inserted by jacoco framework during instrumentation
+     */
+    public static List<FieldInjector> filterFiledInjectors(List<FieldInjector> initialList) {
+        List<FieldInjector> result = new ArrayList<>(initialList.size());
+        for (FieldInjector fieldInjector : initialList) {
+            if (!fieldInjector.getName().startsWith("$jacocoData")) {
+                result.add(fieldInjector);
+            }
+        }
+        return result;
     }
 
     public abstract static class AbstractResource {

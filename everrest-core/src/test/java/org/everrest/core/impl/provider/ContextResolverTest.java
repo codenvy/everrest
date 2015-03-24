@@ -10,8 +10,14 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
+import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.BaseTest;
+import org.everrest.core.impl.ContainerRequest;
+import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.tools.EmptyInputStream;
+import org.everrest.core.tools.SimpleSecurityContext;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
+import java.net.URI;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -27,6 +34,19 @@ import java.util.Set;
  * @author andrew00x
  */
 public class ContextResolverTest extends BaseTest {
+
+    @Before
+    public void setUpConext() throws Exception {
+        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
+                new ContainerRequest("", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(),
+                                     new SimpleSecurityContext(false)), null, ProviderBinder.getInstance()));
+    }
+
+    @After
+    public void cleanupContext() throws Exception {
+        ApplicationContextImpl.setCurrent(null);
+    }
+
 
     @Provider
     @Produces("text/plain")

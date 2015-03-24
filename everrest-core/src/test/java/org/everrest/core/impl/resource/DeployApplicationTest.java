@@ -15,10 +15,18 @@ import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.ResponseFilter;
+import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.BaseTest;
+import org.everrest.core.impl.ContainerRequest;
+import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.tools.EmptyInputStream;
+import org.everrest.core.tools.SimpleSecurityContext;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -26,6 +34,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +42,20 @@ import java.util.Set;
  * @author andrew00x
  */
 public class DeployApplicationTest extends BaseTest {
+
+
+    @Before
+    public void setUpConext() throws Exception {
+        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
+                new ContainerRequest("", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(),
+                                     new SimpleSecurityContext(false)), null, ProviderBinder.getInstance()));
+    }
+
+    @After
+    public void cleanupContext() throws Exception {
+        ApplicationContextImpl.setCurrent(null);
+    }
+
 
     public static class Application1 extends javax.ws.rs.core.Application {
         private final Set<Class<?>> classes    = new HashSet<>();
