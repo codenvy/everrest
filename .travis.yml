@@ -9,7 +9,6 @@ env:
 
 # Actions to perform after the build.
 after_success:
-  - echo "<settings><servers><server><id>ossrh</id><username>\${env.OSSRH_USER}</username><password>\${env.OSSRH_PASS}</password></server></servers></settings>" > ~/settings.xml
-   - >
-        test "${TRAVIS_PULL_REQUEST}" = 'false' &&
-        test "${TRAVIS_JDK_VERSION}" = 'oraclejdk7' && mvn  deploy -X -q --settings ~/settings.xml
+  - wget http://roboconf.net/resources/build/settings.xml
+  - if [[ $TRAVIS_JDK_VERSION == "oraclejdk7" ]]; then mvn clean deploy -q --settings settings.xml; fi
+
