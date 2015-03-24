@@ -8,7 +8,7 @@ env:
   - secure: XFLJ+IbShd7P6b+V/cjk5Tlpc31pKSuIjQK9WaOBFblmBIilh2YjVZE3WgZrcbfgSKY2prxVTlefOYgydprCvZSYeVWbtvKW84iGl6HopgDCcTwahGyV4iXYUE6ZkAu2cUwroJwDWObUvlnEE2edD3Ng1ZCO8VzKhOi+qCMSqL0=
 
 after_success:
-  - .buildscript/deploy_snapshot.sh
+  - .build/deploy_snapshot.sh
 
 branches:
   except:
