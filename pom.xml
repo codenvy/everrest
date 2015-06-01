@@ -58,6 +58,7 @@
     <modules>
         <module>everrest-test</module>
         <module>everrest-core</module>
+        <module>everrest-bean-validation</module>
         <module>everrest-groovy</module>
         <module>everrest-integration/everrest-integration-exo</module>
         <module>everrest-integration/everrest-integration-picocontainer</module>
