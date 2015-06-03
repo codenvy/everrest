@@ -101,7 +101,7 @@
         <javax.mail.version>1.4.4</javax.mail.version>
         <javax.servlet.version>3.0.1</javax.servlet.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
-        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
+        <jdk.min.version>1.8</jdk.min.version>
         <junit.version>4.11</junit.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
@@ -490,6 +490,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${version.javadoc.plugin}</version>
                     <configuration>
+                        <additionalparam>-Xdoclint:none</additionalparam>
                         <archive>
                             <manifest>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
