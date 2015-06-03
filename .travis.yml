@@ -1,6 +1,5 @@
 language: java
 jdk:
-- oraclejdk7
 - oraclejdk8
 env:
   global:
@@ -10,9 +9,11 @@ env:
 after_success:
   - .build/deploy_snapshot.sh
 
+
 branches:
-  except:
-    - gh-pages
+  only:
+    - master
+
 
 sudo: false
 
