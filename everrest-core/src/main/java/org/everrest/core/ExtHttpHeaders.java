@@ -155,4 +155,18 @@ public interface ExtHttpHeaders extends HttpHeaders {
      * content, for example: 'Error-Message'.
      */
     public static final String JAXRS_BODY_PROVIDED = "JAXRS-Body-Provided";
+
+    /**
+     * Forwarded Host header. See
+     * <a href='http://tools.ietf.org/html/rfc7239#section-5.3'>
+     * Forwarded HTTP Extension sec. 5.3 Forwarded Host</a>.
+     */
+    public static final String FORWARDED_HOST = "X-Forwarded-Host";
+
+    /**
+     * Forwarded Protocol header. See
+     * <a href='http://tools.ietf.org/html/rfc7239#section-5.4'>
+     * Forwarded HTTP Extension sec. 5.4 Forwarded Proto</a>.
+     */
+    public static final String FORWARDED_PROTO = "X-Forwarded-Proto";
 }

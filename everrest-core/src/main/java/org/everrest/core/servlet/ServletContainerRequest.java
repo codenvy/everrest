@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.everrest.core.servlet;
 
+import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
@@ -19,7 +20,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Enumeration;
 
@@ -77,15 +81,7 @@ public final class ServletContainerRequest extends ContainerRequest {
      */
     private static URI getRequestUri(HttpServletRequest servletRequest) {
         StringBuilder uri = new StringBuilder();
-        String scheme = servletRequest.getScheme();
-        uri.append(scheme);
-        uri.append("://");
-        uri.append(servletRequest.getServerName());
-        int port = servletRequest.getServerPort();
-        if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
-            uri.append(':');
-            uri.append(port);
-        }
+        appendSchemaHostPort(uri, servletRequest);
         uri.append(servletRequest.getRequestURI());
         String queryString = servletRequest.getQueryString();
         if (queryString != null) {
@@ -105,19 +101,76 @@ public final class ServletContainerRequest extends ContainerRequest {
      */
     private static URI getBaseUri(HttpServletRequest servletRequest) {
         StringBuilder uri = new StringBuilder();
-        String scheme = servletRequest.getScheme();
-        uri.append(scheme);
-        uri.append("://");
-        uri.append(servletRequest.getServerName());
-        int port = servletRequest.getServerPort();
-        if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
-            uri.append(':');
-            uri.append(port);
-        }
+        appendSchemaHostPort(uri, servletRequest);
         uri.append(servletRequest.getContextPath());
         uri.append(servletRequest.getServletPath());
         //System.out.println("BASE URI : " + uri);
         return URI.create(uri.toString());
+    }
+    
+    /**
+     * Get the effective host information for the request. This takes forwarding
+     * headers into account, according to the standard: http://tools.ietf.org/html/rfc7239
+     * 
+     * @param uri
+     * @param servletRequest
+     */
+    private static void appendSchemaHostPort(StringBuilder uri, HttpServletRequest servletRequest) {
+        // Pick the protocol
+        // TODO leave this to the RemoteIpValve in server.xml
+        String scheme;
+        // scheme = servletRequest.getHeader(ExtHttpHeaders.FORWARDED_PROTO);
+        // if (scheme == null) {
+        scheme = servletRequest.getScheme();
+        // }
+        // If the host is forwarded, validate it before use
+        URL forwardedHostUrl = null;
+        String fwdHost = servletRequest.getHeader(ExtHttpHeaders.FORWARDED_HOST);
+        if (fwdHost != null) {
+            // According to the standard, a host is defined this way:
+            // Host = uri-host [ ":" port ]
+            String[] fwdHostParts = fwdHost.split(":");
+            if (fwdHostParts.length <= 2) {
+                try {
+                    String fwdHostName = fwdHostParts[0];
+                    int fwdPort = -1;
+                    // If a port is specified for the forwarded host, make sure
+                    // it is non-negative
+                    boolean portOk = true;
+                    if (fwdHostParts.length == 2) {
+                        fwdPort = Integer.parseInt(fwdHostParts[1]);
+                        portOk = (fwdPort >= 0);
+                    }
+                    // Use the standard URI to verify the host details
+                    if (portOk) {
+                        forwardedHostUrl = new URI(scheme, null, fwdHostName, fwdPort, null, null, null).toURL();
+                    }
+                } catch (NumberFormatException | URISyntaxException | MalformedURLException e) {
+                }
+            }
+        }
+        // Forwarded?
+        String hostName = null;
+        int port = -1;
+        // The host information
+        if (forwardedHostUrl == null) {
+            hostName = servletRequest.getServerName();
+            port = servletRequest.getServerPort();
+        } else {
+            hostName = forwardedHostUrl.getHost();
+            port = forwardedHostUrl.getPort();
+            if (port < 0) {
+                port = forwardedHostUrl.getDefaultPort();
+            }
+        }
+        // Build the final result
+        uri.append(scheme);
+        uri.append("://");
+        uri.append(hostName);
+        if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
+            uri.append(':');
+            uri.append(port);
+        }
     }
 
     /**
