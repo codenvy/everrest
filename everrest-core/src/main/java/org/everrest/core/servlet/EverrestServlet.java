@@ -56,7 +56,7 @@ public class EverrestServlet extends HttpServlet {
         env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
         env.put(ErrorPages.class, errorPages);
         try {
-            ServletContainerRequest request = new ServletContainerRequest(httpRequest);
+            ServletContainerRequest request = ServletContainerRequest.create(httpRequest);
             ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
             processor.process(request, response, env);
         } catch (IOException ioe) {

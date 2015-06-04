@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.servlet;
 
-import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
@@ -22,41 +21,51 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.Principal;
 import java.util.Enumeration;
 
+import static org.everrest.core.ExtHttpHeaders.FORWARDED_HOST;
+
 /** @author andrew00x */
 public final class ServletContainerRequest extends ContainerRequest {
-    /**
-     * @param req
-     *         HttpServletRequest
-     */
-    public ServletContainerRequest(final HttpServletRequest req) {
-        super(getMethod(req), getRequestUri(req), getBaseUri(req), getEntityStream(req), getHeader(req),
-              new SecurityContext() {
-                  @Override
-                  public Principal getUserPrincipal() {
-                      return req.getUserPrincipal();
-                  }
 
-                  @Override
-                  public boolean isUserInRole(String role) {
-                      return req.isUserInRole(role);
-                  }
+    public static ServletContainerRequest create(final HttpServletRequest req) {
+        final URL forwardedUrl = getForwardedUrl(req);
+        String host;
+        int port;
+        if (forwardedUrl == null) {
+            host = req.getServerName();
+            port = req.getServerPort();
+        } else {
+            host = forwardedUrl.getHost();
+            port = forwardedUrl.getPort();
+            if (port < 0) {
+                port = forwardedUrl.getDefaultPort();
+            }
+        }
 
-                  @Override
-                  public boolean isSecure() {
-                      return req.isSecure();
-                  }
+        final String scheme = getScheme(req);
+        final StringBuilder baseUriBuilder = uriBuilder(scheme, host, port);
+        baseUriBuilder.append(req.getContextPath());
+        baseUriBuilder.append(req.getServletPath());
+        final URI baseUri = URI.create(baseUriBuilder.toString());
 
-                  @Override
-                  public String getAuthenticationScheme() {
-                      return req.getAuthType();
-                  }
-              }
-             );
+        final StringBuilder requestUriBuilder = uriBuilder(scheme, host, port);
+        requestUriBuilder.append(req.getRequestURI());
+        final String queryString = req.getQueryString();
+        if (queryString != null) {
+            requestUriBuilder.append('?');
+            requestUriBuilder.append(queryString);
+        }
+        final URI requestUri = URI.create(requestUriBuilder.toString());
+        return new ServletContainerRequest(getMethod(req), requestUri, baseUri, getEntityStream(req), getHeaders(req), getSecurityContext(req));
+    }
+
+    private ServletContainerRequest(String method, URI requestUri, URI baseUri, InputStream entityStream,
+                                    MultivaluedMap<String, String> httpHeaders, SecurityContext securityContext) {
+        super(method, requestUri, baseUri, entityStream, httpHeaders, securityContext);
     }
 
     /**
@@ -71,106 +80,55 @@ public final class ServletContainerRequest extends ContainerRequest {
         return servletRequest.getMethod();
     }
 
-    /**
-     * Constructs full request URI from {@link HttpServletRequest}, URI includes
-     * query string and fragment.
-     *
-     * @param servletRequest
-     *         {@link HttpServletRequest}
-     * @return newly created URI
-     */
-    private static URI getRequestUri(HttpServletRequest servletRequest) {
-        StringBuilder uri = new StringBuilder();
-        appendSchemaHostPort(uri, servletRequest);
-        uri.append(servletRequest.getRequestURI());
-        String queryString = servletRequest.getQueryString();
-        if (queryString != null) {
-            uri.append('?');
-            uri.append(queryString);
-        }
-        //System.out.println("REQ URI :  " + uri);
-        return URI.create(uri.toString());
+    private static String getScheme(HttpServletRequest servletRequest) {
+        return servletRequest.getScheme();
     }
 
-    /**
-     * Constructs base request URI from {@link HttpServletRequest} .
-     *
-     * @param servletRequest
-     *         {@link HttpServletRequest}
-     * @return newly created URI
-     */
-    private static URI getBaseUri(HttpServletRequest servletRequest) {
-        StringBuilder uri = new StringBuilder();
-        appendSchemaHostPort(uri, servletRequest);
-        uri.append(servletRequest.getContextPath());
-        uri.append(servletRequest.getServletPath());
-        //System.out.println("BASE URI : " + uri);
-        return URI.create(uri.toString());
+    private static URL getForwardedUrl(HttpServletRequest servletRequest) {
+        final String scheme = getScheme(servletRequest);
+        final String forwardedHostAndPort = servletRequest.getHeader(FORWARDED_HOST);
+        if (forwardedHostAndPort != null && !forwardedHostAndPort.isEmpty()) {
+            final String host = getForwardedHost(forwardedHostAndPort);
+            final int port = getForwardedPort(forwardedHostAndPort);
+            try {
+                // Use the standard URI to verify the host details
+                return new URI(scheme, null, host, port, null, null, null).toURL();
+            } catch (URISyntaxException | MalformedURLException e) {
+                return null;
+            }
+        }
+        return null;
     }
-    
-    /**
-     * Get the effective host information for the request. This takes forwarding
-     * headers into account, according to the standard: http://tools.ietf.org/html/rfc7239
-     * 
-     * @param uri
-     * @param servletRequest
-     */
-    private static void appendSchemaHostPort(StringBuilder uri, HttpServletRequest servletRequest) {
-        // Pick the protocol
-        // TODO leave this to the RemoteIpValve in server.xml
-        String scheme;
-        // scheme = servletRequest.getHeader(ExtHttpHeaders.FORWARDED_PROTO);
-        // if (scheme == null) {
-        scheme = servletRequest.getScheme();
-        // }
-        // If the host is forwarded, validate it before use
-        URL forwardedHostUrl = null;
-        String fwdHost = servletRequest.getHeader(ExtHttpHeaders.FORWARDED_HOST);
-        if (fwdHost != null) {
-            // According to the standard, a host is defined this way:
-            // Host = uri-host [ ":" port ]
-            String[] fwdHostParts = fwdHost.split(":");
-            if (fwdHostParts.length <= 2) {
-                try {
-                    String fwdHostName = fwdHostParts[0];
-                    int fwdPort = -1;
-                    // If a port is specified for the forwarded host, make sure
-                    // it is non-negative
-                    boolean portOk = true;
-                    if (fwdHostParts.length == 2) {
-                        fwdPort = Integer.parseInt(fwdHostParts[1]);
-                        portOk = (fwdPort >= 0);
-                    }
-                    // Use the standard URI to verify the host details
-                    if (portOk) {
-                        forwardedHostUrl = new URI(scheme, null, fwdHostName, fwdPort, null, null, null).toURL();
-                    }
-                } catch (NumberFormatException | URISyntaxException | MalformedURLException e) {
-                }
+
+    public static String getForwardedHost(String forwardedHostAndPort) {
+        final int colonIndex = forwardedHostAndPort.indexOf(':');
+        if (colonIndex < 0) {
+            return forwardedHostAndPort;
+        }
+        return forwardedHostAndPort.substring(0, colonIndex);
+    }
+
+    public static int getForwardedPort(String forwardedHostAndPort) {
+        final int colonIndex = forwardedHostAndPort.indexOf(':');
+        if (colonIndex >= 0) {
+            try {
+                return Integer.parseInt(forwardedHostAndPort.substring(colonIndex + 1, forwardedHostAndPort.length()));
+            } catch (NumberFormatException ignored) {
             }
         }
-        // Forwarded?
-        String hostName = null;
-        int port = -1;
-        // The host information
-        if (forwardedHostUrl == null) {
-            hostName = servletRequest.getServerName();
-            port = servletRequest.getServerPort();
-        } else {
-            hostName = forwardedHostUrl.getHost();
-            port = forwardedHostUrl.getPort();
-            if (port < 0) {
-                port = forwardedHostUrl.getDefaultPort();
-            }
-        }
-        // Build the final result
-        uri.append(scheme);
-        uri.append("://");
-        uri.append(hostName);
+        return -1;
+    }
+
+    private static StringBuilder uriBuilder(String scheme, String host, int port) {
+        final StringBuilder uriBuilder = new StringBuilder();
+        uriBuilder.append(scheme);
+        uriBuilder.append("://");
+        uriBuilder.append(host);
         if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
-            uri.append(':');
-            uri.append(port);
+            uriBuilder.append(':');
+            uriBuilder.append(port);
         }
+        return uriBuilder;
     }
 
     /**
@@ -180,7 +138,7 @@ public final class ServletContainerRequest extends ContainerRequest {
      *         {@link HttpServletRequest}
      * @return request headers
      */
-    private static MultivaluedMap<String, String> getHeader(HttpServletRequest servletRequest) {
+    private static MultivaluedMap<String, String> getHeaders(HttpServletRequest servletRequest) {
         MultivaluedMap<String, String> h = new MultivaluedMapImpl();
         Enumeration<String> headerNames = servletRequest.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -206,5 +164,29 @@ public final class ServletContainerRequest extends ContainerRequest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static SecurityContext getSecurityContext(final HttpServletRequest servletRequest) {
+        return new SecurityContext() {
+            @Override
+            public Principal getUserPrincipal() {
+                return servletRequest.getUserPrincipal();
+            }
+
+            @Override
+            public boolean isUserInRole(String role) {
+                return servletRequest.isUserInRole(role);
+            }
+
+            @Override
+            public boolean isSecure() {
+                return servletRequest.isSecure();
+            }
+
+            @Override
+            public String getAuthenticationScheme() {
+                return servletRequest.getAuthType();
+            }
+        };
     }
 }

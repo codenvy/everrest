@@ -63,7 +63,7 @@ public class EverrestExoServlet extends AbstractHttpServlet {
 
         try {
             EnvironmentContext.setCurrent(env);
-            ServletContainerRequest request = new ServletContainerRequest(req);
+            ServletContainerRequest request = ServletContainerRequest.create(req);
             ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(res));
             requestHandler.handleRequest(request, response);
         } catch (IOException ioe) {

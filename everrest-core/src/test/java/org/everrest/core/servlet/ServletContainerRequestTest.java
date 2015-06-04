@@ -94,7 +94,7 @@ public class ServletContainerRequestTest {
     public void testSimpleRequest() {
         // A simple HTTP request
         MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest(null, null);
-        ServletContainerRequest req = new ServletContainerRequest(httpReq);
+        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
         // Validate the fields
         assertEquals(TEST_BASE_URI, req.getBaseUri().toString());
         assertEquals(TEST_REQUEST_URI, req.getRequestUri().toString());
@@ -104,7 +104,7 @@ public class ServletContainerRequestTest {
     public void testInvalidForwardedHost() {
         // A simple HTTP request
         MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest("a b c", null);
-        ServletContainerRequest req = new ServletContainerRequest(httpReq);
+        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
         // Validate the fields
         assertEquals(TEST_BASE_URI, req.getBaseUri().toString());
         assertEquals(TEST_REQUEST_URI, req.getRequestUri().toString());
@@ -114,7 +114,7 @@ public class ServletContainerRequestTest {
     public void testForwardedHost() {
         // A simple HTTP request
         MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest("other.myhost.com", null);
-        ServletContainerRequest req = new ServletContainerRequest(httpReq);
+        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
         // Validate the fields
         assertEquals(TEST_SCHEME + "other.myhost.com" + TEST_BASE_PATH, req.getBaseUri().toString());
         assertEquals(TEST_SCHEME + "other.myhost.com" + TEST_FULL_PATH, req.getRequestUri().toString());
@@ -124,7 +124,7 @@ public class ServletContainerRequestTest {
     public void testForwardedHostWithPort() {
         // A simple HTTP request
         MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest("other.myhost.com:777", null);
-        ServletContainerRequest req = new ServletContainerRequest(httpReq);
+        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
         // Validate the fields
         assertEquals(TEST_SCHEME + "other.myhost.com:777" + TEST_BASE_PATH, req.getBaseUri().toString());
         assertEquals(TEST_SCHEME + "other.myhost.com:777" + TEST_FULL_PATH, req.getRequestUri().toString());
