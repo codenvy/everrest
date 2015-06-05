@@ -41,7 +41,7 @@ public class ServletContainerRequestTest {
 
     private static final String TEST_BASE_PATH = TEST_CONTEXT_PATH + TEST_SERVLET_PATH;
     private static final String TEST_FULL_PATH = TEST_BASE_PATH + TEST_SUBPATH;
-    
+
     private static final String TEST_BASE_URI = TEST_SCHEME + TEST_HOST + TEST_BASE_PATH;
     private static final String TEST_REQUEST_URI = TEST_BASE_URI + TEST_SUBPATH;
 
@@ -92,18 +92,27 @@ public class ServletContainerRequestTest {
 
     @Test
     public void testSimpleRequest() {
-        // A simple HTTP request
-        MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest(null, null);
-        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
-        // Validate the fields
-        assertEquals(TEST_BASE_URI, req.getBaseUri().toString());
-        assertEquals(TEST_REQUEST_URI, req.getRequestUri().toString());
+        assertIgnoredForwardedHost(null);
     }
 
     @Test
-    public void testInvalidForwardedHost() {
+    public void testInvalidForwardedHost1() {
+        assertIgnoredForwardedHost("a b c");
+    }
+
+    @Test
+    public void testInvalidForwardedHost2() {
+        assertIgnoredForwardedHost("myhost.com:8877:200");
+    }
+
+    @Test
+    public void testInvalidForwardedHost3() {
+        assertIgnoredForwardedHost("myhost..com");
+    }
+
+    private static void assertIgnoredForwardedHost(String forwardedHostHeader) {
         // A simple HTTP request
-        MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest("a b c", null);
+        MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest(forwardedHostHeader, null);
         ServletContainerRequest req = ServletContainerRequest.create(httpReq);
         // Validate the fields
         assertEquals(TEST_BASE_URI, req.getBaseUri().toString());

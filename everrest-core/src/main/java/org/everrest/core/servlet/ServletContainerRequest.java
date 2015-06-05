@@ -10,9 +10,11 @@
  *******************************************************************************/
 package org.everrest.core.servlet;
 
+import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.everrest.core.util.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
@@ -26,12 +28,13 @@ import java.net.URL;
 import java.security.Principal;
 import java.util.Enumeration;
 
-import static org.everrest.core.ExtHttpHeaders.FORWARDED_HOST;
-
 /** @author andrew00x */
 public final class ServletContainerRequest extends ContainerRequest {
+    
+    private static final Logger LOG = Logger.getLogger(ServletContainerRequest.class);
 
     public static ServletContainerRequest create(final HttpServletRequest req) {
+        // If the URL is forwarded, obtain the forwarding information
         final URL forwardedUrl = getForwardedUrl(req);
         String host;
         int port;
@@ -44,15 +47,31 @@ public final class ServletContainerRequest extends ContainerRequest {
             if (port < 0) {
                 port = forwardedUrl.getDefaultPort();
             }
+            if (LOG.isInfoEnabled()) {
+                LOG.info("Assuming forwarded URL: " + forwardedUrl);
+            }
         }
 
+        // The common URI prefix for both baseUri and requestUri
+        final StringBuilder commonUriBuilder = new StringBuilder();
         final String scheme = getScheme(req);
-        final StringBuilder baseUriBuilder = uriBuilder(scheme, host, port);
+        commonUriBuilder.append(scheme);
+        commonUriBuilder.append("://");
+        commonUriBuilder.append(host);
+        if (!(port < 0 || (port == 80 && "http".equals(scheme)) || (port == 443 && "https".equals(scheme)))) {
+            commonUriBuilder.append(':');
+            commonUriBuilder.append(port);
+        }
+        final String commonUriPrefix = commonUriBuilder.toString();
+        
+        // The Base URI - up to the servlet path
+        final StringBuilder baseUriBuilder = new StringBuilder(commonUriPrefix);
         baseUriBuilder.append(req.getContextPath());
         baseUriBuilder.append(req.getServletPath());
         final URI baseUri = URI.create(baseUriBuilder.toString());
 
-        final StringBuilder requestUriBuilder = uriBuilder(scheme, host, port);
+        // The RequestURI - everything in the URL
+        final StringBuilder requestUriBuilder = new StringBuilder(commonUriPrefix);
         requestUriBuilder.append(req.getRequestURI());
         final String queryString = req.getQueryString();
         if (queryString != null) {
@@ -84,51 +103,48 @@ public final class ServletContainerRequest extends ContainerRequest {
         return servletRequest.getScheme();
     }
 
+    /**
+     * Get the URL that is forwarded using the standard X-Forwarded-Host header.
+     * 
+     * @param servletRequest
+     * @return The URL of the forwarded host. If the header is missing or invalid, null is returned.
+     */
     private static URL getForwardedUrl(HttpServletRequest servletRequest) {
-        final String scheme = getScheme(servletRequest);
         final String forwardedHostAndPort = servletRequest.getHeader(FORWARDED_HOST);
-        if (forwardedHostAndPort != null && !forwardedHostAndPort.isEmpty()) {
-            final String host = getForwardedHost(forwardedHostAndPort);
-            final int port = getForwardedPort(forwardedHostAndPort);
+        if (forwardedHostAndPort == null || forwardedHostAndPort.isEmpty()) {
+            return null;
+        }
+        URL url = parseForwardedHostHeader(forwardedHostAndPort, servletRequest);
+        if (url == null && LOG.isWarnEnabled()) {
+            LOG.warn("Ignoring invalid " + ExtHttpHeaders.FORWARDED_HOST + ": " + forwardedHostAndPort);
+        }
+        return url;
+    }
+
+    /** Parse according to IETF standard for Host field: http://tools.ietf.org/html/rfc7230#section-5.4 */
+    private static URL parseForwardedHostHeader(String forwardedHostAndPort, HttpServletRequest servletRequest) {
+        final String[] parts = forwardedHostAndPort.split(":");
+        if (parts.length > 2) {
+            return null;
+        }
+        int fwdPort = -1;
+        if (parts.length == 2) {
             try {
-                // Use the standard URI to verify the host details
-                return new URI(scheme, null, host, port, null, null, null).toURL();
-            } catch (URISyntaxException | MalformedURLException e) {
+                fwdPort = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+            if (fwdPort < 0) {
                 return null;
             }
         }
+        final String fwdHost = parts[0];
+        final String scheme = getScheme(servletRequest);
+        try {
+            return new URI(scheme, null, fwdHost, fwdPort, null, null, null).toURL();
+        } catch (URISyntaxException | MalformedURLException e) {
+        }
         return null;
-    }
-
-    public static String getForwardedHost(String forwardedHostAndPort) {
-        final int colonIndex = forwardedHostAndPort.indexOf(':');
-        if (colonIndex < 0) {
-            return forwardedHostAndPort;
-        }
-        return forwardedHostAndPort.substring(0, colonIndex);
-    }
-
-    public static int getForwardedPort(String forwardedHostAndPort) {
-        final int colonIndex = forwardedHostAndPort.indexOf(':');
-        if (colonIndex >= 0) {
-            try {
-                return Integer.parseInt(forwardedHostAndPort.substring(colonIndex + 1, forwardedHostAndPort.length()));
-            } catch (NumberFormatException ignored) {
-            }
-        }
-        return -1;
-    }
-
-    private static StringBuilder uriBuilder(String scheme, String host, int port) {
-        final StringBuilder uriBuilder = new StringBuilder();
-        uriBuilder.append(scheme);
-        uriBuilder.append("://");
-        uriBuilder.append(host);
-        if (!(port == 80 || (port == 443 && "https".equals(scheme)))) {
-            uriBuilder.append(':');
-            uriBuilder.append(port);
-        }
-        return uriBuilder;
     }
 
     /**
