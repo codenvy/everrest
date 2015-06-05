@@ -30,7 +30,7 @@ import java.util.Enumeration;
 
 /** @author andrew00x */
 public final class ServletContainerRequest extends ContainerRequest {
-    
+
     private static final Logger LOG = Logger.getLogger(ServletContainerRequest.class);
 
     public static ServletContainerRequest create(final HttpServletRequest req) {
@@ -47,9 +47,7 @@ public final class ServletContainerRequest extends ContainerRequest {
             if (port < 0) {
                 port = forwardedUrl.getDefaultPort();
             }
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Assuming forwarded URL: " + forwardedUrl);
-            }
+            LOG.debug("Assuming forwarded URL: {}", forwardedUrl);
         }
 
         // The common URI prefix for both baseUri and requestUri
@@ -63,7 +61,7 @@ public final class ServletContainerRequest extends ContainerRequest {
             commonUriBuilder.append(port);
         }
         final String commonUriPrefix = commonUriBuilder.toString();
-        
+
         // The Base URI - up to the servlet path
         final StringBuilder baseUriBuilder = new StringBuilder(commonUriPrefix);
         baseUriBuilder.append(req.getContextPath());
@@ -79,7 +77,8 @@ public final class ServletContainerRequest extends ContainerRequest {
             requestUriBuilder.append(queryString);
         }
         final URI requestUri = URI.create(requestUriBuilder.toString());
-        return new ServletContainerRequest(getMethod(req), requestUri, baseUri, getEntityStream(req), getHeaders(req), getSecurityContext(req));
+        return new ServletContainerRequest(getMethod(req), requestUri, baseUri, getEntityStream(req), getHeaders(req),
+                                           getSecurityContext(req));
     }
 
     private ServletContainerRequest(String method, URI requestUri, URI baseUri, InputStream entityStream,
@@ -105,7 +104,7 @@ public final class ServletContainerRequest extends ContainerRequest {
 
     /**
      * Get the URL that is forwarded using the standard X-Forwarded-Host header.
-     * 
+     *
      * @param servletRequest
      * @return The URL of the forwarded host. If the header is missing or invalid, null is returned.
      */
@@ -143,6 +142,7 @@ public final class ServletContainerRequest extends ContainerRequest {
         try {
             return new URI(scheme, null, fwdHost, fwdPort, null, null, null).toURL();
         } catch (URISyntaxException | MalformedURLException e) {
+            LOG.debug(e.getLocalizedMessage());
         }
         return null;
     }
