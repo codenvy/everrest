@@ -73,7 +73,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <tasks unless="maven.test.skip">
                                 <echo>***** Creating Access Policy for tests *****</echo>
                                 <makeurl file="${settings.localRepository}" property="localRepositoryURL" />
                                 <makeurl file="${project.build.outputDirectory}" property="outputDirectoryURL" />
