@@ -1,14 +1,6 @@
 language: java
 jdk:
 - oraclejdk8
-env:
-  global:
-  - secure: eW7mdNs8qxaNIW58lXIlJYBotD070W8h6nSgyHvzbWA/HdAa2gF9qyMqScTXCmxBB4bfj/jwpVhjoqqKL0Mn8XYuczb0ioxoJlaQ8MPyY72DPO9f8Ak9F5ihqX4549r4roUwK+ioQjbWvQtPisxlwWcQPEiHLz7ueT+Z4dpstCo=
-  - secure: XFLJ+IbShd7P6b+V/cjk5Tlpc31pKSuIjQK9WaOBFblmBIilh2YjVZE3WgZrcbfgSKY2prxVTlefOYgydprCvZSYeVWbtvKW84iGl6HopgDCcTwahGyV4iXYUE6ZkAu2cUwroJwDWObUvlnEE2edD3Ng1ZCO8VzKhOi+qCMSqL0=
-
-after_success:
-  - .build/deploy_snapshot.sh
-
 
 branches:
   only:
