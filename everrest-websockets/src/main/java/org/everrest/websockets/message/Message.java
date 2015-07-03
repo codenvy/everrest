@@ -13,8 +13,7 @@ package org.everrest.websockets.message;
 /**
  * Base class for input and output messages.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public abstract class Message {
     private String uuid;

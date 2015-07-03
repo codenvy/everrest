@@ -10,19 +10,18 @@
  *******************************************************************************/
 package org.everrest.websockets.message;
 
+import javax.websocket.Encoder;
+import javax.websocket.EndpointConfig;
+
 /**
- * Thrown by {@link MessageConverter} when reading or writing message is failed.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
-@SuppressWarnings("serial")
-public class MessageConversionException extends Exception {
-    public MessageConversionException(String message) {
-        super(message);
+public abstract class BaseTextEncoder<T> implements Encoder.Text<T> {
+    @Override
+    public void init(EndpointConfig config) {
     }
 
-    public MessageConversionException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public void destroy() {
     }
 }

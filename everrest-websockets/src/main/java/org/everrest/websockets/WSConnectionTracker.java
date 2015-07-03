@@ -10,24 +10,40 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
-import org.apache.catalina.websocket.Constants;
+import org.everrest.core.util.Logger;
 
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.io.IOException;
+
+import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
 
 /**
  * Close web socket connections when HTTP session to which these connections associated is going to be invalidated.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class WSConnectionTracker implements HttpSessionListener {
+    private static final Logger LOG = Logger.getLogger(WSConnectionTracker.class);
+
     @Override
     public void sessionCreated(HttpSessionEvent se) {
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        WSConnectionContext.closeAll(se.getSession().getId(), Constants.STATUS_CLOSE_NORMAL, "Http session destroyed");
+        final String destroyedSessionId = se.getSession().getId();
+        for (WSConnectionImpl wsConnection : WSConnectionContext.connections.values()) {
+            final HttpSession httpSession = wsConnection.getHttpSession();
+            if (httpSession != null && destroyedSessionId.equals(httpSession.getId())) {
+                try {
+                    wsConnection.close(NORMAL_CLOSURE.getCode(), "Http session destroyed");
+                } catch (IOException e) {
+                    LOG.warn(String.format("Error occurs while try to close web-socket connection %s. %s", wsConnection, e.getMessage()),
+                             e);
+                }
+            }
+        }
     }
 }

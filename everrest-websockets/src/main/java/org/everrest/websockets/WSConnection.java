@@ -10,18 +10,18 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
-import org.everrest.websockets.message.MessageConversionException;
 import org.everrest.websockets.message.OutputMessage;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.EncodeException;
+import javax.websocket.Session;
 import java.io.IOException;
 import java.util.Collection;
 
 /**
  * Web socket connection abstraction.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public interface WSConnection {
     /**
@@ -37,6 +37,8 @@ public interface WSConnection {
      * @return HTTP session associated to this connection
      */
     HttpSession getHttpSession();
+
+    Session getWsSession();
 
     /**
      * Subscribe this connection to specified channel.
@@ -108,12 +110,12 @@ public interface WSConnection {
      *
      * @param output
      *         output message
-     * @throws MessageConversionException
+     * @throws EncodeException
      *         if message cannot be serialized
      * @throws IOException
      *         if any i/o error occurs when try to send message to client
      */
-    void sendMessage(OutputMessage output) throws MessageConversionException, IOException;
+    void sendMessage(OutputMessage output) throws EncodeException, IOException;
 
     /**
      * Register new WSMessageReceiver for this connection.
@@ -130,7 +132,6 @@ public interface WSConnection {
      *         message receiver
      */
     void removeMessageReceiver(WSMessageReceiver messageReceiver);
-
 
     /**
      * Returns the object bound with the specified name in this connection, or
@@ -154,7 +155,6 @@ public interface WSConnection {
      */
     public void setAttribute(String name, Object value);
 
-
     /**
      * Removes the object bound with the specified name from this connection. If
      * the connection does not have an object bound with the specified name, this
@@ -165,6 +165,4 @@ public interface WSConnection {
      *         the name of the object to remove from this connection
      */
     public void removeAttribute(String name);
-
-
 }

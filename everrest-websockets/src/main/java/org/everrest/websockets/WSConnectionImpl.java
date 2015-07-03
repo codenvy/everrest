@@ -10,124 +10,103 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
-import org.apache.catalina.websocket.Constants;
-import org.apache.catalina.websocket.MessageInbound;
-import org.apache.catalina.websocket.WsOutbound;
-import org.everrest.websockets.message.MessageConversionException;
-import org.everrest.websockets.message.MessageConverter;
+import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.websockets.message.MessageSender;
 import org.everrest.websockets.message.OutputMessage;
-import org.everrest.websockets.message.RESTfulInputMessage;
+import org.everrest.websockets.message.RestInputMessage;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.CloseReason;
+import javax.websocket.DecodeException;
+import javax.websocket.EncodeException;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.MessageHandler;
+import javax.websocket.Session;
+import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Receives text messages over websocket connection and notify all registered WSMessageReceivers. This implementation
- * does not support binary messages. If binary message received then connection will be closed with error status and
- * then UnsupportedOperationException will be thrown.
- *
- * @author andrew00x
- */
-public class WSConnectionImpl extends MessageInbound implements WSConnection {
+import static javax.websocket.CloseReason.CloseCodes.getCloseCode;
+import static org.everrest.websockets.ServerContainerInitializeListener.EVERREST_PROCESSOR_ATTRIBUTE;
+import static org.everrest.websockets.ServerContainerInitializeListener.EXECUTOR_ATTRIBUTE;
+import static org.everrest.websockets.ServerContainerInitializeListener.HTTP_SESSION_ATTRIBUTE;
+import static org.everrest.websockets.ServerContainerInitializeListener.SECURITY_CONTEXT;
+
+public class WSConnectionImpl extends Endpoint implements WSConnection {
     private static final AtomicLong counter = new AtomicLong(1);
-    private static final Charset    UTF8_CS = Charset.forName("UTF-8");
 
     private final long id = counter.getAndIncrement();
-    private final HttpSession             httpSession;
-    private final MessageConverter        messageConverter;
     private final List<WSMessageReceiver> messageReceivers;
     private final Set<String>             channels;
-    private final Set<String>             readOnlyChannels;
-    private final AtomicBoolean connected   = new AtomicBoolean(false);
-    private       int           closeStatus = 0;
-    private final Map<String, Object> attributes;
-    private int readTimeout = -1; // StreamInbound.getReadTimeout()
+    private final Map<String, Object>     attributes;
 
-    WSConnectionImpl(HttpSession httpSession, MessageConverter messageConverter) {
-        this.httpSession = httpSession;
-        this.messageConverter = messageConverter;
+    private Session       wsSession;
+    private HttpSession   httpSession;
+    private CloseReason   closeReason;
+    private MessageSender messageSender;
+
+    public WSConnectionImpl() {
         this.messageReceivers = new CopyOnWriteArrayList<>();
         this.channels = new CopyOnWriteArraySet<>();
-        this.readOnlyChannels = Collections.unmodifiableSet(channels);
         this.attributes = new HashMap<>();
     }
 
-    public void setReadTimeout(int readTimeout) {
-        if (isConnected()) {
-            throw new IllegalStateException("Connection is already established. ");
-        }
-        this.readTimeout = readTimeout;
-    }
-
     @Override
-    public int getReadTimeout() {
-        return readTimeout;
-    }
-
-    //
-
-    @Override
-    protected void onBinaryMessage(ByteBuffer message) throws IOException {
-        if (connected.compareAndSet(true, false)) {
-            getWsOutbound().close(Constants.STATUS_UNEXPECTED_DATA_TYPE, UTF8_CS.encode("Binary messages is not supported. "));
-        }
-        throw new UnsupportedOperationException("Binary messages is not supported. ");
-    }
-
-    @Override
-    protected void onTextMessage(CharBuffer message) throws IOException {
-        RESTfulInputMessage input = null;
-        MessageConversionException error = null;
-        try {
-            input = messageConverter.fromString(message.toString(), RESTfulInputMessage.class);
-        } catch (MessageConversionException e) {
-            error = e;
-        }
-
-        if (error != null) {
-            for (WSMessageReceiver receiver : messageReceivers) {
-                receiver.onError(error);
+    public void onOpen(Session session, EndpointConfig config) {
+        wsSession = session;
+        messageSender = new MessageSender(session);
+        final Map<String, Object> userProperties = config.getUserProperties();
+        httpSession = (HttpSession)userProperties.get(HTTP_SESSION_ATTRIBUTE);
+        final WS2RESTAdapter restAdapter =
+                new WS2RESTAdapter(this,
+                                   (SecurityContext)userProperties.get(SECURITY_CONTEXT),
+                                   (EverrestProcessor)userProperties.get(EVERREST_PROCESSOR_ATTRIBUTE),
+                                   (Executor)userProperties.get(EXECUTOR_ATTRIBUTE));
+        messageReceivers.add(restAdapter);
+        wsSession.addMessageHandler(RestInputMessage.class, new MessageHandler.Whole<RestInputMessage>() {
+            @Override
+            public void onMessage(RestInputMessage message) {
+                for (WSMessageReceiver receiver : messageReceivers) {
+                    receiver.onMessage(message);
+                }
             }
-        } else {
-            for (WSMessageReceiver receiver : messageReceivers) {
-                receiver.onMessage(input);
-            }
-        }
-    }
+        });
 
-    @Override
-    protected void onOpen(WsOutbound outbound) {
-        // Notify connection listeners about this connection is ready to use.
         for (WSConnectionListener connectionListener : WSConnectionContext.connectionListeners) {
             connectionListener.onOpen(this);
         }
-        connected.compareAndSet(false, true);
+
+        WSConnectionContext.connections.put(getId(), this);
     }
 
     @Override
-    protected void onClose(int status) {
-        connected.compareAndSet(true, false);
-        closeStatus = status;
-        // Notify connection listeners about this connection is closed.
+    public void onClose(Session session, CloseReason closeReason) {
+        this.closeReason = closeReason;
         for (WSConnectionListener connectionListener : WSConnectionContext.connectionListeners) {
             connectionListener.onClose(this);
         }
+        super.onClose(session, closeReason);
     }
 
-    //
+
+    @Override
+    public void onError(Session session, Throwable thr) {
+        if (thr instanceof DecodeException) {
+            for (WSMessageReceiver receiver : messageReceivers) {
+                receiver.onError((DecodeException)thr);
+            }
+        }
+        super.onError(session, thr);
+    }
 
     @Override
     public Long getId() {
@@ -137,6 +116,11 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
     @Override
     public HttpSession getHttpSession() {
         return httpSession;
+    }
+
+    @Override
+    public Session getWsSession() {
+        return wsSession;
     }
 
     @Override
@@ -157,39 +141,43 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
 
     @Override
     public Collection<String> getChannels() {
-        return readOnlyChannels;
+        return channels;
     }
 
     @Override
     public boolean isConnected() {
-        return connected.get();
-    }
-
-    @Override
-    public int getCloseStatus() {
-        return closeStatus;
+        return wsSession != null && wsSession.isOpen();
     }
 
     @Override
     public void close() throws IOException {
-        if (connected.compareAndSet(true, false)) {
-            getWsOutbound().close(Constants.STATUS_CLOSE_NORMAL, null);
+        if (isConnected()) {
+            wsSession.close();
         }
     }
 
     @Override
     public void close(int status, String message) throws IOException {
-        if (connected.compareAndSet(true, false)) {
-            getWsOutbound().close(status, message == null ? null : UTF8_CS.encode(message));
+        if (isConnected()) {
+            wsSession.close(new CloseReason(getCloseCode(status), message));
         }
     }
 
     @Override
-    public void sendMessage(OutputMessage output) throws MessageConversionException, IOException {
-        final CharBuffer message = CharBuffer.wrap(messageConverter.toString(output));
-        final WsOutbound out = getWsOutbound();
-        out.writeTextMessage(message);
-        out.flush();
+    public int getCloseStatus() {
+        return closeReason == null ? 0 : closeReason.getCloseCode().getCode();
+    }
+
+    @Override
+    public void sendMessage(OutputMessage output) throws EncodeException, IOException {
+        checkIsConnected();
+        messageSender.send(output);
+    }
+
+    private void checkIsConnected() {
+        if (!isConnected()) {
+            throw new IllegalStateException("Unable send message because the WebSocket connection has been closed");
+        }
     }
 
     @Override
@@ -200,15 +188,6 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
     @Override
     public void removeMessageReceiver(WSMessageReceiver messageReceiver) {
         messageReceivers.remove(messageReceiver);
-    }
-
-    @Override
-    public String toString() {
-        return "WSConnectionImpl{" +
-               "id=" + id +
-               ", httpSession='" + httpSession.getId() + '\'' +
-               ", channels=" + channels +
-               '}';
     }
 
     @Override
@@ -224,5 +203,17 @@ public class WSConnectionImpl extends MessageInbound implements WSConnection {
     @Override
     public void removeAttribute(String name) {
         attributes.remove(name);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder().append("WSConnectionImpl{")
+                                              .append("id=").append(id)
+                                              .append(", wsSession=").append(wsSession.getId());
+        if (httpSession != null) {
+            sb.append(", httpSession=").append(httpSession.getId());
+        }
+        sb.append(", channels=").append(channels).append('}');
+        return sb.toString();
     }
 }

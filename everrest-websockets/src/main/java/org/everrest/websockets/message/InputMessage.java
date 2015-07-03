@@ -13,8 +13,7 @@ package org.everrest.websockets.message;
 /**
  * Input message.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class InputMessage extends Message {
 }

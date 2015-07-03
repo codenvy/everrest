@@ -92,7 +92,7 @@
     <properties>
         <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
         <com.google.code.guice.version>3.0</com.google.code.guice.version>
-        <commons-codec.version>1.6</commons-codec.version>
+        <com.google.guava.version>18.0</com.google.guava.version>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <commons-io.version>2.4</commons-io.version>
         <gpg.useagent>true</gpg.useagent>
@@ -101,13 +101,13 @@
         <javax.inject.version>1</javax.inject.version>
         <javax.mail.version>1.4.4</javax.mail.version>
         <javax.servlet.version>3.0.1</javax.servlet.version>
+        <javax.websocket.api.version>1.1</javax.websocket.api.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
         <jdk.min.version>1.8</jdk.min.version>
         <junit.version>4.11</junit.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.min.version>3.1.1</maven.min.version>
-        <org.apache.tomcat.version>7.0.54</org.apache.tomcat.version>
         <org.slf4j.version>1.7.6</org.slf4j.version>
         <org.springframework.version>3.0.3.RELEASE</org.springframework.version>
         <version.buildhelper.plugin>1.9.1</version.buildhelper.plugin>
@@ -131,6 +131,11 @@
                 <version>${ch.qos.logback.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${com.google.guava.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>${com.google.code.guice.version}</version>
@@ -144,11 +149,6 @@
                 <groupId>com.google.inject.extensions</groupId>
                 <artifactId>guice-servlet</artifactId>
                 <version>${com.google.code.guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>${commons-codec.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
@@ -197,21 +197,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-catalina</artifactId>
-                <version>${org.apache.tomcat.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-coyote</artifactId>
-                <version>${org.apache.tomcat.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-servlet-api</artifactId>
-                <version>${org.apache.tomcat.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
@@ -397,6 +382,12 @@
                 <groupId>xpp3</groupId>
                 <artifactId>xpp3</artifactId>
                 <version>1.1.4c</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.websocket</groupId>
+                <artifactId>javax.websocket-api</artifactId>
+                <version>${javax.websocket.api.version}</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

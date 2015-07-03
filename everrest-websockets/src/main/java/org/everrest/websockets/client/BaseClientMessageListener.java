@@ -14,8 +14,7 @@ package org.everrest.websockets.client;
  * Base implementation of ClientMessageListener. Implemented methods do nothing. Extend this class instead implement
  * ClientMessageListener if need just few of methods declared in ClientMessageListener.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class BaseClientMessageListener implements ClientMessageListener {
     @Override

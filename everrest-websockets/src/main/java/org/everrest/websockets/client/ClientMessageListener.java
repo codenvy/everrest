@@ -14,8 +14,7 @@ package org.everrest.websockets.client;
  * Implementation of this interface passed to WSClient. After open connection to remote server listener notified about
  * incoming messages from server.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public interface ClientMessageListener {
     /**

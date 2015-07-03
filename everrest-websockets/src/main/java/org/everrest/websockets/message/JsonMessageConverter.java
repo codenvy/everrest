@@ -11,45 +11,32 @@
 package org.everrest.websockets.message;
 
 import org.everrest.core.impl.provider.json.JsonException;
-import org.everrest.core.impl.provider.json.JsonGenerator;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
-import org.everrest.core.impl.provider.json.ObjectBuilder;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import static org.everrest.core.impl.provider.json.JsonGenerator.createJsonObject;
+import static org.everrest.core.impl.provider.json.ObjectBuilder.createObject;
+
 /**
- * Implementation of MessageConverter that supports JSON messages.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
-public class JsonMessageConverter implements MessageConverter {
-    @Override
-    public <T extends Message> T fromString(String message, Class<T> clazz) throws MessageConversionException {
-        try {
-            final JsonParser parser = new JsonParser();
-            parser.parse(new StringReader(message));
-            final JsonValue json = parser.getJsonObject();
-            return ObjectBuilder.createObject(clazz, json);
-        } catch (JsonException e) {
-            throw new MessageConversionException(e.getMessage(), e);
-        }
+public class JsonMessageConverter {
+    public <T extends Message> T fromString(String message, Class<T> clazz) throws JsonException {
+        final JsonParser parser = new JsonParser();
+        parser.parse(new StringReader(message));
+        final JsonValue json = parser.getJsonObject();
+        return createObject(clazz, json);
     }
 
-    @Override
-    public String toString(Message output) throws MessageConversionException {
-        try {
-            final JsonValue jsonOutput = JsonGenerator.createJsonObject(output);
-            final StringWriter writer = new StringWriter();
-            final JsonWriter jsonWriter = new JsonWriter(writer);
-            jsonOutput.writeTo(jsonWriter);
-            jsonWriter.flush();
-            return writer.toString();
-        } catch (JsonException e) {
-            throw new MessageConversionException(e.getMessage(), e);
-        }
+    public String toString(Message output) throws JsonException {
+        final JsonValue jsonOutput = createJsonObject(output);
+        final StringWriter writer = new StringWriter();
+        final JsonWriter jsonWriter = new JsonWriter(writer);
+        jsonOutput.writeTo(jsonWriter);
+        return writer.toString();
     }
 }

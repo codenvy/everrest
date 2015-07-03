@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
-import org.apache.catalina.websocket.Constants;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
@@ -21,12 +20,13 @@ import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.util.Logger;
 import org.everrest.websockets.message.InputMessage;
-import org.everrest.websockets.message.MessageConversionException;
 import org.everrest.websockets.message.OutputMessage;
 import org.everrest.websockets.message.Pair;
-import org.everrest.websockets.message.RESTfulInputMessage;
-import org.everrest.websockets.message.RESTfulOutputMessage;
+import org.everrest.websockets.message.RestInputMessage;
+import org.everrest.websockets.message.RestOutputMessage;
 
+import javax.websocket.DecodeException;
+import javax.websocket.EncodeException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import java.io.ByteArrayInputStream;
@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+
+import static javax.websocket.CloseReason.CloseCodes.VIOLATED_POLICY;
 
 /**
  * @author andrew00x
@@ -63,26 +65,19 @@ class WS2RESTAdapter implements WSMessageReceiver {
 
     @Override
     public void onMessage(final InputMessage input) {
-        // See method onTextMessage(CharBuffer) in class WSConnectionImpl.
-        if (!(input instanceof RESTfulInputMessage)) {
+        if (!(input instanceof RestInputMessage)) {
             throw new IllegalArgumentException("Invalid input message. ");
         }
-        final RESTfulInputMessage request = (RESTfulInputMessage)input;
+        final RestInputMessage request = (RestInputMessage)input;
         final MultivaluedMap<String, String> headers = Pair.toMap(request.getHeaders());
         final String messageType = headers.getFirst("x-everrest-websocket-message-type");
         if ("ping".equalsIgnoreCase(messageType)) {
-            // At the moment is no JavaScript API to send ping message from client side.
-            final RESTfulOutputMessage pong = newOutputMessage(request);
-            // Copy body from ping request.
-            pong.setBody(request.getBody());
-            pong.setResponseCode(200);
-            pong.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "pong")});
-            doSendMessage(pong);
+            sendPongMessage(request);
             return;
         }
         if ("subscribe-channel".equalsIgnoreCase(messageType) || "unsubscribe-channel".equalsIgnoreCase(messageType)) {
             final String channel = parseSubscriptionMessage(input);
-            final RESTfulOutputMessage response = newOutputMessage(request);
+            final RestOutputMessage response = newOutputMessage(request);
             // Send the same body as in request.
             response.setBody(request.getBody());
             response.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", messageType)});
@@ -107,7 +102,7 @@ class WS2RESTAdapter implements WSMessageReceiver {
         }
         if (inProgress.contains(uuid)) {
             // Re-send accept response if client tries send message with the same id
-            final RESTfulOutputMessage response = newOutputMessage(request);
+            final RestOutputMessage response = newOutputMessage(request);
             response.setResponseCode(202);
             doSendMessage(response);
         }
@@ -133,7 +128,7 @@ class WS2RESTAdapter implements WSMessageReceiver {
                         // Always know content length since we use ByteArrayInputStream.
                         headers.putSingle("content-length", Integer.toString(data.available()));
                     }
-                    final RESTfulOutputMessage response = newOutputMessage(request);
+                    final RestOutputMessage response = newOutputMessage(request);
                     final ContainerRequest internalRequest = new ContainerRequest(request.getMethod(),
                                                                                   requestUri,
                                                                                   BASE_URI,
@@ -153,26 +148,34 @@ class WS2RESTAdapter implements WSMessageReceiver {
             }
         });
         // send accept response
-        final RESTfulOutputMessage restOutputMessage = newOutputMessage(request);
+        final RestOutputMessage restOutputMessage = newOutputMessage(request);
         restOutputMessage.setResponseCode(202);
         inProgress.add(uuid);
         doSendMessage(restOutputMessage);
     }
 
+    private void sendPongMessage(RestInputMessage pingMessage) {
+        final RestOutputMessage pong = newOutputMessage(pingMessage);
+        pong.setBody(pingMessage.getBody());
+        pong.setResponseCode(200);
+        pong.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "pong")});
+        doSendMessage(pong);
+    }
+
     @Override
     public void onError(Exception error) {
         LOG.error(error.getMessage(), error);
-        if (error instanceof MessageConversionException) {
+        if (error instanceof DecodeException || error instanceof EncodeException) {
             try {
-                connection.close(Constants.STATUS_POLICY_VIOLATION, error.getMessage());
+                connection.close(VIOLATED_POLICY.getCode(), error.getMessage());
             } catch (IOException e) {
                 LOG.error(e.getMessage(), e);
             }
         }
     }
 
-    private RESTfulOutputMessage newOutputMessage(RESTfulInputMessage input) {
-        final RESTfulOutputMessage output = new RESTfulOutputMessage();
+    private RestOutputMessage newOutputMessage(RestInputMessage input) {
+        final RestOutputMessage output = new RestOutputMessage();
         output.setUuid(input.getUuid());
         output.setMethod(input.getMethod());
         output.setPath(input.getPath());
@@ -183,7 +186,7 @@ class WS2RESTAdapter implements WSMessageReceiver {
         if (connection.isConnected()) {
             try {
                 connection.sendMessage(output);
-            } catch (MessageConversionException | IOException e) {
+            } catch (EncodeException | IOException e) {
                 LOG.error(e.getMessage(), e);
             }
         } else {
@@ -192,8 +195,8 @@ class WS2RESTAdapter implements WSMessageReceiver {
     }
 
     /**
-     * Get name of channel from input message. Expected format of message: {"channel":"my_channel"}. Method return
-     * <code>null</code> if message is invalid.
+     * Get name of channel from input message. Expected format of message: {"channel":"my_channel"}. Method return {@code null} if message
+     * is invalid.
      */
     private String parseSubscriptionMessage(InputMessage input) {
         final JsonParser p = new JsonParser();

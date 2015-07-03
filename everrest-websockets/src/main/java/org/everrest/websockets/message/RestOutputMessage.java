@@ -11,43 +11,16 @@
 package org.everrest.websockets.message;
 
 /**
- * RESTful input message.
+ * REST output messages.
  *
  * @author andrew00x
  */
-public class RESTfulInputMessage extends InputMessage {
-    public static RESTfulInputMessage newPingMessage(String uuid, String message) {
-        final RESTfulInputMessage instance = new RESTfulInputMessage();
-        instance.setUuid(uuid);
-        instance.setMethod("POST");
-        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "ping")});
-        instance.setBody(message);
-        return instance;
-    }
-
-    public static RESTfulInputMessage newSubscribeChannelMessage(String uuid, String channel) {
-        final RESTfulInputMessage instance = new RESTfulInputMessage();
-        instance.setUuid(uuid);
-        instance.setMethod("POST");
-        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "subscribe-channel")});
-        instance.setBody(String.format("{\"channel\":\"%s\"}", channel));
-        return instance;
-    }
-
-    public static RESTfulInputMessage newUnsubscribeChannelMessage(String uuid, String channel) {
-        final RESTfulInputMessage instance = new RESTfulInputMessage();
-        instance.setUuid(uuid);
-        instance.setMethod("POST");
-        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "unsubscribe-channel")});
-        instance.setBody(String.format("{\"channel\":\"%s\"}", channel));
-        return instance;
-    }
-
+public class RestOutputMessage extends OutputMessage {
     private String method;
     private String path;
     private Pair[] headers;
 
-    public RESTfulInputMessage() {
+    public RestOutputMessage() {
     }
 
     /**

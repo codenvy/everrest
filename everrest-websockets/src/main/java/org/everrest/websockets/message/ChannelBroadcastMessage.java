@@ -13,8 +13,7 @@ package org.everrest.websockets.message;
 /**
  * This class intended for sending broadcast messages for all clients subscribed to the channel.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  * @see org.everrest.websockets.WSConnection#subscribeToChannel(String)
  * @see org.everrest.websockets.WSConnection#unsubscribeFromChannel(String)
  * @see org.everrest.websockets.WSConnection#getChannels()

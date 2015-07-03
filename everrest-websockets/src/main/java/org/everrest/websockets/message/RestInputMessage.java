@@ -11,17 +11,43 @@
 package org.everrest.websockets.message;
 
 /**
- * RESTful output messages.
+ * REST input message.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
-public class RESTfulOutputMessage extends OutputMessage {
+public class RestInputMessage extends InputMessage {
+    public static RestInputMessage newPingMessage(String uuid, String message) {
+        final RestInputMessage instance = new RestInputMessage();
+        instance.setUuid(uuid);
+        instance.setMethod("POST");
+        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "ping")});
+        instance.setBody(message);
+        return instance;
+    }
+
+    public static RestInputMessage newSubscribeChannelMessage(String uuid, String channel) {
+        final RestInputMessage instance = new RestInputMessage();
+        instance.setUuid(uuid);
+        instance.setMethod("POST");
+        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "subscribe-channel")});
+        instance.setBody(String.format("{\"channel\":\"%s\"}", channel));
+        return instance;
+    }
+
+    public static RestInputMessage newUnsubscribeChannelMessage(String uuid, String channel) {
+        final RestInputMessage instance = new RestInputMessage();
+        instance.setUuid(uuid);
+        instance.setMethod("POST");
+        instance.setHeaders(new Pair[]{Pair.of("x-everrest-websocket-message-type", "unsubscribe-channel")});
+        instance.setBody(String.format("{\"channel\":\"%s\"}", channel));
+        return instance;
+    }
+
     private String method;
     private String path;
     private Pair[] headers;
 
-    public RESTfulOutputMessage() {
+    public RestInputMessage() {
     }
 
     /**

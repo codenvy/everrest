@@ -14,8 +14,7 @@ package org.everrest.websockets;
  * Notified when WSConnection opened and closed. Implementation of this interface should be registered in
  * WSConnectionContext context.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  * @see WSConnectionContext#registerConnectionListener(WSConnectionListener)
  * @see WSConnectionContext#removeConnectionListener(WSConnectionListener)
  */

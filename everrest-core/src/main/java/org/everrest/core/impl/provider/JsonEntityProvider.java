@@ -121,8 +121,8 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
             }
             return ObjectBuilder.createObject(type, jsonValue);
         } catch (JsonException e) {
-            LOG.error(e.getMessage(), e);
-            throw new IOException("Can't read from input stream " + e);
+            LOG.debug(e.getMessage(), e);
+            throw new IOException("Can't read from input stream " + e, e);
         }
     }
 
@@ -171,8 +171,8 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
             jsonValue.writeTo(jsonWriter);
             jsonWriter.flush();
         } catch (JsonException e) {
-            LOG.error(e.getMessage(), e);
-            throw new IOException("Can't write to output stream. " + e.getMessage());
+            LOG.debug(e.getMessage(), e);
+            throw new IOException("Can't write to output stream. " + e.getMessage(), e);
         }
     }
 }

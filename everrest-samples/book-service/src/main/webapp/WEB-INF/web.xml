@@ -28,6 +28,12 @@
     <listener>
         <listener-class>org.everrest.core.servlet.EverrestInitializedListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>org.everrest.websockets.ServerContainerInitializeListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.everrest.websockets.WSConnectionTracker</listener-class>
+    </listener>
     <servlet>
         <servlet-name>EverrestServlet</servlet-name>
         <servlet-class>org.everrest.core.servlet.EverrestServlet</servlet-class>

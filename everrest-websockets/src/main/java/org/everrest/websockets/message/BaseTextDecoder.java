@@ -10,30 +10,18 @@
  *******************************************************************************/
 package org.everrest.websockets.message;
 
+import javax.websocket.Decoder;
+import javax.websocket.EndpointConfig;
+
 /**
- * Output message.
- *
  * @author andrew00x
  */
-public class OutputMessage extends Message {
-    private int responseCode;
-
-    /**
-     * Get response code.
-     *
-     * @return response code.
-     */
-    public int getResponseCode() {
-        return responseCode;
+public abstract class BaseTextDecoder<T> implements Decoder.Text<T> {
+    @Override
+    public void init(EndpointConfig config) {
     }
 
-    /**
-     * Get response code.
-     *
-     * @param responseCode
-     *         response code.
-     */
-    public void setResponseCode(int responseCode) {
-        this.responseCode = responseCode;
+    @Override
+    public void destroy() {
     }
 }

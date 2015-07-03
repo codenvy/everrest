@@ -13,24 +13,23 @@ package org.everrest.websockets;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.websockets.message.Pair;
-import org.everrest.websockets.message.RESTfulOutputMessage;
+import org.everrest.websockets.message.RestOutputMessage;
 
 import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * Fill RESTfulOutputMessage by result of calling RESTful method.
+ * Fill RestOutputMessage by result of calling REST method.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 class EverrestResponseWriter implements ContainerResponseWriter {
-    private final RESTfulOutputMessage output;
+    private final RestOutputMessage output;
 
     private boolean committed;
 
-    EverrestResponseWriter(RESTfulOutputMessage output) {
+    EverrestResponseWriter(RestOutputMessage output) {
         this.output = output;
     }
 

@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
@@ -46,6 +50,7 @@ public class ContainerResponse implements GenericContainerResponse {
     private static class BodyWriter implements MessageBodyWriter<Object> {
         private final MessageBodyWriter<Object> delegate;
         private final OutputListener            writeListener;
+        private static final Logger LOG = Logger.getLogger(BodyWriter.class);
 
         public BodyWriter(MessageBodyWriter<Object> writer, OutputListener writeListener) {
             this.delegate = writer;
@@ -70,8 +75,22 @@ public class ContainerResponse implements GenericContainerResponse {
                             MediaType mediaType,
                             MultivaluedMap<String, Object> httpHeaders,
                             OutputStream entityStream) throws IOException, WebApplicationException {
-            delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders,
-                             new NotifiesOutputStream(entityStream, writeListener));
+
+            try {
+                delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders,
+                                 new NotifiesOutputStream(entityStream, writeListener));
+            } catch (Exception e) {
+                if(Iterables.any(Throwables.getCausalChain(e), new Predicate<Throwable>() {
+                    @Override
+                    public boolean apply(Throwable input) {
+                        return "org.apache.catalina.connector.ClientAbortException".equals(input.getClass().getName());
+                    }
+                })){
+                    LOG.warn("Client has aborted connection. Response writing omitted.");
+                    return;
+                }
+                throw e;
+            }
         }
     }
 
