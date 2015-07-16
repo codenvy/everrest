@@ -59,6 +59,7 @@
         <module>everrest-test</module>
         <module>everrest-core</module>
         <module>everrest-groovy</module>
+        <module>everrest-assured</module>
         <module>everrest-integration/everrest-integration-exo</module>
         <module>everrest-integration/everrest-integration-picocontainer</module>
         <module>everrest-integration/everrest-integration-guice</module>
@@ -83,7 +84,7 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-       <snapshotRepository>
+        <snapshotRepository>
             <id>codenvy-public-snapshots-repo</id>
             <name>codenvy public snapshots</name>
             <url>https://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/</url>
@@ -104,12 +105,18 @@
         <javax.websocket.api.version>1.1</javax.websocket.api.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
         <jdk.min.version>1.8</jdk.min.version>
+        <jetty.version>8.1.0.v20120127</jetty.version>
         <junit.version>4.11</junit.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.min.version>3.1.1</maven.min.version>
+        <mockito.version>1.9.5</mockito.version>
+        <mockitong.version>0.4</mockitong.version>
+        <org.hamcrest.version>1.3</org.hamcrest.version>
         <org.slf4j.version>1.7.6</org.slf4j.version>
         <org.springframework.version>3.0.3.RELEASE</org.springframework.version>
+        <resetassured.version>2.4.0</resetassured.version>
+        <testng.version>6.8.21</testng.version>
         <version.buildhelper.plugin>1.9.1</version.buildhelper.plugin>
         <version.buildnumber.plugin>1.3</version.buildnumber.plugin>
         <version.dependency.plugin>2.10</version.dependency.plugin>
@@ -149,6 +156,17 @@
                 <groupId>com.google.inject.extensions</groupId>
                 <artifactId>guice-servlet</artifactId>
                 <version>${com.google.code.guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.restassured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${resetassured.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
@@ -216,6 +234,31 @@
                         <groupId>junit</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-http</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-security</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlet</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-util</artifactId>
+                <version>${jetty.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
@@ -318,6 +361,16 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>${org.hamcrest.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-library</artifactId>
+                <version>${org.hamcrest.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.picocontainer</groupId>
                 <artifactId>picocontainer</artifactId>
                 <version>2.10</version>
@@ -388,6 +441,24 @@
                 <artifactId>javax.websocket-api</artifactId>
                 <version>${javax.websocket.api.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockitong</groupId>
+                <artifactId>mockitong</artifactId>
+                <version>${mockitong.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
