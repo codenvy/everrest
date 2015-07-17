@@ -11,6 +11,7 @@
 package org.everrest.test.mock;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -307,6 +308,11 @@ public class MockHttpServletResponse implements HttpServletResponse {
 
     }
 
+    @Override
+    public void setContentLengthLong(long l) {
+
+    }
+
 
     @Override
     public void setContentType(String type) {
@@ -339,6 +345,16 @@ public class MockHttpServletResponse implements HttpServletResponse {
         @Override
         public void write(int i) throws IOException {
             baos.write(i);
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+
         }
     }
 

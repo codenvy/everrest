@@ -12,6 +12,7 @@ package org.everrest.test.mock;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.ReadListener;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -22,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -146,6 +148,11 @@ public class MockHttpServletRequest implements HttpServletRequest {
     @Override
     public int getContentLength() {
         return length;
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        return 0;
     }
 
 
@@ -470,6 +477,11 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return session;
     }
 
+    @Override
+    public String changeSessionId() {
+        return null;
+    }
+
 
     @Override
     public HttpSession getSession(boolean b) {
@@ -516,6 +528,11 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Part getPart(String name) throws IOException, ServletException {
+        return null;
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
         return null;
     }
 
@@ -623,6 +640,21 @@ public class MockHttpServletRequest implements HttpServletRequest {
         @Override
         public int read() throws IOException {
             return data.read();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
+
         }
     }
 }
