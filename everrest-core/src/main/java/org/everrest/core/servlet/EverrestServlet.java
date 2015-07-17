@@ -16,7 +16,8 @@ import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.tools.ErrorPages;
 import org.everrest.core.tools.WebApplicationDeclaredRoles;
-import org.everrest.core.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -31,7 +32,8 @@ import java.io.IOException;
  */
 @SuppressWarnings("serial")
 public class EverrestServlet extends HttpServlet {
-    private static final Logger LOG = Logger.getLogger(EverrestServlet.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(EverrestServlet.class);
+
     private WebApplicationDeclaredRoles webApplicationRoles;
     private ErrorPages                  errorPages;
 

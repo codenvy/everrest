@@ -11,7 +11,7 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.provider.EntityProvider;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -45,7 +45,7 @@ import java.lang.reflect.Type;
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class DOMSourceEntityProvider implements EntityProvider<DOMSource> {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(DOMSourceEntityProvider.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DOMSourceEntityProvider.class);
 
 
     @Override

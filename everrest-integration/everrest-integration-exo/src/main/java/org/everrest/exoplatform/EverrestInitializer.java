@@ -20,11 +20,11 @@ import org.everrest.core.impl.LifecycleComponent;
 import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
-import org.everrest.core.util.Logger;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.picocontainer.Startable;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
 import java.lang.ref.WeakReference;
@@ -45,7 +45,7 @@ import java.util.Set;
  * @author andrew00x
  */
 public class EverrestInitializer implements Startable {
-    private static final Logger LOG = Logger.getLogger(EverrestInitializer.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestInitializer.class);
 
     private final ExoContainer                container;
     private final EverrestConfiguration       config;

@@ -17,8 +17,9 @@ import com.google.common.collect.Iterables;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
-import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.WebApplicationException;
@@ -50,7 +51,7 @@ public class ContainerResponse implements GenericContainerResponse {
     private static class BodyWriter implements MessageBodyWriter<Object> {
         private final MessageBodyWriter<Object> delegate;
         private final OutputListener            writeListener;
-        private static final Logger LOG = Logger.getLogger(BodyWriter.class);
+        private static final Logger LOG = LoggerFactory.getLogger(BodyWriter.class);
 
         public BodyWriter(MessageBodyWriter<Object> writer, OutputListener writeListener) {
             this.delegate = writer;
@@ -80,12 +81,12 @@ public class ContainerResponse implements GenericContainerResponse {
                 delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders,
                                  new NotifiesOutputStream(entityStream, writeListener));
             } catch (Exception e) {
-                if(Iterables.any(Throwables.getCausalChain(e), new Predicate<Throwable>() {
+                if (Iterables.any(Throwables.getCausalChain(e), new Predicate<Throwable>() {
                     @Override
                     public boolean apply(Throwable input) {
                         return "org.apache.catalina.connector.ClientAbortException".equals(input.getClass().getName());
                     }
-                })){
+                })) {
                     LOG.warn("Client has aborted connection. Response writing omitted.");
                     return;
                 }
@@ -146,7 +147,7 @@ public class ContainerResponse implements GenericContainerResponse {
    /* --------------------------------------------------------- */
 
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(ContainerResponse.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ContainerResponse.class);
 
     /** See {@link ContainerResponseWriter}. */
     private ContainerResponseWriter responseWriter;

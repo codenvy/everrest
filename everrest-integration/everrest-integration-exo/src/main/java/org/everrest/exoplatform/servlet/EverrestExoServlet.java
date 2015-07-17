@@ -17,10 +17,10 @@ import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.servlet.ServletContainerRequest;
 import org.everrest.core.servlet.ServletContainerResponseWriter;
 import org.everrest.core.tools.WebApplicationDeclaredRoles;
-import org.everrest.core.util.Logger;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -39,7 +39,7 @@ import java.io.IOException;
  */
 @SuppressWarnings("serial")
 public class EverrestExoServlet extends AbstractHttpServlet {
-    private static final Logger log = Logger.getLogger(EverrestExoServlet.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestExoServlet.class);
     private WebApplicationDeclaredRoles webApplicationRoles;
 
     @Override
@@ -70,8 +70,8 @@ public class EverrestExoServlet extends AbstractHttpServlet {
             // Met problem with Acrobat Reader HTTP client when use EverRest for WebDav.
             // Client close connection before all data transferred and it cause error on server side.
             if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                if (log.isDebugEnabled()) {
-                    log.debug(ioe.getMessage(), ioe);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(ioe.getMessage(), ioe);
                 }
             } else {
                 throw ioe;

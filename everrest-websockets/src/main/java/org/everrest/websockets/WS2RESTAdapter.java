@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
+import static javax.websocket.CloseReason.CloseCodes.VIOLATED_POLICY;
+
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
@@ -18,12 +20,12 @@ import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.provider.json.JsonException;
 import org.everrest.core.impl.provider.json.JsonParser;
 import org.everrest.core.impl.provider.json.JsonValue;
-import org.everrest.core.util.Logger;
 import org.everrest.websockets.message.InputMessage;
 import org.everrest.websockets.message.OutputMessage;
 import org.everrest.websockets.message.Pair;
 import org.everrest.websockets.message.RestInputMessage;
 import org.everrest.websockets.message.RestOutputMessage;
+import org.slf4j.LoggerFactory;
 
 import javax.websocket.DecodeException;
 import javax.websocket.EncodeException;
@@ -39,13 +41,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import static javax.websocket.CloseReason.CloseCodes.VIOLATED_POLICY;
-
 /**
  * @author andrew00x
  */
 class WS2RESTAdapter implements WSMessageReceiver {
-    private static final Logger LOG = Logger.getLogger(WS2RESTAdapter.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(WS2RESTAdapter.class);
 
     private static final URI BASE_URI = URI.create("");
 

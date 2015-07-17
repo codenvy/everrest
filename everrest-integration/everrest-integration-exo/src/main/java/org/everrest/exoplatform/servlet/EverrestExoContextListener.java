@@ -24,11 +24,11 @@ import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
-import org.everrest.core.util.Logger;
 import org.everrest.exoplatform.ExoDependencySupplier;
 import org.everrest.exoplatform.StartableApplication;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.StandaloneContainer;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -74,7 +74,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
         public static final String PREFIX_WAR = "war:";
 
-        private static final Logger LOG = Logger.getLogger(StandaloneContainerStarter.class);
+        private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(StandaloneContainerStarter.class);
 
         private StandaloneContainer container;
 

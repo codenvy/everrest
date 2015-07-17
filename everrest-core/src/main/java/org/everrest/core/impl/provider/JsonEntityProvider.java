@@ -20,7 +20,7 @@ import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.provider.EntityProvider;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
@@ -51,7 +51,8 @@ import java.util.Map;
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 public class JsonEntityProvider<T> implements EntityProvider<T> {
-    private static final Logger LOG = Logger.getLogger(JsonEntityProvider.class);
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(JsonEntityProvider.class);
 
     // It is common task for #isReadable() and #isWriteable
     // Not sure it is required but ...

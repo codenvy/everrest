@@ -11,7 +11,7 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.provider.EntityProvider;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -42,7 +42,7 @@ import java.lang.reflect.Type;
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>> {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(JAXBElementEntityProvider.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(JAXBElementEntityProvider.class);
 
     /** @see Providers */
     private Providers providers;

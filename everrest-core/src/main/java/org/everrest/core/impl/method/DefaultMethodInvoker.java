@@ -18,8 +18,8 @@ import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.method.MethodParameter;
 import org.everrest.core.resource.GenericMethodResource;
-import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
@@ -131,7 +131,7 @@ public class DefaultMethodInvoker implements MethodInvoker {
     }
 
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(DefaultMethodInvoker.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DefaultMethodInvoker.class);
 
 
     @Override

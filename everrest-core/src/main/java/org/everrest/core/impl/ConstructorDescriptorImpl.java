@@ -18,8 +18,8 @@ import org.everrest.core.impl.method.ParameterHelper;
 import org.everrest.core.impl.method.ParameterResolver;
 import org.everrest.core.impl.method.ParameterResolverFactory;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
-import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class ConstructorDescriptorImpl implements ConstructorDescriptor {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(ConstructorDescriptorImpl.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConstructorDescriptorImpl.class);
 
     /** ConstructorDescriptor comparator. */
     public static final Comparator<ConstructorDescriptor> CONSTRUCTOR_COMPARATOR = new ConstructorComparator();

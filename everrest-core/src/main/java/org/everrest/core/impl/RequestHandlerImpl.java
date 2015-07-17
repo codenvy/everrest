@@ -21,8 +21,8 @@ import org.everrest.core.RequestHandler;
 import org.everrest.core.ResponseFilter;
 import org.everrest.core.UnhandledException;
 import org.everrest.core.tools.ErrorPages;
-import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -36,7 +36,7 @@ import java.io.IOException;
  */
 public class RequestHandlerImpl implements RequestHandler {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(RequestHandlerImpl.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RequestHandlerImpl.class);
 
     /** See {@link RequestDispatcher}. */
     private final RequestDispatcher dispatcher;

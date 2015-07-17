@@ -10,12 +10,22 @@
  *******************************************************************************/
 package org.everrest.websockets.client;
 
+import static com.google.common.base.Throwables.propagate;
+import static com.google.common.base.Throwables.propagateIfPossible;
+import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static javax.websocket.ContainerProvider.getWebSocketContainer;
+import static javax.websocket.RemoteEndpoint.Basic;
+import static org.everrest.core.impl.uri.UriComponent.parseQueryString;
+import static org.everrest.websockets.message.RestInputMessage.newSubscribeChannelMessage;
+import static org.everrest.websockets.message.RestInputMessage.newUnsubscribeChannelMessage;
+
 import org.everrest.core.impl.provider.json.JsonException;
-import org.everrest.core.util.Logger;
 import org.everrest.websockets.message.BaseTextEncoder;
 import org.everrest.websockets.message.InputMessage;
 import org.everrest.websockets.message.JsonMessageConverter;
 import org.everrest.websockets.message.MessageSender;
+import org.slf4j.LoggerFactory;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -42,22 +52,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.google.common.base.Throwables.propagate;
-import static com.google.common.base.Throwables.propagateIfPossible;
-import static java.util.concurrent.Executors.newCachedThreadPool;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static javax.websocket.ContainerProvider.getWebSocketContainer;
-import static javax.websocket.RemoteEndpoint.Basic;
-import static org.everrest.core.impl.uri.UriComponent.parseQueryString;
-import static org.everrest.websockets.message.RestInputMessage.newSubscribeChannelMessage;
-import static org.everrest.websockets.message.RestInputMessage.newUnsubscribeChannelMessage;
-
 /**
  * @author andrew00x
  */
 @ClientEndpoint(encoders = {WSClient.InputMessageEncoder.class})
 public class WSClient {
-    private static final Logger LOG = Logger.getLogger(WSClient.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(WSClient.class);
 
     private static final AtomicLong sequence = new AtomicLong(1);
 

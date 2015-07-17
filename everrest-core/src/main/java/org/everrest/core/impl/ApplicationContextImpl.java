@@ -29,7 +29,7 @@ import org.everrest.core.servlet.ServletContainerRequest;
 import org.everrest.core.tools.SimplePrincipal;
 import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.core.tools.WebApplicationDeclaredRoles;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
@@ -53,7 +53,7 @@ import java.util.Set;
  * @author andrew00x
  */
 public class ApplicationContextImpl implements ApplicationContext, Lifecycle {
-    private static final Logger LOG = Logger.getLogger(ApplicationContextImpl.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ApplicationContextImpl.class);
 
     /** {@link ThreadLocal} ApplicationContext. */
     private static ThreadLocal<ApplicationContext> current = new ThreadLocal<>();

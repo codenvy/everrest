@@ -44,10 +44,10 @@ import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.uri.UriPattern;
-import org.everrest.core.util.Logger;
 import org.everrest.core.util.MediaTypeMap;
 import org.everrest.core.util.MediaTypeMultivaluedMap;
 import org.everrest.core.util.UriPatternMap;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -86,7 +86,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class ProviderBinder implements Providers {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(ProviderBinder.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ProviderBinder.class);
 
     /** Need have possibility to disable replacing default providers. */
     private static final RuntimePermission PROVIDERS_PERMISSIONS = new RuntimePermission("providersManagePermission");

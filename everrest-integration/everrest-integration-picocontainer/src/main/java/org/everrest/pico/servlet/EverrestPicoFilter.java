@@ -14,13 +14,13 @@ import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
 import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.EnvironmentContext;
-import org.everrest.core.util.Logger;
 import org.picocontainer.Characteristics;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.PicoCompositionException;
 import org.picocontainer.PicoContainer;
 import org.picocontainer.adapters.AbstractAdapter;
 import org.picocontainer.web.PicoServletContainerFilter;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -37,7 +37,7 @@ import java.lang.reflect.Type;
  */
 @SuppressWarnings("serial")
 public class EverrestPicoFilter extends PicoServletContainerFilter {
-    private static final Logger log = Logger.getLogger(EverrestPicoFilter.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestPicoFilter.class);
 
     public static class HttpHeadersInjector extends AbstractAdapter<HttpHeaders> {
         public HttpHeadersInjector() {
@@ -275,9 +275,10 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         if (object == null) {
             object = getRequestContainer().getComponent(type);
         }
-        if (object == null && log.isDebugEnabled()) {
-            log.debug("Component with type " + type.getName() + " not found in any containers.");
+        if (object == null && LOG.isDebugEnabled()) {
+            LOG.debug("Component with type " + type.getName() + " not found in any containers.");
         }
+
         return object;
     }
 
@@ -295,8 +296,8 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         if (object == null) {
             object = getRequestContainer().getComponent(key);
         }
-        if (object == null && log.isDebugEnabled()) {
-            log.debug("Component " + key + " not found in any containers.");
+        if (object == null && LOG.isDebugEnabled()) {
+            LOG.debug("Component " + key + " not found in any containers.");
         }
         return object;
     }
@@ -328,7 +329,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
             currentSessionContainer.remove();
             currentRequestContainer.remove();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
         super.destroy();
     }

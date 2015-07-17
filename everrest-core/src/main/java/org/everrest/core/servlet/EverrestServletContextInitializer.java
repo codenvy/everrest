@@ -12,7 +12,7 @@ package org.everrest.core.servlet;
 
 import org.everrest.core.Filter;
 import org.everrest.core.impl.EverrestConfiguration;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
@@ -31,7 +31,7 @@ public class EverrestServletContextInitializer {
 
     public static final String JAXRS_APPLICATION = "javax.ws.rs.Application";
 
-    private static final Logger LOG = Logger.getLogger(EverrestServletContextInitializer.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestServletContextInitializer.class);
 
     protected final ServletContext ctx;
 

@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
-import org.everrest.core.util.Logger;
 import org.everrest.websockets.message.ChannelBroadcastMessage;
 import org.everrest.websockets.message.Pair;
 import org.everrest.websockets.message.RestOutputMessage;
+import org.slf4j.LoggerFactory;
 
 import javax.websocket.EncodeException;
 import java.io.IOException;
@@ -26,7 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author andrew00x
  */
 public class WSConnectionContext {
-    private static final Logger LOG = Logger.getLogger(WSConnectionContext.class);
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(WSConnectionContext.class);
 
     static final List<WSConnectionListener>  connectionListeners = new CopyOnWriteArrayList<>();
     static final Map<Long, WSConnectionImpl> connections         = new ConcurrentHashMap<>();

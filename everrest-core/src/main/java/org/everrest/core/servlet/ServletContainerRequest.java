@@ -14,7 +14,7 @@ import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.InputHeadersMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
@@ -31,7 +31,7 @@ import java.util.Enumeration;
 /** @author andrew00x */
 public final class ServletContainerRequest extends ContainerRequest {
 
-    private static final Logger LOG = Logger.getLogger(ServletContainerRequest.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ServletContainerRequest.class);
 
     public static ServletContainerRequest create(final HttpServletRequest req) {
         // If the URL is forwarded, obtain the forwarding information

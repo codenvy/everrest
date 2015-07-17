@@ -21,7 +21,7 @@ import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.uri.UriPattern;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
@@ -37,7 +37,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ResourceBinderImpl implements ResourceBinder {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(ResourceBinderImpl.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ResourceBinderImpl.class);
 
     /** Resource's comparator. */
     protected static final Comparator<ObjectFactory<AbstractResourceDescriptor>> RESOURCE_COMPARATOR =

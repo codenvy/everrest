@@ -24,7 +24,7 @@ import org.everrest.core.resource.SubResourceLocatorMap;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodMap;
 import org.everrest.core.uri.UriPattern;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class AbstractResourceDescriptorImpl extends BaseObjectModel implements AbstractResourceDescriptor {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(AbstractResourceDescriptorImpl.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AbstractResourceDescriptorImpl.class);
 
     /** PathValue. */
     private final PathValue path;

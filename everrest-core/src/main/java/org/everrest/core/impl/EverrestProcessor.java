@@ -20,8 +20,9 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
 import org.everrest.core.impl.uri.UriComponent;
-import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
 import java.io.IOException;
@@ -36,7 +37,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author andrew00x
  */
 public final class EverrestProcessor implements Lifecycle {
-    private static final Logger LOG = Logger.getLogger(EverrestProcessor.class.getName());
+
+    private static final Logger LOG = LoggerFactory.getLogger(EverrestProcessor.class);
 
     private final ResourceBinder        resources;
     private final ProviderBinder        providers;

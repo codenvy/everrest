@@ -10,14 +10,15 @@
  *******************************************************************************/
 package org.everrest.websockets;
 
-import org.everrest.core.util.Logger;
+import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.io.IOException;
-
-import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
 
 /**
  * Close web socket connections when HTTP session to which these connections associated is going to be invalidated.
@@ -25,7 +26,7 @@ import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
  * @author andrew00x
  */
 public final class WSConnectionTracker implements HttpSessionListener {
-    private static final Logger LOG = Logger.getLogger(WSConnectionTracker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WSConnectionTracker.class);
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {

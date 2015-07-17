@@ -13,13 +13,13 @@ package org.everrest.groovy.servlet;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.everrest.core.Filter;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
-import org.everrest.core.util.Logger;
 import org.everrest.groovy.DefaultGroovyResourceLoader;
 import org.everrest.groovy.GroovyClassLoaderProvider;
 import org.everrest.groovy.ScriptFinder;
 import org.everrest.groovy.ScriptFinderFactory;
 import org.everrest.groovy.SourceFile;
 import org.everrest.groovy.URLFilter;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
@@ -37,7 +37,7 @@ import java.util.Set;
  * @author andrew00x
  */
 public class GroovyEverrestServletContextInitializer extends EverrestServletContextInitializer {
-    private static final Logger LOG = Logger.getLogger(GroovyEverrestServletContextInitializer.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GroovyEverrestServletContextInitializer.class);
 
     public static final String EVERREST_GROOVY_ROOT_RESOURCES  = "org.everrest.groovy.root.resources";
     public static final String EVERREST_GROOVY_APPLICATION     = "org.everrest.groovy.Application";

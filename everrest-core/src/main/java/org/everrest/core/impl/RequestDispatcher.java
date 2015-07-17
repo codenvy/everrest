@@ -30,8 +30,8 @@ import org.everrest.core.resource.SubResourceLocatorMap;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.resource.SubResourceMethodMap;
 import org.everrest.core.uri.UriPattern;
-import org.everrest.core.util.Logger;
 import org.everrest.core.util.Tracer;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
@@ -53,7 +53,7 @@ import java.util.Map.Entry;
  */
 public class RequestDispatcher {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(RequestDispatcher.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RequestDispatcher.class);
     /** See {@link org.everrest.core.ResourceBinder}. */
     protected final ResourceBinder resourceBinder;
 

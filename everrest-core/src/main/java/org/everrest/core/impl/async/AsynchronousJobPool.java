@@ -18,7 +18,7 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.tools.EmptyInputStream;
-import org.everrest.core.util.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
@@ -71,7 +71,7 @@ public class AsynchronousJobPool implements ContextResolver<AsynchronousJobPool>
     }
 
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(AsynchronousJobPool.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AsynchronousJobPool.class);
 
     /** Generator for unique ID . */
     private static final AtomicLong sequence = new AtomicLong(1);
