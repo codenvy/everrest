@@ -74,6 +74,10 @@ public class EverrestServlet extends HttpServlet {
         } catch (UnhandledException e) {
             LOG.error(e.getMessage(), e);
             throw new ServletException(e.getCause());
+        } catch (Throwable e){
+            LOG.debug(e.getLocalizedMessage(), e);
+            throw e;
         }
+
     }
 }
