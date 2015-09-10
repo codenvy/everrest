@@ -98,7 +98,7 @@
         <commons-io.version>2.4</commons-io.version>
         <gpg.useagent>true</gpg.useagent>
         <groovy.version>1.7.6</groovy.version>
-        <javax.annotation.version>1.0</javax.annotation.version>
+        <javax.annotation.version>1.2</javax.annotation.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.mail.version>1.4.4</javax.mail.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
@@ -180,7 +180,7 @@
             </dependency>
             <dependency>
                 <groupId>javax.annotation</groupId>
-                <artifactId>jsr250-api</artifactId>
+                <artifactId>javax.annotation-api</artifactId>
                 <version>${javax.annotation.version}</version>
             </dependency>
             <dependency>
