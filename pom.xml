@@ -107,8 +107,8 @@
         <jdk.min.version>1.8</jdk.min.version>
         <jetty.version>9.3.1.v20150714</jetty.version>
         <junit.version>4.11</junit.version>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <maven.min.version>3.1.1</maven.min.version>
         <mockito.version>1.9.5</mockito.version>
         <mockitong.version>0.4</mockitong.version>
