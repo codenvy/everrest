@@ -15,8 +15,10 @@ import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.provider.EntityProvider;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -32,15 +34,12 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: MultivaluedMapEntityProvider.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
- */
 @Provider
 @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
 @Produces({MediaType.APPLICATION_FORM_URLENCODED})
 public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedMap<String, String>> {
+    @Context
+    private HttpServletRequest httpRequest;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -86,6 +85,14 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
             // keep the last part
             addPair(sb.toString(), form);
 
+            if (form.isEmpty()) {
+                httpRequest.getParameterMap()
+                           .entrySet()
+                           .stream()
+                           .filter(e -> e.getValue() != null)
+                           .forEach(e -> form.addAll(e.getKey(), e.getValue()));
+            }
+
             context.getAttributes().put("org.everrest.provider.entity.form", form);
 
             return form;
@@ -93,6 +100,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
             throw new IllegalArgumentException(e);
         }
     }
+
 
     /**
      * Parse string and add key/value pair in the {@link MultivaluedMap}.

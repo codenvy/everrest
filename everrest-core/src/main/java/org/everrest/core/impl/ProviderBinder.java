@@ -730,9 +730,8 @@ public class ProviderBinder implements Providers {
         addMessageBodyReader(fep);
         addMessageBodyWriter(fep);
 
-        MultivaluedMapEntityProvider mvep = new MultivaluedMapEntityProvider();
-        addMessageBodyReader(mvep);
-        addMessageBodyWriter(mvep);
+        addMessageBodyReader(MultivaluedMapEntityProvider.class);
+        addMessageBodyWriter(MultivaluedMapEntityProvider.class);
 
         InputStreamEntityProvider isep = new InputStreamEntityProvider();
         addMessageBodyReader(isep);

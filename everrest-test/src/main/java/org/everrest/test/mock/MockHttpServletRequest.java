@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The Class MockHttpServletRequest.
@@ -49,40 +51,18 @@ import java.util.regex.Pattern;
  */
 @SuppressWarnings("unchecked")
 public class MockHttpServletRequest implements HttpServletRequest {
+    private static final Pattern URL_PATTERN = Pattern.compile("http://([^:]+?):([^/]+?)/([^/]+?)/(.*?)");
 
-    /** HTTP method. */
     private String method;
-
-    /** Length. */
     private int length;
-
-    /** Request url. */
     private String requestURL;
-
-    /** Data. */
     private InputStream data;
-
-    /** Headers. */
     private CaseInsensitiveMultivaluedMap<String> headers = new CaseInsensitiveMultivaluedMap<String>();
-
-    /** The parameters. */
     private Map<String, List<String>> parameters = new HashMap<String, List<String>>();
-
-    /** The session. */
     private HttpSession session;
-
-    /** The locale. */
     private Locale locale;
-
-    /** The secure. */
     private boolean secure;
-
-    /** The Constant p. */
-    private static final Pattern p = Pattern.compile("http://([^:]+?):([^/]+?)/([^/]+?)/(.*?)");
-
-    /** The attributes. */
     private Map<String, Object> attributes = new HashMap<String, Object>();
-
     private Principal principal;
 
     /**
@@ -164,7 +144,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getContextPath() {
-        Matcher m = p.matcher(requestURL);
+        Matcher m = URL_PATTERN.matcher(requestURL);
         if (!m.matches())
             throw new RuntimeException("Unable determine context path.");
         return '/' + m.group(3);
@@ -260,37 +240,37 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public ServletContext getServletContext() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public boolean isAsyncStarted() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean isAsyncSupported() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public AsyncContext getAsyncContext() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public DispatcherType getDispatcherType() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
 
@@ -302,22 +282,22 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getParameter(String name) {
-        Iterator<String> it = parameters.keySet().iterator();
-        while (it.hasNext()) {
-            String key = it.next();
-            if (key.equalsIgnoreCase(name)) {
-                ArrayList values = (ArrayList)parameters.get(key);
-                if (values != null)
-                    return (String)values.get(0);
-            }
-        }
-        return (null);
+        return parameters.entrySet()
+                         .stream()
+                         .filter(entry -> entry.getKey().equalsIgnoreCase(name))
+                         .map(entry -> entry.getValue())
+                         .filter(value -> value != null)
+                         .flatMap(l -> l.stream())
+                         .findFirst().orElse(null);
     }
 
 
     @Override
     public Map getParameterMap() {
-        return parameters;
+        return parameters.entrySet()
+                         .stream()
+                         .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())
+                         .collect(Collectors.toMap(Map.Entry::getKey, p -> p.getValue().stream().toArray(String[]::new)));
     }
 
 
@@ -329,19 +309,19 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String[] getParameterValues(String name) {
-        ArrayList<String> arr = new ArrayList<String>();
-        for (String paramName : parameters.keySet()) {
-            if (paramName.equalsIgnoreCase(name))
-                arr.add(parameters.get(name).get(0));
-        }
-        return arr.toArray(new String[arr.size()]);
+        return parameters.entrySet()
+                         .stream()
+                         .filter(entry -> entry.getKey().equalsIgnoreCase(name))
+                         .map(entry -> entry.getValue())
+                         .filter(value -> value != null)
+                         .flatMap(l -> l.stream())
+                         .toArray(String[]::new);
 
     }
 
-
     @Override
     public String getPathInfo() {
-        Matcher m = p.matcher(requestURL);
+        Matcher m = URL_PATTERN.matcher(requestURL);
         if (!m.matches())
             throw new RuntimeException("Unable determine pathInfo.");
         String p = m.group(4);
@@ -450,7 +430,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getServerName() {
-        Matcher m = p.matcher(requestURL);
+        Matcher m = URL_PATTERN.matcher(requestURL);
         if (!m.matches())
             throw new RuntimeException("Unable determine server name.");
         return m.group(1);
@@ -459,7 +439,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public int getServerPort() {
-        Matcher m = p.matcher(requestURL);
+        Matcher m = URL_PATTERN.matcher(requestURL);
         if (!m.matches())
             throw new RuntimeException("Unable determine request URI.");
         return Integer.valueOf(m.group(2));
@@ -597,34 +577,38 @@ public class MockHttpServletRequest implements HttpServletRequest {
             return m;
         int p = 0;
         int n = 0;
-        while (n < rawQuery.length()) {
-            n = rawQuery.indexOf('&', p);
-            if (n == -1)
-                n = rawQuery.length();
+        try {
+            while (n < rawQuery.length()) {
+                n = rawQuery.indexOf('&', p);
+                if (n == -1)
+                    n = rawQuery.length();
 
-            String pair = rawQuery.substring(p, n);
-            if (pair.length() == 0)
-                continue;
+                String pair = rawQuery.substring(p, n);
+                if (pair.length() == 0)
+                    continue;
 
-            String name;
-            String value = ""; // default value
-            int eq = pair.indexOf('=');
-            if (eq == -1) // no value, default is ""
-                name = pair;
-            else {
-                name = pair.substring(0, eq);
-                value = pair.substring(eq + 1);
+                String name;
+                String value = ""; // default value
+                int eq = pair.indexOf('=');
+                if (eq == -1) // no value, default is ""
+                    name = URLDecoder.decode(pair, "UTF-8");
+                else {
+                    name = URLDecoder.decode(pair.substring(0, eq), "UTF-8");
+                    value = URLDecoder.decode(pair.substring(eq + 1), "UTF-8");
+                }
+
+                if (m.get(name) == null) {
+                    List<String> arr = new ArrayList<String>();
+                    arr.add(value);
+                    m.put(name, arr);
+                } else {
+                    List<String> arr = m.get(name);
+                    arr.add(value);
+                }
+                p = n + 1;
             }
-
-            if (m.get(name) == null) {
-                List<String> arr = new ArrayList<String>();
-                arr.add(value);
-                m.put(name, arr);
-            } else {
-                List<String> arr = m.get(name);
-                arr.add(value);
-            }
-            p = n + 1;
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(); // UTF-8 is supported for sure
         }
         return m;
     }
