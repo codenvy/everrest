@@ -272,11 +272,6 @@
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
-                <artifactId>everrest-httpclient</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.everrest</groupId>
                 <artifactId>everrest-integration-exo</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -293,11 +288,6 @@
             <dependency>
                 <groupId>org.everrest</groupId>
                 <artifactId>everrest-integration-spring</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.everrest</groupId>
-                <artifactId>everrest-proxy</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
