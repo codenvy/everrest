@@ -107,7 +107,7 @@ public class GuiceResourceTest extends BaseTest {
         Module module = new Module() {
             public void configure(Binder binder) {
                 binder.bind(Resource.class);
-                binder.bind(new PathKey<>(Resource.class, "/a/b/c")).to((Resource.class));
+                binder.bind(ServiceBindingKey.of(Resource.class, "/a/b/c")).to((Resource.class));
                 binder.bind(MessageProvider.class).in(Singleton.class);
             }
         };
