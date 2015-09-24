@@ -22,11 +22,11 @@ import java.lang.annotation.Annotation;
  *
  * @author andrew00x
  */
-public class ServiceBindingKey {
-    private ServiceBindingKey() {
+public class ServiceBindingHelper {
+    private ServiceBindingHelper() {
     }
 
-    public static <T> Key<T> of(Class<T> clazz, String path) {
+    public static <T> Key<T> bindingKey(Class<T> clazz, String path) {
         return Key.get(clazz, new BindingPathImpl(path));
     }
 
