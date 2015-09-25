@@ -13,6 +13,7 @@ package org.everrest.guice.servlet;
 import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
@@ -39,11 +40,11 @@ import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
+import org.everrest.guice.BindingPath;
 import org.everrest.guice.EverrestConfigurationModule;
 import org.everrest.guice.EverrestModule;
 import org.everrest.guice.GuiceDependencySupplier;
 import org.everrest.guice.GuiceObjectFactory;
-import org.everrest.guice.PathKey;
 import org.everrest.guice.GuiceRuntimeDelegateImpl;
 
 import javax.servlet.ServletContext;
@@ -196,7 +197,8 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     protected void processBindings(Injector injector, EverrestApplication everrest) {
         ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         for (Binding<?> binding : injector.getBindings().values()) {
-            Type type = binding.getKey().getTypeLiteral().getType();
+            Key<?> bindingKey = binding.getKey();
+            Type type = bindingKey.getTypeLiteral().getType();
             if (type instanceof Class) {
                 Class clazz = (Class)type;
                 if (clazz.getAnnotation(Provider.class) != null) {
@@ -208,15 +210,16 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
                     fDescriptor.accept(rdv);
                     everrest.addFactory(new GuiceObjectFactory<>(fDescriptor, binding.getProvider()));
                 } else if (clazz.getAnnotation(Path.class) != null) {
-                    AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz);
+                    AbstractResourceDescriptor rDescriptor;
+                    if (bindingKey.getAnnotation() != null && bindingKey.getAnnotationType().isAssignableFrom(BindingPath.class)) {
+                        String path = ((BindingPath)bindingKey.getAnnotation()).value();
+                        rDescriptor = new AbstractResourceDescriptorImpl(path, clazz);
+                    } else {
+                        rDescriptor = new AbstractResourceDescriptorImpl(clazz);
+                    }
                     rDescriptor.accept(rdv);
                     everrest.addFactory(new GuiceObjectFactory<>(rDescriptor, binding.getProvider()));
                 }
-            } else if (binding.getKey() instanceof PathKey) {
-                Class clazz = ((PathKey)binding.getKey()).getClazz();
-                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(((PathKey)binding.getKey()).getPath(), clazz);
-                rDescriptor.accept(rdv);
-                everrest.addFactory(new GuiceObjectFactory<>(rDescriptor, binding.getProvider()));
             }
         }
     }
