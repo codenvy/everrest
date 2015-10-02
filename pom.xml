@@ -161,12 +161,6 @@
                 <groupId>com.jayway.restassured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${resetassured.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
@@ -716,7 +710,6 @@
                                 <bannedDependencies>
                                     <searchTransitive>true</searchTransitive>
                                     <excludes>
-                                        <exclude>commons-logging:commons-logging</exclude>
                                         <exclude>commons-logging:commons-logging-api</exclude>
                                         <exclude>concurrent:concurrent</exclude>
                                         <exclude>com.google.code.findbugs:annotations</exclude>
