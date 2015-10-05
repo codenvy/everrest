@@ -16,7 +16,7 @@
     <parent>
         <artifactId>everrest-parent</artifactId>
         <groupId>org.everrest</groupId>
-        <version>1.10.0-SNAPSHOT</version>
+        <version>1.10.0</version>
     </parent>
     <artifactId>everrest-core</artifactId>
     <name>EverRest :: Core</name>
