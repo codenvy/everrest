@@ -169,12 +169,12 @@ public final class IOHelper {
         if (overflow) {
             File f = FileCollector.getInstance().createFile();
 
-            FileOutputStream fos = new FileOutputStream(f);
-            bos.writeTo(fos);
-            while ((r = in.read(b)) != -1) {
-                fos.write(b, 0, r);
+            try(FileOutputStream fos = new FileOutputStream(f)) {
+                bos.writeTo(fos);
+                while ((r = in.read(b)) != -1) {
+                    fos.write(b, 0, r);
+                }
             }
-            fos.close();
             return new DeleteOnCloseFIS(f);
         }
         return new ByteArrayInputStream(bos.toByteArray());
