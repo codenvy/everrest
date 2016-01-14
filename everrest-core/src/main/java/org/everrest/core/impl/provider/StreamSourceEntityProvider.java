@@ -28,6 +28,8 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 /**
  * @author andrew00x
  */
@@ -75,7 +77,9 @@ public class StreamSourceEntityProvider implements EntityProvider<StreamSource> 
                         OutputStream entityStream) throws IOException {
         StreamResult out = new StreamResult(entityStream);
         try {
-            TransformerFactory.newInstance().newTransformer().transform(t, out);
+            TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+            factory.newTransformer().transform(t, out);
         } catch (TransformerException | TransformerFactoryConfigurationError e) {
             throw new IOException("Can't write to output stream " + e);
         }

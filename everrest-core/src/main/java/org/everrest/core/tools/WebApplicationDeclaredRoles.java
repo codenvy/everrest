@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 /**
  * Describes roles declared for web application in web.xml file.
  *
@@ -48,8 +50,14 @@ public class WebApplicationDeclaredRoles {
             return Collections.emptySet();
         }
         try {
-            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document dom = documentBuilder.parse(input);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            try {
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+            } catch (Throwable ignored) {}
+            Document dom = factory.newDocumentBuilder().parse(input);
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
             NodeList all = (NodeList)xpath.evaluate("/web-app/security-role/role-name", dom, XPathConstants.NODESET);

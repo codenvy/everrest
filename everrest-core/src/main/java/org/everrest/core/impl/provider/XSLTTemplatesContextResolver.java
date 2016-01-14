@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 /**
  * Provide cache for transformation templates.
  *
@@ -86,6 +88,7 @@ public class XSLTTemplatesContextResolver implements ContextResolver<XSLTTemplat
         }
         synchronized (templates) {
             SAXTransformerFactory factory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
+            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
             TemplatesHandler templateHandler = factory.newTemplatesHandler();
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             if (resolver != null) {
