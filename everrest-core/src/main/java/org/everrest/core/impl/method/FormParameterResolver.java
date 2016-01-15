@@ -18,6 +18,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -55,9 +56,12 @@ public class FormParameterResolver extends ParameterResolver<FormParam> {
                                             + MultivaluedMap.class.getName() + " and content-type " + contentType);
         }
 
-        MultivaluedMap<String, String> form =
-                (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, contentType, context
-                        .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
-        return typeProducer.createValue(param, form, parameter.getDefaultValue());
+
+        try (InputStream entityStream = context.getContainerRequest().getEntityStream()) {
+            MultivaluedMap<String, String> form =
+                    (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, contentType, context
+                            .getHttpHeaders().getRequestHeaders(), entityStream);
+            return typeProducer.createValue(param, form, parameter.getDefaultValue());
+        }
     }
 }

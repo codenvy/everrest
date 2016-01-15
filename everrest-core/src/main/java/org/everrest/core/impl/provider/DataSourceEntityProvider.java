@@ -75,11 +75,9 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        InputStream in = t.getInputStream();
-        try {
+
+        try (InputStream in = t.getInputStream()) {
             IOHelper.write(in, entityStream);
-        } finally {
-            in.close();
         }
     }
 
