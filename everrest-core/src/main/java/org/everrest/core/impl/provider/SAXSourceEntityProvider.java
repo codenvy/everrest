@@ -30,6 +30,8 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: SAXSourceEntityProvider.java 285 2009-10-15 16:21:30Z aparfonov
@@ -80,7 +82,9 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource> {
                         OutputStream entityStream) throws IOException {
         StreamResult out = new StreamResult(entityStream);
         try {
-            TransformerFactory.newInstance().newTransformer().transform(t, out);
+            TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+            factory.newTransformer().transform(t, out);
         } catch (TransformerConfigurationException e) {
             throw new IOException("Can't write to output stream " + e);
         } catch (TransformerException e) {

@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 /**
  * Describes error-page references for web application in web.xml file.
  *
@@ -58,8 +60,14 @@ public class ErrorPages {
             return;
         }
         try {
-            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document dom = documentBuilder.parse(input);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            try {
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+            } catch (Throwable ignored) {}
+            Document dom = factory.newDocumentBuilder().parse(input);
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
             NodeList all = (NodeList)xpath.evaluate("/web-app/error-page", dom, XPathConstants.NODESET);
