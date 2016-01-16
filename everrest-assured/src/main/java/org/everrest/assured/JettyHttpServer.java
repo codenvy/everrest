@@ -33,12 +33,11 @@ import org.eclipse.jetty.util.security.Password;
 import org.everrest.assured.util.AvailablePortFinder;
 import org.everrest.assured.util.IoUtil;
 import org.everrest.core.DependencySupplier;
-import org.everrest.core.ObjectFactory;
 import org.everrest.core.ResourceBinder;
+import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.RestComponentResolver;
-import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.everrest.core.servlet.EverrestInitializedListener;
 import org.everrest.core.servlet.EverrestServlet;
 import org.everrest.groovy.BaseResourceId;
@@ -47,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
+import javax.ws.rs.core.Application;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.EventListener;
@@ -103,7 +103,7 @@ public class JettyHttpServer {
         //set up security
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);
-        constraint.setRoles(new String[]{"cloud-admin", "users", "user"});
+        constraint.setRoles(new String[]{"cloud-admin", "users", "user", "temp_user"});
         constraint.setAuthenticate(true);
 
         ConstraintMapping constraintMapping = new ConstraintMapping();
@@ -118,6 +118,7 @@ public class JettyHttpServer {
                              new String[]{"cloud-admin",
                                           "users",
                                           "user",
+                                          "temp_user",
                                           "developer",
                                           "admin",
                                           "workspace/developer",
@@ -129,6 +130,7 @@ public class JettyHttpServer {
                              });
         loginService.putUser(MANAGER_USER_NAME, new Password(MANAGER_USER_PASSWORD), new String[]{"cloud-admin",
                                                                                                   "user",
+                                                                                                  "temp_user",
                                                                                                   "users"});
 
         securityHandler.setLoginService(loginService);
@@ -148,37 +150,23 @@ public class JettyHttpServer {
 
     }
 
+
     public void stop() throws Exception {
         context = null;
         server.stop();
-
     }
 
     public void addUser(String userName, Credential credential, String[] roles) {
         ((HashLoginService)context.getSecurityHandler().getLoginService()).putUser(userName, credential, roles);
     }
 
-    public void addSingleton(Object instance) {
-        LOG.debug("addSingleton << " + instance.getClass());
-        ResourceBinder resources = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        ProviderBinder providers = ProviderBinder.getInstance();
-        RestComponentResolver resolver = new RestComponentResolver(resources, providers);
-        resolver.addSingleton(instance);
-    }
-
-    public void addPerRequest(Class clazz) {
-        LOG.debug("addPerRequest << " + clazz);
-        ResourceBinder resources = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        ProviderBinder providers = ProviderBinder.getInstance();
-        RestComponentResolver resolver = new RestComponentResolver(resources, providers);
-        resolver.addPerRequest(clazz);
-    }
-
-    public void addFactory(ObjectFactory<AbstractResourceDescriptor> factory) {
+    public void publish(Application application){
         ResourceBinder binder = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        binder.addResource(factory);
+        ApplicationProviderBinder providerBinder =
+                (ApplicationProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
+        ApplicationPublisher applicationPublisher = new ApplicationPublisher(binder, providerBinder);
+        applicationPublisher.publish(application);
     }
-
 
     public void publishPerRequestGroovyScript(String resourcePath, String name) {
         GroovyResourcePublisher groovyPublisher =
