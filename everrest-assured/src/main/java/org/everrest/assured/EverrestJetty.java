@@ -26,11 +26,21 @@ import org.everrest.core.ResponseFilter;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.*;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestNGListener;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.annotations.Listeners;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.ext.*;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Field;
 
 
@@ -140,15 +150,7 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
                 for (Field field : fields) {
                     try {
                         if (isRestResource(field.getType())) {
-                            field.setAccessible(true);
-                            Object fieldInstance = field.get(instance);
-                            if (fieldInstance != null) {
-                                httpServer.addSingleton(fieldInstance);
-                            } else {
-                                ///httpServer.addPerRequest(field.getType());
-                                httpServer.addFactory(new TestResourceFactory(field.getType(), instance, field));
-                            }
-
+                            httpServer.addRestResource(instance, field);
                         } else if (javax.servlet.Filter.class.isAssignableFrom(field.getType())) {
                             field.setAccessible(true);
                             Object fieldInstance = field.get(instance);
