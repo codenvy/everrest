@@ -21,16 +21,36 @@ package org.everrest.assured;
 import com.jayway.restassured.RestAssured;
 
 import org.everrest.core.Filter;
+import org.everrest.core.FilterDescriptor;
+import org.everrest.core.ObjectFactory;
+import org.everrest.core.ObjectModel;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.ResponseFilter;
+import org.everrest.core.impl.EverrestApplication;
+import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.provider.ProviderDescriptorImpl;
+import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
+import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.method.MethodInvokerFilter;
+import org.everrest.core.provider.ProviderDescriptor;
+import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.*;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestNGListener;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.annotations.Listeners;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.ext.*;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Field;
 
 
@@ -135,20 +155,17 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
     private void initRestResource(ITestNGMethod... testMethods) {
         for (ITestNGMethod testMethod : testMethods) {
             Object instance = testMethod.getInstance();
+
             if (hasEverrestJettyListenerTestHierarchy(instance.getClass())) {
+                EverrestApplication everrest = new EverrestApplication();
                 Field[] fields = instance.getClass().getDeclaredFields();
                 for (Field field : fields) {
                     try {
                         if (isRestResource(field.getType())) {
-                            field.setAccessible(true);
-                            Object fieldInstance = field.get(instance);
-                            if (fieldInstance != null) {
-                                httpServer.addSingleton(fieldInstance);
-                            } else {
-                                ///httpServer.addPerRequest(field.getType());
-                                httpServer.addFactory(new TestResourceFactory(field.getType(), instance, field));
+                            ObjectFactory<? extends ObjectModel> factory = createFactory(instance, field);
+                            if (factory != null) {
+                                everrest.addFactory(factory);
                             }
-
                         } else if (javax.servlet.Filter.class.isAssignableFrom(field.getType())) {
                             field.setAccessible(true);
                             Object fieldInstance = field.get(instance);
@@ -162,10 +179,11 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
                         e.printStackTrace();
                     }
                 }
-
+                if (everrest.getFactories().size() > 0) {
+                    httpServer.publish(everrest);
+                }
             }
         }
-
     }
 
 
@@ -215,4 +233,22 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
                resourceClass.isAssignableFrom(ResponseFilter.class);
     }
 
+    public ObjectFactory<? extends ObjectModel> createFactory(Object testObject, Field field) {
+        ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
+        Class clazz = (Class)field.getType();
+        if (clazz.getAnnotation(Provider.class) != null) {
+            ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz);
+            pDescriptor.accept(rdv);
+            return new TestResourceFactory<>(pDescriptor, testObject, field);
+        } else if (clazz.getAnnotation(javax.servlet.Filter.class) != null) {
+            FilterDescriptor fDescriptor = new FilterDescriptorImpl(clazz);
+            fDescriptor.accept(rdv);
+            return new TestResourceFactory<>(fDescriptor, testObject, field);
+        } else if (clazz.getAnnotation(Path.class) != null) {
+            AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz);
+            rDescriptor.accept(rdv);
+            return new TestResourceFactory<>(rDescriptor, testObject, field);
+        }
+        return null;
+    }
 }

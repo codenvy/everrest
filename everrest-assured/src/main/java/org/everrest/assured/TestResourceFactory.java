@@ -18,34 +18,57 @@
 package org.everrest.assured;
 
 import org.everrest.core.ApplicationContext;
+import org.everrest.core.FieldInjector;
 import org.everrest.core.ObjectFactory;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.ObjectModel;
+import org.everrest.core.PerRequestObjectFactory;
+import org.everrest.core.SingletonObjectFactory;
+import org.everrest.core.impl.provider.ProviderDescriptorImpl;
+import org.everrest.core.impl.resource.ResourceDescriptorValidator;
+import org.everrest.core.provider.ProviderDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 /** Get instance of the REST resource from test class in request time. */
-public class TestResourceFactory implements ObjectFactory<AbstractResourceDescriptor> {
+public class TestResourceFactory<T extends ObjectModel> implements ObjectFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestResourceFactory.class);
-    private final Object   testParent;
-    private final Field    resourceField;
-    private final Class<?> resourceClass;
+    private final Object testParent;
+    private final Field  resourceField;
+    private final T      model;
 
-    public TestResourceFactory(Class<?> resourceClass, Object testParent, Field resourceField) {
-        this.resourceClass = resourceClass;
+    public TestResourceFactory(T model, Object testParent, Field resourceField) {
+        this.model = model;
         this.testParent = testParent;
         this.resourceField = resourceField;
+        this.resourceField.setAccessible(true);
     }
 
     /** @see org.everrest.core.ObjectFactory#getInstance(org.everrest.core.ApplicationContext) */
     @Override
     public Object getInstance(ApplicationContext context) {
         try {
-            resourceField.setAccessible(true);
-            return resourceField.get(testParent);
+
+            Object object = resourceField.get(testParent);
+            if (object != null) {
+                ProviderDescriptor descriptor = new ProviderDescriptorImpl(object);
+                descriptor.accept(ResourceDescriptorValidator.getInstance());
+                List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+                if (fieldInjectors != null && fieldInjectors.size() > 0) {
+                    fieldInjectors.stream()
+                                  .filter(injector -> injector.getAnnotation() != null)
+                                  .forEach(injector -> injector.inject(object, context));
+                }
+                return new SingletonObjectFactory<>(descriptor, object).getInstance(context);
+            } else {
+                ProviderDescriptor descriptor = new ProviderDescriptorImpl(resourceField.getType());
+                descriptor.accept(ResourceDescriptorValidator.getInstance());
+                return new PerRequestObjectFactory<>(descriptor).getInstance(context);
+            }
+
         } catch (IllegalArgumentException e) {
             LOG.error(e.getLocalizedMessage(), e);
             throw new RuntimeException(e.getLocalizedMessage(), e);
@@ -57,8 +80,8 @@ public class TestResourceFactory implements ObjectFactory<AbstractResourceDescri
 
     /** @see org.everrest.core.ObjectFactory#getObjectModel() */
     @Override
-    public AbstractResourceDescriptor getObjectModel() {
-        return new AbstractResourceDescriptorImpl(resourceClass);
+    public T getObjectModel() {
+        return model;
     }
 
 }
