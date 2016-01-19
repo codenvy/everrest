@@ -28,6 +28,7 @@ import org.everrest.assured.util.IoUtil;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.ApplicationProviderBinderHelper;
 import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.ResourceBinderImpl;
@@ -206,6 +207,10 @@ public class JettyHttpServer {
         LOG.debug("reset >>");
         ResourceBinder binder = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
         ((ResourceBinderImpl)binder).clear();
+        ApplicationProviderBinder providerBinder =
+                (ApplicationProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
+
+        ApplicationProviderBinderHelper.resetApplicationProviderBinder(providerBinder);
         ProviderBinder.setInstance(null);
 
     }
