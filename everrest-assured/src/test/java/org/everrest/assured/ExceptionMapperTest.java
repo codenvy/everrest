@@ -19,10 +19,10 @@ import org.mockito.testng.MockitoTestNGListener;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.ext.ExceptionMapper;
-
 import static com.jayway.restassured.RestAssured.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /** Test of exception mapper testing. */
 @Listeners(value = {EverrestJetty.class, MockitoTestNGListener.class})
@@ -43,6 +43,18 @@ public class ExceptionMapperTest {
         given().
                 pathParam("id", "123-1235-555").
                 expect().statusCode(404).when().get("/books/{id}");
+
+        verify(bookStorage).getBook(eq("123-1235-555"));
+    }
+
+    @Test
+    public void shouldworkTwoTimes() throws Exception {
+        when(bookStorage.getBook(eq("123-1235-555"))).thenReturn(null);
+
+        //unsecure call to rest service
+        given().
+                       pathParam("id", "123-1235-555").
+                       expect().statusCode(404).when().get("/books/{id}");
 
         verify(bookStorage).getBook(eq("123-1235-555"));
     }
