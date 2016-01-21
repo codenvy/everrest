@@ -21,7 +21,7 @@
     </parent>
     <groupId>org.everrest</groupId>
     <artifactId>everrest-parent</artifactId>
-    <version>1.12.0</version>
+    <version>1.13.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>EverRest :: Parent</name>
     <description>everREST is a project which provides a way to build RESTful applications
@@ -81,7 +81,7 @@
     <scm>
         <connection>scm:git:git@github.com:codenvy/everrest.git</connection>
         <developerConnection>scm:git:git@github.com:codenvy/everrest.git</developerConnection>
-        <tag>1.12.0</tag>
+        <tag>HEAD</tag>
         <url>https://github.com/codenvy/everrest/</url>
     </scm>
     <distributionManagement>
