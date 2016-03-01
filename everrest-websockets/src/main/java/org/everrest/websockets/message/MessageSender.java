@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.everrest.websockets.message;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.websocket.CloseReason;
 import javax.websocket.EncodeException;
 import javax.websocket.SendHandler;
@@ -26,8 +29,10 @@ import static javax.websocket.RemoteEndpoint.Async;
  * @author andrew00x
  */
 public class MessageSender {
+
+    private static final Logger LOG                       = LoggerFactory.getLogger(MessageSender.class);
     // todo: make configurable
-    private final int maxNumberOfMessageInQueue = 10000;
+    private final        int    maxNumberOfMessageInQueue = 1_000_000_000;
 
     private final Session                    session;
     private final Async                      async;
@@ -75,6 +80,7 @@ public class MessageSender {
 
     private boolean isMaxQueueCapacityExceeded() {
         final int newSize = sendQueue.size() + 1;
+        LOG.debug(" SendQueue sieze {} ,  maxNumberOfMessageInQueue {}", newSize, maxNumberOfMessageInQueue);
         return newSize > maxNumberOfMessageInQueue;
     }
 
@@ -140,6 +146,11 @@ public class MessageSender {
     private class MessageSendHandler implements SendHandler {
         @Override
         public void onResult(SendResult result) {
+            LOG.debug(" SendQueue size {} ,  maxNumberOfMessageInQueue {} result {}",
+                      sendQueue.size(),
+                      maxNumberOfMessageInQueue,
+                      result.isOK());
+
             if (!result.isOK()) {
                 try {
                     session.close();
