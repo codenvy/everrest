@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.12.1](https://github.com/codenvy/everrest/tree/1.12.1) (2016-03-01)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.12.0...1.12.1)
+
+**Merged pull requests:**
+
+- CHE-614 increase maxNumberOfMessageInQueue for websocket messages [\#20](https://github.com/codenvy/everrest/pull/20) ([skabashnyuk](https://github.com/skabashnyuk))
+- change README to markdown format for better reading [\#18](https://github.com/codenvy/everrest/pull/18) ([freewind](https://github.com/freewind))
+- Added changes log [\#16](https://github.com/codenvy/everrest/pull/16) ([skabashnyuk](https://github.com/skabashnyuk))
+
 ## [1.12.0](https://github.com/codenvy/everrest/tree/1.12.0) (2016-01-21)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.11.0...1.12.0)
 
@@ -53,6 +62,10 @@
 ## [1.4.0](https://github.com/codenvy/everrest/tree/1.4.0) (2015-03-20)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.3.0...1.4.0)
 
+**Merged pull requests:**
+
+- Fix map array deserialization [\#4](https://github.com/codenvy/everrest/pull/4) ([garagatyi](https://github.com/garagatyi))
+
 ## [1.3.0](https://github.com/codenvy/everrest/tree/1.3.0) (2015-03-05)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.2.0...1.3.0)
 
@@ -70,6 +83,7 @@
 
 **Merged pull requests:**
 
+- CLDIDE-1995; allow to use guice interceptors and proxies; [\#3](https://github.com/codenvy/everrest/pull/3) ([mshaposhnik](https://github.com/mshaposhnik))
 - Cldide 1914 [\#2](https://github.com/codenvy/everrest/pull/2) ([mshaposhnik](https://github.com/mshaposhnik))
 
 ## [1.1.16](https://github.com/codenvy/everrest/tree/1.1.16) (2014-08-19)
