@@ -232,11 +232,7 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
             ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz);
             pDescriptor.accept(rdv);
             return new TestResourceFactory<>(pDescriptor, testObject, field);
-        } else if (clazz.getAnnotation(Filter.class) != null &&
-                   (RequestFilter.class.isAssignableFrom(clazz)
-                    || ResponseFilter.class.isAssignableFrom(clazz)
-                    || MethodInvokerFilter.class.isAssignableFrom(clazz)
-                   )) {
+        } else if (clazz.getAnnotation(Filter.class) != null) {
             FilterDescriptor fDescriptor = new FilterDescriptorImpl(clazz);
             fDescriptor.accept(rdv);
             return new TestResourceFactory<>(fDescriptor, testObject, field);

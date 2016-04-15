@@ -51,7 +51,7 @@ public class MethodInvokerFilterTest {
     private BookService bookService;
 
     @Test
-    public void shouldChangeMethodName() throws Exception {
+    public void shouldBeAbleToGetBook() throws Exception {
         Book book = new Book();
         book.setId("123-1235-555");
         when(bookStorage.getBook(eq("123-1235-555"))).thenReturn(book);
