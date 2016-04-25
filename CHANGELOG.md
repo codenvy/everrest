@@ -1,9 +1,16 @@
 # Change Log
 
+## [1.12.2](https://github.com/codenvy/everrest/tree/1.12.2) (2016-04-18)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.12.1...1.12.2)
+
+**Pull requests merged:**
+
+- Fixed ClassCastException [\#22](https://github.com/codenvy/everrest/pull/22) ([skabashnyuk](https://github.com/skabashnyuk))
+
 ## [1.12.1](https://github.com/codenvy/everrest/tree/1.12.1) (2016-03-01)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.12.0...1.12.1)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - CHE-614 increase maxNumberOfMessageInQueue for websocket messages [\#20](https://github.com/codenvy/everrest/pull/20) ([skabashnyuk](https://github.com/skabashnyuk))
 - change README to markdown format for better reading [\#18](https://github.com/codenvy/everrest/pull/18) ([freewind](https://github.com/freewind))
@@ -12,7 +19,7 @@
 ## [1.12.0](https://github.com/codenvy/everrest/tree/1.12.0) (2016-01-21)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.11.0...1.12.0)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - Fix filter deployment [\#15](https://github.com/codenvy/everrest/pull/15) ([skabashnyuk](https://github.com/skabashnyuk))
 - Reset internal stated of ApplicationProviderBinder [\#14](https://github.com/codenvy/everrest/pull/14) ([skabashnyuk](https://github.com/skabashnyuk))
@@ -20,7 +27,7 @@
 ## [1.11.0](https://github.com/codenvy/everrest/tree/1.11.0) (2016-01-19)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.10.0...1.11.0)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - Setup maven license plugin. Update headers [\#13](https://github.com/codenvy/everrest/pull/13) ([skabashnyuk](https://github.com/skabashnyuk))
 - EVERREST-81 Correctly provide instances for test [\#12](https://github.com/codenvy/everrest/pull/12) ([skabashnyuk](https://github.com/skabashnyuk))
@@ -31,11 +38,11 @@
 ## [1.10.0](https://github.com/codenvy/everrest/tree/1.10.0) (2015-10-05)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.9.0...1.10.0)
 
-**Closed issues:**
+**Issues with no labels:**
 
 - MultivaluedMapEntityProvider fail in case the request inputStream has already been consumed [\#7](https://github.com/codenvy/everrest/issues/7)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - Rework custom path binding for guice 4.0 [\#8](https://github.com/codenvy/everrest/pull/8) ([andrew00x](https://github.com/andrew00x))
 
@@ -54,7 +61,7 @@
 ## [1.5.0](https://github.com/codenvy/everrest/tree/1.5.0) (2015-06-22)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.4.0...1.5.0)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - Safety fixes in interpretation of X-Forwarded-Host [\#6](https://github.com/codenvy/everrest/pull/6) ([tareqhs](https://github.com/tareqhs))
 - Initial support for X-Forwarded-Host in Everrest [\#5](https://github.com/codenvy/everrest/pull/5) ([tareqhs](https://github.com/tareqhs))
@@ -62,7 +69,7 @@
 ## [1.4.0](https://github.com/codenvy/everrest/tree/1.4.0) (2015-03-20)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.3.0...1.4.0)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - Fix map array deserialization [\#4](https://github.com/codenvy/everrest/pull/4) ([garagatyi](https://github.com/garagatyi))
 
@@ -81,7 +88,7 @@
 ## [1.1.14.1](https://github.com/codenvy/everrest/tree/1.1.14.1) (2014-10-09)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.1.16...1.1.14.1)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - CLDIDE-1995; allow to use guice interceptors and proxies; [\#3](https://github.com/codenvy/everrest/pull/3) ([mshaposhnik](https://github.com/mshaposhnik))
 - Cldide 1914 [\#2](https://github.com/codenvy/everrest/pull/2) ([mshaposhnik](https://github.com/mshaposhnik))
@@ -89,7 +96,7 @@
 ## [1.1.16](https://github.com/codenvy/everrest/tree/1.1.16) (2014-08-19)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.1.15...1.1.16)
 
-**Merged pull requests:**
+**Pull requests merged:**
 
 - Fix log filling when locale not English [\#1](https://github.com/codenvy/everrest/pull/1) ([stephanedaviet](https://github.com/stephanedaviet))
 
