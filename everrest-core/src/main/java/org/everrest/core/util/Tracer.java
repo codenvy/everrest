@@ -12,7 +12,6 @@ package org.everrest.core.util;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.GenericContainerResponse;
-import org.everrest.core.impl.ApplicationContextImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,22 +22,21 @@ import static java.lang.String.format;
  * Collector for trace messages. This class designed for internal usage only. Regular users of EverRest framework are
  * not expected to use this class directly.
  * <p/>
- * To turn on the tracing feature client must send query parameter <code>tracing=true</code>.
- * Trace messages added by method <code>trace</code>. All collected messages will be sent to client as headers. Each
+ * To turn on the tracing feature client must send query parameter {@code tracing=true}.
+ * Trace messages added by method {@code trace}. All collected messages will be sent to client as headers. Each
  * trace message is represented as separate HTTP header. The name of header has next pattern
- * <code>EverRest-Trace-XXX</code>, where XXX is number of message.
+ * {@code EverRest-Trace-XXX}, where XXX is number of message.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class Tracer {
     /**
      * Check is tracing feature enabled.
      *
-     * @return <code>true</code> if tracing enabled and <code>false</code> otherwise.
+     * @return {@code true} if tracing enabled and {@code false} otherwise.
      */
     public static boolean isTracingEnabled() {
-        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        ApplicationContext context = ApplicationContext.getCurrent();
         if (context == null) {
             throw new IllegalStateException("ApplicationContext is not initialized yet. ");
         }
@@ -58,7 +56,19 @@ public final class Tracer {
     }
 
     /**
-     * Add all collected trace messages to specified instance of <code>response</code> as HTTP headers.
+     * Add trace message.
+     *
+     * @param format
+     *         the trace message's format
+     * @param args
+     *         the arguments for string format
+     */
+    public static void trace(String format, Object... args) {
+        trace(String.format(format, args));
+    }
+
+    /**
+     * Add all collected trace messages to specified instance of {@code response} as HTTP headers.
      * This method must be invoked at the end of request lifecycle.
      *
      * @param response
@@ -71,7 +81,7 @@ public final class Tracer {
     }
 
     private static TraceHolder getTraceHolder() {
-        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        ApplicationContext context = ApplicationContext.getCurrent();
         if (context == null) {
             throw new IllegalStateException("ApplicationContext is not initialized yet. ");
         }
@@ -83,8 +93,8 @@ public final class Tracer {
         return t;
     }
 
-    private static final class TraceHolder {
-        private final List<String> traces = new ArrayList<String>();
+    static class TraceHolder {
+        private final List<String> traces = new ArrayList<>();
 
         void addTrace(String message) {
             traces.add(message);

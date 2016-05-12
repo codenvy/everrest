@@ -4,28 +4,23 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * <p/>
  * Contributors:
- *   Codenvy, S.A. - initial API and implementation
+ * Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.util.Locale;
 
 /**
- * Reflection for HTTP language tag.
+ * HTTP language tag.
  *
  * @author andrew00x
  */
 public class Language {
-    /** See {@link RuntimeDelegate#createHeaderDelegate(Class)}. */
-    private static final HeaderDelegate<Locale> DELEGATE =
-            RuntimeDelegate.getInstance().createHeaderDelegate(Locale.class);
-
-    /** @see {@link Locale} */
     private final Locale locale;
+    private final String primaryTag;
+    private final String subTag;
 
     /**
      * Constructs new instance of Language.
@@ -36,38 +31,29 @@ public class Language {
      */
     public Language(Locale locale) {
         this.locale = locale;
+
+        primaryTag = locale.getLanguage().toLowerCase();
+        subTag = locale.getCountry().toLowerCase();
     }
 
     /**
-     * Create {@link Locale} from Language Tag string.
-     *
-     * @param language
-     *         string representation of Language Tag, See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10"
-     *         >HTTP/1.1 documentation</a>}.
-     * @return {@link Locale}
-     */
-    public static Locale getLocale(String language) {
-        return DELEGATE.fromString(language);
-    }
-
-    /**
-     * Get primary-tag of language tag, e. g. if Language tag 'en-gb' then 'en' is primary-tag. See {@link <a
-     * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}.
+     * Gets primary-tag of language tag, e. g. if Language tag 'en-gb' then 'en' is primary-tag. See <a
+     * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>.
      *
      * @return the primary-tag of Language tag
      */
     public String getPrimaryTag() {
-        return locale.getLanguage().toLowerCase();
+        return primaryTag;
     }
 
     /**
-     * Get sub-tag of language tag, e. g. if Language tag 'en-gb' then 'gb' is sub-tag. See {@link <a
-     * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>}.
+     * Gets sub-tag of language tag, e. g. if Language tag 'en-gb' then 'gb' is sub-tag. See <a
+     * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec3.10" >HTTP/1.1 documentation</a>.
      *
      * @return the sub-tag of Language tag
      */
     public String getSubTag() {
-        return locale.getCountry().toLowerCase();
+        return subTag;
     }
 
     /** @return @see {@link Locale} */
@@ -76,32 +62,51 @@ public class Language {
     }
 
     /**
-     * Check is two Language instance is compatible.
+     * Checks that two Languages instance are compatible.
      *
      * @param other
      *         checked language
-     * @return true if given Language is compatible with current false otherwise
+     * @return {@code true} if given Language is compatible with current {@code false} otherwise
      */
     public boolean isCompatible(Language other) {
         if (other == null) {
             return false;
         }
-        if ("*".equals(getPrimaryTag())) {
+        if ("*".equals(primaryTag)) {
             return true;
         }
         // primary tags match and sub-tag not specified (any matches)
         // if 'accept-language' is 'en' then 'en-us' and 'en-gb' is matches
-        return (getPrimaryTag().equalsIgnoreCase(other.getPrimaryTag()) && getSubTag().isEmpty())
-               || this.toString().equalsIgnoreCase(other.toString());
+        return primaryTag.equals(other.primaryTag)
+               && (subTag.isEmpty() || subTag.equals(other.subTag));
     }
 
-
+    @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getPrimaryTag());
-        if (!getSubTag().isEmpty()) {
-            sb.append('-').append(getSubTag());
+        sb.append(primaryTag);
+        if (!subTag.isEmpty()) {
+            sb.append('-').append(subTag);
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Language)) {
+            return false;
+        }
+
+        Language other = (Language)o;
+        return locale.equals(other.locale);
+    }
+
+    @Override
+    public int hashCode() {
+        int hashcode = 8;
+        return hashcode * 31 + locale.hashCode();
     }
 }

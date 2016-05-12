@@ -12,7 +12,6 @@ package org.everrest.core.util;
 
 import org.everrest.core.ExtMultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,6 +21,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author andrew00x
@@ -42,187 +44,116 @@ public class CaselessUnmodifiableMultivaluedMapTest {
 
     @Test
     public void testGet() {
-        Assert.assertEquals("a", map.getFirst("k"));
-        Assert.assertEquals(Arrays.asList("a", "b"), map.get("k"));
-        Assert.assertEquals("c", map.getFirst("E"));
-        Assert.assertEquals(Arrays.asList("d", "e"), map.get("Y"));
+        assertEquals("a", map.getFirst("k"));
+        assertEquals(Arrays.asList("a", "b"), map.get("k"));
+        assertEquals("c", map.getFirst("E"));
+        assertEquals(Arrays.asList("d", "e"), map.get("Y"));
     }
 
     @Test
     public void testGetList() {
-        Assert.assertEquals(Arrays.asList("a", "b"), map.getList("k"));
+        assertEquals(Arrays.asList("a", "b"), map.getList("k"));
         List<String> list = map.getList("x");
-        Assert.assertNotNull(list);
-        Assert.assertEquals(0, list.size());
+        assertNotNull(list);
+        assertEquals(0, list.size());
     }
 
+    @Test(expected = UnsupportedOperationException.class)
     public void tesClear() {
-        try {
-            map.clear();
-            Assert.fail("UnsupportedOperationException should be thrown fro 'clear'");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.clear();
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testRemove() {
-        try {
-            map.remove("k");
-            Assert.fail("UnsupportedOperationException should be thrown for 'remove'");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.remove("k");
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testPut() {
-        try {
-            map.put("k", new ArrayList<String>());
-            Assert.fail("UnsupportedOperationException should be thrown for 'put'");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.put("k", new ArrayList<>());
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testPutAll() {
-        try {
-            map.putAll(new MultivaluedMapImpl());
-            Assert.fail("UnsupportedOperationException should be thrown for 'puAll'");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.putAll(new MultivaluedMapImpl());
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testPutSingle() {
-        try {
-            map.putSingle("k", "value");
-            Assert.fail("UnsupportedOperationException should be thrown for 'putSingle'");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.putSingle("k", "value");
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testAdd() {
-        try {
-            map.add("k", "value");
-            Assert.fail("UnsupportedOperationException should be thrown for 'add'");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.add("k", "value");
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testEntryRemove() {
-        try {
-            map.entrySet().remove(new java.util.Map.Entry<String, List<String>>() {
-                public String getKey() {
-                    return "K";
-                }
+        map.entrySet().remove(new java.util.Map.Entry<String, List<String>>() {
+            public String getKey() {
+                return "K";
+            }
 
-                public List<String> getValue() {
-                    return Arrays.asList("a", "b");
-                }
+            public List<String> getValue() {
+                return Arrays.asList("a", "b");
+            }
 
-                public List<String> setValue(List<String> value) {
-                    return Arrays.asList("a", "b");
-                }
-            });
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+            public List<String> setValue(List<String> value) {
+                return Arrays.asList("a", "b");
+            }
+        });
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testEntryRemoveAll() {
-        try {
-            map.entrySet().removeAll(new ArrayList());
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.entrySet().removeAll(new ArrayList());
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testEntryRetainAll() {
-        try {
-            map.entrySet().retainAll(new ArrayList());
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.entrySet().retainAll(new ArrayList());
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testEntryIteratorRemove() {
-        try {
-            Iterator<Map.Entry<String, List<String>>> i = map.entrySet().iterator();
-            while (i.hasNext()) {
-                i.remove();
-            }
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        Iterator<Map.Entry<String, List<String>>> i = map.entrySet().iterator();
+        i.remove();
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testEntryUpdateValue() {
-        try {
-            map.entrySet().iterator().next().setValue(new ArrayList<String>());
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.entrySet().iterator().next().setValue(new ArrayList<>());
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testKeysRemove() {
-        try {
-            map.keySet().remove("K");
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.keySet().remove("K");
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testKeysRemoveAll() {
-        try {
-            map.keySet().removeAll(Arrays.asList("k", "y", "e"));
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.keySet().removeAll(Arrays.asList("k", "y", "e"));
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testKeysRetainAll() {
-        try {
-            map.keySet().retainAll(Arrays.asList("k", "y"));
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.keySet().retainAll(Arrays.asList("k", "y"));
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testKeysIteratorRemove() {
-        try {
-            Iterator<String> i = map.keySet().iterator();
-            while (i.hasNext()) {
-                i.remove();
-            }
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        Iterator<String> i = map.keySet().iterator();
+        i.remove();
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testClearList() {
-        try {
-            map.get("k").clear();
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.get("k").clear();
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testClearKeys() {
-        try {
-            map.keySet().clear();
-            Assert.fail("UnsupportedOperationException should be thrown");
-        } catch (UnsupportedOperationException e) {
-        }
+        map.keySet().clear();
     }
 }

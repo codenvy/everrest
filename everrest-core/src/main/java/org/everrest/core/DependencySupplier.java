@@ -11,38 +11,32 @@
 package org.everrest.core;
 
 /**
- * Implementation of DependencySupplier should be able to provide objects that
- * required for constructors or fields of Resource or Provider.
+ * Implementation of DependencySupplier should be able to provide objects that required for constructors or fields of Resource or Provider.
  *
- * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface DependencySupplier {
     /**
-     * Get object that is approach do description <code>parameter</code>.
+     * Get object that is approach do description of {@code parameter}.
      *
      * @param parameter
      *         required parameter description
-     * @return object of required type or null if instance described by
-     * <code>parameter</code> may not be produced
+     * @return object of required type or null if instance described by {@code parameter} may not be produced
      * @throws RuntimeException
-     *         if any error occurs while creating instance
-     *         described by <code>parameter</code>
+     *         if any error occurs while creating instance described by {@code parameter}
      * @see Parameter#getParameterClass()
      * @see Parameter#getGenericType()
      */
-    Object getComponent(Parameter parameter);
+    Object getInstance(Parameter parameter);
 
     /**
-     * Get instance of <code>type</code>.
+     * Get instance of {@code type}.
      *
      * @param type
      *         required parameter class
-     * @return object of required type or null if instance described by
-     * <code>type</code> may not be produced
+     * @return object of required type or null if instance described by {@code type} may not be produced
      * @throws RuntimeException
-     *         if any error occurs while creating instance
-     *         of <code>type</code>
+     *         if any error occurs while creating instance of {@code type}
      */
-    Object getComponent(Class<?> type);
+    Object getInstance(Class<?> type);
 }

@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl.method;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public final class StringProducer extends BaseTypeProducer {
     /**
      * Don't need to do anything just return passed in method String as is.

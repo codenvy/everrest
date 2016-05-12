@@ -17,11 +17,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
- * Transform {@link java.lang.Exception} to JAX-RS response.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: DefaultExceptionMapper.java 2262 2010-04-09 15:21:21Z aparfonov
- *          $
+ * Transforms {@link java.lang.Exception} to JAX-RS response.
  */
 public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
 
@@ -31,11 +27,11 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
         if (message == null) {
             message = exception.getClass().getName();
         }
-        return Response //
-                .status(500) //
-                .entity(message) //
-                .type(MediaType.TEXT_PLAIN) //
-                .header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message") //
+        return Response
+                .status(500)
+                .entity(message)
+                .type(MediaType.TEXT_PLAIN)
+                .header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message")
                 .build();
     }
 }

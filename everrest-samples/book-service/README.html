@@ -61,24 +61,28 @@
 <li>EverRest components.
     <p><i>org.everrest.sample.book.BookApplication</i> - application deployer.</p>
       <pre>
-      public class BookApplication extends Application
-      {
-         @Override
-         public Set&lt;Class&lt;?&gt;&gt; getClasses()
-         {
-            Set&lt;Class&lt;?&gt;&gt; cls = new HashSet&lt;Class&lt;?&gt;&gt;(1);
-            cls.add(BookService.class);
-            return cls;
-         }
+    public class BookApplication extends Application {
 
-         @Override
-         public Set&lt;Object&gt; getSingletons()
-         {
-            Set&lt;Object&gt; objs = new HashSet&lt;Object&gt;(1);
-            objs.add(new BookNotFoundExceptionMapper());
-            return objs;
-         }
-      }
+        private final Set&lt;Class&lt;?&gt;&gt; classes;
+        private final Set&lt;Object&gt; singletons;
+
+        public BookApplication() {
+            classes = new HashSet&lt;&gt;(1);
+            singletons = new HashSet&lt;&gt;(1);
+            classes.add(BookService.class);
+            singletons.add(new BookNotFoundExceptionMapper());
+        }
+
+        @Override
+        public Set&lt;Class&lt;?&gt;&gt; getClasses() {
+            return classes;
+        }
+
+        @Override
+        public Set&lt;Object&gt; getSingletons() {
+            return singletons;
+        }
+    }
       </pre>
     <p><i>org.everrest.sample.book.Book</i> - simple Java Bean that will be used to transfer data via JSON.</p>
 

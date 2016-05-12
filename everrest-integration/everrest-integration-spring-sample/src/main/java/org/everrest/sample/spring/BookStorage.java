@@ -14,10 +14,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class BookStorage {
     private static int idCounter = 100;
 
@@ -26,7 +22,7 @@ public class BookStorage {
         return Integer.toString(idCounter);
     }
 
-    private Map<String, Book> books = new ConcurrentHashMap<String, Book>();
+    private Map<String, Book> books = new ConcurrentHashMap<>();
 
     public BookStorage() {
         init();

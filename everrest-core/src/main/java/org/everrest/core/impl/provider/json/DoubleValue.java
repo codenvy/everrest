@@ -10,21 +10,10 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider.json;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class DoubleValue extends NumericValue {
 
-    /** Value. */
     private final double value;
 
-    /**
-     * Constructs new DoubleValue.
-     *
-     * @param value
-     *         the value.
-     */
     public DoubleValue(double value) {
         this.value = value;
     }

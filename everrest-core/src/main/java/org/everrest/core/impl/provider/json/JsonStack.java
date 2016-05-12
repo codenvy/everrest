@@ -13,16 +13,11 @@ package org.everrest.core.impl.provider.json;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 class JsonStack<T> {
-
     private final List<T> elements;
 
     JsonStack() {
-        elements = new ArrayList<T>(16);
+        elements = new ArrayList<>();
     }
 
     boolean isEmpty() {

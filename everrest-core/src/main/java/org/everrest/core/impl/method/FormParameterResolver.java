@@ -19,45 +19,61 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+
+import static org.everrest.core.util.ParameterizedTypeImpl.newParameterizedType;
 
 /**
- * @author andrew00x
+ * Creates object that might be injected to JAX-RS component through method (constructor) parameter or field annotated with
+ * &#064;FormParam annotation.
  */
-public class FormParameterResolver extends ParameterResolver<FormParam> {
-    /** Form generic type. */
-    private static final Type FORM_TYPE = (ParameterizedType)MultivaluedMapImpl.class.getGenericInterfaces()[0];
-
-    /** See {@link FormParam}. */
-    private final FormParam formParam;
+public class FormParameterResolver implements ParameterResolver<FormParam> {
+    private final FormParam           formParam;
+    private final TypeProducerFactory typeProducerFactory;
 
     /**
      * @param formParam
      *         FormParam
      */
-    FormParameterResolver(FormParam formParam) {
+    FormParameterResolver(FormParam formParam, TypeProducerFactory typeProducerFactory) {
         this.formParam = formParam;
+        this.typeProducerFactory = typeProducerFactory;
     }
 
-
-    @SuppressWarnings({"unchecked"})
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         String param = this.formParam.value();
-        TypeProducer typeProducer =
-                ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
+        TypeProducer typeProducer = typeProducerFactory.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
 
+        MultivaluedMap<String, String> form = readForm(context, !parameter.isEncoded());
+        return typeProducer.createValue(param, form, parameter.getDefaultValue());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private MultivaluedMap<String, String> readForm(ApplicationContext context, boolean decode) throws java.io.IOException {
         MediaType contentType = context.getHttpHeaders().getMediaType();
-        MessageBodyReader reader =
-                context.getProviders().getMessageBodyReader(MultivaluedMap.class, FORM_TYPE, null, contentType);
+        ParameterizedType multivaluedMapType = newParameterizedType(MultivaluedMap.class, String.class, String.class);
+        MessageBodyReader reader = context.getProviders().getMessageBodyReader(MultivaluedMap.class, multivaluedMapType, null, contentType);
         if (reader == null) {
-            throw new IllegalStateException("Can't find appropriate entity reader for entity type "
-                                            + MultivaluedMap.class.getName() + " and content-type " + contentType);
+            throw new IllegalStateException(String.format("Can't find appropriate entity reader for entity type %s and content-type %s",
+                                                          MultivaluedMap.class.getName(), contentType));
         }
 
-        MultivaluedMap<String, String> form =
-                (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, contentType, context
-                        .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
-        return typeProducer.createValue(param, form, parameter.getDefaultValue());
+        reader.readFrom(MultivaluedMap.class,
+                        multivaluedMapType,
+                        null,
+                        contentType,
+                        context.getHttpHeaders().getRequestHeaders(),
+                        context.getContainerRequest().getEntityStream());
+        MultivaluedMap<String, String> form;
+        if (decode) {
+            form = (MultivaluedMap<String, String>)context.getAttributes().get("org.everrest.provider.entity.decoded.form");
+        } else {
+            form = (MultivaluedMap<String, String>)context.getAttributes().get("org.everrest.provider.entity.encoded.form");
+        }
+        if (form == null) {
+            form = new MultivaluedMapImpl();
+        }
+
+        return form;
     }
 }

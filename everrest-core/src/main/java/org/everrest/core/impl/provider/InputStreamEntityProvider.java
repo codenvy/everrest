@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
+import com.google.common.io.ByteStreams;
+
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.provider.EntityProvider;
 
 import javax.ws.rs.core.MediaType;
@@ -34,7 +35,6 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream> {
         return type == InputStream.class;
     }
 
-
     @Override
     public InputStream readFrom(Class<InputStream> type,
                                 Type genericType,
@@ -42,30 +42,26 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream> {
                                 MediaType mediaType,
                                 MultivaluedMap<String, String> httpHeaders,
                                 InputStream entityStream) throws IOException {
-        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        ApplicationContext context = ApplicationContext.getCurrent();
         if (context.isAsynchronous()) {
-            // If request is asynchronous spool content of stream to file or memory.
             int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
             return IOHelper.bufferStream(entityStream, bufferSize);
         }
         return entityStream;
     }
 
-
     @Override
     public long getSize(InputStream t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return InputStream.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(InputStream t,
+    public void writeTo(InputStream in,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
@@ -73,9 +69,9 @@ public class InputStreamEntityProvider implements EntityProvider<InputStream> {
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
         try {
-            IOHelper.write(t, entityStream);
+            ByteStreams.copy(in, entityStream);
         } finally {
-            t.close();
+            in.close();
         }
     }
 }

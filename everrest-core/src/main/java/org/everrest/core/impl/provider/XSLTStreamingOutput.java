@@ -14,23 +14,18 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * This type should be used by resource methods when need to apply XSLT
- * transformation for returned {@link Source}.
+ * This type should be used by resource methods when need to apply XSLT transformation for returned {@link Source}.
  *
- * @author <a href="dkatayev@gmail.com">Dmytro Katayev</a>
- * @version $Id: XLSTStreamingOutPut.java
- * @see StreamingOutput
+ * @author Dmytro Katayev
  */
 public class XSLTStreamingOutput implements StreamingOutput {
-    private Source source;
-
+    private Source    source;
     private Templates templates;
 
     /**
@@ -46,14 +41,11 @@ public class XSLTStreamingOutput implements StreamingOutput {
         this.templates = templates;
     }
 
-    /** {@inheritDoc} . */
     @Override
     public void write(OutputStream output) throws IOException {
         try {
             Transformer transformer = templates.newTransformer();
             transformer.transform(source, new StreamResult(output));
-        } catch (TransformerConfigurationException tce) {
-            throw new IOException(tce.getMessage(), tce);
         } catch (TransformerException tre) {
             throw new IOException(tre.getMessage(), tre);
         }

@@ -13,7 +13,7 @@ package org.everrest.core.impl;
 import org.everrest.core.ExtMultivaluedMap;
 
 import javax.ws.rs.core.MultivaluedHashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +27,7 @@ public class MultivaluedMapImpl extends MultivaluedHashMap<String, String> imple
     public List<String> getList(String key) {
         List<String> list = get(key);
         if (list == null) {
-            list = new LinkedList<>();
+            list = new ArrayList<>();
             put(key, list);
         }
         return list;

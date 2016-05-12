@@ -19,8 +19,7 @@ import java.util.Map;
 /**
  * Simple dependency resolver.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class DependencySupplierImpl extends BaseDependencySupplier {
     private final Map<Class<?>, Object> dependencies = new HashMap<Class<?>, Object>();
@@ -32,13 +31,12 @@ public class DependencySupplierImpl extends BaseDependencySupplier {
         super(injectAnnotation);
     }
 
-    public void addComponent(Class<?> key, Object instance) {
+    public void addInstance(Class<?> key, Object instance) {
         dependencies.put(key, instance);
     }
 
-    /** @see org.everrest.core.DependencySupplier#getComponent(java.lang.Class) */
     @Override
-    public Object getComponent(Class<?> type) {
+    public Object getInstance(Class<?> type) {
         return dependencies.get(type);
     }
 }

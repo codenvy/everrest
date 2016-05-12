@@ -10,127 +10,63 @@
  *******************************************************************************/
 package org.everrest.core.impl.method;
 
-import junit.framework.TestCase;
+import org.everrest.core.Property;
+import org.junit.Test;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
-public class ParameterHelperTest extends TestCase {
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-    public void testString() throws Exception {
-        Method method = getClass().getMethod("m1", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(String.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(String.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(String.class, ParameterHelper.getGenericType(types[2]));
+public class ParameterHelperTest {
+    @Test
+    public void annotationsThatMightBeAppliedToProviderFields() {
+        assertEquals(2, ParameterHelper.PROVIDER_FIELDS_ANNOTATIONS.size());
+        assertThat(ParameterHelper.PROVIDER_FIELDS_ANNOTATIONS,
+                   hasItems(Context.class.getName(), Property.class.getName()));
     }
 
-    public void testByte() throws Exception {
-        Method method = getClass().getMethod("m2", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(Byte.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(Byte.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(Byte.class, ParameterHelper.getGenericType(types[2]));
+    @Test
+    public void annotationsThatMightBeAppliedToProviderConstructorParameters() {
+        assertEquals(2, ParameterHelper.PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS.size());
+        assertThat(ParameterHelper.PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS,
+                   hasItems(Context.class.getName(), Property.class.getName()));
     }
 
-    public void testShort() throws Exception {
-        Method method = getClass().getMethod("m3", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(Short.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(Short.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(Short.class, ParameterHelper.getGenericType(types[2]));
+    @Test
+    public void annotationsThatMightBeAppliedToResourceFields() {
+        assertEquals(7, ParameterHelper.RESOURCE_FIELDS_ANNOTATIONS.size());
+        assertThat(ParameterHelper.RESOURCE_FIELDS_ANNOTATIONS,
+                   hasItems(CookieParam.class.getName(), Context.class.getName(), Property.class.getName(),
+                            QueryParam.class.getName(), PathParam.class.getName(), MatrixParam.class.getName(),
+                            HeaderParam.class.getName())
+                  );
     }
 
-    public void testInteger() throws Exception {
-        Method method = getClass().getMethod("m4", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(Integer.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(Integer.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(Integer.class, ParameterHelper.getGenericType(types[2]));
+    @Test
+    public void annotationsThatMightBeAppliedToResourceConstructorParameters() {
+        assertEquals(7, ParameterHelper.RESOURCE_CONSTRUCTOR_PARAMETER_ANNOTATIONS.size());
+        assertThat(ParameterHelper.RESOURCE_CONSTRUCTOR_PARAMETER_ANNOTATIONS,
+                   hasItems(CookieParam.class.getName(), Context.class.getName(), Property.class.getName(),
+                            QueryParam.class.getName(), PathParam.class.getName(), MatrixParam.class.getName(),
+                            HeaderParam.class.getName())
+                  );
     }
 
-    public void testLong() throws Exception {
-        Method method = getClass().getMethod("m5", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(Long.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(Long.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(Long.class, ParameterHelper.getGenericType(types[2]));
+    @Test
+    public void annotationsThatMightBeAppliedToResourceMethodParameters() {
+        assertEquals(8, ParameterHelper.RESOURCE_METHOD_PARAMETER_ANNOTATIONS.size());
+        assertThat(ParameterHelper.RESOURCE_METHOD_PARAMETER_ANNOTATIONS,
+                   hasItems(CookieParam.class.getName(), Context.class.getName(), Property.class.getName(),
+                            QueryParam.class.getName(), PathParam.class.getName(), MatrixParam.class.getName(),
+                            HeaderParam.class.getName(), FormParam.class.getName())
+                  );
     }
-
-    public void testFloat() throws Exception {
-        Method method = getClass().getMethod("m6", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(Float.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(Float.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(Float.class, ParameterHelper.getGenericType(types[2]));
-    }
-
-    public void testDouble() throws Exception {
-        Method method = getClass().getMethod("m7", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(Double.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(Double.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(Double.class, ParameterHelper.getGenericType(types[2]));
-    }
-
-    public void testBoolean() throws Exception {
-        Method method = getClass().getMethod("m8", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(Boolean.class, ParameterHelper.getGenericType(types[0]));
-        assertEquals(Boolean.class, ParameterHelper.getGenericType(types[1]));
-        assertEquals(Boolean.class, ParameterHelper.getGenericType(types[2]));
-    }
-
-    public void testNull() throws Exception {
-        Method method = getClass().getMethod("m9", List.class, Set.class, SortedSet.class);
-        Type[] types = method.getGenericParameterTypes();
-        assertEquals(null, ParameterHelper.getGenericType(types[0]));
-        assertEquals(null, ParameterHelper.getGenericType(types[1]));
-        assertEquals(null, ParameterHelper.getGenericType(types[2]));
-    }
-
-    ////////////////////////////////
-    public void m1(List<String> l, Set<String> s, SortedSet<String> ss) {
-        // used for test
-    }
-
-    public void m2(List<Byte> l, Set<Byte> s, SortedSet<Byte> ss) {
-        // used for test
-    }
-
-    public void m3(List<Short> l, Set<Short> s, SortedSet<Short> ss) {
-        // used for test
-    }
-
-    public void m4(List<Integer> l, Set<Integer> s, SortedSet<Integer> ss) {
-        // used for test
-    }
-
-    public void m5(List<Long> l, Set<Long> s, SortedSet<Long> ss) {
-        // used for test
-    }
-
-    public void m6(List<Float> l, Set<Float> s, SortedSet<Float> ss) {
-        // used for test
-    }
-
-    public void m7(List<Double> l, Set<Double> s, SortedSet<Double> ss) {
-        // used for test
-    }
-
-    public void m8(List<Boolean> l, Set<Boolean> s, SortedSet<Boolean> ss) {
-        // used for test
-    }
-
-    public void m9(List l, Set s, SortedSet ss) {
-        // used for test
-    }
-
 }

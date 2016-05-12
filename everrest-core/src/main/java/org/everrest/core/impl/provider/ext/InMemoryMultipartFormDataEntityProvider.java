@@ -15,7 +15,6 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.provider.MultipartFormDataEntityProvider;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,30 +29,30 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 
-/**
- * @author andrew00x
- */
 @Provider
 @Consumes({"multipart/*"})
 public class InMemoryMultipartFormDataEntityProvider extends MultipartFormDataEntityProvider {
-    @Context
-    private HttpServletRequest httpRequest;
 
+    public InMemoryMultipartFormDataEntityProvider(@Context HttpServletRequest httpRequest) {
+        super(httpRequest);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type, Type genericType, Annotation[] annotations,
-                                       MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
+    public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type,
+                                       Type genericType,
+                                       Annotation[] annotations,
+                                       MediaType mediaType,
+                                       MultivaluedMap<String, String> httpHeaders,
                                        InputStream entityStream) throws IOException {
         try {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
             FileItemFactory factory = new InMemoryItemFactory(bufferSize);
             FileUpload upload = new FileUpload(factory);
             return upload.parseRequest(httpRequest).iterator();
         } catch (FileUploadException e) {
-            throw new IOException("Can't process multipart data item " + e);
+            throw new IOException(String.format("Can't process multipart data item, %s", e));
         }
     }
-
 }

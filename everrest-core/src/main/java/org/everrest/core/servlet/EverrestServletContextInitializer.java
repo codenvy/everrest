@@ -10,8 +10,23 @@
  *******************************************************************************/
 package org.everrest.core.servlet;
 
+import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
+import org.everrest.core.RequestHandler;
+import org.everrest.core.ResourceBinder;
+import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.EverrestConfiguration;
+import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.impl.RequestDispatcher;
+import org.everrest.core.impl.RequestHandlerImpl;
+import org.everrest.core.impl.ResourceBinderImpl;
+import org.everrest.core.impl.async.AsynchronousJobPool;
+import org.everrest.core.impl.async.AsynchronousJobService;
+import org.everrest.core.impl.async.AsynchronousProcessListWriter;
+import org.everrest.core.impl.method.filter.SecurityConstraint;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
@@ -25,18 +40,16 @@ import java.util.Set;
 
 /** @author andrew00x */
 public class EverrestServletContextInitializer {
-    public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
+    private static final Logger LOG = LoggerFactory.getLogger(EverrestServletContextInitializer.class);
 
+    public static final String EVERREST_SCAN_COMPONENTS    = "org.everrest.scan.components";
     public static final String EVERREST_SCAN_SKIP_PACKAGES = "org.everrest.scan.skip.packages";
+    public static final String JAXRS_APPLICATION           = "javax.ws.rs.Application";
 
-    public static final String JAXRS_APPLICATION = "javax.ws.rs.Application";
+    protected final ServletContext servletContext;
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestServletContextInitializer.class);
-
-    protected final ServletContext ctx;
-
-    public EverrestServletContextInitializer(ServletContext ctx) {
-        this.ctx = ctx;
+    public EverrestServletContextInitializer(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
 
     /**
@@ -72,7 +85,7 @@ public class EverrestServletContextInitializer {
         return application;
     }
 
-    public EverrestConfiguration getConfiguration() {
+    public EverrestConfiguration createConfiguration() {
         EverrestConfiguration config = new EverrestConfiguration();
         for (String parameterName : getParameterNames()) {
             config.setProperty(parameterName, getParameter(parameterName));
@@ -80,8 +93,54 @@ public class EverrestServletContextInitializer {
         return config;
     }
 
+    public RequestHandler createRequestHandler() {
+        return new RequestHandlerImpl(createRequestDispatcher(), createProviderBinder());
+    }
+
+    public RequestDispatcher createRequestDispatcher() {
+        return new RequestDispatcher(createResourceBinder());
+    }
+
+    public ResourceBinder createResourceBinder() {
+        return new ResourceBinderImpl();
+    }
+
+    public DependencySupplier getDependencySupplier() {
+        DependencySupplier dependencySupplier = (DependencySupplier)servletContext.getAttribute(DependencySupplier.class.getName());
+        if (dependencySupplier == null) {
+            dependencySupplier = new ServletContextDependencySupplier(servletContext);
+        }
+        return dependencySupplier;
+    }
+
+    public ProviderBinder createProviderBinder() {
+        return new ApplicationProviderBinder();
+    }
+
+    private EverrestApplication getEverrestApplication(EverrestConfiguration configuration) {
+        EverrestApplication everrest = new EverrestApplication();
+        if (configuration.isAsynchronousSupported()) {
+            everrest.addResource(configuration.getAsynchronousServicePath(), AsynchronousJobService.class);
+            everrest.addSingleton(new AsynchronousJobPool(configuration));
+            everrest.addSingleton(new AsynchronousProcessListWriter());
+        }
+        if (configuration.isCheckSecurity()) {
+            everrest.addSingleton(new SecurityConstraint());
+        }
+        everrest.addApplication(getApplication());
+        return everrest;
+    }
+
+    public EverrestProcessor createEverrestProcessor() {
+        EverrestConfiguration configuration = createConfiguration();
+        return new EverrestProcessor(configuration,
+                                     getDependencySupplier(),
+                                     createRequestHandler(),
+                                     getEverrestApplication(configuration));
+    }
+
     protected List<String> getParameterNames() {
-        return Collections.list(ctx.getInitParameterNames());
+        return Collections.list(servletContext.getInitParameterNames());
     }
 
     /**
@@ -92,7 +151,7 @@ public class EverrestServletContextInitializer {
      * @return value of parameter with specified name
      */
     protected String getParameter(String name) {
-        String str = ctx.getInitParameter(name);
+        String str = servletContext.getInitParameter(name);
         if (str != null) {
             return str.trim();
         }

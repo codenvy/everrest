@@ -11,6 +11,7 @@
 package org.everrest.core.impl;
 
 import org.everrest.core.Filter;
+import org.everrest.core.ObjectFactory;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResponseFilter;
@@ -26,10 +27,8 @@ import javax.ws.rs.ext.Provider;
 /**
  * @author andrew00x
  */
-public final class RestComponentResolver {
-
+public class RestComponentResolver {
     private ResourceBinder resources;
-
     private ProviderBinder providers;
 
     public RestComponentResolver(ResourceBinder resources, ProviderBinder providers) {
@@ -41,7 +40,6 @@ public final class RestComponentResolver {
     public void addSingleton(Object instance) {
         Class clazz = instance.getClass();
         if (clazz.getAnnotation(Provider.class) != null) {
-            // singleton provider
             if (instance instanceof ContextResolver) {
                 providers.addContextResolver((ContextResolver)instance);
             }
@@ -55,7 +53,6 @@ public final class RestComponentResolver {
                 providers.addMessageBodyWriter((MessageBodyWriter)instance);
             }
         } else if (clazz.getAnnotation(Filter.class) != null) {
-            // singleton filter
             if (instance instanceof MethodInvokerFilter) {
                 providers.addMethodInvokerFilter((MethodInvokerFilter)instance);
             }
@@ -66,16 +63,13 @@ public final class RestComponentResolver {
                 providers.addResponseFilter((ResponseFilter)instance);
             }
         } else if (clazz.getAnnotation(Path.class) != null) {
-            // singleton resource
             resources.addResource(instance, null);
         }
-
     }
 
     @SuppressWarnings({"unchecked"})
     public void addPerRequest(Class clazz) {
         if (clazz.getAnnotation(Provider.class) != null) {
-            // per-request provider
             if (ContextResolver.class.isAssignableFrom(clazz)) {
                 providers.addContextResolver(clazz);
             }
@@ -89,7 +83,6 @@ public final class RestComponentResolver {
                 providers.addMessageBodyWriter(clazz);
             }
         } else if (clazz.getAnnotation(Filter.class) != null) {
-            // per-request filter
             if (MethodInvokerFilter.class.isAssignableFrom(clazz)) {
                 providers.addMethodInvokerFilter(clazz);
             }
@@ -100,10 +93,39 @@ public final class RestComponentResolver {
                 providers.addResponseFilter(clazz);
             }
         } else if (clazz.getAnnotation(Path.class) != null) {
-            // per-request resource
             resources.addResource(clazz, null);
         }
+    }
 
+    @SuppressWarnings({"unchecked"})
+    public void addFactory(ObjectFactory factory) {
+        Class clazz = factory.getObjectModel().getObjectClass();
+        if (clazz.getAnnotation(Provider.class) != null) {
+            if (ContextResolver.class.isAssignableFrom(clazz)) {
+                providers.addContextResolver(factory);
+            }
+            if (ExceptionMapper.class.isAssignableFrom(clazz)) {
+                providers.addExceptionMapper(factory);
+            }
+            if (MessageBodyReader.class.isAssignableFrom(clazz)) {
+                providers.addMessageBodyReader(factory);
+            }
+            if (MessageBodyWriter.class.isAssignableFrom(clazz)) {
+                providers.addMessageBodyWriter(factory);
+            }
+        } else if (clazz.getAnnotation(Filter.class) != null) {
+            if (MethodInvokerFilter.class.isAssignableFrom(clazz)) {
+                providers.addMethodInvokerFilter(factory);
+            }
+            if (RequestFilter.class.isAssignableFrom(clazz)) {
+                providers.addRequestFilter(factory);
+            }
+            if (ResponseFilter.class.isAssignableFrom(clazz)) {
+                providers.addResponseFilter(factory);
+            }
+        } else if (clazz.getAnnotation(Path.class) != null) {
+            resources.addResource(factory);
+        }
     }
 
 }

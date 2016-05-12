@@ -16,10 +16,6 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public interface GenericContainerResponse {
 
     /**

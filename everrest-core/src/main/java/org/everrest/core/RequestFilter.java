@@ -16,11 +16,9 @@ package org.everrest.core;
  * is part of REST framework, otherwise {@link ApplicationContext} may contains
  * wrong parameters.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface RequestFilter {
-
     /**
      * Can modify original request.
      *
@@ -28,5 +26,4 @@ public interface RequestFilter {
      *         the request
      */
     void doFilter(GenericContainerRequest request);
-
 }

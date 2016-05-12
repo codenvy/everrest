@@ -11,15 +11,13 @@
 package org.everrest.core.method;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.resource.GenericResourceMethod;
 
 /**
  * Invoke resource methods.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- * @see GenericMethodResource
+ * @author andrew00x
+ * @see GenericResourceMethod
  */
 public interface MethodInvoker {
 
@@ -28,12 +26,12 @@ public interface MethodInvoker {
      *
      * @param resource
      *         object that contains method
-     * @param genericMethodResource
-     *         See {@link GenericMethodResource}
+     * @param genericResourceMethod
+     *         See {@link GenericResourceMethod}
      * @param context
-     *         See {@link ApplicationContextImpl}
+     *         See {@link ApplicationContext}
      * @return result of method invoking
      */
-    Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context);
+    Object invokeMethod(Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context);
 
 }

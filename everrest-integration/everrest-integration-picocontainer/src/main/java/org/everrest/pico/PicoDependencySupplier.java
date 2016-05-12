@@ -18,12 +18,12 @@ import org.everrest.pico.servlet.EverrestPicoFilter;
  */
 public class PicoDependencySupplier extends BaseDependencySupplier {
     @Override
-    public Object getComponent(Class<?> type) {
+    public Object getInstance(Class<?> type) {
         return EverrestPicoFilter.getComponent(type);
     }
 
     @Override
-    public Object getComponentByName(String name) {
+    public Object getInstanceByName(String name) {
         return EverrestPicoFilter.getComponent(name);
     }
 }

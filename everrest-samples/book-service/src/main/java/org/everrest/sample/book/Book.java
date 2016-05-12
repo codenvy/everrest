@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.everrest.sample.book;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class Book {
     private String title;
     private String author;

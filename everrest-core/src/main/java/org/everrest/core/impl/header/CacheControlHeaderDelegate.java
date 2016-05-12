@@ -15,16 +15,14 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author andrew00x
- */
+import static org.everrest.core.impl.header.HeaderHelper.addQuotesIfHasWhitespace;
+
 public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegate<CacheControl> {
 
     @Override
     public CacheControl fromString(String header) {
-        throw new IllegalArgumentException("CacheControl used only for response headers.");
+        throw new UnsupportedOperationException("CacheControl used only for response headers.");
     }
-
 
     @Override
     public String toString(CacheControl header) {
@@ -51,10 +49,10 @@ public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegat
             appendString(buff, "proxy-revalidate");
         }
         if (header.getMaxAge() >= 0) {
-            appendString(buff, header.getMaxAge() + "");
+            appendString(buff, Integer.toString(header.getMaxAge()));
         }
         if (header.getSMaxAge() >= 0) {
-            appendString(buff, header.getSMaxAge() + "");
+            appendString(buff, Integer.toString(header.getSMaxAge()));
         }
         for (Map.Entry<String, String> entry : header.getCacheExtension().entrySet()) {
             appendWithSingleParameter(buff, entry.getKey(), entry.getValue());
@@ -63,14 +61,14 @@ public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegat
     }
 
     /**
-     * Add single <code>String</code> to <code>StringBuilder</code> .
+     * Adds single {@code String} to {@code StringBuilder}.
      *
      * @param buff
      *         the StringBuilder
      * @param s
      *         single String
      */
-    private static void appendString(StringBuilder buff, String s) {
+    private void appendString(StringBuilder buff, String s) {
         if (buff.length() > 0) {
             buff.append(',').append(' ');
         }
@@ -79,7 +77,7 @@ public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegat
     }
 
     /**
-     * Add single pair key=value to <code>StringBuilder</code> . If value contains whitespace then quotes will be added.
+     * Adds single pair key=value to {@code StringBuilder}. If value contains whitespace then quotes will be added.
      *
      * @param buff
      *         the StringBuilder
@@ -88,19 +86,19 @@ public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegat
      * @param value
      *         the value
      */
-    private static void appendWithSingleParameter(StringBuilder buff, String key, String value) {
+    private void appendWithSingleParameter(StringBuilder buff, String key, String value) {
         StringBuilder localBuff = new StringBuilder();
         localBuff.append(key);
 
         if (value != null && value.length() > 0) {
-            localBuff.append('=').append(HeaderHelper.addQuotesIfHasWhitespace(value));
+            localBuff.append('=').append(addQuotesIfHasWhitespace(value));
         }
 
         appendString(buff, localBuff.toString());
     }
 
     /**
-     * Add to pair key="value1, value2" to <code>StringBuilder</code> .
+     * Add pair key="value1, value2" to {@code StringBuilder}.
      *
      * @param buff
      *         the StringBuilder
@@ -109,7 +107,7 @@ public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegat
      * @param values
      *         the collection of values
      */
-    private static void appendWithParameters(StringBuilder buff, String key, List<String> values) {
+    private void appendWithParameters(StringBuilder buff, String key, List<String> values) {
         appendString(buff, key);
         if (values.size() > 0) {
             StringBuilder localBuff = new StringBuilder();

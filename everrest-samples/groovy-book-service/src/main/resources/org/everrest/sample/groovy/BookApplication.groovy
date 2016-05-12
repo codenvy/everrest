@@ -11,11 +11,15 @@
 package org.everrest.sample.groovy
 
 class BookApplication extends javax.ws.rs.core.Application {
-    Set<Class<?>> getClasses() {
-        new HashSet<Class<?>>()
+    def bookService
+    def bookNotFoundExceptionMapper
+
+    BookApplication() {
+        bookService = new BookService(bookStorage: new BookStorage())
+        bookNotFoundExceptionMapper = new BookNotFoundExceptionMapper()
     }
 
     Set<Object> getSingletons() {
-        new HashSet<Object>([new BookService(bookStorage: new BookStorage()), new BookNotFoundExceptionMapper()])
+        new HashSet<Object>([bookService, this.bookNotFoundExceptionMapper])
     }
 }

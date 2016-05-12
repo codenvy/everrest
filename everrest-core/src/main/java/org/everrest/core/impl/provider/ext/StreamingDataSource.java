@@ -21,12 +21,10 @@ import java.io.OutputStream;
  * not return new <code>InputStream</code> for each call of method
  * {@link #getInputStream()}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class StreamingDataSource implements DataSource {
     private final InputStream stream;
-
     private final String contentType;
 
     public StreamingDataSource(InputStream stream, String contentType) {
@@ -34,24 +32,20 @@ public class StreamingDataSource implements DataSource {
         this.contentType = contentType;
     }
 
-
     @Override
     public String getContentType() {
         return contentType;
     }
-
 
     @Override
     public InputStream getInputStream() throws IOException {
         return stream;
     }
 
-
     @Override
     public String getName() {
         return null;
     }
-
 
     @Override
     public OutputStream getOutputStream() throws IOException {

@@ -13,15 +13,9 @@ package org.everrest.core.servlet;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
-import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
-import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.async.AsynchronousJobPool;
-import org.everrest.core.impl.async.AsynchronousJobService;
-import org.everrest.core.impl.async.AsynchronousProcessListWriter;
-import org.everrest.core.impl.method.filter.SecurityConstraint;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -38,48 +32,39 @@ public class EverrestInitializedListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         makeFileCollectorDestroyer().stopFileCollector();
-        ServletContext ctx = sce.getServletContext();
-        EverrestProcessor processor = (EverrestProcessor)ctx.getAttribute(EverrestProcessor.class.getName());
+        ServletContext servletContext = sce.getServletContext();
+        EverrestProcessor processor = (EverrestProcessor)servletContext.getAttribute(EverrestProcessor.class.getName());
         if (processor != null) {
             processor.stop();
         }
+        servletContext.removeAttribute(EverrestProcessor.class.getName());
+        servletContext.removeAttribute(EverrestConfiguration.class.getName());
+        servletContext.removeAttribute(Application.class.getName());
+        servletContext.removeAttribute(DependencySupplier.class.getName());
+        servletContext.removeAttribute(ResourceBinder.class.getName());
+        servletContext.removeAttribute(ApplicationProviderBinder.class.getName());
     }
 
     protected FileCollectorDestroyer makeFileCollectorDestroyer() {
         return new FileCollectorDestroyer();
     }
 
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        ServletContext ctx = sce.getServletContext();
-        DependencySupplier dependencySupplier = (DependencySupplier)ctx.getAttribute(DependencySupplier.class.getName());
-        if (dependencySupplier == null) {
-            dependencySupplier = new ServletContextDependencySupplier(ctx);
-        }
-        ResourceBinder resources = new ResourceBinderImpl();
-        ApplicationProviderBinder providers = new ApplicationProviderBinder();
-        EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(ctx);
-        EverrestConfiguration config = initializer.getConfiguration();
-        Application application = initializer.getApplication();
-        EverrestApplication everrest = new EverrestApplication();
-        if (config.isAsynchronousSupported()) {
-            everrest.addResource(config.getAsynchronousServicePath(), AsynchronousJobService.class);
-            everrest.addSingleton(new AsynchronousJobPool(config));
-            everrest.addSingleton(new AsynchronousProcessListWriter());
-        }
-        if (config.isCheckSecurity()) {
-            everrest.addSingleton(new SecurityConstraint());
-        }
-        everrest.addApplication(application);
-        EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+        ServletContext servletContext = sce.getServletContext();
+        EverrestServletContextInitializer initializer = new EverrestServletContextInitializer(servletContext);
+        initializeEverrestComponents(initializer, servletContext);
+    }
+
+    void initializeEverrestComponents(EverrestServletContextInitializer initializer, ServletContext servletContext) {
+        EverrestProcessor processor = initializer.createEverrestProcessor();
         processor.start();
 
-        ctx.setAttribute(EverrestConfiguration.class.getName(), config);
-        ctx.setAttribute(Application.class.getName(), everrest);
-        ctx.setAttribute(DependencySupplier.class.getName(), dependencySupplier);
-        ctx.setAttribute(ResourceBinder.class.getName(), resources);
-        ctx.setAttribute(ApplicationProviderBinder.class.getName(), providers);
-        ctx.setAttribute(EverrestProcessor.class.getName(), processor);
+        servletContext.setAttribute(EverrestProcessor.class.getName(), processor);
+        servletContext.setAttribute(EverrestConfiguration.class.getName(), initializer.createConfiguration());
+        servletContext.setAttribute(Application.class.getName(), processor.getApplication());
+        servletContext.setAttribute(DependencySupplier.class.getName(), processor.getDependencySupplier());
+        servletContext.setAttribute(ResourceBinder.class.getName(), processor.getResources());
+        servletContext.setAttribute(ApplicationProviderBinder.class.getName(), processor.getProviders());
     }
 }

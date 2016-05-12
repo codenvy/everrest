@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider.json;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class NullValue extends JsonValue {
 
 

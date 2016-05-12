@@ -11,11 +11,8 @@
 package org.everrest.core.tools;
 
 import java.security.Principal;
+import java.util.Objects;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
- */
 public class SimplePrincipal implements Principal {
     private final String identity;
 
@@ -33,18 +30,17 @@ public class SimplePrincipal implements Principal {
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (!(obj instanceof SimplePrincipal)) {
             return false;
         }
 
-        SimplePrincipal other = (SimplePrincipal)obj;
-        return identity == null ? other.identity == null : identity.equals(other.identity);
+        return Objects.equals(identity, ((SimplePrincipal)obj).identity);
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = hash * 31 + (identity == null ? 0 : identity.hashCode());
+        hash = hash * 31 + Objects.hashCode(identity);
         return hash;
     }
 

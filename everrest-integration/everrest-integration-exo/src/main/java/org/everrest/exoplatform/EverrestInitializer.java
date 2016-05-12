@@ -24,6 +24,7 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.picocontainer.Startable;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
@@ -45,7 +46,7 @@ import java.util.Set;
  * @author andrew00x
  */
 public class EverrestInitializer implements Startable {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestInitializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EverrestInitializer.class);
 
     private final ExoContainer                container;
     private final EverrestConfiguration       config;

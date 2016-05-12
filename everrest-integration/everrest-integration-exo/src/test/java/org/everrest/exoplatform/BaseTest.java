@@ -26,10 +26,7 @@ public abstract class BaseTest {
 
     @Before
     public void setUp() throws Exception {
-        // reset set of providers for each test
-        Constructor<ProviderBinder> c = ProviderBinder.class.getDeclaredConstructor();
-        c.setAccessible(true);
-        ProviderBinder.setInstance(c.newInstance());
+        ProviderBinder.setInstance(null);
         container = getContainer();
     }
 

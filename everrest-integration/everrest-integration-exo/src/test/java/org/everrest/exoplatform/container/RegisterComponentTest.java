@@ -11,7 +11,7 @@
 package org.everrest.exoplatform.container;
 
 import org.everrest.core.ContainerResponseWriter;
-import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.InputHeadersMap;
@@ -20,7 +20,6 @@ import org.everrest.core.tools.DummyContainerResponseWriter;
 import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.exoplatform.StandaloneBaseTest;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +43,10 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
 
+import static org.everrest.core.ApplicationContext.anApplicationContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * @author andrew00x
  */
@@ -62,7 +65,7 @@ public class RegisterComponentTest extends StandaloneBaseTest {
         ContainerRequest request = new ContainerRequest("GET", new URI("/a"), new URI(""), new ByteArrayInputStream(new byte[0]),
                                                         new InputHeadersMap(h), new SimpleSecurityContext(false));
         ContainerResponse response = new ContainerResponse(writer);
-        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(request, response, null));
+        ApplicationContext.setCurrent(anApplicationContext().withRequest(request).withResponse(response).build());
         // Add dependencies to different containers to be sure both are resolvable.
         container.registerComponentInstance(new ConstructorDependency());
         restfulContainer.registerComponentInstance(new InjectDependency());
@@ -75,50 +78,50 @@ public class RegisterComponentTest extends StandaloneBaseTest {
     @Override
     public void tearDown() throws Exception {
         restfulContainer.stop();
-        ApplicationContextImpl.setCurrent(null);
+        ApplicationContext.setCurrent(null);
         super.tearDown();
     }
 
     @Test
     public void testRegisterProvider() throws Exception {
         restfulContainer.registerComponentImplementation("A", A.class);
-        Assert.assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
+        assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
         restfulContainer.unregisterComponent("A");
-        Assert.assertEquals(0, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
+        assertEquals(0, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
     }
 
     @Test
     public void testRegisterResource() throws Exception {
         restfulContainer.registerComponentImplementation("X", X.class);
-        Assert.assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
+        assertEquals(1, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
         restfulContainer.unregisterComponent("X");
-        Assert.assertEquals(0, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
+        assertEquals(0, ((Map)restToComponentAdaptersField.get(restfulContainer)).size());
     }
 
     @Test
     public void testCreateProvider() throws Exception {
         restfulContainer.registerComponentImplementation("A", A.class);
         A a = (A)restfulContainer.getComponentInstance("A");
-        Assert.assertNotNull(a);
-        Assert.assertNotNull(a.h);
-        Assert.assertNotNull(a.u);
-        Assert.assertEquals("/a", a.u.getRequestUri().getPath());
-        Assert.assertEquals("TO BE OR NOT TO BE", a.h.getRequestHeaders().getFirst("test"));
-        Assert.assertNotNull(a.inj);
-        Assert.assertNotNull(a.c);
+        assertNotNull(a);
+        assertNotNull(a.h);
+        assertNotNull(a.u);
+        assertEquals("/a", a.u.getRequestUri().getPath());
+        assertEquals("TO BE OR NOT TO BE", a.h.getRequestHeaders().getFirst("test"));
+        assertNotNull(a.inj);
+        assertNotNull(a.c);
     }
 
     @Test
     public void testCreateResource() throws Exception {
         restfulContainer.registerComponentImplementation("X", X.class);
         X x = (X)restfulContainer.getComponentInstance("X");
-        Assert.assertNotNull(x);
-        Assert.assertNotNull(x.h);
-        Assert.assertNotNull(x.u);
-        Assert.assertEquals("/a", x.u.getRequestUri().getPath());
-        Assert.assertEquals("TO BE OR NOT TO BE", x.h.getRequestHeaders().getFirst("test"));
-        Assert.assertNotNull(x.inj);
-        Assert.assertNotNull(x.c);
+        assertNotNull(x);
+        assertNotNull(x.h);
+        assertNotNull(x.u);
+        assertEquals("/a", x.u.getRequestUri().getPath());
+        assertEquals("TO BE OR NOT TO BE", x.h.getRequestHeaders().getFirst("test"));
+        assertNotNull(x.inj);
+        assertNotNull(x.c);
     }
 
     public static class ConstructorDependency {

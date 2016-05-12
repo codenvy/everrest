@@ -22,9 +22,7 @@ import java.lang.annotation.Annotation;
  * instance of org.foo.bar.MyClass must be bound to attribute name
  * org.foo.bar.MyClass
  *
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: ServletContextDependencySupplier.java 71 2010-10-25 15:19:37Z
- *          andrew00x $
+ * @author andrew00x
  */
 public class ServletContextDependencySupplier extends BaseDependencySupplier {
     private final ServletContext ctx;
@@ -39,12 +37,12 @@ public class ServletContextDependencySupplier extends BaseDependencySupplier {
     }
 
     @Override
-    public Object getComponent(Class<?> type) {
+    public Object getInstance(Class<?> type) {
         return ctx.getAttribute(type.getName());
     }
 
     @Override
-    public Object getComponentByName(String name) {
+    public Object getInstanceByName(String name) {
         return ctx.getAttribute(name);
     }
 }

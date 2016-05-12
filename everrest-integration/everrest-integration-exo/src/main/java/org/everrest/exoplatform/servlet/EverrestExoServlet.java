@@ -20,6 +20,7 @@ import org.everrest.core.tools.WebApplicationDeclaredRoles;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
@@ -39,7 +40,7 @@ import java.io.IOException;
  */
 @SuppressWarnings("serial")
 public class EverrestExoServlet extends AbstractHttpServlet {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestExoServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EverrestExoServlet.class);
     private WebApplicationDeclaredRoles webApplicationRoles;
 
     @Override
@@ -48,36 +49,38 @@ public class EverrestExoServlet extends AbstractHttpServlet {
     }
 
     @Override
-    protected void onService(ExoContainer container, HttpServletRequest req, HttpServletResponse res)
+    protected void onService(ExoContainer container, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws ServletException, IOException {
         RequestLifeCycle.begin(container);
 
         RequestHandler requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
 
-        EnvironmentContext env = new EnvironmentContext();
-        env.put(HttpServletRequest.class, req);
-        env.put(HttpServletResponse.class, res);
-        env.put(ServletConfig.class, config);
-        env.put(ServletContext.class, getServletContext());
-        env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
+        EnvironmentContext environmentContext = new EnvironmentContext();
+        environmentContext.put(HttpServletRequest.class, httpServletRequest);
+        environmentContext.put(HttpServletResponse.class, httpServletResponse);
+        environmentContext.put(ServletConfig.class, config);
+        environmentContext.put(ServletContext.class, getServletContext());
+        environmentContext.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
 
         try {
-            EnvironmentContext.setCurrent(env);
-            ServletContainerRequest request = ServletContainerRequest.create(req);
-            ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(res));
+            EnvironmentContext.setCurrent(environmentContext);
+            ServletContainerRequest request = ServletContainerRequest.create(httpServletRequest);
+            ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpServletResponse));
             requestHandler.handleRequest(request, response);
         } catch (IOException ioe) {
             // Met problem with Acrobat Reader HTTP client when use EverRest for WebDav.
             // Client close connection before all data transferred and it cause error on server side.
             if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug(ioe.getMessage(), ioe);
-                }
+                LOG.debug(ioe.getMessage(), ioe);
             } else {
                 throw ioe;
             }
         } catch (UnhandledException e) {
-            throw new ServletException(e);
+            if (e.getResponseStatus() != 0) {
+                httpServletResponse.sendError(e.getResponseStatus());
+            } else {
+                throw new ServletException(e.getCause());
+            }
         } finally {
             EnvironmentContext.setCurrent(null);
             RequestLifeCycle.end();

@@ -20,20 +20,8 @@ import java.lang.reflect.Type;
  * @author andrew00x
  */
 public class OutputItem {
-    public static OutputItem create(String name, Object entity, Class<?> type, Type genericType, MediaType mediaType, String fileName) {
-        return new OutputItem(name, entity, type, genericType, mediaType, fileName);
-    }
-
-    public static OutputItem create(String name, Object entity, Type genericType, MediaType mediaType, String fileName) {
-        return new OutputItem(name, entity, entity.getClass(), genericType, mediaType, fileName);
-    }
-
-    public static OutputItem create(String name, Object entity, MediaType mediaType, String fileName) {
-        return new OutputItem(name, entity, entity.getClass(), null, mediaType, fileName);
-    }
-
-    public static OutputItem create(String name, Object entity, MediaType mediaType) {
-        return new OutputItem(name, entity, entity.getClass(), null, mediaType, null);
+    public static OutputItemBuilder anOutputItem() {
+        return new OutputItemBuilder();
     }
 
     private final String                         name;
@@ -80,5 +68,48 @@ public class OutputItem {
 
     public MultivaluedMap<String, String> getHeaders() {
         return headers;
+    }
+
+    public static class OutputItemBuilder {
+        private String name;
+        private Object    entity;
+        private Class<?>  type;
+        private Type      genericType;
+        private MediaType mediaType;
+        private String    filename;
+
+        public OutputItemBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public OutputItemBuilder withEntity(Object entity) {
+            this.entity = entity;
+            return this;
+        }
+
+        public OutputItemBuilder withMediaType(MediaType mediaType) {
+            this.mediaType = mediaType;
+            return this;
+        }
+
+        public OutputItemBuilder withFilename(String filename) {
+            this.filename = filename;
+            return this;
+        }
+
+        public OutputItemBuilder withType(Class<?> type) {
+            this.type = type;
+            return this;
+        }
+
+        public OutputItemBuilder withGenericType(Type genericType) {
+            this.genericType = genericType;
+            return this;
+        }
+
+        public OutputItem build() {
+            return new OutputItem(name, entity, type == null ? entity.getClass() : type, genericType, mediaType, filename);
+        }
     }
 }

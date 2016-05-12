@@ -11,11 +11,9 @@
 package org.everrest.core.impl.provider.json;
 
 /**
- * Should be thrown if any error occurs during JSON <-> Java Object
- * transformation.
+ * Should be thrown if any error occurs during JSON <-> Java Object transformation.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @SuppressWarnings("serial")
 public class JsonException extends Exception {

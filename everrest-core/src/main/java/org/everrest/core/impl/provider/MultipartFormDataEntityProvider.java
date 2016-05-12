@@ -15,7 +15,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.provider.EntityProvider;
 
@@ -42,26 +41,23 @@ import java.util.Iterator;
 @Consumes({"multipart/*"})
 public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<FileItem>> {
 
-    /** @see HttpServletRequest */
-    @Context
-    private HttpServletRequest httpRequest;
+    protected HttpServletRequest httpRequest;
 
+    public MultipartFormDataEntityProvider(@Context HttpServletRequest httpRequest) {
+        this.httpRequest = httpRequest;
+    }
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (type == Iterator.class) {
-            try {
-                ParameterizedType t = (ParameterizedType)genericType;
-                Type[] ta = t.getActualTypeArguments();
-                return ta.length == 1 && ta[0] == FileItem.class;
-            } catch (ClassCastException e) {
-                return false;
+            if (genericType instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType)genericType;
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                return actualTypeArguments.length == 1 && actualTypeArguments[0] == FileItem.class;
             }
         }
-
         return false;
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -72,29 +68,25 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
                                        MultivaluedMap<String, String> httpHeaders,
                                        InputStream entityStream) throws IOException {
         try {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
             DefaultFileItemFactory factory = new DefaultFileItemFactory(bufferSize, FileCollector.getInstance().getStore());
             FileUpload upload = new FileUpload(factory);
             return upload.parseRequest(httpRequest).iterator();
         } catch (FileUploadException e) {
-            throw new IOException("Can't process multipart data item " + e);
+            throw new IOException(String.format("Can't process multipart data item, %s", e));
         }
     }
-
 
     @Override
     public long getSize(Iterator<FileItem> t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        // output is not supported
         return false;
     }
-
 
     @Override
     public void writeTo(Iterator<FileItem> t,

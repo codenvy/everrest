@@ -10,11 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
+import com.google.common.base.Joiner;
+
 import org.everrest.core.header.QualityValue;
+import org.everrest.core.impl.header.ListHeaderProducer.ListItemFactory;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -29,37 +31,39 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author andrew00x
- */
-public final class HeaderHelper {
-    /** Constructor. */
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static javax.ws.rs.core.MediaType.WILDCARD;
+import static org.everrest.core.impl.header.CookieBuilder.aCookie;
+import static org.everrest.core.impl.header.NewCookieBuilder.aNewCookie;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.doesNotContain;
+import static org.everrest.core.util.StringUtils.scan;
+
+public class HeaderHelper {
     private HeaderHelper() {
     }
 
     /** Pattern for search whitespace and quote in string. */
     private static final Pattern WHITESPACE_QUOTE_PATTERN = Pattern.compile("[\\s\"]");
 
-    /** Pattern for whitespace in string. */
+    /** Pattern for search whitespace in string. */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
     /** Header separators. Header token MUST NOT contains any of it. */
-    private static final char[] SEPARATORS = new char[128];
+    private static final boolean[] SEPARATORS = new boolean[128];
 
     static {
         for (char c : "()<>@,;:\"\\/[]?={}".toCharArray()) {
-            SEPARATORS[c] = c;
+            SEPARATORS[c] = true;
         }
     }
 
     /** Accept all media type list. */
-    private static final List<AcceptMediaType> ACCEPT_ALL_MEDIA_TYPE = Collections
-            .singletonList(AcceptMediaType.DEFAULT);
+    private static final List<AcceptMediaType> ACCEPT_ALL_MEDIA_TYPE = Collections.singletonList(AcceptMediaType.DEFAULT);
 
     /** Accept all languages list. */
     private static final List<AcceptLanguage> ACCEPT_ALL_LANGUAGE = Collections.singletonList(AcceptLanguage.DEFAULT);
@@ -75,19 +79,10 @@ public final class HeaderHelper {
      * @see QualityValue
      */
     public static final Comparator<QualityValue> QUALITY_VALUE_COMPARATOR = new Comparator<QualityValue>() {
-        /**
-         * Compare two QualityValue for order.
-         *
-         * @param o1 first QualityValue to be compared
-         * @param o2 second QualityValue to be compared
-         * @return result of comparison
-         * @see Comparator#compare(Object, Object)
-         * @see QualityValue
-         */
         @Override
-        public int compare(QualityValue o1, QualityValue o2) {
-            float q1 = o1.getQvalue();
-            float q2 = o2.getQvalue();
+        public int compare(QualityValue qualityValueOne, QualityValue qualityValueTwo) {
+            float q1 = qualityValueOne.getQvalue();
+            float q2 = qualityValueTwo.getQvalue();
             if (q1 < q2) {
                 return 1;
             }
@@ -105,26 +100,17 @@ public final class HeaderHelper {
      *
      * @see ListHeaderProducer
      */
-    private static final ListHeaderProducer<AcceptMediaType> LIST_MEDIA_TYPE_PRODUCER =
-            new ListHeaderProducer<AcceptMediaType>() {
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                protected AcceptMediaType create(String part) {
-                    return AcceptMediaType.valueOf(part);
-                }
-            };
+    private static final ListHeaderProducer<AcceptMediaType> LIST_MEDIA_TYPE_PRODUCER = new ListHeaderProducer<>(new AcceptMediaTypeFactory());
 
     /**
-     * Create sorted by quality value accepted media type list.
+     * Creates sorted by quality value accepted media type list.
      *
      * @param header
      *         source header string
      * @return List of AcceptMediaType
      */
-    public static List<AcceptMediaType> createAcceptedMediaTypeList(String header) {
-        if (header == null || header.length() == 0 || MediaType.WILDCARD.equals(header.trim())) {
+    public static List<AcceptMediaType> createAcceptMediaTypeList(String header) {
+        if (isNullOrEmpty(header) || WILDCARD.equals(header.trim())) {
             return ACCEPT_ALL_MEDIA_TYPE;
         }
         return LIST_MEDIA_TYPE_PRODUCER.createQualitySortedList(header);
@@ -135,26 +121,17 @@ public final class HeaderHelper {
      *
      * @see ListHeaderProducer
      */
-    private static final ListHeaderProducer<AcceptLanguage> LIST_LANGUAGE_PRODUCER =
-            new ListHeaderProducer<AcceptLanguage>() {
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                protected AcceptLanguage create(String part) {
-                    return AcceptLanguage.valueOf(part);
-                }
-            };
+    private static final ListHeaderProducer<AcceptLanguage> LIST_LANGUAGE_PRODUCER = new ListHeaderProducer<>(new AcceptLanguageFactory());
 
     /**
-     * Create sorted by quality value accepted language list.
+     * Creates sorted by quality value accepted language list.
      *
      * @param header
      *         source header string
      * @return List of AcceptLanguage
      */
     public static List<AcceptLanguage> createAcceptedLanguageList(String header) {
-        if (header == null || header.length() == 0 || "*".equals(header)) {
+        if (isNullOrEmpty(header) || "*".equals(header)) {
             return ACCEPT_ALL_LANGUAGE;
         }
         return LIST_LANGUAGE_PRODUCER.createQualitySortedList(header);
@@ -165,177 +142,168 @@ public final class HeaderHelper {
      *
      * @see ListHeaderProducer
      */
-    private static final ListHeaderProducer<AcceptToken> LIST_TOKEN_PRODUCER = new ListHeaderProducer<AcceptToken>() {
-        @Override
-        protected AcceptToken create(String part) {
-            try {
-                // check does contains parameter
-                int col = part.indexOf(';');
-                String token = col > 0 ? part.substring(0, col).trim() : part.trim();
-
-                int i;
-                if ((i = isToken(token)) != -1) // check is valid token
-                {
-                    throw new IllegalArgumentException("Not valid character at index " + i + " in " + token);
-                }
-
-                if (col < 0) {
-                    return new AcceptToken(token);
-                }
-
-                Map<String, String> param = new HeaderParameterParser().parse(part);
-                if (param.containsKey(QualityValue.QVALUE)) {
-                    return new AcceptToken(token, parseQualityValue(param.get(QualityValue.QVALUE)));
-                }
-
-                return new AcceptToken(token);
-            } catch (ParseException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-    };
+    private static final ListHeaderProducer<AcceptToken> LIST_TOKEN_PRODUCER = new ListHeaderProducer<>(new AcceptTokenFactory());
 
     /**
-     * Create sorted by quality value 'accept-character' list.
+     * Creates sorted by quality value 'accept-character' list.
      *
      * @param header
      *         source header string
      * @return List of accept charset tokens
      */
     public static List<AcceptToken> createAcceptedCharsetList(String header) {
-        if (header == null || header.length() == 0 || "*".equals(header)) {
+        if (isNullOrEmpty(header) || "*".equals(header)) {
             return ACCEPT_ALL_TOKENS;
         }
         return LIST_TOKEN_PRODUCER.createQualitySortedList(header);
     }
 
     /**
-     * Create sorted by quality value 'accept-encoding' list.
+     * Creates sorted by quality value 'accept-encoding' list.
      *
      * @param header
      *         source header string
      * @return List of accept encoding tokens
      */
     public static List<AcceptToken> createAcceptedEncodingList(String header) {
-        if (header == null || header.length() == 0 || "*".equals(header)) {
+        if (isNullOrEmpty(header) || "*".equals(header)) {
             return ACCEPT_ALL_TOKENS;
         }
         return LIST_TOKEN_PRODUCER.createQualitySortedList(header);
     }
 
-    // cookie
-
-    /** Temporary cookie image. */
-    @SuppressWarnings("unused")
-    private static class TempCookie {
-        /** Cookie name. */
-        String name;
-        /** Cookie value. */
-        String value;
-        /** Cookie version. */
-        int    version;
-        /** Cookie path. */
-        String path;
-        /** Cookie domain. */
-        String domain;
-
-        // For NewCookie.
-
-        /** Comments about cookie. */
-        String  comment;
-        /** Cookie max age. */
-        int     maxAge;
-        /** True if cookie secure false otherwise. */
-        boolean security;
-
-        /**
-         * @param name
-         *         cookie name
-         * @param value
-         *         cookie value
-         */
-        public TempCookie(String name, String value) {
-            this.name = name;
-            this.value = value;
-            this.version = Cookie.DEFAULT_VERSION;
-            this.domain = null;
-            this.path = null;
-            this.comment = null;
-            this.maxAge = NewCookie.DEFAULT_MAX_AGE;
-            this.security = false;
-        }
-    }
-
     /**
-     * Parse cookie header string and create collection of cookie from it.
+     * Parses cookie header string and create collection of cookie from it.
      *
-     * @param cookie
+     * @param cookiesString
      *         the cookie string.
      * @return collection of Cookie.
      */
-    public static List<Cookie> parseCookies(String cookie) {
+    public static List<Cookie> parseCookies(String cookiesString) {
+        final List<Cookie> cookies = new ArrayList<>();
+
         int p = 0;
         int n;
-        TempCookie temp = null;
-        int version = 0;
-        List<Cookie> l = new ArrayList<Cookie>();
+        CookieBuilder cookieBuilder = null;
+        int version = Cookie.DEFAULT_VERSION;
 
-        while (p < cookie.length()) {
-            n = findCookieParameterSeparator(cookie, p);
+        while (p < cookiesString.length()) {
+            n = findCookieParameterSeparator(cookiesString, p);
 
-            // cut pair of key/value
-            String pair = cookie.substring(p, n);
+            String pair = cookiesString.substring(p, n);
 
             String name;
             String value = "";
 
-            // '=' separator
-            int eq = pair.indexOf('=');
-            if (eq != -1) {
+            int eq = scan(pair, '=');
+            if (charAtIs(pair, eq, '=')) {
                 name = pair.substring(0, eq).trim();
                 value = pair.substring(eq + 1).trim();
-                if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1) {
+                if (value.length() > 1 && value.startsWith("\"") && value.endsWith("\"")) {
                     value = value.substring(1, value.length() - 1);
                 }
             } else {
-                // there is no value
                 name = pair.trim();
             }
 
             // Name of parameter not start from '$', then it is cookie name and value.
             // In header string name/value pair (name without '$') SHOULD be before
-            // '$Path' and '$Domain' parameters, but '$Version' goes before name/value
-            // pair.
-            if (name.indexOf('$') == -1) {
-
-                // first save previous cookie
-                if (temp != null) {
-                    l.add(new Cookie(temp.name, temp.value, temp.path, temp.domain, temp.version));
+            // '$Path' and '$Domain' parameters, but '$Version' goes before name/value pair.
+            if (doesNotContain(name, '$')) {
+                if (cookieBuilder != null) {
+                    cookies.add(cookieBuilder.build());
                 }
-
-                temp = new TempCookie(name, value);
-                // version was kept before
-                // @see http://www.ietf.org/rfc/rfc2109.txt section 4.4
-                temp.version = version;
-            } else if (name.equalsIgnoreCase("$Version")) {
-                // keep version number
+                cookieBuilder = aCookie().withName(name).withValue(value);
+                // version was kept before http://www.ietf.org/rfc/rfc2109.txt section 4.4
+                cookieBuilder.withVersion(version);
+            } else if ("$Version".equalsIgnoreCase(name)) {
                 version = Integer.valueOf(value);
-            } else if (name.equalsIgnoreCase("$Path") && temp != null) {
-                // Temporary cookie must exists, otherwise this parameter will be lost
-                temp.path = value;
-            } else if (name.equalsIgnoreCase("$Domain") && temp != null) {
-                // Temporary cookie must exists, otherwise this parameter will be lost.
-                temp.domain = value;
+            } else if (cookieBuilder != null && "$Path".equalsIgnoreCase(name)) {
+                cookieBuilder.withPath(value);
+            } else if (cookieBuilder != null && "$Domain".equalsIgnoreCase(name)) {
+                cookieBuilder.withDomain(value);
             }
 
             p = n + 1;
         }
 
-        if (temp != null) {
-            l.add(new Cookie(temp.name, temp.value, temp.path, temp.domain, temp.version));
+        if (cookieBuilder != null) {
+            cookies.add(cookieBuilder.build());
         }
 
-        return l;
+        return cookies;
+    }
+
+    /**
+     * Parses cookie header string and create collection of NewCookie from it.
+     *
+     * @param newCookieString
+     *         the new cookie string.
+     * @return collection of NewCookie.
+     */
+    public static NewCookie parseNewCookie(String newCookieString) {
+        int p = 0;
+        int n = findCookieParameterSeparator(newCookieString, p);
+        int separator = -1;
+        if (n > 0 && n < newCookieString.length()) {
+            separator = newCookieString.charAt(n);
+        }
+        NewCookieBuilder newCookieBuilder = null;
+
+        while (p < newCookieString.length()) {
+
+            String pair = newCookieString.substring(p, n);
+
+            String name;
+            String value = "";
+
+            int eq = scan(pair, '=');
+            if (charAtIs(pair, eq, '=')) {
+                name = pair.substring(0, eq).trim();
+                value = pair.substring(eq + 1).trim();
+                if (value.length() > 1 && value.startsWith("\"") && value.endsWith("\"")) {
+                    value = value.substring(1, value.length() - 1);
+                }
+            } else {
+                name = pair.trim();
+            }
+
+            if (newCookieBuilder == null) {
+                newCookieBuilder = aNewCookie().withName(name).withValue(value).withVersion(Cookie.DEFAULT_VERSION);
+            } else {
+                if (name.equalsIgnoreCase("version")) {
+                    newCookieBuilder.withVersion(Integer.parseInt(value));
+                } else if (name.equalsIgnoreCase("domain")) {
+                    newCookieBuilder.withDomain(value);
+                } else if (name.equalsIgnoreCase("path")) {
+                    newCookieBuilder.withPath(value);
+                } else if (name.equalsIgnoreCase("secure")) {
+                    newCookieBuilder.withSecure(true);
+                } else if (name.equalsIgnoreCase("HttpOnly")) {
+                    newCookieBuilder.withHttpOnly(true);
+                } else if (name.equalsIgnoreCase("Max-Age")) {
+                    newCookieBuilder.withMaxAge(Integer.parseInt(value));
+                } else if (name.equalsIgnoreCase("expires")) {
+                    try {
+                        newCookieBuilder.withExpiry(parseDateHeader(value));
+                    } catch (IllegalArgumentException ignored) {
+                        ignored.printStackTrace();
+                    }
+                } else if (name.equalsIgnoreCase("comment")) {
+                    newCookieBuilder.withComment(value);
+                }
+            }
+            if (separator == -1) {
+                break;
+            }
+            p = n + 1;
+            n = scan(newCookieString, p, (char)separator);
+        }
+
+        if (newCookieBuilder == null) {
+            return null;
+        }
+        return newCookieBuilder.build();
     }
 
     // Date
@@ -357,32 +325,24 @@ public final class HeaderHelper {
         /** ANSI C's asctime() format. */
         static final String ANSI_C_DATE_FORMAT = "EEE MMM d HH:mm:ss yyyy";
 
-        /**
-         * SimpleDateFormat java docs says:
-         * <p>
-         * Date formats are not synchronized. It is recommended to create separate format instances for each thread. If
-         * multiple threads access a format concurrently, it must be synchronized externally.
-         * </p>
-         * Formats from this not used directly create instead.
-         */
         static final SimpleDateFormat[] formats = createFormats();
 
         private static SimpleDateFormat[] createFormats() {
-            SimpleDateFormat[] tmp = new SimpleDateFormat[3];
-            tmp[0] = new SimpleDateFormat(RFC_1123_DATE_FORMAT, Locale.US);
-            tmp[1] = new SimpleDateFormat(RFC_1036_DATE_FORMAT, Locale.US);
-            tmp[2] = new SimpleDateFormat(ANSI_C_DATE_FORMAT, Locale.US);
+            SimpleDateFormat[] formats = new SimpleDateFormat[3];
+            formats[0] = new SimpleDateFormat(RFC_1123_DATE_FORMAT, Locale.US);
+            formats[1] = new SimpleDateFormat(RFC_1036_DATE_FORMAT, Locale.US);
+            formats[2] = new SimpleDateFormat(ANSI_C_DATE_FORMAT, Locale.US);
             TimeZone tz = TimeZone.getTimeZone("GMT");
-            tmp[0].setTimeZone(tz);
-            tmp[1].setTimeZone(tz);
-            tmp[2].setTimeZone(tz);
-            return tmp;
+            formats[0].setTimeZone(tz);
+            formats[1].setTimeZone(tz);
+            formats[2].setTimeZone(tz);
+            return formats;
         }
     }
 
     /**
-     * Parse date header. Will try to found appropriated format for given date header. Format can be one of see
-     * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>} .
+     * Parses date header. Will try to found appropriated format for given date header. Format can be one of described in
+     * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a> .
      *
      * @param header
      *         source date header
@@ -392,16 +352,14 @@ public final class HeaderHelper {
         for (SimpleDateFormat format : DateFormats.formats) {
             try {
                 return ((SimpleDateFormat)format.clone()).parse(header);
-            } catch (ParseException e) {
-                // ignore all ParseException now
+            } catch (ParseException ignored) {
             }
         }
-        // no one format was found
-        throw new IllegalArgumentException("Not found appropriated date format for " + header);
+        throw new IllegalArgumentException(String.format("Not found appropriated date format for %s", header));
     }
 
     /**
-     * Format <code>date</code> in RFC 1123 format.
+     * Formats {@code date} in RFC 1123 format.
      *
      * @param date
      *         date
@@ -413,37 +371,31 @@ public final class HeaderHelper {
 
     //
 
-    /**
-     * @param httpHeaders
-     *         HTTP headers
-     * @return parsed content-length or null if content-length header is not specified
-     */
     public static long getContentLengthLong(MultivaluedMap<String, String> httpHeaders) {
-        String t = httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
-        // to be sure Content-length header is not null, usually it must be not null
-        return t != null ? Long.parseLong(t) : 0;
+        String contentLengthHeader = httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
+        return contentLengthHeader == null ? 0 : Long.parseLong(contentLengthHeader);
     }
 
     /**
-     * Create string representation of Java Object for adding to response. Method use {@link HeaderDelegate#toString()}.
+     * Creates string representation of given object for adding to response header. Method uses {@link HeaderDelegate#toString()}.
+     * If required implementation of HeaderDelegate is not accessible via {@link RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
+     * then method {@code toString} of given object is used.
      *
      * @param o
-     *         HTTP header as Java type.
+     *         object
      * @return string representation of supplied type
      */
     @SuppressWarnings({"unchecked"})
     public static String getHeaderAsString(Object o) {
-        HeaderDelegate hd = RuntimeDelegate.getInstance().createHeaderDelegate(o.getClass());
-        if (hd != null) {
-            return hd.toString(o);
+        HeaderDelegate headerDelegate = RuntimeDelegate.getInstance().createHeaderDelegate(o.getClass());
+        if (headerDelegate == null) {
+            return o.toString();
         }
-        return o.toString();
+        return headerDelegate.toString(o);
     }
 
     /**
-     * Convert Collection&lt;String&gt; to single String, where values separated by ','. Useful for getting source
-     * string
-     * of HTTP header for next processing quality value of header tokens.
+     * Convert Collection&lt;String&gt; to single String, where values separated by ','.
      *
      * @param collection
      *         the source list
@@ -453,101 +405,86 @@ public final class HeaderHelper {
         if (collection == null) {
             return null;
         }
-        if (collection.size() == 0) {
+        if (collection.isEmpty()) {
             return "";
         }
 
-        StringBuilder sb = new StringBuilder();
-        for (String t : collection) {
-            if (sb.length() > 0) {
-                sb.append(',');
-            }
-            sb.append(t);
-        }
-
-        return sb.toString();
+        return Joiner.on(',').join(collection);
     }
 
     /**
-     * Append string in given string buffer, if string contains quotes or whitespace, then it be escaped.
+     * Appends string in given string builder. All quotes and whitespace are escaped.
      *
-     * @param sb
-     *         string buffer
-     * @param s
-     *         string
+     * @param target
+     *         string builder
+     * @param appendMe
+     *         string to append
      */
-    static void appendWithQuote(StringBuilder sb, String s) {
-        if (s == null) {
+    static void appendWithQuote(StringBuilder target, String appendMe) {
+        if (appendMe == null) {
             return;
         }
-        Matcher m = WHITESPACE_QUOTE_PATTERN.matcher(s);
+        Matcher matcher = WHITESPACE_QUOTE_PATTERN.matcher(appendMe);
 
-        if (m.find()) {
-            sb.append('"');
-            appendEscapeQuote(sb, s);
-            sb.append('"');
-            return;
+        if (matcher.find()) {
+            target.append('"');
+            appendEscapeQuote(target, appendMe);
+            target.append('"');
+        } else {
+            target.append(appendMe);
         }
-
-        sb.append(s);
-
     }
 
     /**
-     * Append string in given string buffer, quotes will be escaped.
+     * Appends string in given string builder. All quotes are escaped.
      *
-     * @param sb
-     *         string buffer
-     * @param s
-     *         string
+     * @param target
+     *         string builder
+     * @param appendMe
+     *         string to append
      */
-    static void appendEscapeQuote(StringBuilder sb, String s) {
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+    static void appendEscapeQuote(StringBuilder target, String appendMe) {
+        for (int i = 0; i < appendMe.length(); i++) {
+            char c = appendMe.charAt(i);
             if (c == '"') {
-                sb.append('\\');
+                target.append('\\');
             }
-            sb.append(c);
+            target.append(c);
         }
     }
 
     /**
-     * Remove all whitespace from given string.
+     * Removes all whitespace from given string.
      *
-     * @param s
+     * @param str
      *         the source string
      * @return the result string
      */
-    static String removeWhitespaces(String s) {
-        Matcher m = WHITESPACE_PATTERN.matcher(s);
-        if (m.find()) {
-            return m.replaceAll("");
+    static String removeWhitespaces(String str) {
+        Matcher matcher = WHITESPACE_PATTERN.matcher(str);
+        if (matcher.find()) {
+            return matcher.replaceAll("");
         }
-
-        return s;
+        return str;
     }
 
     /**
-     * Add quotes to <code>String</code> if it consists whitespaces, otherwise <code>String</code> will be returned
-     * without changes.
+     * Adds quotes to {@code String} if it consists whitespaces, otherwise {@code String} will be returned without changes.
      *
-     * @param s
+     * @param str
      *         the source string.
      * @return new string.
      */
-    static String addQuotesIfHasWhitespace(String s) {
-        Matcher matcher = WHITESPACE_PATTERN.matcher(s);
-
+    static String addQuotesIfHasWhitespace(String str) {
+        Matcher matcher = WHITESPACE_PATTERN.matcher(str);
         if (matcher.find()) {
-            return '"' + s + '"';
+            return '"' + str + '"';
         }
-
-        return s;
+        return str;
     }
 
     /**
-     * Check syntax of quality value and parse it. Quality value must have not more then 5 characters and be not more
-     * then 1 .
+     * Parses quality value. Quality value must have not more then 5 characters and must not be greater then 1 .
      *
      * @param qString
      *         string representation of quality value
@@ -558,27 +495,30 @@ public final class HeaderHelper {
             throw new IllegalArgumentException("Quality value string has more then 5 characters");
         }
 
-        float q = Float.valueOf(qString);
-        if (q > 1.0F) {
+        float qValue;
+        try {
+            qValue = Float.valueOf(qString);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(String.format("Invalid quality value '%s'", qString));
+        }
+        if (qValue > 1.0F) {
             throw new IllegalArgumentException("Quality value can't be greater then 1.0");
         }
 
-        return q;
+        return qValue;
     }
 
     /**
-     * Check is given string token. Token may contains only US-ASCII characters except separators, {@link #SEPARATORS}
-     * and
-     * controls.
+     * Checks that given string is token. Token contains only US-ASCII characters except separators, {@link #SEPARATORS} and controls.
      *
      * @param token
      *         the token
-     * @return -1 if string has only valid character otherwise index of first wrong character
+     * @return -1 if string has only valid characters otherwise index of first illegal character
      */
     static int isToken(String token) {
         for (int i = 0; i < token.length(); i++) {
             char c = token.charAt(i);
-            if (c > 127 || SEPARATORS[c] != 0) {
+            if (c > 127 || SEPARATORS[c]) {
                 return i;
             }
         }
@@ -586,32 +526,19 @@ public final class HeaderHelper {
     }
 
     /**
-     * The cookies parameters can be separated by ';' or ',', try to find first available separator in cookie string. If
-     * both not found the string length will be returned.
+     * The cookies parameters can be separated by ';' or ','. This method tries to find first available separator in cookie string.
+     * If both are not found then string length is returned.
      *
      * @param cookie
      *         the cookie string.
      * @param start
      *         index for start searching.
-     * @return the index of ',' or ';'.
+     * @return the index of ',' or ';' or length of given cookie string.
      */
     private static int findCookieParameterSeparator(String cookie, int start) {
-        int p;
-
-        int comma = cookie.indexOf(',', start);
-        int semicolon = cookie.indexOf(';', start);
-        if (comma > 0 && semicolon > 0) {
-            p = comma < semicolon ? comma : semicolon;
-        } else if (comma < 0 && semicolon > 0) {
-            p = semicolon;
-        } else if (comma > 0 && semicolon < 0) {
-            p = comma;
-        } else {
-            p = cookie.length(); // end of string? not comma nor semicolon found
-        }
-
-        return p;
-
+        int comma = scan(cookie, start, ',');
+        int semicolon = scan(cookie, start, ';');
+        return Math.min(comma, semicolon);
     }
 
     /**
@@ -624,18 +551,38 @@ public final class HeaderHelper {
      *         token for processing
      * @return result
      */
-    static String filterEscape(String token) {
+    static String removeQuoteEscapes(String token) {
         StringBuilder sb = new StringBuilder();
         int length = token.length();
 
         for (int i = 0; i < length; i++) {
-            char c = token.charAt(i);
-            if (c != '\\' || i >= length - 1 || token.charAt(i + 1) != '"') {
-                sb.append(c);
+            if (charAtIs(token, i, '\\') && charAtIs(token, i + 1, '"')) {
+                continue;
             }
+            sb.append(token.charAt(i));
         }
 
         return sb.toString();
     }
 
+    private static class AcceptTokenFactory implements ListItemFactory<AcceptToken> {
+        @Override
+        public AcceptToken createItem(String part) {
+            return AcceptToken.valueOf(part);
+        }
+    }
+
+    private static class AcceptMediaTypeFactory implements ListItemFactory<AcceptMediaType> {
+        @Override
+        public AcceptMediaType createItem(String part) {
+            return AcceptMediaType.valueOf(part);
+        }
+    }
+
+    private static class AcceptLanguageFactory implements ListItemFactory<AcceptLanguage> {
+        @Override
+        public AcceptLanguage createItem(String singleHeader) {
+            return AcceptLanguage.valueOf(singleHeader);
+        }
+    }
 }

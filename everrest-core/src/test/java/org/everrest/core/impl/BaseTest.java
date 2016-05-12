@@ -30,16 +30,21 @@ public abstract class BaseTest {
     @Before
     public void setUp() throws Exception {
         ResourceBinderImpl resources = new ResourceBinderImpl();
-        // reset embedded providers to be sure it is clean
-        ProviderBinder.setInstance(new ProviderBinder());
+        resetProviderBinder();
         ProviderBinder providers = new ApplicationProviderBinder();
         asynchronousPool = new AsynchronousJobPool(new EverrestConfiguration());
         providers.addContextResolver(asynchronousPool);
         providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
         resources.addResource("/async", AsynchronousJobService.class, null);
         dependencySupplier = new DependencySupplierImpl();
-        processor = new EverrestProcessor(resources, providers, dependencySupplier, new EverrestConfiguration(), null);
+        processor = new EverrestProcessor(new EverrestConfiguration(), dependencySupplier, new RequestHandlerImpl(new RequestDispatcher(resources), providers), null);
         launcher = new ResourceLauncher(processor);
+    }
+
+    private void resetProviderBinder() {
+        ProviderBinder providerBinder = new ProviderBinder();
+        providerBinder.init();
+        ProviderBinder.setInstance(providerBinder);
     }
 
     @After

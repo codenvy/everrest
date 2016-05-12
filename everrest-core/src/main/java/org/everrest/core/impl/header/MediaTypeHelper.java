@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.QualityValue;
+import org.everrest.core.util.MediaTypeComparator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -18,40 +18,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+import static java.util.stream.Collectors.toList;
+import static javax.ws.rs.core.MediaType.MEDIA_TYPE_WILDCARD;
+
 public final class MediaTypeHelper {
-    /** Constructor. */
-    private MediaTypeHelper() {
-    }
-
-    /** Default media type. It minds any content type. */
-    public static final String DEFAULT = "*/*";
-
-    /** Default media type. It minds any content type. */
-    public static final MediaType DEFAULT_TYPE = new MediaType("*", "*");
-
     /** List which contains default media type. */
-    public static final List<MediaType> DEFAULT_TYPE_LIST = Collections.singletonList(DEFAULT_TYPE);
-
-    /** WADL media type. */
-    public static final String WADL = "application/vnd.sun.wadl+xml";
+    private static final List<MediaType> DEFAULT_TYPE_LIST = Collections.singletonList(MediaType.WILDCARD_TYPE);
 
     /** WADL media type. */
     public static final MediaType WADL_TYPE = new MediaType("application", "vnd.sun.wadl+xml");
-
-    /** Suffix of sub-type part of media types as application/atom+*. */
-    public static final String EXT_SUFFIX_SUBTYPE = "+*";
 
     /** Prefix of sub-type part of media types as application/*+xml. */
     public static final String EXT_PREFIX_SUBTYPE = "*+";
@@ -66,14 +49,24 @@ public final class MediaTypeHelper {
     public static final Pattern EXT_PREFIX_SUBTYPE_PATTERN = Pattern.compile("\\*\\+(.+)");
 
     /**
-     * Builder or range acceptable media types for look up appropriate {@link MessageBodyReader},
-     * {@link MessageBodyWriter} or {@link ContextResolver}. It provider set of media types in descending ordering.
+     * Creates range of acceptable media types for look up appropriate {@link MessageBodyReader},
+     * {@link MessageBodyWriter} or {@link ContextResolver}. It provides set of media types in descending ordering.
+     * <p/>
+     * For given media type: {@code application/xml}
+     * <li>{@code application/xml}</li>
+     * <li>{@code application&#47;*+xml}</li>
+     * <li>{@code application&#47;*}</li>
+     * <li>{@code *&#47;*}</li>
      */
-    public static final class MediaTypeRange implements java.util.Iterator<MediaType> {
+    public static Iterator<MediaType> createDescendingMediaTypeIterator(MediaType type) {
+        return new MediaTypeRange(type);
+    }
+
+    public static final class MediaTypeRange implements Iterator<MediaType> {
         private MediaType next;
 
         public MediaTypeRange(MediaType type) {
-            next = (type == null) ? MediaTypeHelper.DEFAULT_TYPE : type;
+            next = (type == null) ? MediaType.WILDCARD_TYPE : type;
         }
 
         @Override
@@ -97,108 +90,43 @@ public final class MediaTypeHelper {
         }
 
         void fetchNext() {
-            MediaType mediaType = next;
-            next = null;
-            if (!mediaType.isWildcardType() && !mediaType.isWildcardSubtype()) {
-                // Media type such as application/xml, application/atom+xml, application/*+xml
-                // or application/xml+* .
-                String type = mediaType.getType();
-                String subType = mediaType.getSubtype();
-                Matcher extMatcher = MediaTypeHelper.EXT_SUBTYPE_PATTERN.matcher(subType);
+            MediaType current = next;
+            if (current.isWildcardType() && current.isWildcardSubtype()) {
+                next = null;
+            } else if (current.isWildcardSubtype()) {
+                // Type such as 'application/*' . Next one to be checked is '*/*'.
+                // This type is always last for checking in our range.
+                next = MediaType.WILDCARD_TYPE;
+            } else {
+                // Media type such as application/xml, application/atom+xml, application/*+xml or application/xml+* .
+                String type = current.getType();
+                String subType = current.getSubtype();
+                Matcher extMatcher = EXT_SUBTYPE_PATTERN.matcher(subType);
                 if (extMatcher.matches()) {
                     // Media type such as application/atom+xml or application/*+xml (sub-type extended!!!)
                     String extSubtypePrefix = extMatcher.group(1);
                     String extSubtype = extMatcher.group(2);
-                    if (MediaType.MEDIA_TYPE_WILDCARD.equals(extSubtypePrefix)) {
-                        // Media type such as 'application/*+xml' (first part is wildcard).
-                        // Next to be checked will be 'application/*'. NOTE do not use 'application/xml'
-                        // since there is no guaranty sure xml reader/writer/resolver supports xml extensions.
-                        next = new MediaType(type, MediaType.MEDIA_TYPE_WILDCARD);
+                    if (MEDIA_TYPE_WILDCARD.equals(extSubtypePrefix)) {
+                        // Media type such as 'application/*+xml' (first part is wildcard). Next to be checked will be 'application/*'.
+                        next = new MediaType(type, MEDIA_TYPE_WILDCARD);
                     } else {
                         // Media type such as 'application/atom+xml' next to be checked will be 'application/*+xml'
-                        // Reader/writer/resolver which declared support of 'application/*+xml' should
-                        // supports 'application/atom+xml' also.
-                        next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + extSubtype);
+                        next = new MediaType(type, EXT_PREFIX_SUBTYPE + extSubtype);
                     }
                 } else {
                     // Media type without extension such as 'application/xml'.
                     // Next will be 'application/*+xml' since extensions should support pure xml as well.
-                    next = new MediaType(type, MediaTypeHelper.EXT_PREFIX_SUBTYPE + subType);
+                    next = new MediaType(type, EXT_PREFIX_SUBTYPE + subType);
                 }
-            } else if (!mediaType.isWildcardType() && mediaType.isWildcardSubtype()) {
-                // Type such as 'application/*' . Next one to be checked is '*/*'.
-                // This type is always last for checking in our range.
-                next = MediaTypeHelper.DEFAULT_TYPE;
             }
         }
     }
 
-    /**
-     * Compare two mime-types. The main rule for sorting media types is :
-     * <p/>
-     * <li>n / m</li>
-     * <li>n / *</li>
-     * <li>* / *</li>
-     * <p/>
-     * Method that explicitly list of media types is sorted before a method that list * / *.
-     */
-    public static final Comparator<MediaType> MEDIA_TYPE_COMPARATOR = new Comparator<MediaType>() {
-        @Override
-        public int compare(MediaType mediaType1, MediaType mediaType2) {
-            String type1 = mediaType1.getType();
-            String subType1 = mediaType1.getSubtype();
-            String type2 = mediaType2.getType();
-            String subType2 = mediaType2.getSubtype();
-
-            if (type1.equals(MediaType.MEDIA_TYPE_WILDCARD) && !type2.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
-                return 1;
-            }
-            if (!type1.equals(MediaType.MEDIA_TYPE_WILDCARD) && type2.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
-                return -1;
-            }
-            if (subType1.equals(MediaType.MEDIA_TYPE_WILDCARD) && !subType2.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
-                return 1;
-            }
-            if (!subType1.equals(MediaType.MEDIA_TYPE_WILDCARD) && subType2.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
-                return -1;
-            }
-
-            Matcher extmatcher1 = EXT_SUBTYPE_PATTERN.matcher(subType1);
-            Matcher extmatcher2 = EXT_SUBTYPE_PATTERN.matcher(subType2);
-            if (extmatcher1.matches() && !extmatcher2.matches()) {
-                return 1;
-            }
-            if (!extmatcher1.matches() && extmatcher2.matches()) {
-                return -1;
-            }
-
-            extmatcher1 = EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType1);
-            extmatcher2 = EXT_PREFIX_SUBTYPE_PATTERN.matcher(subType2);
-            if (extmatcher1.matches() && !extmatcher2.matches()) {
-                return 1;
-            }
-            if (!extmatcher1.matches() && extmatcher2.matches()) {
-                return -1;
-            }
-
-            extmatcher1 = EXT_SUFFIX_SUBTYPE_PATTERN.matcher(subType1);
-            extmatcher2 = EXT_SUFFIX_SUBTYPE_PATTERN.matcher(subType2);
-            if (extmatcher1.matches() && !extmatcher2.matches()) {
-                return 1;
-            }
-            if (!extmatcher1.matches() && extmatcher2.matches()) {
-                return -1;
-            }
-
-            return 0;
-        }
-
-    };
+    ;
 
     /**
-     * Create a list of media type for given Consumes annotation. If parameter mime is null then list with single
-     * element
-     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
+     * Creates a list of media type for given &#64;Consumes annotation. If parameter mime is {@code null} then returns list with single
+     * element {@link MediaType#WILDCARD_TYPE}.
      *
      * @param mime
      *         the Consumes annotation.
@@ -213,9 +141,8 @@ public final class MediaTypeHelper {
     }
 
     /**
-     * Create a list of media type for given Produces annotation. If parameter mime is null then list with single
-     * element
-     * {@link MediaTypeHelper#DEFAULT_TYPE} will be returned.
+     * Creates a list of media type for given Produces annotation. If parameter mime is {@code null} then return list with single element
+     * {@link MediaType#WILDCARD_TYPE}.
      *
      * @param mime
      *         the Produces annotation.
@@ -239,13 +166,7 @@ public final class MediaTypeHelper {
      * @return true contentType is compatible to one of consumes, false otherwise
      */
     public static boolean isConsume(List<MediaType> consumes, MediaType contentType) {
-        for (MediaType c : consumes) {
-            //if (contentType.isCompatible(c))
-            if (isMatched(c, contentType)) {
-                return true;
-            }
-        }
-        return false;
+        return consumes.stream().anyMatch(consume -> isMatched(consume, contentType));
     }
 
     /**
@@ -256,45 +177,36 @@ public final class MediaTypeHelper {
      * @return ordered list of media types
      */
     private static List<MediaType> createMediaTypesList(String[] mimes) {
-        List<MediaType> l = new ArrayList<MediaType>(mimes.length);
-        for (String m : mimes) {
-            l.add(MediaType.valueOf(m));
-        }
-
-        Collections.sort(l, MEDIA_TYPE_COMPARATOR);
-        return l;
+        return Arrays.stream(mimes).map(MediaType::valueOf).sorted(new MediaTypeComparator()).collect(toList());
     }
 
     /**
-     * Looking for accept media type with the best quality. Accept list of media type must be sorted by quality value.
+     * Looking for first accept media type that is matched to first media type from {@code producedByResource}.
      *
-     * @param accept
-     *         See {@link AcceptMediaType}, {@link QualityValue}
-     * @param produces
+     * @param acceptMediaTypes
+     *         See {@link AcceptMediaType}
+     * @param producedByResource
      *         list of produces media type, See {@link Produces}
-     * @return quality value of best found compatible accept media type or 0.0 if media types are not compatible
+     * @return the best found compatible accept media type or {@code null} if media types are not compatible
      */
-    public static float processQuality(List<MediaType> accept, List<MediaType> produces) {
-        // NOTE accept contains list of AcceptMediaType instead
-        // MediaType, see ContainerRequest#getAcceptableMediaTypes
-        for (MediaType type : accept) {
-            AcceptMediaType a = (AcceptMediaType)type;
-            if ("*".equals(a.getType())) // accept everything, not need continue
-            {
-                return a.getQvalue();
+    public static AcceptMediaType findFistCompatibleAcceptMediaType(List<AcceptMediaType> acceptMediaTypes,
+                                                                    List<MediaType> producedByResource) {
+        for (AcceptMediaType accept : acceptMediaTypes) {
+            if (accept.isWildcardType()) {
+                return accept;
             }
-            for (MediaType p : produces) {
-                if (p.isCompatible(a)) {
-                    return a.getQvalue();
+            for (MediaType produce : producedByResource) {
+                if (produce.isCompatible(accept.getMediaType())) {
+                    return accept;
                 }
             }
         }
 
-        return 0.0F; // 0 quality not acceptable
+        return null;
     }
 
     /**
-     * Check types <code>one</code> and type <code>two</code> are compatible. The operation is commutative.
+     * Checks that types {@code mediaTypeOne} and type {@code mediaTypeTwo} are compatible. The operation is commutative.
      * <p>
      * Examples:
      * <ul>
@@ -303,55 +215,65 @@ public final class MediaTypeHelper {
      * </ul>
      * </p>
      *
-     * @param one
+     * @param mediaTypeOne
      *         media type
-     * @param two
+     * @param mediaTypeTwo
      *         media type
-     * @return <code>true</code> if types compatible and <code>false</code> otherwise
+     * @return {@code true} if types compatible and {@code false} otherwise
      */
-    public static boolean isCompatible(MediaType one, MediaType two) {
-        if (one == null || two == null) {
-            throw new IllegalArgumentException("null");
+    public static boolean isCompatible(MediaType mediaTypeOne, MediaType mediaTypeTwo) {
+        if (mediaTypeOne == null || mediaTypeTwo == null) {
+            throw new IllegalArgumentException("Null arguments are not allowed");
         }
 
-        String oneType = one.getType();
-        String twoType = two.getType();
-        if (oneType.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoType.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
+        if (mediaTypeOne.isWildcardType() || mediaTypeTwo.isWildcardType()) {
             return true;
         }
 
-        if (one.getType().equalsIgnoreCase(two.getType())) {
-            String oneSubtype = one.getSubtype();
-            String twoSubtype = two.getSubtype();
-            if (oneSubtype.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoSubtype.equals(MediaType.MEDIA_TYPE_WILDCARD)
-                || oneSubtype.equalsIgnoreCase(twoSubtype)) {
+        if (mediaTypeOne.getType().equalsIgnoreCase(mediaTypeTwo.getType())) {
+
+            if (mediaTypeOne.isWildcardSubtype()
+                || mediaTypeTwo.isWildcardSubtype()
+                || mediaTypeOne.getSubtype().equalsIgnoreCase(mediaTypeTwo.getSubtype())) {
+
                 return true;
             }
-            Matcher oneMatcher = EXT_SUBTYPE_PATTERN.matcher(oneSubtype);
-            Matcher twoMatcher = EXT_SUBTYPE_PATTERN.matcher(twoSubtype);
-            if (!oneMatcher.matches() && twoMatcher.matches()) {
+
+            Matcher extSubtypeMatcherOne = EXT_SUBTYPE_PATTERN.matcher(mediaTypeOne.getSubtype());
+            Matcher extSubtypeMatcherTwo = EXT_SUBTYPE_PATTERN.matcher(mediaTypeTwo.getSubtype());
+            boolean extSubtypeMatcherOneMatches = extSubtypeMatcherOne.matches();
+            boolean extSubtypeMatcherTwoMatches = extSubtypeMatcherTwo.matches();
+
+            if (!extSubtypeMatcherOneMatches && extSubtypeMatcherTwoMatches) {
+
                 // one is type such as application/xml
                 // two is type such as application/atom+xml, application/*+xml, application/xml+*
-                return oneSubtype.equalsIgnoreCase(twoMatcher.group(1)) || oneSubtype.equalsIgnoreCase(twoMatcher.group(2));
-            } else if (oneMatcher.matches() && !twoMatcher.matches()) {
+                return mediaTypeOne.getSubtype().equalsIgnoreCase(extSubtypeMatcherTwo.group(1))
+                       || mediaTypeOne.getSubtype().equalsIgnoreCase(extSubtypeMatcherTwo.group(2));
+
+            } else if (extSubtypeMatcherOneMatches && !extSubtypeMatcherTwoMatches) {
+
                 // one is type such as application/atom+xml, application/*+xml, application/xml+*
                 // two is type such as application/xml
-                return twoSubtype.equalsIgnoreCase(oneMatcher.group(1)) || twoSubtype.equalsIgnoreCase(oneMatcher.group(2));
-            } else if (oneMatcher.matches() && twoMatcher.matches()) {
-                // both types are extended types
-                String onePrefix = oneMatcher.group(1);
-                String oneSuffix = oneMatcher.group(2);
-                String twoPrefix = twoMatcher.group(1);
-                String twoSuffix = twoMatcher.group(2);
+                return mediaTypeTwo.getSubtype().equalsIgnoreCase(extSubtypeMatcherOne.group(1))
+                       || mediaTypeTwo.getSubtype().equalsIgnoreCase(extSubtypeMatcherOne.group(2));
 
-                if (onePrefix.equalsIgnoreCase(twoPrefix)
-                    && (oneSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD))) {
+            } else if (extSubtypeMatcherOneMatches && extSubtypeMatcherTwoMatches) {
+
+                // both types are extended types
+                String subtypePrefixOne = extSubtypeMatcherOne.group(1);
+                String subTypeSuffixOne = extSubtypeMatcherOne.group(2);
+                String subTypePrefixTwo = extSubtypeMatcherTwo.group(1);
+                String subtypeSuffixTwo = extSubtypeMatcherTwo.group(2);
+
+                if (subtypePrefixOne.equalsIgnoreCase(subTypePrefixTwo)
+                    && (MEDIA_TYPE_WILDCARD.equals(subTypeSuffixOne) || MEDIA_TYPE_WILDCARD.equals(subtypeSuffixTwo))) {
                     // parts before '+' are the same and one of after '+' is wildcard '*'
                     // For example two sub-types: atom+* and atom+xml
                     return true;
                 }
-                if (oneSuffix.equalsIgnoreCase(twoSuffix)
-                    && (onePrefix.equals(MediaType.MEDIA_TYPE_WILDCARD) || twoPrefix.equals(MediaType.MEDIA_TYPE_WILDCARD))) {
+                if (subTypeSuffixOne.equalsIgnoreCase(subtypeSuffixTwo)
+                    && (MEDIA_TYPE_WILDCARD.equals(subtypePrefixOne) || MEDIA_TYPE_WILDCARD.equals(subTypePrefixTwo))) {
                     // parts after '+' are the same and one of before '+' is wildcard '*'
                     // For example two sub-types: *+xml and atom+xml
                     return true;
@@ -362,9 +284,8 @@ public final class MediaTypeHelper {
     }
 
     /**
-     * Check is type <code>checkMe</code> matched to type <code>pattern</code>. NOTE The operation is NOT commutative,
-     * e.g. matching of type <code>checkMe</code> matched to <code>pattern</code> does not guaranty that
-     * <code>pattern</code> matched to <code>checkMe</code>.
+     * Checks that type {@code checkMe} is matched to type {@code pattern}. NOTE The operation is NOT commutative,
+     * e.g. matching of type {@code checkMe} to {@code pattern} does not guaranty that {@code pattern} is matched to {@code checkMe}.
      * <p>
      * Examples:
      * <ul>
@@ -378,26 +299,25 @@ public final class MediaTypeHelper {
      *         pattern type
      * @param checkMe
      *         type to be checked
-     * @return <code>true</code> if type <code>checkMe</code> is matched to <code>pattern</code> and <code>false</code>
-     * otherwise
+     * @return {@code true} if type {@code checkMe} is matched to {@code pattern} and {@code false} otherwise
      */
     public static boolean isMatched(MediaType pattern, MediaType checkMe) {
         if (pattern == null || checkMe == null) {
-            throw new IllegalArgumentException("null");
+            throw new IllegalArgumentException("Null arguments are not allowed");
         }
 
-        if (pattern.getType().equals(MediaType.MEDIA_TYPE_WILDCARD)) {
+        if (pattern.isWildcardType()) {
             return true;
         }
 
         if (pattern.getType().equalsIgnoreCase(checkMe.getType())) {
-            String patternSubtype = pattern.getSubtype();
-            String checkMeSubtype = checkMe.getSubtype();
-            if (patternSubtype.equals(MediaType.MEDIA_TYPE_WILDCARD) || patternSubtype.equalsIgnoreCase(checkMeSubtype)) {
+            if (pattern.isWildcardSubtype() || pattern.getSubtype().equalsIgnoreCase(checkMe.getSubtype())) {
                 return true;
             }
-            Matcher patternMatcher = EXT_SUBTYPE_PATTERN.matcher(patternSubtype);
-            Matcher checkMeMatcher = EXT_SUBTYPE_PATTERN.matcher(checkMeSubtype);
+
+            Matcher patternMatcher = EXT_SUBTYPE_PATTERN.matcher(pattern.getSubtype());
+            Matcher checkMeMatcher = EXT_SUBTYPE_PATTERN.matcher(checkMe.getSubtype());
+
             if (patternMatcher.matches()) {
                 String patternPrefix = patternMatcher.group(1);
                 String patternSuffix = patternMatcher.group(2);
@@ -405,19 +325,21 @@ public final class MediaTypeHelper {
                 if (!checkMeMatcher.matches()) {
                     // pattern is type such as application/atom+xml, application/*+xml, application/xml+*
                     // checkMe is type such as application/xml
-                    return checkMeSubtype.equalsIgnoreCase(patternPrefix) || checkMeSubtype.equalsIgnoreCase(patternSuffix);
+                    return checkMe.getSubtype().equalsIgnoreCase(patternPrefix)
+                           || checkMe.getSubtype().equalsIgnoreCase(patternSuffix);
                 }
 
                 // both types are extended types
                 String checkMePrefix = checkMeMatcher.group(1);
                 String checkMeSuffix = checkMeMatcher.group(2);
 
-                if (patternPrefix.equalsIgnoreCase(checkMePrefix) && patternSuffix.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
+                if (MEDIA_TYPE_WILDCARD.equals(patternSuffix) && patternPrefix.equalsIgnoreCase(checkMePrefix)) {
                     // parts before '+' are the same and pattern after '+' is wildcard '*'
                     // For example two sub-types: atom+* and atom+xml
                     return true;
                 }
-                if (patternSuffix.equalsIgnoreCase(checkMeSuffix) && patternPrefix.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
+
+                if (MEDIA_TYPE_WILDCARD.equals(patternPrefix) && patternSuffix.equalsIgnoreCase(checkMeSuffix)) {
                     // parts after '+' are the same and pattern before '+' is wildcard '*'
                     // For example two sub-types: *+xml and atom+xml
                     return true;
@@ -426,5 +348,8 @@ public final class MediaTypeHelper {
         }
 
         return false;
+    }
+
+    private MediaTypeHelper() {
     }
 }

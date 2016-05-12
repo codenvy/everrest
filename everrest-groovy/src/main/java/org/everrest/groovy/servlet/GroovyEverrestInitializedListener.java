@@ -31,12 +31,12 @@ public class GroovyEverrestInitializedListener implements ServletContextListener
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        ServletContext sctx = event.getServletContext();
-        EverrestProcessor processor = (EverrestProcessor)sctx.getAttribute(EverrestProcessor.class.getName());
+        ServletContext servletContext = event.getServletContext();
+        EverrestProcessor processor = (EverrestProcessor)servletContext.getAttribute(EverrestProcessor.class.getName());
         if (processor == null) {
             throw new RuntimeException("EverrestProcessor not found. ");
         }
-        EverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(sctx);
+        EverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(servletContext);
         Application application = initializer.getApplication();
         if (application != null) {
             processor.addApplication(application);

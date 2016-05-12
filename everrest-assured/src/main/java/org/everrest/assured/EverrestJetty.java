@@ -159,7 +159,7 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
                             }
                         }
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        LOG.error(e.getLocalizedMessage(), e);
                     }
                 }
 

@@ -20,6 +20,7 @@ import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.provider.EntityProvider;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.activation.DataSource;
@@ -51,15 +52,7 @@ import java.util.Map;
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 public class JsonEntityProvider<T> implements EntityProvider<T> {
-
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(JsonEntityProvider.class);
-
-    // It is common task for #isReadable() and #isWriteable
-    // Not sure it is required but ...
-    // Investigation about checking can type be write as JSON (useful JSON).
-    // Probably should be better added this checking in JSON framework.
-    // Or probably enough check only content type 'application/json'
-    // and if this content type set trust it and try parse/write
+    private static final Logger LOG = LoggerFactory.getLogger(JsonEntityProvider.class);
 
     /** Do not process via JSON "known" JAX-RS types and some other. */
     private static final Class<?>[] IGNORED = new Class<?>[]{byte[].class, char[].class, DataSource.class,
@@ -82,8 +75,6 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        // say as support all objects
-        //return Object.class.isAssignableFrom(type);
         return isSupported(type);
     }
 
@@ -100,7 +91,6 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
             jsonParser.parse(entityStream);
             JsonValue jsonValue = jsonParser.getJsonObject();
 
-            // If requested object is JsonValue then stop processing here.
             if (JsonValue.class.isAssignableFrom(type)) {
                 return (T)jsonValue;
             }
@@ -123,7 +113,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
             return ObjectBuilder.createObject(type, jsonValue);
         } catch (JsonException e) {
             LOG.debug(e.getMessage(), e);
-            throw new IOException("Can't read from input stream " + e, e);
+            throw new IOException(String.format("Can't read from input stream %s", e), e);
         }
     }
 
@@ -134,8 +124,6 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        // say as support all objects
-        //return Object.class.isAssignableFrom(type);
         return isSupported(type);
     }
 
@@ -151,7 +139,6 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
         try {
             JsonValue jsonValue;
             if (t instanceof JsonValue) {
-                // Don't do any transformation if object is prepared JsonValue.
                 jsonValue = (JsonValue)t;
             } else {
                 Types jType = JsonUtils.getType(type);
@@ -173,7 +160,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
             jsonWriter.flush();
         } catch (JsonException e) {
             LOG.debug(e.getMessage(), e);
-            throw new IOException("Can't write to output stream. " + e.getMessage(), e);
+            throw new IOException(String.format("Can't write to output stream. %s", e.getMessage()), e);
         }
     }
 }

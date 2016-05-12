@@ -11,18 +11,20 @@
 package org.everrest.exoplatform;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * @author andrew00x
  */
 public class StandaloneInjectionTest extends StandaloneBaseTest {
-    public static interface Injectable {
+    public interface Injectable {
         String getName();
     }
 
@@ -40,8 +42,8 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            Assert.assertNotNull(inj);
-            Assert.assertEquals(InjectableImpl.class.getName(), inj.getName());
+            assertNotNull(inj);
+            assertEquals(InjectableImpl.class.getName(), inj.getName());
         }
     }
 
@@ -52,17 +54,17 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            Assert.assertNotNull(pInj);
+            assertNotNull(pInj);
             Injectable inj = pInj.get();
-            Assert.assertNotNull(inj);
-            Assert.assertEquals(InjectableImpl.class.getName(), inj.getName());
+            assertNotNull(inj);
+            assertEquals(InjectableImpl.class.getName(), inj.getName());
         }
     }
 
    /* ------------------------------------------------------------- */
 
     // Implementation of this interface used as ExoContainer component.
-    public static interface InjectableComponent {
+    public interface InjectableComponent {
         String getName();
     }
 
@@ -80,8 +82,8 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            Assert.assertNotNull(inj);
-            Assert.assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
+            assertNotNull(inj);
+            assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
         }
     }
 
@@ -92,10 +94,10 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
 
         @GET
         public void m0() {
-            Assert.assertNotNull(pInj);
+            assertNotNull(pInj);
             InjectableComponent inj = pInj.get();
-            Assert.assertNotNull(inj);
-            Assert.assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
+            assertNotNull(inj);
+            assertEquals(InjectableComponentImpl.class.getName(), inj.getName());
         }
     }
 
@@ -129,14 +131,14 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
     @Test
     public void testInjectInstance() throws Exception {
         resources.addResource(Resource1.class, null);
-        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource1", "", null, null, null).getStatus());
+        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource1", "", null, null, null).getStatus());
         resources.removeResource(Resource1.class);
     }
 
     @Test
     public void testInjectProvider() throws Exception {
         resources.addResource(Resource2.class, null);
-        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource2", "", null, null, null).getStatus());
+        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource2", "", null, null, null).getStatus());
         resources.removeResource(Resource2.class);
     }
 
@@ -146,7 +148,7 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
     @Test
     public void testInjectInstance2() throws Exception {
         resources.addResource(Resource3.class, null);
-        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource3", "", null, null, null).getStatus());
+        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource3", "", null, null, null).getStatus());
         resources.removeResource(Resource3.class);
     }
 
@@ -159,7 +161,7 @@ public class StandaloneInjectionTest extends StandaloneBaseTest {
     @Test
     public void testInjectProvider2() throws Exception {
         resources.addResource(Resource4.class, null);
-        Assert.assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource4", "", null, null, null).getStatus());
+        assertEquals(204, launcher.service("GET", "/StandaloneInjectionTest.Resource4", "", null, null, null).getStatus());
         resources.removeResource(Resource4.class);
     }
 }

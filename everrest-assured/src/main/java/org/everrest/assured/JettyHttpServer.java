@@ -35,10 +35,11 @@ import org.everrest.assured.util.IoUtil;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ResourceBinder;
+import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.RestComponentResolver;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.servlet.EverrestInitializedListener;
 import org.everrest.core.servlet.EverrestServlet;
 import org.everrest.groovy.BaseResourceId;
@@ -159,22 +160,22 @@ public class JettyHttpServer {
     }
 
     public void addSingleton(Object instance) {
-        LOG.debug("addSingleton << " + instance.getClass());
+        LOG.debug("addSingleton {}", instance.getClass());
         ResourceBinder resources = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        ProviderBinder providers = ProviderBinder.getInstance();
+        ProviderBinder providers = (ProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
         RestComponentResolver resolver = new RestComponentResolver(resources, providers);
         resolver.addSingleton(instance);
     }
 
     public void addPerRequest(Class clazz) {
-        LOG.debug("addPerRequest << " + clazz);
+        LOG.debug("addPerRequest << {}", clazz);
         ResourceBinder resources = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        ProviderBinder providers = ProviderBinder.getInstance();
+        ProviderBinder providers = (ProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
         RestComponentResolver resolver = new RestComponentResolver(resources, providers);
         resolver.addPerRequest(clazz);
     }
 
-    public void addFactory(ObjectFactory<AbstractResourceDescriptor> factory) {
+    public void addFactory(ObjectFactory<ResourceDescriptor> factory) {
         ResourceBinder binder = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
         binder.addResource(factory);
     }

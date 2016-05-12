@@ -11,48 +11,64 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.impl.header.MediaTypeHelper;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
+import java.util.Random;
 
-/**
- * @author andrew00x
- */
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class ByteEntityProviderTest {
 
-    @Test
-    @SuppressWarnings({"unchecked"})
-    public void testRead() throws Exception {
-        MessageBodyReader reader = new ByteEntityProvider();
-        Assert.assertTrue(reader.isReadable(byte[].class, null, null, null));
-        byte[] data = new byte[16];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = (byte)i;
-        }
-        Assert.assertTrue(reader.isReadable(data.getClass(), null, null, null));
-        byte[] result =
-                (byte[])reader.readFrom(byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(),
-                                        new ByteArrayInputStream(data));
-        Assert.assertTrue(Arrays.equals(data, result));
+    private byte[] testContent;
+    private ByteEntityProvider byteEntityProvider;
+
+    @Before
+    public void setUp() throws Exception {
+        testContent = new byte[16];
+        new Random().nextBytes(testContent);
+
+        byteEntityProvider = new ByteEntityProvider();
     }
 
     @Test
-    @SuppressWarnings({"unchecked"})
-    public void testWrite() throws Exception {
-        MessageBodyWriter writer = new ByteEntityProvider();
-        Assert.assertTrue(writer.isWriteable(byte[].class, null, null, null));
-        byte[] data = new byte[16];
-        for (int i = data.length - 1; i >= 0; i--) {
-            data[i] = (byte)i;
-        }
+    public void isReadableForByteArray() throws Exception {
+        assertTrue(byteEntityProvider.isReadable(byte[].class, null, null, null));
+    }
+
+    @Test
+    public void isNotReadableForTypeOtherThanByteArray() throws Exception {
+        assertFalse(byteEntityProvider.isReadable(String.class, null, null, null));
+    }
+
+    @Test
+    public void isWritableForByteArray() throws Exception {
+        assertTrue(byteEntityProvider.isWriteable(byte[].class, null, null, null));
+    }
+
+    @Test
+    public void isNotWritableForTypeOtherThanByteArray() throws Exception {
+        assertFalse(byteEntityProvider.isWriteable(String.class, null, null, null));
+    }
+
+    @Test
+    public void readsContentOfEntityStreamAsByteArray() throws Exception {
+        byte[] result = byteEntityProvider.readFrom(byte[].class, null, null, MediaType.WILDCARD_TYPE, new MultivaluedMapImpl(),
+                                                    new ByteArrayInputStream(testContent));
+        assertArrayEquals(testContent, result);
+    }
+
+    @Test
+    public void writesByteArrayToOutputStream() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.writeTo(data, byte[].class, null, null, MediaTypeHelper.DEFAULT_TYPE, new MultivaluedMapImpl(), out);
-        Assert.assertTrue(Arrays.equals(data, out.toByteArray()));
+        byteEntityProvider.writeTo(testContent, byte[].class, null, null, MediaType.WILDCARD_TYPE, new MultivaluedHashMap<>(), out);
+
+        assertArrayEquals(testContent, out.toByteArray());
     }
 }

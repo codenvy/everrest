@@ -10,132 +10,121 @@
  *******************************************************************************/
 package org.everrest.core.servlet;
 
-import static org.junit.Assert.assertEquals;
+import org.everrest.core.tools.SimplePrincipal;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.HttpHeaders;
+import static java.util.Collections.emptyEnumeration;
+import static java.util.Collections.enumeration;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.everrest.core.ExtHttpHeaders;
-import org.everrest.core.tools.EmptyInputStream;
-import org.everrest.test.mock.MockHttpServletRequest;
-import org.junit.Test;
-
-/**
- * Test for {@link ServletContainerRequest}
- * 
- * @author Tareq Sharafy <tareq.sharafy@sap.com>
- */
 public class ServletContainerRequestTest {
 
-    private static final String TEST_SCHEME = "http://";
-    private static final String TEST_SERVER_NAME = "test.myhost.com";
-    private static final int TEST_SERVER_PORT = 8080;
-    private static final String TEST_HOST = TEST_SERVER_NAME + ":" + TEST_SERVER_PORT;
-    private static final String TEST_CONTEXT_PATH = "/myapp";
-    private static final String TEST_SERVLET_PATH = "/myservlet";
-    private static final String TEST_SUBPATH = "/datapath";
+    private HttpServletRequest httpServletRequest;
 
-    private static final String TEST_BASE_PATH = TEST_CONTEXT_PATH + TEST_SERVLET_PATH;
-    private static final String TEST_FULL_PATH = TEST_BASE_PATH + TEST_SUBPATH;
+    @Before
+    public void setUp() throws Exception {
+        httpServletRequest = mock(HttpServletRequest.class);
+        when(httpServletRequest.getHeaderNames()).thenReturn(emptyEnumeration());
+    }
 
-    private static final String TEST_BASE_URI = TEST_SCHEME + TEST_HOST + TEST_BASE_PATH;
-    private static final String TEST_REQUEST_URI = TEST_BASE_URI + TEST_SUBPATH;
+    @Test
+    public void getsHttpMethodFromServletRequest() throws Exception {
+        when(httpServletRequest.getMethod()).thenReturn("POST");
+        assertEquals("POST", ServletContainerRequest.create(httpServletRequest).getMethod());
+    }
 
-    private static class MockEmptyBodyHttpRequest extends MockHttpServletRequest {
+    @Test
+    public void getsHttpHeadersFromServletRequest() throws Exception {
+        Map<String, List<String>> httpHeaders = new HashMap<>();
+        httpHeaders.put("content-type", Arrays.asList("text/plain"));
+        httpHeaders.put("content-length", Arrays.asList("100"));
+        configureHttpHeadersInServletRequest(httpHeaders);
 
-        MockEmptyBodyHttpRequest(String forwardedHost, String forwardedProto) {
-            super("", new EmptyInputStream(), 0, "GET", transformHeaders(forwardedHost, forwardedProto));
-        }
+        ServletContainerRequest servletContainerRequest = ServletContainerRequest.create(httpServletRequest);
 
-        private static Map<String, List<String>> transformHeaders(String forwardedHost, String forwardedProto) {
-            Map<String, List<String>> finalHeaders = new HashMap<String, List<String>>();
-            if (forwardedHost != null) {
-                finalHeaders.put(ExtHttpHeaders.FORWARDED_HOST, Arrays.asList(forwardedHost));
+        assertEquals("text/plain", servletContainerRequest.getRequestHeaders().getFirst("content-type"));
+        assertEquals("100", servletContainerRequest.getRequestHeaders().getFirst("content-length"));
+    }
+
+    @Test
+    public void getsUrisFromServletRequest() throws Exception {
+        when(httpServletRequest.getScheme()).thenReturn("http");
+        when(httpServletRequest.getServerName()).thenReturn("some.host.com");
+        when(httpServletRequest.getServerPort()).thenReturn(8080);
+        when(httpServletRequest.getContextPath()).thenReturn("/my-app");
+        when(httpServletRequest.getServletPath()).thenReturn("/my-servlet");
+        when(httpServletRequest.getPathInfo()).thenReturn("/my-resource");
+        when(httpServletRequest.getRequestURI()).thenReturn("/my-app/my-servlet/my-resource");
+        when(httpServletRequest.getQueryString()).thenReturn("a=b&c=d");
+
+        ServletContainerRequest servletContainerRequest = ServletContainerRequest.create(httpServletRequest);
+
+        assertEquals("http://some.host.com:8080/my-app/my-servlet", servletContainerRequest.getBaseUri().toString());
+        assertEquals("http://some.host.com:8080/my-app/my-servlet/my-resource?a=b&c=d", servletContainerRequest.getRequestUri().toString());
+    }
+
+    @Test
+    public void getsEntityStreamFromServletRequest() throws Exception {
+        byte[] inData = "hello world".getBytes();
+        when(httpServletRequest.getInputStream()).thenReturn(new TstServletInputStream(inData));
+
+        ServletContainerRequest servletContainerRequest = ServletContainerRequest.create(httpServletRequest);
+
+        byte[] data = new byte[inData.length];
+        servletContainerRequest.getEntityStream().read(data);
+        assertArrayEquals(inData, data);
+    }
+
+    @Test
+    public void getsSecurityContextFromServletRequest() throws Exception {
+        when(httpServletRequest.getUserPrincipal()).thenReturn(new SimplePrincipal("andrew"));
+        when(httpServletRequest.isUserInRole("user")).thenReturn(true);
+        when(httpServletRequest.isSecure()).thenReturn(false);
+        when(httpServletRequest.getAuthType()).thenReturn("BASIC_AUTH");
+
+        ServletContainerRequest servletContainerRequest = ServletContainerRequest.create(httpServletRequest);
+
+        assertEquals("BASIC_AUTH", servletContainerRequest.getAuthenticationScheme());
+        assertEquals("andrew", servletContainerRequest.getUserPrincipal().getName());
+        assertFalse(servletContainerRequest.isSecure());
+        assertTrue(servletContainerRequest.isUserInRole("user"));
+    }
+
+    private void configureHttpHeadersInServletRequest(Map<String, List<String>> httpHeaders) {
+        when(httpServletRequest.getHeaderNames()).thenReturn(enumeration(httpHeaders.keySet()));
+
+        when(httpServletRequest.getHeaders(any(String.class))).thenAnswer(new Answer<Enumeration<String>>() {
+            @Override
+            public Enumeration<String> answer(InvocationOnMock invocation) throws Throwable {
+                String headerName = (String)invocation.getArguments()[0];
+                List<String> values = httpHeaders.get(headerName);
+                return values == null ? emptyEnumeration() : enumeration(values);
             }
-            if (forwardedProto != null) {
-                finalHeaders.put(ExtHttpHeaders.FORWARDED_PROTO, Arrays.asList(forwardedProto));
+        });
+
+        when(httpServletRequest.getHeader(any(String.class))).thenAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                String headerName = (String)invocation.getArguments()[0];
+                List<String> values = httpHeaders.get(headerName);
+                return values == null || values.isEmpty() ? null : values.get(0);
             }
-            // Add the 'host' header
-            finalHeaders.put(HttpHeaders.HOST, Arrays.asList(TEST_HOST));
-            return finalHeaders;
-        }
-
-        @Override
-        public String getServerName() {
-            return TEST_SERVER_NAME;
-        }
-
-        @Override
-        public int getServerPort() {
-            return TEST_SERVER_PORT;
-        }
-
-        @Override
-        public String getContextPath() {
-            return TEST_CONTEXT_PATH;
-        }
-
-        @Override
-        public String getServletPath() {
-            return TEST_SERVLET_PATH;
-        }
-
-        @Override
-        public String getPathInfo() {
-            return TEST_SUBPATH;
-        }
-    }
-
-    @Test
-    public void testSimpleRequest() {
-        assertIgnoredForwardedHost(null);
-    }
-
-    @Test
-    public void testInvalidForwardedHost1() {
-        assertIgnoredForwardedHost("a b c");
-    }
-
-    @Test
-    public void testInvalidForwardedHost2() {
-        assertIgnoredForwardedHost("myhost.com:8877:200");
-    }
-
-    @Test
-    public void testInvalidForwardedHost3() {
-        assertIgnoredForwardedHost("myhost..com");
-    }
-
-    private static void assertIgnoredForwardedHost(String forwardedHostHeader) {
-        // A simple HTTP request
-        MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest(forwardedHostHeader, null);
-        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
-        // Validate the fields
-        assertEquals(TEST_BASE_URI, req.getBaseUri().toString());
-        assertEquals(TEST_REQUEST_URI, req.getRequestUri().toString());
-    }
-
-    @Test
-    public void testForwardedHost() {
-        // A simple HTTP request
-        MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest("other.myhost.com", null);
-        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
-        // Validate the fields
-        assertEquals(TEST_SCHEME + "other.myhost.com" + TEST_BASE_PATH, req.getBaseUri().toString());
-        assertEquals(TEST_SCHEME + "other.myhost.com" + TEST_FULL_PATH, req.getRequestUri().toString());
-    }
-
-    @Test
-    public void testForwardedHostWithPort() {
-        // A simple HTTP request
-        MockHttpServletRequest httpReq = new MockEmptyBodyHttpRequest("other.myhost.com:777", null);
-        ServletContainerRequest req = ServletContainerRequest.create(httpReq);
-        // Validate the fields
-        assertEquals(TEST_SCHEME + "other.myhost.com:777" + TEST_BASE_PATH, req.getBaseUri().toString());
-        assertEquals(TEST_SCHEME + "other.myhost.com:777" + TEST_FULL_PATH, req.getRequestUri().toString());
+        });
     }
 }

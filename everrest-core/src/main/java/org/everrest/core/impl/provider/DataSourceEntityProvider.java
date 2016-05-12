@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
+import com.google.common.io.ByteStreams;
+
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.provider.EntityProvider;
 
@@ -30,18 +31,19 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+
 /**
  * @author andrew00x
  */
 @Provider
 public class DataSourceEntityProvider implements EntityProvider<DataSource> {
 
-
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == DataSource.class;
     }
-
 
     @Override
     public DataSource readFrom(Class<DataSource> type,
@@ -50,36 +52,32 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
                                MediaType mediaType,
                                MultivaluedMap<String, String> httpHeaders,
                                InputStream entityStream) throws IOException {
-        String m = mediaType == null ? null : mediaType.toString();
-
-        return createDataSource(entityStream, m);
+        return createDataSource(entityStream, mediaType == null ? null : mediaType.toString());
     }
-
 
     @Override
-    public long getSize(DataSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(DataSource dataSource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return DataSource.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(DataSource t, Class<?> type,
+    public void writeTo(DataSource dataSource,
+                        Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        InputStream in = t.getInputStream();
-        try {
-            IOHelper.write(in, entityStream);
-        } finally {
-            in.close();
+        if (httpHeaders.getFirst(CONTENT_TYPE) == null && !isNullOrEmpty(dataSource.getContentType())) {
+            httpHeaders.putSingle(CONTENT_TYPE, dataSource.getContentType());
+        }
+        try (InputStream in = dataSource.getInputStream()) {
+            ByteStreams.copy(in, entityStream);
         }
     }
 
@@ -96,56 +94,42 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
      * @throws IOException
      *         if any i/o errors occurs
      */
-    private static DataSource createDataSource(InputStream entityStream, String mimeType) throws IOException {
+    private DataSource createDataSource(InputStream entityStream, String mimeType) throws IOException {
 
         boolean overflow = false;
         byte[] buffer = new byte[8192];
 
-        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        ApplicationContext context = ApplicationContext.getCurrent();
         int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(bufferSize);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(bufferSize);
 
-        int bytes;
-        while (!overflow && ((bytes = entityStream.read(buffer)) != -1)) {
-            bout.write(buffer, 0, bytes);
-            if (bout.size() > bufferSize) {
+        int bytesNum;
+        while (!overflow && ((bytesNum = entityStream.read(buffer)) != -1)) {
+            bos.write(buffer, 0, bytesNum);
+            if (bos.size() > bufferSize) {
                 overflow = true;
             }
         }
 
-        if (!overflow) {
-            // small data , use bytes
-            return new ByteArrayDataSource(bout.toByteArray(), mimeType);
+        if (overflow) {
+            File file = FileCollector.getInstance().createFile();
+            try (OutputStream fos = new FileOutputStream(file)) {
+                bos.writeTo(fos);
+                while ((bytesNum = entityStream.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesNum);
+                }
+            }
+            return new MimeFileDataSource(file, mimeType);
         }
 
-        // large data, use file
-        final File file = FileCollector.getInstance().createFile();
-        OutputStream fos = new FileOutputStream(file);
-
-        // copy data from byte array in file
-        bout.writeTo(fos);
-
-        while ((bytes = entityStream.read(buffer)) != -1) {
-            fos.write(buffer, 0, bytes);
-        }
-
-        fos.close();
-
-        return new MimeFileDataSource(file, mimeType);
+        return new ByteArrayDataSource(bos.toByteArray(), mimeType);
     }
 
     /** FileDataSource with preset media type. */
     static class MimeFileDataSource extends FileDataSource {
-
         /** Media type of the data. */
         private final String mimeType;
 
-        /**
-         * @param file
-         *         file
-         * @param mimeType
-         *         media type
-         */
         public MimeFileDataSource(File file, String mimeType) {
             super(file);
             this.mimeType = mimeType;
@@ -160,7 +144,6 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource> {
             }
             super.finalize();
         }
-
 
         @Override
         public String getContentType() {

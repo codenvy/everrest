@@ -4,88 +4,60 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * <p/>
  * Contributors:
- *   Codenvy, S.A. - initial API and implementation
+ * Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
 package org.everrest.core.impl.method;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.method.TypeProducer;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
-public class StringConstructorProducerTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-    public void testByte() throws Exception {
-        StringConstructorProducer StringConstructorProducer =
-                new StringConstructorProducer(Byte.class.getConstructor(String.class));
-        assertEquals(new Byte("127"), StringConstructorProducer.createValue("127"));
+public class StringConstructorProducerTest {
+    private StringConstructorProducer producer;
+
+    @Before
+    public void setUp() throws Exception {
+        producer = new StringConstructorProducer(Integer.class.getConstructor(String.class));
     }
 
-    public void testShort() throws Exception {
-        StringConstructorProducer StringConstructorProducer =
-                new StringConstructorProducer(Short.class.getConstructor(String.class));
-        assertEquals(new Short("32767"), StringConstructorProducer.createValue("32767"));
-    }
-
-    public void testInteger() throws Exception {
-        StringConstructorProducer StringConstructorProducer =
-                new StringConstructorProducer(Integer.class.getConstructor(String.class));
-        assertEquals(new Integer("2147483647"), StringConstructorProducer.createValue("2147483647"));
-    }
-
-    public void testLong() throws Exception {
-        StringConstructorProducer StringConstructorProducer =
-                new StringConstructorProducer(Long.class.getConstructor(String.class));
-        assertEquals(new Long("9223372036854775807"), StringConstructorProducer.createValue("9223372036854775807"));
-    }
-
-    public void testFloat() throws Exception {
-        StringConstructorProducer StringConstructorProducer =
-                new StringConstructorProducer(Float.class.getConstructor(String.class));
-        assertEquals(new Float("1.23456789"), StringConstructorProducer.createValue("1.23456789"));
-    }
-
-    public void testDouble() throws Exception {
-        StringConstructorProducer StringConstructorProducer =
-                new StringConstructorProducer(Double.class.getConstructor(String.class));
-        assertEquals(new Double("1.234567898765432"), StringConstructorProducer.createValue("1.234567898765432"));
-    }
-
-    public void testBoolean() throws Exception {
-        StringConstructorProducer StringConstructorProducer =
-                new StringConstructorProducer(Boolean.class.getConstructor(String.class));
-        assertEquals(true, StringConstructorProducer.createValue("true"));
-    }
-
-    public void testCustomTypeStringConstructor() throws Exception {
-        TypeProducer t = ParameterHelper.createTypeProducer(StringConstructor.class, null);
+    @Test
+    public void createsInstanceAndUsesSingleValueFromMap() throws Exception {
         MultivaluedMap<String, String> values = new MultivaluedMapImpl();
-        values.putSingle("key1", "string constructor test");
-        StringConstructor o1 = (StringConstructor)t.createValue("key1", values, null);
-        assertEquals("string constructor test", o1.getValue());
-        values.clear();
-        o1 = (StringConstructor)t.createValue("key1", values, "default value");
-        assertEquals("default value", o1.getValue());
+        values.putSingle("number", "2147483647");
+
+        Object result = producer.createValue("number", values, null);
+        assertEquals(new Integer("2147483647"), result);
     }
 
-    public static class StringConstructor {
-        private String value;
+    @Test
+    public void createsInstanceAndUsesFirstValueFromMap() throws Exception {
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
 
-        public StringConstructor(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
+        Object result = producer.createValue("number", values, null);
+        assertEquals(new Integer("2147483647"), result);
     }
 
+    @Test
+    public void createsInstanceAndUsesDefault() throws Exception {
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+
+        Object result = producer.createValue("number", values, "-777");
+        assertEquals(new Integer("-777"), result);
+    }
+
+    @Test
+    public void returnsNullWhenMapDoesNotContainRequiredValueAndDefaultValueIsNull() throws Exception {
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+
+        Object result = producer.createValue("number", values, null);
+        assertNull(result);
+    }
 }

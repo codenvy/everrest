@@ -14,8 +14,6 @@ import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +21,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import java.util.Arrays;
 import java.util.HashSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author andrew00x
@@ -32,7 +33,7 @@ public class AsyncTest extends StandaloneBaseTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Identity user = new Identity("john", new HashSet<MembershipEntry>(), new HashSet<String>(Arrays.asList("admin")));
+        Identity user = new Identity("john", new HashSet<>(), new HashSet<>(Arrays.asList("admin")));
         ConversationState.setCurrent(new ConversationState(user));
     }
 
@@ -40,7 +41,7 @@ public class AsyncTest extends StandaloneBaseTest {
     public static class Async1 {
         @GET
         public void m() {
-            Assert.assertNotNull(ConversationState.getCurrent());
+            assertNotNull(ConversationState.getCurrent());
         }
     }
 
@@ -57,11 +58,11 @@ public class AsyncTest extends StandaloneBaseTest {
     public void testCopyConversationState() throws Exception {
         resources.addResource(Async1.class, null);
         ContainerResponse response = launcher.service("GET", "/AsyncTest.Async1?async=true", "", null, null, null);
-        Assert.assertEquals(202, response.getStatus());
+        assertEquals(202, response.getStatus());
         String jobUrl = (String)response.getEntity();
         response = getAsynchronousResponse(jobUrl, null);
         //System.out.println(response.getEntity());
-        Assert.assertEquals(204, response.getStatus());
+        assertEquals(204, response.getStatus());
         resources.removeResource(Async1.class);
     }
 
@@ -69,13 +70,13 @@ public class AsyncTest extends StandaloneBaseTest {
     public void testProcessExceptions() throws Exception {
         resources.addResource(Async2.class, null);
         ContainerResponse response = launcher.service("GET", "/AsyncTest.Async2?async=true", "", null, null, null);
-        Assert.assertEquals(202, response.getStatus());
+        assertEquals(202, response.getStatus());
         String jobUrl = (String)response.getEntity();
         ByteArrayContainerResponseWriter w = new ByteArrayContainerResponseWriter();
         response = getAsynchronousResponse(jobUrl, w);
         //System.out.println(response.getEntity());
-        Assert.assertEquals(500, response.getStatus());
-        Assert.assertEquals("test process exceptions in asynchronous mode", new String(w.getBody()));
+        assertEquals(500, response.getStatus());
+        assertEquals("test process exceptions in asynchronous mode", new String(w.getBody()));
         resources.removeResource(Async1.class);
     }
 

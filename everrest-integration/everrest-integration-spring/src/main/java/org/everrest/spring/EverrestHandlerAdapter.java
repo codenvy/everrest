@@ -54,7 +54,6 @@ public class EverrestHandlerAdapter implements HandlerAdapter, ServletContextAwa
         env.put(ServletConfig.class, servletConfig);
         env.put(ServletContext.class, servletContext);
         env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
-        //System.out.println("\n\n" + webApplicationRoles.getDeclaredRoles() + "\n");
         ((EverrestProcessor)handler).process(ServletContainerRequest.create(request), new ContainerResponse(
                 new ServletContainerResponseWriter(response)), env);
         // return null since request handled directly.

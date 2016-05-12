@@ -40,6 +40,6 @@ public class PathValue {
 
 
     public String toString() {
-        return "( " + path + " )";
+        return "(" + path + ")";
     }
 }

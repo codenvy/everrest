@@ -15,9 +15,6 @@ import java.util.HashMap;
 /**
  * Keeps objects from environment (e. g. servlet container) which can be passed
  * in resource. Parameter must be annotated by {@link javax.ws.rs.core.Context}.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
  */
 public class EnvironmentContext extends HashMap<Class<?>, Object> {
     private static final long serialVersionUID = 5409617947238152318L;

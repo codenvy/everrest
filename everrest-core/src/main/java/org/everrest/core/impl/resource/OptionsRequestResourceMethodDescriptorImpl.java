@@ -10,28 +10,24 @@
  *******************************************************************************/
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.method.MethodParameter;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.Parameter;
+import org.everrest.core.resource.ResourceDescriptor;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: OptionsRequestResourceMethodDescriptorImpl.java 285 2009-10-15
- *          16:21:30Z aparfonov $
+ * Resource method that produces response for OPTIONS request. This resource method is just placeholder to mark fact that OPTIONS request is supported
+ * and it is not linked with any real method of class.
  */
 public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMethodDescriptorImpl {
     /**
-     * @param method
-     *         See {@link Method}
      * @param httpMethod
      *         HTTP request method designator
      * @param parameters
-     *         list of method parameters. See {@link MethodParameter}
+     *         list of method parameters. See {@link Parameter}
      * @param parentResource
      *         parent resource for this method
      * @param consumes
@@ -41,16 +37,14 @@ public final class OptionsRequestResourceMethodDescriptorImpl extends ResourceMe
      * @param additional
      *         additional annotations
      */
-    public OptionsRequestResourceMethodDescriptorImpl(Method method,
-                                                      String httpMethod,
-                                                      List<MethodParameter> parameters,
-                                                      AbstractResourceDescriptor parentResource,
+    public OptionsRequestResourceMethodDescriptorImpl(String httpMethod,
+                                                      List<Parameter> parameters,
+                                                      ResourceDescriptor parentResource,
                                                       List<MediaType> consumes,
                                                       List<MediaType> produces,
                                                       Annotation[] additional) {
-        super(method, httpMethod, parameters, parentResource, consumes, produces, additional);
+        super(null, httpMethod, parameters, parentResource, consumes, produces, additional);
     }
-
 
     @Override
     public Class<?> getResponseType() {

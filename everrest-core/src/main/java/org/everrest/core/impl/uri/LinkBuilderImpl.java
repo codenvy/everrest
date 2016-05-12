@@ -10,16 +10,26 @@
  *******************************************************************************/
 package org.everrest.core.impl.uri;
 
+import com.google.common.base.Objects;
+
+import org.everrest.core.impl.header.HeaderParameterParser;
+
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.everrest.core.impl.uri.UriComponent.normalize;
+import static org.everrest.core.impl.uri.UriComponent.resolve;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.scan;
 
 /**
  * @author andrew00x
@@ -30,6 +40,7 @@ public class LinkBuilderImpl implements Link.Builder {
     private Map<String, String> params;
 
     public LinkBuilderImpl() {
+        uriBuilder = new UriBuilderImpl();
         params = new HashMap<>();
     }
 
@@ -43,12 +54,32 @@ public class LinkBuilderImpl implements Link.Builder {
 
     @Override
     public Link.Builder link(String link) {
-        return link(LinkImpl.valueOf(link));
+        checkArgument(link != null, "Link string might not be null");
+        this.params.clear();
+        int p = scan(link, '<');
+        checkArgument(charAtIs(link, p, '<'), "Link string must start with '<'");
+        int n = scan(link, p, '>');
+        checkArgument(charAtIs(link, n, '>'), String.format("Missing '>' in link: %s", link));
+        String uri = link.substring(p + 1, n).trim();
+
+        p = scan(link, n, ';');
+        if (charAtIs(link, p, ';')) {
+            try {
+                Map<String, String> params = new HeaderParameterParser().parse(link);
+                uriBuilder = UriBuilder.fromUri(uri);
+                this.params.putAll(params);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException(e.getMessage(), e);
+            }
+        } else {
+            uriBuilder = UriBuilder.fromUri(uri);
+        }
+        return this;
     }
 
     @Override
     public Link.Builder uriBuilder(UriBuilder uriBuilder) {
-        this.uriBuilder = uriBuilder.clone();
+        this.uriBuilder = UriBuilder.fromUri(uriBuilder.toTemplate());
         return this;
     }
 
@@ -66,9 +97,7 @@ public class LinkBuilderImpl implements Link.Builder {
 
     @Override
     public Link.Builder rel(String rel) {
-        if (rel == null) {
-            throw new IllegalArgumentException("Null rel isn't allowed");
-        }
+        checkArgument(rel != null, "Null rel isn't allowed");
         String value = params.get(Link.REL);
         if (value == null) {
             param(Link.REL, rel);
@@ -80,9 +109,7 @@ public class LinkBuilderImpl implements Link.Builder {
 
     @Override
     public Link.Builder title(String title) {
-        if (title == null) {
-            throw new IllegalArgumentException("Null title isn't allowed");
-        }
+        checkArgument(title != null, "Null title isn't allowed");
         param(Link.TITLE, title);
         return this;
 
@@ -90,64 +117,42 @@ public class LinkBuilderImpl implements Link.Builder {
 
     @Override
     public Link.Builder type(String type) {
-        if (type == null) {
-            throw new IllegalArgumentException("Null type isn't allowed");
-        }
+        checkArgument(type != null, "Null type isn't allowed");
         param(Link.TYPE, type);
         return this;
     }
 
     @Override
     public Link.Builder param(String name, String value) throws IllegalArgumentException {
-        if (name == null) {
-            throw new IllegalArgumentException("Null name of parameter isn't allowed");
-        }
-        if (value == null) {
-            throw new IllegalArgumentException("Null value of parameter isn't allowed");
-        }
+        checkArgument(name != null, "Null name of parameter isn't allowed");
+        checkArgument(value != null, "Null value of parameter isn't allowed");
         params.put(name, value);
         return this;
     }
 
     @Override
     public Link build(Object... values) throws UriBuilderException {
-        if (values == null) {
-            throw new IllegalArgumentException("Null values aren't allowed");
-        }
-        if (values.length > 0 && uriBuilder == null) {
-            throw new UriBuilderException("Can't construct URI. UriBuilder isn't defined.");
-        }
-        URI myUri;
-        if (uriBuilder == null) {
-            myUri = URI.create("");
-        } else {
-            myUri = uriBuilder.build(values);
-        }
-        return new LinkImpl(myUri).withParams(params);
+        checkArgument(values != null, "Null values aren't allowed");
+        URI myUri = resolveLinkUri(values);
+        return new LinkImpl(myUri, params);
     }
 
     @Override
     public Link buildRelativized(URI uri, Object... values) {
-        if (uri == null) {
-            throw new IllegalArgumentException("Null uri isn't allowed");
-        }
-        if (values == null) {
-            throw new IllegalArgumentException("Null values aren't allowed");
-        }
-        if (values.length > 0 && uriBuilder == null) {
-            throw new UriBuilderException("Can't construct URI. UriBuilder isn't defined.");
-        }
-        URI myUri;
-        if (uriBuilder == null) {
-            myUri = URI.create("");
+        checkArgument(uri != null, "Null uri isn't allowed");
+        checkArgument(values != null, "Null values aren't allowed");
+        URI myUri = resolveLinkUri(values);
+        return new LinkImpl(uri.relativize(myUri), new HashMap<>(params));
+    }
+
+    private URI resolveLinkUri(Object... values) {
+        URI result = uriBuilder.build(values);
+        if (baseUri == null || result.isAbsolute()) {
+            result = normalize(result);
         } else {
-            if (baseUri != null) {
-                myUri = baseUri.resolve(uriBuilder.build(values));
-            } else {
-                myUri = uriBuilder.build(values);
-            }
+            result = resolve(baseUri, result);
         }
-        return new LinkImpl(uri.relativize(myUri)).withParams(params);
+        return result;
     }
 
     @Override
@@ -158,21 +163,16 @@ public class LinkBuilderImpl implements Link.Builder {
 
     @Override
     public Link.Builder baseUri(String uri) {
-        this.baseUri = URI.create(uri);
-        return this;
+        return baseUri(URI.create(uri));
     }
 
-    /**
-     * @author andrew00x
-     */
     public static class LinkImpl extends Link {
-        private static final RuntimeDelegate.HeaderDelegate<Link> DELEGATE = RuntimeDelegate.getInstance().createHeaderDelegate(Link.class);
         private URI                 uri;
         private Map<String, String> params;
 
-        LinkImpl(URI uri) {
+        LinkImpl(URI uri, Map<String, String> params) {
             this.uri = uri;
-            params = new HashMap<>();
+            this.params = params;
         }
 
         @Override
@@ -216,12 +216,37 @@ public class LinkBuilderImpl implements Link.Builder {
 
         @Override
         public String toString() {
-            return DELEGATE.toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append('<');
+            sb.append(uri);
+            sb.append('>');
+
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                sb.append(';');
+                sb.append(entry.getKey());
+                sb.append("=\"");
+                sb.append(entry.getValue());
+                sb.append('"');
+            }
+            return sb.toString();
         }
 
-        Link withParams(Map<String, String> params) {
-            this.params.putAll(params);
-            return this;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Link)) {
+                return false;
+            }
+            Link link = (Link)o;
+            return Objects.equal(uri, link.getUri()) &&
+                   Objects.equal(params, link.getParams());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(uri, params);
         }
     }
 }

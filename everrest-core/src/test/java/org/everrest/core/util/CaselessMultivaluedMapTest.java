@@ -11,7 +11,6 @@
 package org.everrest.core.util;
 
 import org.everrest.core.ExtMultivaluedMap;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +20,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author andrew00x
@@ -36,68 +41,68 @@ public class CaselessMultivaluedMapTest {
 
     @Test
     public void testPut() {
-        List<String> list = new ArrayList<>(Arrays.asList("a", "b", "c"));
+        List<String> list = newArrayList("a", "b", "c");
         map.put("kEy1", list);
-        Assert.assertEquals(1, map.size());
-        Assert.assertEquals(list, map.get("key1"));
+        assertEquals(1, map.size());
+        assertEquals(list, map.get("key1"));
     }
 
     @Test
     public void testAdd() {
         map.add("KeY1", "a");
-        Assert.assertEquals(1, map.size());
-        Assert.assertEquals("a", map.getFirst("key1"));
-        Assert.assertEquals(1, map.get("KEY1").size());
+        assertEquals(1, map.size());
+        assertEquals("a", map.getFirst("key1"));
+        assertEquals(1, map.get("KEY1").size());
     }
 
     @Test
     public void testPutSingle() {
-        map.put("kEy1", new ArrayList<>(Arrays.asList("a", "b", "c")));
+        map.put("kEy1", newArrayList("a", "b", "c"));
         map.putSingle("key1", "value");
-        Assert.assertEquals(1, map.size());
-        Assert.assertEquals("value", map.getFirst("key1"));
-        Assert.assertEquals(1, map.get("KEY1").size());
+        assertEquals(1, map.size());
+        assertEquals("value", map.getFirst("key1"));
+        assertEquals(1, map.get("KEY1").size());
     }
 
     @Test
     public void testContainsKey() {
-        map.put("kEy1", new ArrayList<>(Arrays.asList("a", "b", "c")));
-        map.put("KEy2", new ArrayList<>(Arrays.asList("e", "f")));
-        Assert.assertEquals(2, map.size());
-        Assert.assertTrue(map.containsKey("KEY1"));
-        Assert.assertTrue(map.containsKey("key2"));
+        map.put("kEy1", newArrayList("a", "b", "c"));
+        map.put("KEy2", newArrayList("e", "f"));
+        assertEquals(2, map.size());
+        assertTrue(map.containsKey("KEY1"));
+        assertTrue(map.containsKey("key2"));
     }
 
     @Test
     public void testRemove() {
-        map.put("kEy1", new ArrayList<>(Arrays.asList("a", "b", "c")));
-        map.put("KEy2", new ArrayList<>(Arrays.asList("e", "f")));
-        Assert.assertEquals(2, map.size());
-        Assert.assertEquals(new ArrayList<>(Arrays.asList("e", "f")), map.remove("KEY2"));
-        Assert.assertEquals(1, map.size());
-        Assert.assertTrue(map.containsKey("key1"));
-        Assert.assertFalse(map.containsKey("kEy2"));
+        map.put("kEy1", newArrayList("a", "b", "c"));
+        map.put("KEy2", newArrayList("e", "f"));
+        assertEquals(2, map.size());
+        assertEquals(new ArrayList<>(Arrays.asList("e", "f")), map.remove("KEY2"));
+        assertEquals(1, map.size());
+        assertTrue(map.containsKey("key1"));
+        assertFalse(map.containsKey("kEy2"));
     }
 
     @Test
     public void testGetList() {
-        Assert.assertEquals(0, map.size());
+        assertEquals(0, map.size());
         List<String> list = map.getList("key1");
-        Assert.assertNotNull(list);
-        Assert.assertEquals(0, list.size());
-        Assert.assertEquals(1, map.size());
+        assertNotNull(list);
+        assertEquals(0, list.size());
+        assertEquals(1, map.size());
     }
 
     @Test
     public void testEntrySet() {
         Set<Entry<String, List<String>>> entries = map.entrySet();
-        map.put("k", new ArrayList<>(Arrays.asList("a", "b")));
-        map.put("e", new ArrayList<>(Arrays.asList("c", "d")));
-        map.put("Y", new ArrayList<>(Arrays.asList("e", "f")));
-        Assert.assertEquals(3, map.size());
-        Assert.assertEquals(3, entries.size());
+        map.put("k", newArrayList("a", "b"));
+        map.put("e", newArrayList("c", "d"));
+        map.put("Y", newArrayList("e", "f"));
+        assertEquals(3, map.size());
+        assertEquals(3, entries.size());
 
-        Assert.assertTrue(entries.remove(new java.util.Map.Entry<String, List<String>>() {
+        assertTrue(entries.remove(new java.util.Map.Entry<String, List<String>>() {
             public String getKey() {
                 return "E";
             }
@@ -110,38 +115,38 @@ public class CaselessMultivaluedMapTest {
                 return Arrays.asList("c", "d");
             }
         }));
-        Assert.assertEquals(2, map.size());
-        Assert.assertEquals(2, entries.size());
-        Assert.assertTrue(map.containsKey("K"));
-        Assert.assertTrue(map.containsKey("y"));
-        Assert.assertFalse(map.containsKey("e"));
+        assertEquals(2, map.size());
+        assertEquals(2, entries.size());
+        assertTrue(map.containsKey("K"));
+        assertTrue(map.containsKey("y"));
+        assertFalse(map.containsKey("e"));
         entries.clear();
-        Assert.assertEquals(0, map.size());
-        Assert.assertEquals(0, entries.size());
+        assertEquals(0, map.size());
+        assertEquals(0, entries.size());
     }
 
     @Test
     public void testKeySet() {
         Set<String> keys = map.keySet();
-        map.put("k", new ArrayList<>(Arrays.asList("a", "b")));
-        map.put("e", new ArrayList<>(Arrays.asList("c", "d")));
-        map.put("Y", new ArrayList<>(Arrays.asList("e", "f")));
-        Assert.assertEquals(3, map.size());
-        Assert.assertEquals(3, keys.size());
-        Assert.assertTrue(keys.contains("K"));
-        Assert.assertTrue(keys.contains("Y"));
-        Assert.assertTrue(keys.contains("e"));
-        Assert.assertTrue(keys.remove("Y"));
-        Assert.assertEquals(2, map.size());
-        Assert.assertEquals(2, keys.size());
-        Assert.assertTrue(keys.contains("K"));
-        Assert.assertTrue(keys.contains("e"));
-        Assert.assertFalse(keys.contains("Y"));
+        map.put("k", newArrayList("a", "b"));
+        map.put("e", newArrayList("c", "d"));
+        map.put("Y", newArrayList("e", "f"));
+        assertEquals(3, map.size());
+        assertEquals(3, keys.size());
+        assertTrue(keys.contains("K"));
+        assertTrue(keys.contains("Y"));
+        assertTrue(keys.contains("e"));
+        assertTrue(keys.remove("Y"));
+        assertEquals(2, map.size());
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains("K"));
+        assertTrue(keys.contains("e"));
+        assertFalse(keys.contains("Y"));
         for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
             iterator.next();
             iterator.remove();
         }
-        Assert.assertEquals(0, map.size());
-        Assert.assertEquals(0, keys.size());
+        assertEquals(0, map.size());
+        assertEquals(0, keys.size());
     }
 }

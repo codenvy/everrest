@@ -10,8 +10,10 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
-import org.everrest.core.FilterDescriptor;
-import org.everrest.core.ObjectFactory;
+import org.everrest.core.ApplicationContext;
+import org.everrest.core.RequestFilter;
+import org.everrest.core.ResponseFilter;
+import org.everrest.core.method.MethodInvokerFilter;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -21,6 +23,8 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Provider binder for concrete JAX-RS application. Set of providers from this binder always take preference over
@@ -32,21 +36,11 @@ import java.util.List;
  * @see javax.ws.rs.core.Application
  */
 public class ApplicationProviderBinder extends ProviderBinder {
-
-    public ApplicationProviderBinder() {
-        super();
-    }
-
-    @Override
-    protected void init() {
-        // Do not add default providers.
-    }
-
     @Override
     public List<MediaType> getAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations) {
-        List<MediaType> l = doGetAcceptableWriterMediaTypes(type, genericType, annotations);
-        l.addAll(getDefaults().getAcceptableWriterMediaTypes(type, genericType, annotations));
-        return l;
+        List<MediaType> mediaTypes = doGetAcceptableWriterMediaTypes(type, genericType, annotations);
+        mediaTypes.addAll(getDefaults().getAcceptableWriterMediaTypes(type, genericType, annotations));
+        return mediaTypes;
     }
 
     @Override
@@ -60,11 +54,11 @@ public class ApplicationProviderBinder extends ProviderBinder {
 
     @Override
     public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type) {
-        ExceptionMapper<T> excMapper = doGetExceptionMapper(type);
-        if (excMapper == null) {
-            excMapper = getDefaults().getExceptionMapper(type);
+        ExceptionMapper<T> exceptionMapper = doGetExceptionMapper(type);
+        if (exceptionMapper == null) {
+            exceptionMapper = getDefaults().getExceptionMapper(type);
         }
-        return excMapper;
+        return exceptionMapper;
     }
 
     @Override
@@ -86,24 +80,33 @@ public class ApplicationProviderBinder extends ProviderBinder {
     }
 
     @Override
-    public List<ObjectFactory<FilterDescriptor>> getMethodInvokerFilters(String path) {
-        List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, invokerFilters);
-        l.addAll(getDefaults().getMethodInvokerFilters(path));
-        return l;
+    public List<MethodInvokerFilter> getMethodInvokerFilters(String path) {
+        ApplicationContext context = ApplicationContext.getCurrent();
+        List<MethodInvokerFilter> filters = doGetMatchedFilters(path, invokerFilters).stream()
+                                                                                     .map(factory -> (MethodInvokerFilter)factory.getInstance(context))
+                                                                                     .collect(toList());
+        filters.addAll(getDefaults().getMethodInvokerFilters(path));
+        return filters;
     }
 
     @Override
-    public List<ObjectFactory<FilterDescriptor>> getRequestFilters(String path) {
-        List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, requestFilters);
-        l.addAll(getDefaults().getRequestFilters(path));
-        return l;
+    public List<RequestFilter> getRequestFilters(String path) {
+        ApplicationContext context = ApplicationContext.getCurrent();
+        List<RequestFilter> filters = doGetMatchedFilters(path, requestFilters).stream()
+                                                                               .map(factory -> (RequestFilter)factory.getInstance(context))
+                                                                               .collect(toList());
+        filters.addAll(getDefaults().getRequestFilters(path));
+        return filters;
     }
 
     @Override
-    public List<ObjectFactory<FilterDescriptor>> getResponseFilters(String path) {
-        List<ObjectFactory<FilterDescriptor>> l = doGetMatchedFilters(path, responseFilters);
-        l.addAll(getDefaults().getResponseFilters(path));
-        return l;
+    public List<ResponseFilter> getResponseFilters(String path) {
+        ApplicationContext context = ApplicationContext.getCurrent();
+        List<ResponseFilter> filters = doGetMatchedFilters(path, responseFilters).stream()
+                                                                                 .map(factory -> (ResponseFilter)factory.getInstance(context))
+                                                                                 .collect(toList());
+        filters.addAll(getDefaults().getResponseFilters(path));
+        return filters;
     }
 
     private ProviderBinder getDefaults() {

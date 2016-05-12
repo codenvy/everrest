@@ -41,20 +41,18 @@ public class EverrestServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        processor = (EverrestProcessor)getServletConfig().getServletContext().getAttribute(EverrestProcessor.class.getName());
+        processor = (EverrestProcessor)getServletContext().getAttribute(EverrestProcessor.class.getName());
         webApplicationRoles = new WebApplicationDeclaredRoles(getServletContext());
         errorPages = new ErrorPages(getServletContext());
     }
 
     @Override
-    public void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-                                                                                                 ServletException {
+    public void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException, ServletException {
         EnvironmentContext env = new EnvironmentContext();
         env.put(HttpServletRequest.class, httpRequest);
         env.put(HttpServletResponse.class, httpResponse);
         env.put(ServletConfig.class, getServletConfig());
-        final ServletContext servletContext = getServletContext();
-        env.put(ServletContext.class, servletContext);
+        env.put(ServletContext.class, getServletContext());
         env.put(WebApplicationDeclaredRoles.class, webApplicationRoles);
         env.put(ErrorPages.class, errorPages);
         try {
@@ -65,19 +63,20 @@ public class EverrestServlet extends HttpServlet {
             // Met problem with Acrobat Reader HTTP client when use EverRest for WebDav.
             // Client close connection before all data transferred and it cause error on server side.
             if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug(ioe.getMessage(), ioe);
-                }
+                LOG.debug(ioe.getMessage(), ioe);
             } else {
                 throw ioe;
             }
         } catch (UnhandledException e) {
             LOG.error(e.getMessage(), e);
-            throw new ServletException(e.getCause());
+            if (e.getResponseStatus() != 0) {
+                httpResponse.sendError(e.getResponseStatus());
+            } else {
+                throw new ServletException(e.getCause());
+            }
         } catch (Throwable e){
             LOG.debug(e.getLocalizedMessage(), e);
             throw e;
         }
-
     }
 }

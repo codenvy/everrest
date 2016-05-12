@@ -10,9 +10,10 @@
  *******************************************************************************/
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.method.MethodParameter;
-import org.everrest.core.resource.AbstractResourceDescriptor;
-import org.everrest.core.resource.ResourceDescriptorVisitor;
+import com.google.common.base.MoreObjects;
+
+import org.everrest.core.Parameter;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
 import org.everrest.core.uri.UriPattern;
 
@@ -21,47 +22,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: SubResourceMethodDescriptorImpl.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
- */
-public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescriptor {
+public class SubResourceMethodDescriptorImpl extends ResourceMethodDescriptorImpl implements SubResourceMethodDescriptor {
 
     /** See {@link PathValue}. */
     private final PathValue path;
 
     /** See {@link UriPattern}. */
     private final UriPattern uriPattern;
-
-    /** This method will be invoked. */
-    private final Method method;
-
-    /** HTTP request method designator. */
-    private final String httpMethod;
-
-    /** List of method's parameters. See {@link MethodParameter} . */
-    private final List<MethodParameter> parameters;
-
-    /**
-     * Parent resource for this method resource, in other words class which
-     * contains this method.
-     */
-    private final AbstractResourceDescriptor parentResource;
-
-    /**
-     * List of media types which this method can consume. See
-     * {@link javax.ws.rs.Consumes} .
-     */
-    private final List<MediaType> consumes;
-
-    /**
-     * List of media types which this method can produce. See
-     * {@link javax.ws.rs.Produces} .
-     */
-    private final List<MediaType> produces;
-
-    private final Annotation[] additional;
 
     /**
      * Constructs new instance of {@link SubResourceMethodDescriptor}.
@@ -73,7 +40,7 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
      * @param httpMethod
      *         HTTP request method designator
      * @param parameters
-     *         list of method parameters. See {@link MethodParameter}
+     *         list of method parameters. See {@link Parameter}
      * @param parentResource
      *         parent resource for this method
      * @param consumes
@@ -86,106 +53,41 @@ public class SubResourceMethodDescriptorImpl implements SubResourceMethodDescrip
     SubResourceMethodDescriptorImpl(PathValue path,
                                     Method method,
                                     String httpMethod,
-                                    List<MethodParameter> parameters,
-                                    AbstractResourceDescriptor parentResource,
+                                    List<Parameter> parameters,
+                                    ResourceDescriptor parentResource,
                                     List<MediaType> consumes,
                                     List<MediaType> produces,
                                     Annotation[] additional) {
+        super(method,
+              httpMethod,
+              parameters,
+              parentResource,
+              consumes,
+              produces,
+              additional);
         this.path = path;
         this.uriPattern = new UriPattern(path.getPath());
-        this.method = method;
-        this.httpMethod = httpMethod;
-        this.parameters = parameters;
-        this.parentResource = parentResource;
-        this.consumes = consumes;
-        this.produces = produces;
-        this.additional = additional;
     }
-
-
-    @Override
-    public List<MediaType> consumes() {
-        return consumes;
-    }
-
-
-    @Override
-    public String getHttpMethod() {
-        return httpMethod;
-    }
-
-
-    @Override
-    public List<MediaType> produces() {
-        return produces;
-    }
-
-
-    @Override
-    public void accept(ResourceDescriptorVisitor visitor) {
-        visitor.visitSubResourceMethodDescriptor(this);
-    }
-
 
     @Override
     public PathValue getPathValue() {
         return path;
     }
 
-
     @Override
     public UriPattern getUriPattern() {
         return uriPattern;
     }
 
-
-    @Override
-    public Method getMethod() {
-        return method;
-    }
-
-
-    @Override
-    public List<MethodParameter> getMethodParameters() {
-        return parameters;
-    }
-
-
-    @Override
-    public AbstractResourceDescriptor getParentResource() {
-        return parentResource;
-    }
-
-
-    @Override
-    public Class<?> getResponseType() {
-        return getMethod().getReturnType();
-    }
-
-
-    @Override
-    public Annotation[] getAnnotations() {
-        return additional;
-    }
-
-
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");
-        sb.append("resource: ");
-        sb.append(getParentResource());
-        sb.append("; path: ");
-        sb.append(getPathValue());
-        sb.append("; HTTP method: ");
-        sb.append(getHttpMethod());
-        sb.append("; produces media type: ");
-        sb.append(produces());
-        sb.append("; consumes media type: ");
-        sb.append(consumes());
-        sb.append("; return type: ");
-        sb.append(getResponseType());
-        sb.append(" ]");
-        return sb.toString();
+        return MoreObjects.toStringHelper(this)
+                          .add("resource", getParentResource().getObjectClass())
+                          .add("path", path)
+                          .add("HTTP method", getHttpMethod())
+                          .add("produced media types", produces())
+                          .add("consumed media types", consumes())
+                          .add("returned type", getResponseType())
+                          .toString();
     }
-
 }

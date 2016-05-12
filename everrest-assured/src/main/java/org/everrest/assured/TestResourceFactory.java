@@ -19,25 +19,25 @@ package org.everrest.assured;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ObjectFactory;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 
 /** Get instance of the REST resource from test class in request time. */
-public class TestResourceFactory implements ObjectFactory<AbstractResourceDescriptor> {
+public class TestResourceFactory implements ObjectFactory<ResourceDescriptor> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestResourceFactory.class);
     private final Object   testParent;
     private final Field    resourceField;
-    private final Class<?> resourceClass;
+    private final AbstractResourceDescriptor resourceDescriptor;
 
     public TestResourceFactory(Class<?> resourceClass, Object testParent, Field resourceField) {
-        this.resourceClass = resourceClass;
         this.testParent = testParent;
         this.resourceField = resourceField;
+        resourceDescriptor = new AbstractResourceDescriptor(resourceClass);
     }
 
     /** @see org.everrest.core.ObjectFactory#getInstance(org.everrest.core.ApplicationContext) */
@@ -46,10 +46,7 @@ public class TestResourceFactory implements ObjectFactory<AbstractResourceDescri
         try {
             resourceField.setAccessible(true);
             return resourceField.get(testParent);
-        } catch (IllegalArgumentException e) {
-            LOG.error(e.getLocalizedMessage(), e);
-            throw new RuntimeException(e.getLocalizedMessage(), e);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             LOG.error(e.getLocalizedMessage(), e);
             throw new RuntimeException(e.getLocalizedMessage(), e);
         }
@@ -57,8 +54,8 @@ public class TestResourceFactory implements ObjectFactory<AbstractResourceDescri
 
     /** @see org.everrest.core.ObjectFactory#getObjectModel() */
     @Override
-    public AbstractResourceDescriptor getObjectModel() {
-        return new AbstractResourceDescriptorImpl(resourceClass);
+    public ResourceDescriptor getObjectModel() {
+        return resourceDescriptor;
     }
 
 }

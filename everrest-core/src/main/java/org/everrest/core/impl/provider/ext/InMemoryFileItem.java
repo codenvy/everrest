@@ -13,86 +13,37 @@ package org.everrest.core.impl.provider.ext;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 /**
  * Implementation of {@link FileItem} which allow store data in memory only
  * without access to file system. If size of item exceeds limit (initial
  * allocated buffer size) then {@link WebApplicationException} will be thrown.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 class InMemoryFileItem implements FileItem {
-    class _ByteArrayOutputStream extends ByteArrayOutputStream {
-        public _ByteArrayOutputStream(int size) {
-            super(size);
-        }
-
-        @Override
-        public void write(byte b[], int off, int len) {
-            if (len == 0) {
-                return;
-            }
-            if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length)) {
-                throw new IndexOutOfBoundsException();
-            }
-            int newCount = count + len;
-            if (newCount > buf.length) {
-                throw new WebApplicationException(Response.status(413).entity(
-                        "Item size is to large. Must not be over " + buf.length).type(MediaType.TEXT_PLAIN).build());
-            }
-            System.arraycopy(b, off, buf, count, len);
-            count = newCount;
-        }
-
-        @Override
-        public void write(int b) {
-            int newCount = count + 1;
-            if (newCount > buf.length) {
-                throw new WebApplicationException(Response.status(413).entity(
-                        "Item size is to large. Must not be over " + buf.length).type(MediaType.TEXT_PLAIN).build());
-            }
-            buf[count] = (byte)b;
-            count = newCount;
-        }
-
-        void delete() {
-            this.buf = null;
-        }
-
-        byte[] getByteArray() {
-            byte[] copy = new byte[count];
-            System.arraycopy(buf, 0, copy, 0, count);
-            return copy;
-        }
-
-        int getCount() {
-            return this.count;
-        }
-    }
-
-    private _ByteArrayOutputStream bout;
-
-    private String contentType;
-
-    private String fieldName;
-
-    private boolean isFormField;
-
-    private final String fileName;
-
-    private final int maxSize;
 
     private static final byte[] EMPTY_DATA = new byte[0];
+
+    private final String fileName;
+    private final int    maxSize;
+
+    private ByteArrayOutputStream byteArrayOutputStream;
+    private FilterOutputStream    countingOutputStream;
+    private String                contentType;
+    private String                fieldName;
+    private boolean               isFormField;
 
     InMemoryFileItem(String contentType, String fieldName, boolean isFormField, String fileName, int maxSize) {
         this.contentType = contentType;
@@ -102,98 +53,108 @@ class InMemoryFileItem implements FileItem {
         this.maxSize = maxSize;
     }
 
-
     @Override
     public void delete() {
-        if (bout != null) {
-            bout.delete();
-        }
+        byteArrayOutputStream = null;
+        countingOutputStream = null;
     }
-
 
     @Override
     public byte[] get() {
-        if (bout == null) {
+        if (byteArrayOutputStream == null) {
             return EMPTY_DATA;
         }
-        return bout.getByteArray();
+        return byteArrayOutputStream.toByteArray();
     }
-
 
     @Override
     public String getContentType() {
         return contentType;
     }
 
-
     @Override
     public String getFieldName() {
         return fieldName;
     }
-
 
     @Override
     public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(get());
     }
 
-
     @Override
     public String getName() {
         return fileName;
     }
 
-
     @Override
     public OutputStream getOutputStream() {
-        if (bout == null) {
-            bout = new _ByteArrayOutputStream(maxSize);
-        }
-        return bout;
-    }
+        if (byteArrayOutputStream == null) {
+            byteArrayOutputStream = new ByteArrayOutputStream(maxSize);
+            countingOutputStream = new FilterOutputStream(byteArrayOutputStream) {
+                private int bytesCounter = 0;
 
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    ensureDoNotExceedMaxSize(len);
+                    super.write(b, off, len);
+                    bytesCounter += len;
+                }
+
+                @Override
+                public void write(int b) throws IOException {
+                    ensureDoNotExceedMaxSize(1);
+                    super.write(b);
+                    bytesCounter++;
+                }
+
+                private void ensureDoNotExceedMaxSize(int numBytesToWrite) {
+                    int newSize = bytesCounter + numBytesToWrite;
+                    if (newSize > maxSize) {
+                        throw new WebApplicationException(Response.status(413)
+                                                                  .entity(String.format("Item size is too large. Must not be over %d", maxSize))
+                                                                  .type(TEXT_PLAIN).build());
+                    }
+                }
+            };
+        }
+        return countingOutputStream;
+    }
 
     @Override
     public long getSize() {
         return get().length;
     }
 
-
     @Override
     public String getString() {
         return new String(get());
     }
-
 
     @Override
     public String getString(String encoding) throws UnsupportedEncodingException {
         return new String(get(), encoding);
     }
 
-
     @Override
     public boolean isFormField() {
         return isFormField;
     }
-
 
     @Override
     public boolean isInMemory() {
         return true;
     }
 
-
     @Override
     public void setFieldName(String name) {
         this.fieldName = name;
     }
 
-
     @Override
     public void setFormField(boolean state) {
         isFormField = state;
     }
-
 
     @Override
     public void write(File file) throws Exception {

@@ -13,8 +13,7 @@ package org.everrest.core.impl.async;
 /**
  * Implementation of this interface may be notified when asynchronous job is done.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  * @see AsynchronousJobPool
  */
 public interface AsynchronousJobListener {

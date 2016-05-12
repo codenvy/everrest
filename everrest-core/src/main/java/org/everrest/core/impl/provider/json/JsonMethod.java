@@ -12,7 +12,6 @@ package org.everrest.core.impl.provider.json;
 
 import java.lang.reflect.Method;
 
-/** @author andrew00x */
 class JsonMethod {
     final Method method;
     final String field;

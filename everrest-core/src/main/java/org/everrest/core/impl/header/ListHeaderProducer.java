@@ -16,57 +16,62 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.everrest.core.impl.header.HeaderHelper.QUALITY_VALUE_COMPARATOR;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.scan;
+
 /**
- * Produce sorted by quality value list of 'accept' header. In first it used for
- * parsing 'accept' and 'accept-language' headers.
+ * Produces sorted by quality value list of 'accept' headers, e.g. 'accept', 'accept-language'.
  *
  * @param <T>
  *         type that implements {@link QualityValue}
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public abstract class ListHeaderProducer<T extends QualityValue> {
-    /**
-     * Create each element of header list.
-     *
-     * @param part
-     *         the part of source string, it is part between two commas
-     * @return newly created element of list
-     */
-    protected abstract T create(String part);
+public class ListHeaderProducer<T extends QualityValue> {
+
+    private final ListItemFactory<T> itemFactory;
+
+    public ListHeaderProducer(ListItemFactory<T> itemFactory) {
+        this.itemFactory = itemFactory;
+    }
 
     /**
-     * Create list of headers which is sorted by quality value. It is useful for
-     * parsing 'accept' headers. If source list is null then empty list will be
-     * returned.
+     * Parses given string to list of QualityValue. List is sorted by {@link QualityValue#getQvalue()}.
      *
      * @param header
      *         source header string
-     * @return List of parsed sorted by quality value
+     * @return sorted list QualityValue
+     * @see ListItemFactory
      */
     public List<T> createQualitySortedList(String header) {
-        List<T> l = new ArrayList<T>();
-
+        final List<T> tokens = new ArrayList<>();
         int n;
         int p = 0;
-        while (p < header.length()) {
-            n = header.indexOf(',', p);
+        final int length = header.length();
+        while (p < length) {
+            n = scan(header, p, ',');
 
             String token;
-            if (n < 0) {
-                token = header.substring(p);
-                n = header.length();
-            } else {
+            if (charAtIs(header, n, ',')) {
                 token = header.substring(p, n);
+            } else {
+                token = header.substring(p);
+                n = length;
             }
 
-            l.add(create(token));
+            tokens.add(itemFactory.createItem(token));
 
             p = n + 1;
         }
 
-        Collections.sort(l, HeaderHelper.QUALITY_VALUE_COMPARATOR);
+        if (tokens.size() > 1) {
+            Collections.sort(tokens, QUALITY_VALUE_COMPARATOR);
+        }
 
-        return l;
+        return tokens;
+    }
+
+    public interface ListItemFactory<T> {
+        T createItem(String part);
     }
 }

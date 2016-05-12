@@ -10,19 +10,21 @@
  *******************************************************************************/
 package org.everrest.core.impl.method.filter;
 
+import org.everrest.core.ApplicationContext;
 import org.everrest.core.Filter;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.method.MethodInvokerFilter;
-import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.resource.GenericResourceMethod;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.lang.annotation.Annotation;
+
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 /**
  * Contract of this class is constraint access to the resource method that use JSR-250 security common annotations. See also
@@ -40,24 +42,24 @@ public class SecurityConstraint implements MethodInvokerFilter {
      * @see RolesAllowed
      */
     @Override
-    public void accept(GenericMethodResource method, Object[] params) throws WebApplicationException {
-        for (Annotation a : method.getAnnotations()) {
-            Class<?> aClass = a.annotationType();
-            if (aClass == PermitAll.class) {
+    public void accept(GenericResourceMethod method, Object[] params) throws WebApplicationException {
+        for (Annotation annotation : method.getAnnotations()) {
+            Class<?> annotationType = annotation.annotationType();
+            if (annotationType == PermitAll.class) {
                 return;
-            } else if (aClass == DenyAll.class) {
-                throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN)
-                                                          .entity("User not authorized to call this method.").type(MediaType.TEXT_PLAIN)
+            } else if (annotationType == DenyAll.class) {
+                throw new WebApplicationException(Response.status(FORBIDDEN)
+                                                          .entity("User not authorized to call this method").type(TEXT_PLAIN)
                                                           .build());
-            } else if (aClass == RolesAllowed.class) {
-                SecurityContext security = ApplicationContextImpl.getCurrent().getSecurityContext();
-                for (String role : ((RolesAllowed)a).value()) {
+            } else if (annotationType == RolesAllowed.class) {
+                SecurityContext security = ApplicationContext.getCurrent().getSecurityContext();
+                for (String role : ((RolesAllowed)annotation).value()) {
                     if (security.isUserInRole(role)) {
                         return;
                     }
                 }
-                throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN)
-                                                          .entity("User not authorized to call this method.").type(MediaType.TEXT_PLAIN)
+                throw new WebApplicationException(Response.status(FORBIDDEN)
+                                                          .entity("User not authorized to call this method").type(TEXT_PLAIN)
                                                           .build());
             }
         }

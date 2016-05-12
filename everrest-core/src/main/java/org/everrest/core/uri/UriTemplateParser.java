@@ -17,10 +17,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class UriTemplateParser {
     /** Pattern for process URI parameters, for example /a/b/{x}/c . */
     public static final Pattern URI_PARAMETERS_PATTERN = Pattern.compile("\\{[^\\}^\\{]+\\}");
@@ -197,8 +193,7 @@ public class UriTemplateParser {
                 sb.append(ch);
             } else if (ch == ':') {
                 break;
-            } else if (ch != ' ') // skip whitespace
-            {
+            } else if (ch != ' ') {
                 throw new IllegalArgumentException("Wrong character at part " + str);
             }
         }

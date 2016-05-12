@@ -35,7 +35,7 @@ public class EntityTagHeaderDelegate implements RuntimeDelegate.HeaderDelegate<E
         }
         // remove quotes
         value = value.substring(1, value.length() - 1);
-        value = HeaderHelper.filterEscape(value);
+        value = HeaderHelper.removeQuoteEscapes(value);
 
         return new EntityTag(value, isWeak);
     }

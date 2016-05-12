@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.method;
 
-import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.ApplicationContext;
+import org.everrest.core.resource.GenericResourceMethod;
 
 import javax.ws.rs.WebApplicationException;
 
 /**
- * Can be used for check is {@link GenericMethodResource} can be invoked. For example can be checked permission to invoke method according
+ * Can be used for check is {@link GenericResourceMethod} can be invoked. For example can be checked permission to invoke method according
  * to annotation JSR-250.
  *
  * @author andrew00x
@@ -26,15 +26,15 @@ public interface MethodInvokerFilter {
     /**
      * Check does supplied method can be invoked.
      *
-     * @param genericMethodResource
-     *         See {@link GenericMethodResource}
+     * @param genericResourceMethod
+     *         See {@link GenericResourceMethod}
      * @param params
      *         actual method parameters that were created from request
      * @throws WebApplicationException
      *         if method can not be invoked cause current environment context, e.g. for current user, with current request attributes, etc.
-     *         Actual context can be obtained as next {@link ApplicationContextImpl#getCurrent()}. WebApplicationException should contain
+     *         Actual context can be obtained as next {@link ApplicationContext#getCurrent()}. WebApplicationException should contain
      *         Response with corresponded status and message.
      */
-    void accept(GenericMethodResource genericMethodResource, Object[] params) throws WebApplicationException;
+    void accept(GenericResourceMethod genericResourceMethod, Object[] params) throws WebApplicationException;
 
 }

@@ -11,17 +11,15 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.ApplicationContext;
+import org.everrest.core.Parameter;
 import org.everrest.core.Property;
 
 /**
- * Obtain value of property (see {@link org.everrest.core.InitialProperties}) with name supplied
- * in {@link Property#value()} .
+ * Obtains value of property (see {@link org.everrest.core.InitialProperties}) with name supplied in {@link Property#value()} .
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public class PropertyResolver extends ParameterResolver<Property> {
-    /** See {@link Property} */
+public class PropertyResolver implements ParameterResolver<Property> {
     private final Property property;
 
     /**
@@ -34,10 +32,9 @@ public class PropertyResolver extends ParameterResolver<Property> {
 
 
     @Override
-    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+    public Object resolve(Parameter parameter, ApplicationContext context) throws Exception {
         if (parameter.getParameterClass() != String.class) {
-            throw new IllegalArgumentException(
-                    "Only parameters and fields with string type may be annotated by @Property.");
+            throw new IllegalArgumentException("Only parameters and fields with string type may be annotated by @Property.");
         }
         String param = this.property.value();
 

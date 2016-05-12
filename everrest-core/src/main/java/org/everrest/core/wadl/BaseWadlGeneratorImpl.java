@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.wadl;
 
-import org.everrest.core.method.MethodParameter;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.Parameter;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.wadl.research.Application;
 import org.everrest.core.wadl.research.Param;
@@ -31,11 +31,9 @@ import java.util.Set;
 import java.util.SortedSet;
 
 /**
- * Base implementation of {@link WadlGenerator}. This implementation does not
- * provide doc and grammar extension of WADL.
+ * Base implementation of {@link WadlGenerator}. This implementation does not* provide doc and grammar extension of WADL.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class BaseWadlGeneratorImpl implements WadlGenerator {
 
@@ -53,7 +51,7 @@ public class BaseWadlGeneratorImpl implements WadlGenerator {
 
 
     @Override
-    public org.everrest.core.wadl.research.Resource createResource(AbstractResourceDescriptor rd) {
+    public org.everrest.core.wadl.research.Resource createResource(ResourceDescriptor rd) {
         if (rd.isRootResource()) {
             return createResource(rd.getPathValue().getPath());
         }
@@ -138,7 +136,7 @@ public class BaseWadlGeneratorImpl implements WadlGenerator {
 
 
     @Override
-    public Param createParam(MethodParameter methodParameter) {
+    public Param createParam(Parameter methodParameter) {
         Param wadlParameter = null;
         Annotation annotation = methodParameter.getAnnotation();
         Class<?> annotationClass = methodParameter.getAnnotation().annotationType();

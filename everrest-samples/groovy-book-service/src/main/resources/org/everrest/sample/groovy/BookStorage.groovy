@@ -36,7 +36,7 @@ class BookStorage {
 
     String putBook(Book book) {
         String id = book.getId()
-        if (id == null || id.trim().length() == 0) {
+        if (id == null || id.trim().isEmpty()) {
             id = generateId()
             book.setId(id)
         }

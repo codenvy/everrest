@@ -10,14 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
+import org.everrest.core.ApplicationContext;
 import org.everrest.core.DependencySupplier;
-import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.Lifecycle;
 import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
-import org.everrest.core.UnhandledException;
 import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
 import org.everrest.core.impl.uri.UriComponent;
 import org.everrest.core.util.Tracer;
@@ -26,66 +25,60 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Application;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.everrest.core.ApplicationContext.anApplicationContext;
+import static org.everrest.core.ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE;
+import static org.everrest.core.impl.EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY;
 
 /**
  * @author andrew00x
  */
-public final class EverrestProcessor implements Lifecycle {
+public class EverrestProcessor implements Lifecycle {
 
     private static final Logger LOG = LoggerFactory.getLogger(EverrestProcessor.class);
 
-    private final ResourceBinder        resources;
-    private final ProviderBinder        providers;
     private final DependencySupplier    dependencySupplier;
     private final RequestHandler        requestHandler;
-    private final Deployer              deployer;
-    private final EverrestConfiguration config;
+    private final EverrestApplication   everrestApplication;
+    private final EverrestConfiguration configuration;
 
     private final MethodInvokerDecoratorFactory methodInvokerDecoratorFactory;
-
     /**
-     * Application properties. Properties from this map will be copied to ApplicationContext and may be accessible via method {@link
-     * ApplicationContextImpl#getProperties()}.
+     * Application properties. Properties from this map will be copied to ApplicationContext and may be accessible via method {@link ApplicationContext#getProperties()}.
      */
     private final Map<String, String> properties;
 
-    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier,
-                             EverrestConfiguration config, Application application) {
-        this.resources = resources;
-        this.providers = providers;
-        this.dependencySupplier = dependencySupplier;
-        this.requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources));
-        properties = new ConcurrentHashMap<>();
-
-        this.config = config == null ? new EverrestConfiguration() : config;
-
-        String decoratorFactoryClassName = this.config.getProperty(EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY);
-        if (decoratorFactoryClassName != null) {
-            try {
-                methodInvokerDecoratorFactory = MethodInvokerDecoratorFactory.class.cast(
-                        Thread.currentThread().getContextClassLoader().loadClass(decoratorFactoryClassName).newInstance());
-            } catch (Exception e) {
-                throw new IllegalStateException("Cannot instantiate '" + decoratorFactoryClassName + "', : " + e, e);
-            }
-        } else {
-            methodInvokerDecoratorFactory = null;
-        }
-
-        deployer = new Deployer(resources, providers);
-
-        if (application != null) {
-            deployer.addApplication(application);
-        }
+    public EverrestProcessor(DependencySupplier dependencySupplier, RequestHandler requestHandler) {
+        this(null, dependencySupplier, requestHandler, null);
     }
 
-    public EverrestProcessor(ResourceBinder resources, ProviderBinder providers, DependencySupplier dependencySupplier) {
-        this(resources, providers, dependencySupplier, null, null);
+    public EverrestProcessor(EverrestConfiguration configuration, DependencySupplier dependencySupplier, RequestHandler requestHandler, Application application) {
+        this.configuration = configuration == null ? new EverrestConfiguration() : configuration;
+        this.dependencySupplier = dependencySupplier;
+        this.requestHandler = requestHandler;
+
+        properties = new ConcurrentHashMap<>();
+        everrestApplication = new EverrestApplication();
+        if (application != null) {
+            addApplication(application);
+        }
+        methodInvokerDecoratorFactory = createMethodInvokerDecoratorFactory(this.configuration);
+    }
+
+    private MethodInvokerDecoratorFactory createMethodInvokerDecoratorFactory(EverrestConfiguration configuration) {
+        String decoratorFactoryClassName = configuration.getProperty(METHOD_INVOKER_DECORATOR_FACTORY);
+        if (decoratorFactoryClassName != null) {
+            try {
+                Class<?> decoratorFactoryClass = Thread.currentThread().getContextClassLoader().loadClass(decoratorFactoryClassName);
+                return MethodInvokerDecoratorFactory.class.cast(decoratorFactoryClass.newInstance());
+            } catch (Exception e) {
+                throw new IllegalStateException(String.format("Cannot instantiate '%s', : %s", decoratorFactoryClassName, e), e);
+            }
+        }
+        return null;
     }
 
     public String getProperty(String name) {
@@ -100,110 +93,90 @@ public final class EverrestProcessor implements Lifecycle {
         }
     }
 
-    public void process(GenericContainerRequest request, GenericContainerResponse response, EnvironmentContext envCtx)
-            throws UnhandledException, IOException {
+    public void process(GenericContainerRequest request, GenericContainerResponse response, EnvironmentContext environmentContext)
+            throws IOException {
 
-        EnvironmentContext.setCurrent(envCtx);
+        EnvironmentContext.setCurrent(environmentContext);
 
-        ApplicationContextImpl context = null;
+        ApplicationContext context = anApplicationContext()
+                .withRequest(request)
+                .withResponse(response)
+                .withProviders(requestHandler.getProviders())
+                .withProperties(properties)
+                .withApplication(everrestApplication)
+                .withConfiguration(new EverrestConfiguration(configuration))
+                .withDependencySupplier(dependencySupplier)
+                .withMethodInvokerDecoratorFactory(methodInvokerDecoratorFactory)
+                .build();
         try {
-            context = new ApplicationContextImpl(request, response, providers, methodInvokerDecoratorFactory);
-            context.getProperties().putAll(properties);
-            context.setDependencySupplier(dependencySupplier);
-            context.setApplication(deployer);
-            context.setEverrestConfiguration(new EverrestConfiguration(config));
             context.start();
-            ApplicationContextImpl.setCurrent(context);
-
-            if (config.isNormalizeUri()) {
-                request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
+            ApplicationContext.setCurrent(context);
+            if (configuration.isNormalizeUri()) {
+                normalizeRequestUri(request);
             }
-
-            if (config.isHttpMethodOverride()) {
-                String method = request.getRequestHeaders().getFirst(ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE);
-                if (method != null) {
-                    if (Tracer.isTracingEnabled()) {
-                        Tracer.trace("Override HTTP method from \"X-HTTP-Method-Override\" header "
-                                     + request.getMethod() + " => " + method);
-                    }
-
-                    request.setMethod(method);
-                }
+            if (configuration.isHttpMethodOverride()) {
+                overrideHttpMethod(request);
             }
-
             requestHandler.handleRequest(request, response);
-
         } finally {
             try {
-                if (context != null) {
-                    context.stop();
-                }
+                context.stop();
             } finally {
-                ApplicationContextImpl.setCurrent(null);
+                ApplicationContext.setCurrent(null);
             }
             EnvironmentContext.setCurrent(null);
         }
     }
 
-    public void addApplication(Application application) {
-        if (application == null) {
-            throw new NullPointerException("application");
-        }
-        deployer.addApplication(application);
+    private void normalizeRequestUri(GenericContainerRequest request) {
+        request.setUris(UriComponent.normalize(request.getRequestUri()), request.getBaseUri());
     }
 
-    /** @see org.everrest.core.Lifecycle#start() */
+    private void overrideHttpMethod(GenericContainerRequest request) {
+        String method = request.getRequestHeaders().getFirst(X_HTTP_METHOD_OVERRIDE);
+        if (method != null) {
+            if (Tracer.isTracingEnabled()) {
+                Tracer.trace("Override HTTP method from \"X-HTTP-Method-Override\" header %s => %s", request.getMethod(), method);
+            }
+            request.setMethod(method);
+        }
+    }
+
+    public void addApplication(Application application) {
+        checkNotNull(application);
+        everrestApplication.addApplication(application);
+        ApplicationPublisher applicationPublisher = new ApplicationPublisher(requestHandler.getResources(), requestHandler.getProviders());
+        applicationPublisher.publish(application);
+    }
+
     @Override
     public void start() {
     }
 
-    /** @see org.everrest.core.Lifecycle#stop() */
     @Override
     public void stop() {
-        deployer.stop();
-    }
-
-    private static class Deployer extends EverrestApplication {
-        final ApplicationPublisher        publisher;
-        final List<WeakReference<Object>> singletonsReferences;
-
-        Deployer(ResourceBinder resources, ProviderBinder providers) {
-            publisher = new ApplicationPublisher(resources, providers);
-            singletonsReferences = new ArrayList<>();
-        }
-
-        @Override
-        public void addApplication(Application application) {
-            super.addApplication(application);
-            publisher.publish(application);
-            Set<Object> singletons = application.getSingletons();
-            if (singletons != null && singletons.size() > 0) {
-                for (Object o : singletons) {
-                    singletonsReferences.add(new WeakReference<>(o));
-                }
+        for (Object singleton : everrestApplication.getSingletons()) {
+            try {
+                new LifecycleComponent(singleton).destroy();
+            } catch (InternalException e) {
+                LOG.error("Unable to destroy component", e);
             }
-        }
-
-        void stop() {
-            for (WeakReference<Object> ref : singletonsReferences) {
-                Object o = ref.get();
-                if (o != null) {
-                    try {
-                        new LifecycleComponent(o).destroy();
-                    } catch (InternalException e) {
-                        LOG.error("Unable to destroy component. ", e);
-                    }
-                }
-            }
-            singletonsReferences.clear();
         }
     }
 
     public ProviderBinder getProviders() {
-        return providers;
+        return requestHandler.getProviders();
     }
 
     public ResourceBinder getResources() {
-        return resources;
+        return requestHandler.getResources();
+    }
+
+    public EverrestApplication getApplication() {
+        return everrestApplication;
+    }
+
+    public DependencySupplier getDependencySupplier() {
+        return dependencySupplier;
     }
 }

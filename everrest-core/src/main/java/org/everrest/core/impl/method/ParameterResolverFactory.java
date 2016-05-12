@@ -24,7 +24,7 @@ import java.lang.annotation.Annotation;
 /**
  * @author andrew00x
  */
-public final class ParameterResolverFactory {
+public class ParameterResolverFactory {
     /**
      * Create parameter resolver for supplied annotation.
      *
@@ -32,36 +32,32 @@ public final class ParameterResolverFactory {
      *         JAX-RS annotation
      * @return ParameterResolver
      */
-    public static ParameterResolver createParameterResolver(Annotation annotation) {
-        Class clazz = annotation.annotationType();
-        if (clazz == CookieParam.class) {
-            return new CookieParameterResolver((CookieParam)annotation);
+    public ParameterResolver createParameterResolver(Annotation annotation) {
+        final Class annotationType = annotation.annotationType();
+        if (annotationType == CookieParam.class) {
+            return new CookieParameterResolver((CookieParam)annotation, new TypeProducerFactory());
         }
-        if (clazz == Context.class) {
-            return new ContextParameterResolver((Context)annotation);
+        if (annotationType == Context.class) {
+            return new ContextParameterResolver();
         }
-        if (clazz == FormParam.class) {
-            return new FormParameterResolver((FormParam)annotation);
+        if (annotationType == FormParam.class) {
+            return new FormParameterResolver((FormParam)annotation, new TypeProducerFactory());
         }
-        if (clazz == HeaderParam.class) {
-            return new HeaderParameterResolver((HeaderParam)annotation);
+        if (annotationType == HeaderParam.class) {
+            return new HeaderParameterResolver((HeaderParam)annotation, new TypeProducerFactory());
         }
-        if (clazz == MatrixParam.class) {
-            return new MatrixParameterResolver((MatrixParam)annotation);
+        if (annotationType == MatrixParam.class) {
+            return new MatrixParameterResolver((MatrixParam)annotation, new TypeProducerFactory());
         }
-        if (clazz == PathParam.class) {
-            return new PathParameterResolver((PathParam)annotation);
+        if (annotationType == PathParam.class) {
+            return new PathParameterResolver((PathParam)annotation, new TypeProducerFactory());
         }
-        if (clazz == QueryParam.class) {
-            return new QueryParameterResolver((QueryParam)annotation);
+        if (annotationType == QueryParam.class) {
+            return new QueryParameterResolver((QueryParam)annotation, new TypeProducerFactory());
         }
-        if (clazz == Property.class) {
+        if (annotationType == Property.class) {
             return new PropertyResolver((Property)annotation);
         }
-        return null;
-    }
-
-    /** Constructor. */
-    private ParameterResolverFactory() {
+        throw new IllegalArgumentException(String.format("Unsupported annotation %s", annotationType));
     }
 }

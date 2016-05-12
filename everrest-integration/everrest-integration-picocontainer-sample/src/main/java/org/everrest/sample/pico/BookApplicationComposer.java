@@ -15,10 +15,6 @@ import org.picocontainer.MutablePicoContainer;
 
 import javax.servlet.ServletContext;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class BookApplicationComposer extends EverrestComposer {
     @Override
     protected void doComposeApplication(MutablePicoContainer container, ServletContext servletContext) {

@@ -51,7 +51,7 @@ public final class EverrestConfigurationHelper extends EverrestConfiguration {
                 }
                 return names;
             }
-        }.getConfiguration();
+        }.createConfiguration();
         if (initParams != null) {
             PropertiesParam properties = initParams.getPropertiesParam("properties");
             if (properties != null) {

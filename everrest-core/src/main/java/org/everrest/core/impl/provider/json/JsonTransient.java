@@ -24,8 +24,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * indicates that the class should not be processed by
  * {@link JsonEntityProvider}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Retention(RUNTIME)
 @Target({FIELD, TYPE})

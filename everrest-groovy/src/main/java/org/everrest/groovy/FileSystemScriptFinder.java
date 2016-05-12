@@ -39,7 +39,7 @@ public class FileSystemScriptFinder implements ScriptFinder {
 
     private URL[] find(File directory, URLFilter filter) throws MalformedURLException {
         List<URL> files = new ArrayList<>();
-        LinkedList<File> q = new LinkedList<File>();
+        LinkedList<File> q = new LinkedList<>();
         q.add(directory);
         while (!q.isEmpty()) {
             File current = q.pop();

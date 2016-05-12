@@ -13,9 +13,10 @@ package org.everrest.core.impl.header;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.Locale;
 
-/**
- * @author andrew00x
- */
+import static org.everrest.core.impl.header.HeaderHelper.removeWhitespaces;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.scan;
+
 public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Locale> {
 
     @Override
@@ -24,19 +25,18 @@ public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Loca
             throw new IllegalArgumentException();
         }
 
-        header = HeaderHelper.removeWhitespaces(header);
-        int p;
+        header = removeWhitespaces(header);
+        int p = scan(header, ',');
         // Can be set multiple content language, the take first one
-        if ((p = header.indexOf(',')) > 0) {
+        if (charAtIs(header, p, ',')) {
             header = header.substring(0, p);
         }
 
-        p = header.indexOf('-');
-        if (p != -1 && p < header.length() - 1) {
+        p = scan(header, '-');
+        if (charAtIs(header, p, '-')) {
             return new Locale(header.substring(0, p), header.substring(p + 1));
-        } else {
-            return new Locale(header);
         }
+        return new Locale(header);
     }
 
 
@@ -45,17 +45,17 @@ public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Loca
         if (locale == null) {
             throw new IllegalArgumentException();
         }
-        String lan = locale.getLanguage();
+        String language = locale.getLanguage();
         // For output if language does not set correctly then ignore it.
-        if (lan.isEmpty() || "*".equals(lan)) {
+        if (language.isEmpty() || "*".equals(language)) {
             return null;
         }
 
-        String con = locale.getCountry();
-        if (con.isEmpty()) {
-            return lan.toLowerCase();
+        String country = locale.getCountry();
+        if (country.isEmpty()) {
+            return language.toLowerCase();
         }
 
-        return lan.toLowerCase() + "-" + con.toLowerCase();
+        return language.toLowerCase() + "-" + country.toLowerCase();
     }
 }

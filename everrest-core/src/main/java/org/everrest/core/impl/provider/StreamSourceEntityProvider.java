@@ -28,9 +28,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-/**
- * @author andrew00x
- */
 @Provider
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
@@ -40,7 +37,6 @@ public class StreamSourceEntityProvider implements EntityProvider<StreamSource> 
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == StreamSource.class;
     }
-
 
     @Override
     public StreamSource readFrom(Class<StreamSource> type,
@@ -52,32 +48,29 @@ public class StreamSourceEntityProvider implements EntityProvider<StreamSource> 
         return new StreamSource(entityStream);
     }
 
-
     @Override
-    public long getSize(StreamSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(StreamSource streamSource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return StreamSource.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(StreamSource t,
+    public void writeTo(StreamSource streamSource,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        StreamResult out = new StreamResult(entityStream);
+        StreamResult streamResult = new StreamResult(entityStream);
         try {
-            TransformerFactory.newInstance().newTransformer().transform(t, out);
+            TransformerFactory.newInstance().newTransformer().transform(streamSource, streamResult);
         } catch (TransformerException | TransformerFactoryConfigurationError e) {
-            throw new IOException("Can't write to output stream " + e);
+            throw new IOException(String.format("Can't write to output stream, %s", e));
         }
     }
 }

@@ -12,7 +12,6 @@ package org.everrest.pico.servlet;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.EnvironmentContext;
 import org.picocontainer.Characteristics;
 import org.picocontainer.MutablePicoContainer;
@@ -20,6 +19,7 @@ import org.picocontainer.PicoCompositionException;
 import org.picocontainer.PicoContainer;
 import org.picocontainer.adapters.AbstractAdapter;
 import org.picocontainer.web.PicoServletContainerFilter;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
@@ -37,7 +37,7 @@ import java.lang.reflect.Type;
  */
 @SuppressWarnings("serial")
 public class EverrestPicoFilter extends PicoServletContainerFilter {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EverrestPicoFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EverrestPicoFilter.class);
 
     public static class HttpHeadersInjector extends AbstractAdapter<HttpHeaders> {
         public HttpHeadersInjector() {
@@ -46,7 +46,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
 
         @Override
         public HttpHeaders getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             }
@@ -70,7 +70,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
 
         @Override
         public InitialProperties getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             }
@@ -94,7 +94,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
 
         @Override
         public Providers getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             }
@@ -118,7 +118,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
 
         @Override
         public Request getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             }
@@ -142,7 +142,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
 
         @Override
         public SecurityContext getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             }
@@ -216,7 +216,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
 
         @Override
         public UriInfo getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             }
@@ -240,7 +240,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
 
         @Override
         public Application getComponentInstance(PicoContainer container, Type into) throws PicoCompositionException {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
             }
@@ -257,14 +257,14 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         }
     }
 
-    private static final ThreadLocal<MutablePicoContainer> currentAppContainer     = new ThreadLocal<MutablePicoContainer>();
-    private static final ThreadLocal<MutablePicoContainer> currentSessionContainer = new ThreadLocal<MutablePicoContainer>();
-    private static final ThreadLocal<MutablePicoContainer> currentRequestContainer = new ThreadLocal<MutablePicoContainer>();
+    private static final ThreadLocal<MutablePicoContainer> currentAppContainer     = new ThreadLocal<>();
+    private static final ThreadLocal<MutablePicoContainer> currentSessionContainer = new ThreadLocal<>();
+    private static final ThreadLocal<MutablePicoContainer> currentRequestContainer = new ThreadLocal<>();
 
     public static <T> T getComponent(Class<T> type) {
         // Since containers are inherited start lookup components from top
         // container. It is application scope container in our case.
-        T object = null;
+        T object;
         object = getAppContainer().getComponent(type);
         if (object == null) {
             final MutablePicoContainer sessionContainer = getSessionContainer();
@@ -275,8 +275,8 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         if (object == null) {
             object = getRequestContainer().getComponent(type);
         }
-        if (object == null && LOG.isDebugEnabled()) {
-            LOG.debug("Component with type " + type.getName() + " not found in any containers.");
+        if (object == null) {
+            LOG.debug("Component with type {} not found in any containers", type.getName());
         }
 
         return object;
@@ -285,8 +285,7 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
     public static Object getComponent(Object key) {
         // Since containers are inherited start lookup components from top
         // container. It is application scope container in our case.
-        Object object = null;
-        object = getAppContainer().getComponent(key);
+        Object object = getAppContainer().getComponent(key);
         if (object == null) {
             final MutablePicoContainer sessionContainer = getSessionContainer();
             if (sessionContainer != null) {
@@ -296,8 +295,8 @@ public class EverrestPicoFilter extends PicoServletContainerFilter {
         if (object == null) {
             object = getRequestContainer().getComponent(key);
         }
-        if (object == null && LOG.isDebugEnabled()) {
-            LOG.debug("Component " + key + " not found in any containers.");
+        if (object == null) {
+            LOG.debug("Component {} not found in any containers" , key);
         }
         return object;
     }

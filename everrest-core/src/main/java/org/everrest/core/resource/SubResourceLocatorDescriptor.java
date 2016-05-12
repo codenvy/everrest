@@ -16,22 +16,14 @@ import org.everrest.core.uri.UriPattern;
 import javax.ws.rs.Path;
 
 /**
- * Describe sub-resource locator. Sub-resource locator is
- * {@link java.lang.reflect.Method} of resource class which has own {@link Path}
- * annotation and has not {@link javax.ws.rs.HttpMethod} annotation. This method
- * can't handle request by self but produce object and this object can handle
- * request or maybe has other resource locators.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: SubResourceLocatorDescriptor.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
+ * Describe sub-resource locator. Sub-resource locator is {@link java.lang.reflect.Method} of resource class which has own {@link Path}
+ * annotation and has not {@link javax.ws.rs.HttpMethod} annotation. This method can't handle request by self but produce object and this
+ * object can handle request or maybe has other resource locators.
  */
-public interface SubResourceLocatorDescriptor extends GenericMethodResource, ResourceDescriptor {
-
-    /** @return See {@link PathValue} */
+public interface SubResourceLocatorDescriptor extends GenericResourceMethod {
+    /** @return {@link PathValue} */
     PathValue getPathValue();
 
-    /** @return See {@link UriPattern} */
+    /** @return {@link UriPattern} */
     UriPattern getUriPattern();
-
 }

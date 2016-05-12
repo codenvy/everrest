@@ -17,8 +17,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 
 /**
- * Mock object than can be used for any test when we don't care about response
- * entity at all.
+ * Mock object than can be used for any test when we don't care about response entity at all.
  *
  * @author andrew00x
  */

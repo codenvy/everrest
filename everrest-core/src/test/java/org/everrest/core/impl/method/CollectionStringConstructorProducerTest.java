@@ -10,65 +10,101 @@
  *******************************************************************************/
 package org.everrest.core.impl.method;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.impl.MultivaluedMapImpl;
+import org.junit.Test;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
-public class CollectionStringConstructorProducerTest extends TestCase {
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Sets.newTreeSet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-    @SuppressWarnings("unchecked")
-    public void testList() throws Exception {
-        CollectionStringConstructorProducer collectionStringConstructorProducer =
+public class CollectionStringConstructorProducerTest {
+
+    @Test
+    public void createsListAndUsesValuesFromMap() throws Exception {
+        CollectionStringConstructorProducer producer =
                 new CollectionStringConstructorProducer(List.class, Integer.class.getConstructor(String.class));
-        MultivaluedMap<String, String> multivaluedMap = new MultivaluedMapImpl();
-        multivaluedMap.putSingle("number", "2147483647");
-        List l1 = (List)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
-        assertEquals(1, l1.size());
-        assertEquals(2147483647, l1.get(0));
-        // test with default value
-        List l2 = (List)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
-        assertEquals(1, l2.size());
-        assertEquals(-2147483647, l2.get(0));
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
+
+        Object result = producer.createValue("number", values, null);
+
+        assertEquals(newArrayList(2147483647, 746384741), result);
     }
 
-    @SuppressWarnings("unchecked")
-    public void testSet() throws Exception {
-        CollectionStringConstructorProducer collectionStringConstructorProducer =
+    @Test
+    public void createsListAndUsesDefaultValue() throws Exception {
+        CollectionStringConstructorProducer producer =
+                new CollectionStringConstructorProducer(List.class, Integer.class.getConstructor(String.class));
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
+
+        Object result = producer.createValue("__number", values, "-2147483647");
+
+        assertEquals(newArrayList(-2147483647), result);
+    }
+
+    @Test
+    public void createsSetAndUsesValuesFromMap() throws Exception {
+        CollectionStringConstructorProducer producer =
                 new CollectionStringConstructorProducer(Set.class, Integer.class.getConstructor(String.class));
-        MultivaluedMap<String, String> multivaluedMap = new MultivaluedMapImpl();
-        multivaluedMap.putSingle("number", "2147483647");
-        Set s1 = (Set)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
-        assertEquals(1, s1.size());
-        assertEquals(2147483647, s1.iterator().next());
-        // test with default value
-        Set s2 = (Set)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
-        assertEquals(1, s2.size());
-        assertEquals(-2147483647, s2.iterator().next());
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
+
+        Object result = producer.createValue("number", values, null);
+
+        assertEquals(newHashSet(2147483647, 746384741), result);
     }
 
-    @SuppressWarnings("unchecked")
-    public void testSortedSet() throws Exception {
-        CollectionStringConstructorProducer collectionStringConstructorProducer =
+    @Test
+    public void createsSetAndUsesDefaultValue() throws Exception {
+        CollectionStringConstructorProducer producer =
+                new CollectionStringConstructorProducer(Set.class, Integer.class.getConstructor(String.class));
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
+
+        Object result = producer.createValue("__number", values, "-2147483647");
+
+        assertEquals(newHashSet(-2147483647), result);
+    }
+
+    @Test
+    public void createsSortedSetAndUsesValuesFromMap() throws Exception {
+        CollectionStringConstructorProducer producer =
                 new CollectionStringConstructorProducer(SortedSet.class, Integer.class.getConstructor(String.class));
-        MultivaluedMap<String, String> multivaluedMap = new MultivaluedMapImpl();
-        multivaluedMap.putSingle("number", "2147483647");
-        SortedSet ss1 =
-                (SortedSet)collectionStringConstructorProducer.createValue("number", multivaluedMap, null);
-        assertEquals(1, ss1.size());
-        assertEquals(2147483647, ss1.iterator().next());
-        // test with default value
-        SortedSet ss2 =
-                (SortedSet)collectionStringConstructorProducer.createValue("_number_", multivaluedMap, "-2147483647");
-        assertEquals(1, ss2.size());
-        assertEquals(-2147483647, ss2.iterator().next());
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
+
+        Object result = producer.createValue("number", values, null);
+
+        assertEquals(newTreeSet(newArrayList(2147483647, 746384741)), result);
+    }
+
+    @Test
+    public void createsSortedSetAndUsesDefaultValue() throws Exception {
+        CollectionStringConstructorProducer producer =
+                new CollectionStringConstructorProducer(SortedSet.class, Integer.class.getConstructor(String.class));
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
+
+        Object result = producer.createValue("__number", values, "-2147483647");
+
+        assertEquals(newTreeSet(newArrayList(-2147483647)), result);
+    }
+
+    @Test
+    public void returnsNullWhenMapDoesNotContainRequiredValueAndDefaultValueIsNull() throws Exception {
+        CollectionStringConstructorProducer producer =
+                new CollectionStringConstructorProducer(List.class, Integer.class.getConstructor(String.class));
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+
+        Object result = producer.createValue("number", values, null);
+        assertNull(result);
     }
 }

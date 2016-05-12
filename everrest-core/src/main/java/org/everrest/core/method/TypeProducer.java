@@ -13,11 +13,9 @@ package org.everrest.core.method;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Can create object by using String value. For each type of object should be
- * created new instance of TypeProducer.
+ * Can create object by using String value. For each type of object should be created new TypeProducer.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface TypeProducer {
 

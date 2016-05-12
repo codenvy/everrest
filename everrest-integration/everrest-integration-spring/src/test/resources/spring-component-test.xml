@@ -24,8 +24,8 @@
     <bean id="everrest.configuration" class="org.everrest.core.impl.EverrestConfiguration"/>
 
     <bean class="org.everrest.spring.SpringComponentsLoader">
-        <constructor-arg ref="everrest.resources"></constructor-arg>
-        <constructor-arg ref="everrest.providers"></constructor-arg>
+        <constructor-arg ref="everrest.resources"/>
+        <constructor-arg ref="everrest.providers"/>
         <constructor-arg ref="everrest.dependencies"/>
         <constructor-arg ref="everrest.configuration"/>
     </bean>

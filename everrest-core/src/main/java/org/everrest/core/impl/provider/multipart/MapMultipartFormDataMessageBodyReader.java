@@ -37,8 +37,11 @@ import java.util.Map;
 @Consumes({"multipart/*"})
 public class MapMultipartFormDataMessageBodyReader implements MessageBodyReader<Map<String, InputItem>> {
 
-    @Context
-    private Providers providers;
+    private final Providers providers;
+
+    public MapMultipartFormDataMessageBodyReader(@Context Providers providers) {
+        this.providers = providers;
+    }
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -61,7 +64,7 @@ public class MapMultipartFormDataMessageBodyReader implements MessageBodyReader<
                 multipartReader.readFrom(Iterator.class, genericSuperclass, annotations, mediaType, httpHeaders, entityStream);
         final Map<String, InputItem> result = new LinkedHashMap<>();
         while (iterator.hasNext()) {
-            final InputItemImpl item = new InputItemImpl((FileItem)iterator.next(), providers);
+            final DefaultInputItem item = new DefaultInputItem((FileItem)iterator.next(), providers);
             result.put(item.getName(), item);
         }
         return result;

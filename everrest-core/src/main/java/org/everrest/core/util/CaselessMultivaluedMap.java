@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.util;
 
+import com.google.common.base.Objects;
+
 import org.everrest.core.ExtMultivaluedMap;
 
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -465,5 +467,39 @@ public class CaselessMultivaluedMap<T> implements ExtMultivaluedMap<String, T>, 
     @Override
     public Collection<List<T>> values() {
         return m.values();
+    }
+
+    @Override
+    public String toString() {
+        if (isEmpty()) {
+            return "{}";
+        }
+        Iterator<Entry<String, List<T>>> iterator = entrySet().iterator();
+        StringBuilder sb = new StringBuilder();
+        sb.append('{');
+        while (iterator.hasNext()) {
+            sb.append(iterator.next());
+            if (iterator.hasNext()) {
+                sb.append(',').append(' ');
+            }
+        }
+        return sb.append('}').toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof MultivaluedMap) {
+            MultivaluedMap<?, ?> that = (MultivaluedMap<?, ?>)o;
+            return Objects.equal(entrySet(), that.entrySet());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(entrySet());
     }
 }

@@ -12,7 +12,6 @@ package org.everrest.exoplatform.container;
 
 import org.everrest.exoplatform.StandaloneBaseTest;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.picocontainer.ComponentAdapter;
@@ -21,6 +20,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author andrew00x
@@ -49,14 +51,14 @@ public class RestfulContainerTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation(C.class);
         restfulContainer.registerComponentImplementation(D.class);
         List<ComponentAdapter> adapters = restfulContainer.getComponentAdapters(MyAnnotation.class);
-        Assert.assertEquals(3, adapters.size());
+        assertEquals(3, adapters.size());
         List<Class<?>> l = new ArrayList<Class<?>>(3);
         for (ComponentAdapter a : adapters) {
             l.add(a.getComponentImplementation());
         }
-        Assert.assertTrue(l.contains(A.class));
-        Assert.assertTrue(l.contains(B.class));
-        Assert.assertTrue(l.contains(D.class));
+        assertTrue(l.contains(A.class));
+        assertTrue(l.contains(B.class));
+        assertTrue(l.contains(D.class));
     }
 
     @Test
@@ -66,13 +68,13 @@ public class RestfulContainerTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation(C.class);
         restfulContainer.registerComponentImplementation(D.class);
         List<ComponentAdapter> adapters = restfulContainer.getComponentAdaptersOfType(I.class, MyAnnotation.class);
-        Assert.assertEquals(2, adapters.size());
+        assertEquals(2, adapters.size());
         List<Class<?>> l = new ArrayList<Class<?>>(2);
         for (ComponentAdapter a : adapters) {
             l.add(a.getComponentImplementation());
         }
-        Assert.assertTrue(l.contains(A.class));
-        Assert.assertTrue(l.contains(B.class));
+        assertTrue(l.contains(A.class));
+        assertTrue(l.contains(B.class));
     }
 
     @Retention(RetentionPolicy.RUNTIME)

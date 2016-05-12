@@ -12,9 +12,11 @@ package org.everrest.core.impl.method;
 
 import java.lang.reflect.Method;
 
+
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * Creates object from class which has method {@code valueOf} with single String argument.
+ *
+ * @author andrew00x
  */
 public final class StringValueOfProducer extends BaseTypeProducer {
     /** This method will be used for creation object. */

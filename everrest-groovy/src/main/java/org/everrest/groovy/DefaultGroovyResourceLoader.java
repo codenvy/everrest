@@ -77,10 +77,10 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader {
     protected URL getResource(String filename) throws MalformedURLException {
         FileNameLock lock = locks.get(filename);
         if (lock == null) {
-            FileNameLock l = new FileNameLock();
-            lock = locks.putIfAbsent(filename, l);
+            FileNameLock newLock = new FileNameLock();
+            lock = locks.putIfAbsent(filename, newLock);
             if (lock == null) {
-                lock = l;
+                lock = newLock;
             }
         }
 

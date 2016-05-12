@@ -12,15 +12,14 @@ package org.everrest.core.impl.method;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.method.MethodInvoker;
-import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.resource.GenericResourceMethod;
 
 /**
  * MethodInvokerDecorator can be used to extend the functionality of {@link MethodInvoker}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
-public abstract class MethodInvokerDecorator implements MethodInvoker {
+public class MethodInvokerDecorator implements MethodInvoker {
     protected final MethodInvoker decoratedInvoker;
 
     /**
@@ -33,10 +32,10 @@ public abstract class MethodInvokerDecorator implements MethodInvoker {
 
     /**
      * @see org.everrest.core.method.MethodInvoker#invokeMethod(java.lang.Object,
-     * org.everrest.core.resource.GenericMethodResource, org.everrest.core.ApplicationContext)
+     * GenericResourceMethod, org.everrest.core.ApplicationContext)
      */
     @Override
-    public Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context) {
-        return decoratedInvoker.invokeMethod(resource, genericMethodResource, context);
+    public Object invokeMethod(Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context) {
+        return decoratedInvoker.invokeMethod(resource, genericResourceMethod, context);
     }
 }

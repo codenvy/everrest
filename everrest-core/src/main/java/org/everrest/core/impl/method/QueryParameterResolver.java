@@ -16,29 +16,27 @@ import org.everrest.core.method.TypeProducer;
 import javax.ws.rs.QueryParam;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: QueryParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
+ * Creates object that might be injected to JAX-RS component through method (constructor) parameter or field annotated with
+ * &#064;QueryParam annotation.
  */
-public class QueryParameterResolver extends ParameterResolver<QueryParam> {
-    /** See {@link QueryParam}. */
-    private final QueryParam queryParam;
+public class QueryParameterResolver implements ParameterResolver<QueryParam> {
+    private final QueryParam          queryParam;
+    private final TypeProducerFactory typeProducerFactory;
 
     /**
      * @param queryParam
      *         QueryParam
      */
-    QueryParameterResolver(QueryParam queryParam) {
+    QueryParameterResolver(QueryParam queryParam, TypeProducerFactory typeProducerFactory) {
         this.queryParam = queryParam;
+        this.typeProducerFactory = typeProducerFactory;
     }
 
 
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
         String param = this.queryParam.value();
-        TypeProducer typeProducer =
-                ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
-        return typeProducer.createValue(param, context.getQueryParameters(!parameter.isEncoded()), parameter
-                .getDefaultValue());
+        TypeProducer typeProducer = typeProducerFactory.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
+        return typeProducer.createValue(param, context.getQueryParameters(!parameter.isEncoded()), parameter.getDefaultValue());
     }
 }

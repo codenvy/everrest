@@ -21,13 +21,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-/**
- * See {@link ContainerResponseWriter}.
- *
- * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id: ServletContainerResponseWriter.java 279 2009-10-14 15:58:06Z
- *          aparfonov $
- */
 public class ServletContainerResponseWriter implements ContainerResponseWriter {
     /** See {@link HttpServletResponse}. */
     private final HttpServletResponse servletResponse;

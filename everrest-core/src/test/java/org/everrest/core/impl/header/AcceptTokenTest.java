@@ -10,73 +10,62 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.junit.Assert;
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-/**
- * @author andrew00x
- */
+@RunWith(DataProviderRunner.class)
 public class AcceptTokenTest {
 
-    @Test
-    public void testListAcceptCharsetNull() {
-        String cs = null;
-        List<AcceptToken> l = HeaderHelper.createAcceptedCharsetList(cs);
-        Assert.assertEquals(1, l.size());
-        Assert.assertEquals(l.get(0).getToken(), "*");
-        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
+    @DataProvider
+    public static Object[][] forTestValueOf() {
+        return new Object[][]{
+                {"utf8",         new AcceptToken("utf8", 1.0f)},
+                {"gzip;q=0.825", new AcceptToken("gzip", 0.825f)},
+                {"*",            new AcceptToken("*", 1.0f)}
+        };
     }
 
+    @UseDataProvider("forTestValueOf")
     @Test
-    public void testListAcceptCharsetEmptyString() {
-        String cs = "";
-        List<AcceptToken> l = HeaderHelper.createAcceptedCharsetList(cs);
-        Assert.assertEquals(1, l.size());
-        Assert.assertEquals(l.get(0).getToken(), "*");
-        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
+    public void testValueOf(String header, AcceptToken expectedResult) {
+        assertEquals(expectedResult, AcceptToken.valueOf(header));
     }
 
-    @Test
-    public void testListAcceptCharset() {
-        String cs = "Windows-1251,utf-8; q   =0.9,*;q=0.7";
-        List<AcceptToken> l = HeaderHelper.createAcceptedCharsetList(cs);
-        Assert.assertEquals(3, l.size());
-        Assert.assertEquals(l.get(0).getToken(), "windows-1251");
-        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
-        Assert.assertEquals(l.get(1).getToken(), "utf-8");
-        Assert.assertEquals(l.get(1).getQvalue(), 0.9F, 0.0F);
-        Assert.assertEquals(l.get(2).getToken(), "*");
-        Assert.assertEquals(l.get(2).getQvalue(), 0.7F, 0.0F);
+    @DataProvider
+    public static Object[][] forTestIsCompatible() {
+        return new Object[][]{
+                {new AcceptToken("utf8"), new AcceptToken("utf8"), true},
+                {new AcceptToken("utf8"), new AcceptToken("gzip"), false},
+                {new AcceptToken("*"),    new AcceptToken("*"), true},
+                {new AcceptToken("*"),    new AcceptToken("utf8"), true},
+                {new AcceptToken("utf8"), new AcceptToken("*"), false},
+        };
     }
 
+    @UseDataProvider("forTestIsCompatible")
     @Test
-    public void testListAcceptEncodingNull() {
-        String en = null;
-        List<AcceptToken> l = HeaderHelper.createAcceptedEncodingList(en);
-        Assert.assertEquals(1, l.size());
-        Assert.assertEquals(l.get(0).getToken(), "*");
-        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
+    public void testIsCompatible(AcceptToken acceptToken, AcceptToken checkAcceptToken, boolean expectedResult) throws Exception {
+        assertEquals(expectedResult, acceptToken.isCompatible(checkAcceptToken));
     }
 
-    @Test
-    public void testListAcceptEncodingEmptyString() {
-        String en = "";
-        List<AcceptToken> l = HeaderHelper.createAcceptedEncodingList(en);
-        Assert.assertEquals(1, l.size());
-        Assert.assertEquals(l.get(0).getToken(), "*");
-        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
+    @Test(expected = IllegalArgumentException.class)
+    public void throwExceptionWhenAcceptTokenHeaderIsNull() {
+        AcceptToken.valueOf(null);
     }
 
-    @Test
-    public void testListAcceptEncoding() {
-        String en = "compress;q=0.5, gzip;q=1.0";
-        List<AcceptToken> l = HeaderHelper.createAcceptedCharsetList(en);
-        Assert.assertEquals(2, l.size());
-        Assert.assertEquals(l.get(0).getToken(), "gzip");
-        Assert.assertEquals(l.get(0).getQvalue(), 1.0F, 0.0F);
-        Assert.assertEquals(l.get(1).getToken(), "compress");
-        Assert.assertEquals(l.get(1).getQvalue(), 0.5F, 0.0F);
+    @Test(expected = IllegalArgumentException.class)
+    public void throwExceptionWhenAcceptTokenHeaderContainsInvalidCharacters() {
+        AcceptToken.valueOf("utf[8");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void throwExceptionWhenAcceptTokenHeaderContainsNonUS_ASCIICharacters() {
+        AcceptToken.valueOf("\u041f\u0440\u0438\u0432\u0456\u0442");
     }
 }

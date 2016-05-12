@@ -11,7 +11,6 @@
 package org.everrest.exoplatform;
 
 import org.everrest.core.impl.provider.IOHelper;
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -27,6 +26,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author andrew00x
@@ -61,8 +62,7 @@ public class WebAppExoResourcesTest extends WebAppBaseTest {
         public Message readFrom(Class<Message> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                                 MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
                 throws IOException, WebApplicationException {
-            return new Message(IOHelper.readString(entityStream,
-                                                   mediaType != null ? mediaType.getParameters().get("charset") : null));
+            return new Message(IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get("charset") : null));
         }
 
         public void writeTo(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
@@ -76,7 +76,7 @@ public class WebAppExoResourcesTest extends WebAppBaseTest {
     public static class Resource1 {
         @GET
         public void m(Message m) {
-            Assert.assertEquals(messageBody, m.getMessage());
+            assertEquals(messageBody, m.getMessage());
         }
     }
 
@@ -84,8 +84,6 @@ public class WebAppExoResourcesTest extends WebAppBaseTest {
 
     @Test
     public void testResource() throws Exception {
-        Assert.assertEquals(204,
-                            launcher.service("GET", "/WebAppExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null)
-                                    .getStatus());
+        assertEquals(204, launcher.service("GET", "/WebAppExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null).getStatus());
     }
 }

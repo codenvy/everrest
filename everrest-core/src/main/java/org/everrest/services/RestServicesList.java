@@ -12,7 +12,7 @@ package org.everrest.services;
 
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ResourceBinder;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -27,10 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id$
- */
 @Path("/")
 public class RestServicesList {
 
@@ -158,10 +154,10 @@ public class RestServicesList {
     }
 
     protected RootResourcesList rootResources() {
-        List<ObjectFactory<AbstractResourceDescriptor>> l = binder.getResources();
+        List<ObjectFactory<ResourceDescriptor>> l = binder.getResources();
         List<RootResource> resources = new ArrayList<RootResource>(l.size());
-        for (ObjectFactory<AbstractResourceDescriptor> om : l) {
-            AbstractResourceDescriptor descriptor = om.getObjectModel();
+        for (ObjectFactory<ResourceDescriptor> om : l) {
+            ResourceDescriptor descriptor = om.getObjectModel();
             resources.add(new RootResource(descriptor.getObjectClass().getName(), //
                                            descriptor.getPathValue().getPath(), //
                                            descriptor.getUriPattern().getRegex()));

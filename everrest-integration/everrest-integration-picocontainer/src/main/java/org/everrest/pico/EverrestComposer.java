@@ -13,6 +13,7 @@ package org.everrest.pico;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;
+import org.everrest.core.RequestHandler;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestApplication;
@@ -20,16 +21,17 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.RequestDispatcher;
+import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.impl.resource.ResourceDescriptorValidator;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
 import org.everrest.core.provider.ProviderDescriptor;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.Disposable;
@@ -118,23 +120,35 @@ public class EverrestComposer implements WebappComposer {
         }
 
         EverrestServletContextInitializer everrestInitializer = new EverrestServletContextInitializer(servletContext);
-        ResourceBinder resources = container.getComponent(ResourceBinder.class);
-        ApplicationProviderBinder providers = container.getComponent(ApplicationProviderBinder.class);
+        RequestHandler requestHandler = container.getComponent(RequestHandler.class);
         EverrestConfiguration config = container.getComponent(EverrestConfiguration.class);
         DependencySupplier dependencySupplier = container.getComponent(DependencySupplier.class);
+        ResourceBinder resources;
+        ApplicationProviderBinder providers;
 
-        if (resources == null) {
-            resources = new ResourceBinderImpl();
-            container.addComponent(ResourceBinder.class, resources);
+        if (requestHandler == null) {
+            resources = container.getComponent(ResourceBinder.class);
+            providers = container.getComponent(ApplicationProviderBinder.class);
+
+            if (resources == null) {
+                resources = new ResourceBinderImpl();
+                container.addComponent(ResourceBinder.class, resources);
+            }
+
+            if (providers == null) {
+                providers = new ApplicationProviderBinder();
+                container.addComponent(ApplicationProviderBinder.class, providers);
+            }
+            requestHandler = new RequestHandlerImpl(new RequestDispatcher(resources), providers);
+            container.addComponent(RequestHandler.class, requestHandler);
+        } else {
+            resources = requestHandler.getResources();
+            providers = (ApplicationProviderBinder)requestHandler.getProviders();
         }
 
-        if (providers == null) {
-            providers = new ApplicationProviderBinder();
-            container.addComponent(ApplicationProviderBinder.class, providers);
-        }
 
         if (config == null) {
-            config = everrestInitializer.getConfiguration();
+            config = everrestInitializer.createConfiguration();
             container.addComponent(EverrestConfiguration.class, config);
         }
 
@@ -158,7 +172,7 @@ public class EverrestComposer implements WebappComposer {
         doComposeApplication(container, servletContext);
         processComponents(container, everrest);
 
-        processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+        processor = new EverrestProcessor(config, dependencySupplier, requestHandler, everrest);
         container.addComponent(new PicoEverrestProcessorWrapper(processor));
         container.addComponent(new PicoFileCollectorDestroyer(makeFileCollectorDestroyer()));
 
@@ -251,21 +265,17 @@ public class EverrestComposer implements WebappComposer {
 
     protected void processComponents(MutablePicoContainer container, EverrestApplication everrest) {
         Collection<ComponentAdapter<?>> adapters = container.getComponentAdapters();
-        ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         for (ComponentAdapter<?> adapter : adapters) {
             Class<?> clazz = adapter.getComponentImplementation();
-            if (clazz.getAnnotation(Provider.class) != null) {
-                ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz);
-                pDescriptor.accept(rdv);
-                everrest.addFactory(new PicoObjectFactory<>(pDescriptor));
-            } else if (clazz.getAnnotation(Filter.class) != null) {
-                FilterDescriptor fDescriptor = new FilterDescriptorImpl(clazz);
-                fDescriptor.accept(rdv);
-                everrest.addFactory(new PicoObjectFactory<>(fDescriptor));
-            } else if (clazz.getAnnotation(Path.class) != null) {
-                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz);
-                rDescriptor.accept(rdv);
-                everrest.addFactory(new PicoObjectFactory<>(rDescriptor));
+            if (clazz.isAnnotationPresent(Provider.class)) {
+                ProviderDescriptor providerDescriptor = new ProviderDescriptorImpl(clazz);
+                everrest.addFactory(new PicoObjectFactory<>(providerDescriptor));
+            } else if (clazz.isAnnotationPresent(Filter.class)) {
+                FilterDescriptor filterDescriptor = new FilterDescriptorImpl(clazz);
+                everrest.addFactory(new PicoObjectFactory<>(filterDescriptor));
+            } else if (clazz.isAnnotationPresent(Path.class)) {
+                ResourceDescriptor resourceDescriptor = new AbstractResourceDescriptor(clazz);
+                everrest.addFactory(new PicoObjectFactory<>(resourceDescriptor));
             }
         }
     }

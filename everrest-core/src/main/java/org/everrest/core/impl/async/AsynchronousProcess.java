@@ -12,16 +12,18 @@ package org.everrest.core.impl.async;
 
 /**
  * Description of AsynchronousJob. It may be serialized to JSON or plain text format to make possible for client to see
- * what asynchronous jobs in progress.
+ * statuses of asynchronous jobs.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public final class AsynchronousProcess {
-    private final String owner;
-    private final Long   id;
-    private final String path;
-    private final String status;
+    private String owner;
+    private Long   id;
+    private String path;
+    private String status;
+
+    public AsynchronousProcess() {
+    }
 
     public AsynchronousProcess(String owner, Long id, String path, String status) {
         this.owner = owner;
@@ -44,5 +46,31 @@ public final class AsynchronousProcess {
 
     public String getStatus() {
         return status;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "AsynchronousProcess{" +
+               "owner='" + owner + '\'' +
+               ", id=" + id +
+               ", path='" + path + '\'' +
+               ", status='" + status + '\'' +
+               '}';
     }
 }

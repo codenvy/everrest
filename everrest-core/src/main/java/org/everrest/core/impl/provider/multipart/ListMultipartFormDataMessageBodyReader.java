@@ -37,8 +37,11 @@ import java.util.List;
 @Consumes({"multipart/*"})
 public class ListMultipartFormDataMessageBodyReader implements MessageBodyReader<List<InputItem>> {
 
-    @Context
-    private Providers providers;
+    private final Providers providers;
+
+    public ListMultipartFormDataMessageBodyReader(@Context Providers providers) {
+        this.providers = providers;
+    }
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -54,14 +57,14 @@ public class ListMultipartFormDataMessageBodyReader implements MessageBodyReader
     public List<InputItem> readFrom(Class<List<InputItem>> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                                     MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
-        final Type genericSuperclass = ParameterizedTypeImpl.newParameterizedType(Iterator.class, FileItem.class);
+        final Type fileItemIteratorGenericType = ParameterizedTypeImpl.newParameterizedType(Iterator.class, FileItem.class);
         final MessageBodyReader<Iterator> multipartReader =
-                providers.getMessageBodyReader(Iterator.class, genericSuperclass, annotations, mediaType);
+                providers.getMessageBodyReader(Iterator.class, fileItemIteratorGenericType, annotations, mediaType);
         final Iterator iterator =
-                multipartReader.readFrom(Iterator.class, genericSuperclass, annotations, mediaType, httpHeaders, entityStream);
+                multipartReader.readFrom(Iterator.class, fileItemIteratorGenericType, annotations, mediaType, httpHeaders, entityStream);
         final List<InputItem> result = new LinkedList<>();
         while (iterator.hasNext()) {
-            result.add(new InputItemImpl((FileItem)iterator.next(), providers));
+            result.add(new DefaultInputItem((FileItem)iterator.next(), providers));
         }
         return result;
     }

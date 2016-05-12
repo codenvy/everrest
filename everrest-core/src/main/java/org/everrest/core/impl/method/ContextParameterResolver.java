@@ -25,15 +25,7 @@ import javax.ws.rs.ext.Providers;
 /**
  * @author andrew00x
  */
-public class ContextParameterResolver extends ParameterResolver<Context> {
-    /**
-     * @param contextParam
-     *         {@link Context}
-     */
-    ContextParameterResolver(Context contextParam) {
-        // @Context annotation has not value.
-    }
-
+public class ContextParameterResolver implements ParameterResolver<Context> {
 
     @Override
     public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
@@ -53,7 +45,6 @@ public class ContextParameterResolver extends ParameterResolver<Context> {
         } else if (parameterClass == InitialProperties.class) {
             return context.getInitialProperties();
         }
-        // For servlet container environment context contains HttpServletRequest, HttpServletResponse, ServletConfig, ServletContext
         return EnvironmentContext.getCurrent().get(parameter.getParameterClass());
     }
 }

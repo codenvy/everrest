@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
+import com.google.common.io.ByteStreams;
+
 import org.everrest.core.provider.EntityProvider;
 import org.everrest.core.util.NoSyncByteArrayOutputStream;
 
@@ -35,7 +37,6 @@ public class ByteEntityProvider implements EntityProvider<byte[]> {
         return type == byte[].class;
     }
 
-
     @Override
     public byte[] readFrom(Class<byte[]> type,
                            Type genericType,
@@ -43,6 +44,13 @@ public class ByteEntityProvider implements EntityProvider<byte[]> {
                            MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders,
                            InputStream entityStream) throws IOException {
+        int length = getContentLength(httpHeaders);
+        ByteArrayOutputStream out = length > 0 ? new NoSyncByteArrayOutputStream(length) : new NoSyncByteArrayOutputStream();
+        ByteStreams.copy(entityStream, out);
+        return out.toByteArray();
+    }
+
+    private int getContentLength(MultivaluedMap<String, String> httpHeaders) {
         String contentLength = httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
         int length = 0;
         if (contentLength != null) {
@@ -51,33 +59,27 @@ public class ByteEntityProvider implements EntityProvider<byte[]> {
             } catch (NumberFormatException ignored) {
             }
         }
-        ByteArrayOutputStream out =
-                length > 0 ? new NoSyncByteArrayOutputStream(length) : new NoSyncByteArrayOutputStream();
-        IOHelper.write(entityStream, out);
-        return out.toByteArray();
+        return length;
     }
-
 
     @Override
-    public long getSize(byte[] t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return t.length;
+    public long getSize(byte[] bytes, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return bytes.length;
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == byte[].class;
     }
 
-
     @Override
-    public void writeTo(byte[] t,
+    public void writeTo(byte[] bytes,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        entityStream.write(t);
+        entityStream.write(bytes);
     }
 }

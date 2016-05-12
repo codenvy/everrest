@@ -22,20 +22,13 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: StreamOutputEntityProvider.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
- */
 @Provider
 public class StreamOutputEntityProvider implements EntityProvider<StreamingOutput> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        // input is not supported
         return false;
     }
-
 
     @Override
     public StreamingOutput readFrom(Class<StreamingOutput> type,
@@ -44,31 +37,27 @@ public class StreamOutputEntityProvider implements EntityProvider<StreamingOutpu
                                     MediaType mediaType,
                                     MultivaluedMap<String, String> httpHeaders,
                                     InputStream entityStream) throws IOException {
-        // input is not supported
         throw new UnsupportedOperationException();
     }
 
-
     @Override
-    public long getSize(StreamingOutput t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(StreamingOutput streamingOutput, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return StreamingOutput.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(StreamingOutput t,
+    public void writeTo(StreamingOutput streamingOutput,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        t.write(entityStream);
+        streamingOutput.write(entityStream);
     }
 }

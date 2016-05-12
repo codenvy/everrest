@@ -11,11 +11,9 @@
 package org.everrest.core.impl.header;
 
 /**
- * Token is any header part which contains only valid characters see
- * {@link HeaderHelper#isToken(String)} . Token is separated by ','
+ * Token is any header part which contains only valid characters see {@link HeaderHelper#isToken(String)} . Token is separated by ','
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public class Token {
     /** Token. */
@@ -43,5 +41,33 @@ public class Token {
      */
     public boolean isCompatible(Token other) {
         return "*".equals(token) || token.equalsIgnoreCase(other.getToken());
+    }
+
+    public boolean isCompatible(String other) {
+        return other != null && ("*".equals(token) || token.equalsIgnoreCase(other));
+    }
+
+    @Override
+    public String toString() {
+        return token;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Token)) {
+            return false;
+        }
+
+        Token other = (Token)o;
+        return token.equals(other.token);
+    }
+
+    @Override
+    public int hashCode() {
+        int hashcode = 8;
+        return hashcode * 31 + token.hashCode();
     }
 }

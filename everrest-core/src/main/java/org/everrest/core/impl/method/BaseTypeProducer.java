@@ -15,16 +15,13 @@ import org.everrest.core.method.TypeProducer;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Abstraction for single (not for collections) types.
+ * Abstraction for creation single (not collection) type.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public abstract class BaseTypeProducer implements TypeProducer {
     /**
-     * Create object from given string. In all extends for this class this method
-     * must be specified to produce object of required type. String will be used
-     * as parameter for constructor of object or static valueOf method.
+     * Creates object from given string. String will be used as parameter for constructor or static valueOf method.
      *
      * @param value
      *         string value
