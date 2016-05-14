@@ -10,16 +10,13 @@
  *******************************************************************************/
 package org.everrest.guice;
 
+import com.google.common.io.CharStreams;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 
-import org.everrest.core.impl.EverrestConfiguration;
-import org.everrest.core.impl.provider.IOHelper;
-import org.junit.Assert;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -30,11 +27,17 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author andrew00x
@@ -54,9 +57,7 @@ public class GuiceResourceTest extends BaseTest {
 
     @Provider
     public static class MessageProvider implements MessageBodyReader<Message>, MessageBodyWriter<Message> {
-        @Inject
-        EverrestConfiguration cfg;
-        public long getSize(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        public long getSize(Message message, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
             return -1;
         }
 
@@ -69,16 +70,23 @@ public class GuiceResourceTest extends BaseTest {
         }
 
         public Message readFrom(Class<Message> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                                MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
-                                                                                                             WebApplicationException {
-            return new Message(IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get(
-                    "charset") : null));
+                                MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+            return new Message(CharStreams.toString(new InputStreamReader(entityStream, getCharsetOrUtf8(mediaType))));
         }
 
-        public void writeTo(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-                                                                                                          WebApplicationException {
-            IOHelper.writeString(t.getMessage(), entityStream, mediaType.getParameters().get("charset"));
+        public void writeTo(Message message, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+            Writer writer = new OutputStreamWriter(entityStream, getCharsetOrUtf8(mediaType));
+            writer.write(message.getMessage());
+            writer.flush();
+        }
+
+        private String getCharsetOrUtf8(MediaType mediaType) {
+            String charset = mediaType == null ? null : mediaType.getParameters().get("charset");
+            if (isNullOrEmpty(charset)) {
+                charset = "UTF-8";
+            }
+            return charset;
         }
     }
 
@@ -86,7 +94,7 @@ public class GuiceResourceTest extends BaseTest {
     public static class Resource {
         @GET
         public void m(Message m) {
-            Assert.assertEquals(messageBody, m.getMessage());
+            assertEquals(messageBody, m.getMessage());
         }
     }
 
@@ -94,12 +102,12 @@ public class GuiceResourceTest extends BaseTest {
 
     @Test
     public void testResource() throws Exception {
-        Assert.assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
+        assertEquals(204, launcher.service("GET", "/a", "", null, messageBody.getBytes(), null).getStatus());
     }
 
     @Test
     public void testRemapResource() throws Exception {
-        Assert.assertEquals(204, launcher.service("GET", "/a/b/c", "", null, messageBody.getBytes(), null).getStatus());
+        assertEquals(204, launcher.service("GET", "/a/b/c", "", null, messageBody.getBytes(), null).getStatus());
     }
 
     @Override
@@ -113,5 +121,4 @@ public class GuiceResourceTest extends BaseTest {
         };
         return Collections.singletonList(module);
     }
-
 }
