@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012-2014 Codenvy, S.A.
+    Copyright (c) 2012-2016 Codenvy, S.A.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -21,12 +21,17 @@
     </parent>
     <groupId>org.everrest</groupId>
     <artifactId>everrest-parent</artifactId>
-    <version>1.10.0-SNAPSHOT</version>
+    <version>1.12.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>EverRest :: Parent</name>
     <description>everREST is a project which provides a way to build RESTful applications
         using own complete implementation of JAX-RS specification (a.k.a JSR-311)</description>
     <url>https://github.com/codenvy/everrest</url>
+    <inceptionYear>2012</inceptionYear>
+    <organization>
+        <name>Codenvy, S.A.</name>
+        <url>http://www.codenvy.com</url>
+    </organization>
     <licenses>
         <license>
             <name>Eclipse Public License</name>
@@ -97,6 +102,7 @@
         <com.tngtech.java>1.9.3</com.tngtech.java>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <commons-io.version>2.4</commons-io.version>
+        <currentYear>2016</currentYear>
         <gpg.useagent>true</gpg.useagent>
         <groovy.version>1.7.6</groovy.version>
         <javax.annotation.version>1.2</javax.annotation.version>
@@ -108,6 +114,7 @@
         <jdk.min.version>1.8</jdk.min.version>
         <jetty.version>9.3.1.v20150714</jetty.version>
         <junit.version>4.11</junit.version>
+        <license_years>${project.inceptionYear}-${currentYear}</license_years>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.min.version>3.1.1</maven.min.version>
@@ -125,6 +132,8 @@
         <version.gpg.plugin>1.5</version.gpg.plugin>
         <version.jacoco.plugin>0.7.4.201502262128</version.jacoco.plugin>
         <version.javadoc.plugin>2.10.1</version.javadoc.plugin>
+        <version.license-bundle>13</version.license-bundle>
+        <version.license-header>codenvy-eclipse-license-resource-bundle</version.license-header>
         <version.mycila-license.plugin>2.8</version.mycila-license.plugin>
         <version.release.plugin>2.5.1</version.release.plugin>
         <version.sortpom.plugin>2.3.0</version.sortpom.plugin>
@@ -167,12 +176,6 @@
                 <groupId>com.jayway.restassured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${resetassured.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.tngtech.java</groupId>
@@ -492,6 +495,127 @@
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
                     <version>${version.mycila-license.plugin}</version>
+                    <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license-header.txt file -->
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.codenvy.resources</groupId>
+                            <artifactId>${version.license-header}</artifactId>
+                            <version>${version.license-bundle}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <header>license-header.txt</header>
+                        <properties>
+                            <!-- Values to be substituted in template -->
+                            <h_inceptionYear>${project.inceptionYear}</h_inceptionYear>
+                            <h_currentYear>${currentYear}</h_currentYear>
+                            <h_copyrightOwner>${project.organization.name}</h_copyrightOwner>
+                            <h_license_years>${license_years}</h_license_years>
+                        </properties>
+                        <failIfMissing>true</failIfMissing>
+                        <strictCheck>true</strictCheck>
+                        <!-- We're only interested in checking our sources and our POMs -->
+                        <includes>
+                            <include>src/**</include>
+                            <include>pom.xml</include>
+                        </includes>
+                        <!-- Default excludes are excluding POMs -->
+                        <useDefaultExcludes>false</useDefaultExcludes>
+                        <excludes>
+                            <exclude>**/*~</exclude>
+                            <exclude>**/#*#</exclude>
+                            <exclude>**/.#*</exclude>
+                            <exclude>**/%*%</exclude>
+                            <exclude>**/._*</exclude>
+                            <exclude>**/.repository/**</exclude>
+                            <exclude>**/CVS</exclude>
+                            <exclude>**/CVS/**</exclude>
+                            <exclude>**/.cvsignore</exclude>
+                            <exclude>**/RCS</exclude>
+                            <exclude>**/RCS/**</exclude>
+                            <exclude>**/SCCS</exclude>
+                            <exclude>**/SCCS/**</exclude>
+                            <exclude>**/vssver.scc</exclude>
+                            <exclude>**/.svn</exclude>
+                            <exclude>**/.svn/**</exclude>
+                            <exclude>**/.arch-ids</exclude>
+                            <exclude>**/.arch-ids/**</exclude>
+                            <exclude>**/.bzr</exclude>
+                            <exclude>**/.bzr/**</exclude>
+                            <exclude>**/.MySCMServerInfo</exclude>
+                            <exclude>**/.DS_Store</exclude>
+                            <exclude>**/.metadata</exclude>
+                            <exclude>**/.metadata/**</exclude>
+                            <exclude>**/.hg</exclude>
+                            <exclude>**/.hg/**</exclude>
+                            <exclude>**/.git</exclude>
+                            <exclude>**/.git/**</exclude>
+                            <exclude>**/.gitignore</exclude>
+                            <exclude>**/BitKeeper</exclude>
+                            <exclude>**/BitKeeper/**</exclude>
+                            <exclude>**/ChangeSet</exclude>
+                            <exclude>**/ChangeSet/**</exclude>
+                            <exclude>**/_darcs</exclude>
+                            <exclude>**/_darcs/**</exclude>
+                            <exclude>**/.darcsrepo</exclude>
+                            <exclude>**/.darcsrepo/**</exclude>
+                            <exclude>**/-darcs-backup*</exclude>
+                            <exclude>**/.darcs-temp-mail</exclude>
+                            <exclude>**/target/**</exclude>
+                            <exclude>**/test-output/**</exclude>
+                            <exclude>**/release.properties</exclude>
+                            <exclude>**/dependency-reduced-pom.xml</exclude>
+                            <exclude>**/cobertura.ser</exclude>
+                            <exclude>**/.clover/**</exclude>
+                            <exclude>**/.classpath</exclude>
+                            <exclude>**/.project</exclude>
+                            <exclude>**/.settings/**</exclude>
+                            <exclude>**/*.iml</exclude>
+                            <exclude>**/*.ipr</exclude>
+                            <exclude>**/*.iws</exclude>
+                            <exclude>**/.idea/**</exclude>
+                            <exclude>**/MANIFEST.MF</exclude>
+                            <exclude>**/*.jpg</exclude>
+                            <exclude>**/*.png</exclude>
+                            <exclude>**/*.gif</exclude>
+                            <exclude>**/*.ico</exclude>
+                            <exclude>**/*.bmp</exclude>
+                            <exclude>**/*.tiff</exclude>
+                            <exclude>**/*.tif</exclude>
+                            <exclude>**/*.cr2</exclude>
+                            <exclude>**/*.xcf</exclude>
+                            <exclude>**/*.class</exclude>
+                            <exclude>**/*.exe</exclude>
+                            <exclude>**/*.md5</exclude>
+                            <exclude>**/*.sha1</exclude>
+                            <exclude>**/*.jar</exclude>
+                            <exclude>**/*.zip</exclude>
+                            <exclude>**/*.rar</exclude>
+                            <exclude>**/*.tar</exclude>
+                            <exclude>**/*.tar.gz</exclude>
+                            <exclude>**/*.tar.bz2</exclude>
+                            <exclude>**/*.gz</exclude>
+                            <exclude>**/*.xls</exclude>
+                            <exclude>**/META-INF/services/**</exclude>
+                            <exclude>**/*.pem</exclude>
+                            <exclude>**/*.txt</exclude>
+                            <exclude>**/*.log</exclude>
+                            <exclude>**/*.svg</exclude>
+                            <exclude>**/README</exclude>
+                            <exclude>**/server.xml</exclude>
+                            <exclude>**/*.json</exclude>
+                            <exclude>**/catalina.properties</exclude>
+                            <exclude>**/logging.properties</exclude>
+                            <exclude>**/jaas.conf</exclude>
+                            <exclude>**/jmxremote.access</exclude>
+                            <exclude>**/jmxremote.password</exclude>
+                            <exclude>**/tomcat-users.xml</exclude>
+                            <exclude>**/rewrite.config</exclude>
+                        </excludes>
+                        <headerDefinitions>
+                            <headerDefinition>javadoc.xml</headerDefinition>
+                        </headerDefinitions>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -732,7 +856,6 @@
                                 <bannedDependencies>
                                     <searchTransitive>true</searchTransitive>
                                     <excludes>
-                                        <exclude>commons-logging:commons-logging</exclude>
                                         <exclude>commons-logging:commons-logging-api</exclude>
                                         <exclude>concurrent:concurrent</exclude>
                                         <exclude>com.google.code.findbugs:annotations</exclude>

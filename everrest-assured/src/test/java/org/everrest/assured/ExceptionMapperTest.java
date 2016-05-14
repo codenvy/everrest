@@ -1,21 +1,13 @@
-/*
- * Copyright (C) 2012 eXo Platform SAS.
+/*******************************************************************************
+ * Copyright (c) 2012-2016 Codenvy, S.A.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ * Contributors:
+ *   Codenvy, S.A. - initial API and implementation
+ *******************************************************************************/
 package org.everrest.assured;
 
 import org.everrest.sample.book.BookNotFoundExceptionMapper;
@@ -27,10 +19,10 @@ import org.mockito.testng.MockitoTestNGListener;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.ext.ExceptionMapper;
-
 import static com.jayway.restassured.RestAssured.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /** Test of exception mapper testing. */
 @Listeners(value = {EverrestJetty.class, MockitoTestNGListener.class})
@@ -51,6 +43,18 @@ public class ExceptionMapperTest {
         given().
                 pathParam("id", "123-1235-555").
                 expect().statusCode(404).when().get("/books/{id}");
+
+        verify(bookStorage).getBook(eq("123-1235-555"));
+    }
+
+    @Test
+    public void shouldworkTwoTimes() throws Exception {
+        when(bookStorage.getBook(eq("123-1235-555"))).thenReturn(null);
+
+        //unsecure call to rest service
+        given().
+                       pathParam("id", "123-1235-555").
+                       expect().statusCode(404).when().get("/books/{id}");
 
         verify(bookStorage).getBook(eq("123-1235-555"));
     }

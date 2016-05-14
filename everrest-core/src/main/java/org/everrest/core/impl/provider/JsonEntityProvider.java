@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -95,20 +95,18 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
                 return (T)jsonValue;
             }
 
-            Types jType = JsonUtils.getType(type);
-            if (jType == Types.ARRAY_BOOLEAN || jType == Types.ARRAY_BYTE || jType == Types.ARRAY_SHORT
-                || jType == Types.ARRAY_INT || jType == Types.ARRAY_LONG || jType == Types.ARRAY_FLOAT
-                || jType == Types.ARRAY_DOUBLE || jType == Types.ARRAY_CHAR || jType == Types.ARRAY_STRING
-                || jType == Types.ARRAY_OBJECT) {
+            Types jsonType = JsonUtils.getType(type);
+            if (jsonType == Types.ARRAY_BOOLEAN || jsonType == Types.ARRAY_BYTE || jsonType == Types.ARRAY_SHORT
+                || jsonType == Types.ARRAY_INT || jsonType == Types.ARRAY_LONG || jsonType == Types.ARRAY_FLOAT
+                || jsonType == Types.ARRAY_DOUBLE || jsonType == Types.ARRAY_CHAR || jsonType == Types.ARRAY_STRING
+                || jsonType == Types.ARRAY_OBJECT) {
                 return (T)ObjectBuilder.createArray(type, jsonValue);
             }
-            if (jType == Types.COLLECTION) {
-                Class c = type;
-                return (T)ObjectBuilder.createCollection(c, genericType, jsonValue);
+            if (jsonType == Types.COLLECTION) {
+                return (T)ObjectBuilder.createCollection((Class)type, genericType, jsonValue);
             }
-            if (jType == Types.MAP) {
-                Class c = type;
-                return (T)ObjectBuilder.createObject(c, genericType, jsonValue);
+            if (jsonType == Types.MAP) {
+                return (T)ObjectBuilder.createObject((Class)type, genericType, jsonValue);
             }
             return ObjectBuilder.createObject(type, jsonValue);
         } catch (JsonException e) {

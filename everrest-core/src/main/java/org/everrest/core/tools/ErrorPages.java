@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,6 +20,7 @@ import org.w3c.dom.NodeList;
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -27,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.base.Throwables.propagate;
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
 
 /**
  * Describes error-page references for web application in web.xml file.
@@ -34,8 +38,10 @@ import static com.google.common.base.Throwables.propagate;
  * @author Max Shaposhnik
  */
 public class ErrorPages {
-    private final Map<Integer, String> errorCodes     = new HashMap<>();
-    private final Map<String, String>  exceptionTypes = new HashMap<>();
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorPages.class);
+
+    private final        Map<Integer, String> errorCodes     = new HashMap<>();
+    private final        Map<String, String>  exceptionTypes = new HashMap<>();
 
     public ErrorPages(ServletContext servletContext) {
         loadErrorPages(servletContext, errorCodes, exceptionTypes);
@@ -57,7 +63,8 @@ public class ErrorPages {
         InputStream input = servletContext.getResourceAsStream("/WEB-INF/web.xml");
         if (input != null) {
             try {
-                DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                DocumentBuilderFactory documentBuilderFactory = createFeaturedDocumentBuilderFactory();
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
                 Document dom = documentBuilder.parse(input);
                 XPathFactory xpathFactory = XPathFactory.newInstance();
                 XPath xpath = xpathFactory.newXPath();
@@ -95,5 +102,18 @@ public class ErrorPages {
                 }
             }
         }
+    }
+
+    private DocumentBuilderFactory createFeaturedDocumentBuilderFactory() {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+        } catch (ParserConfigurationException e) {
+            LOG.debug(e.getMessage(), e);
+        }
+        return factory;
     }
 }

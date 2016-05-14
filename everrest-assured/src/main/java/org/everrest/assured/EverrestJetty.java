@@ -1,36 +1,46 @@
-/*
- * CODENVY CONFIDENTIAL
- * __________________
+/*******************************************************************************
+ * Copyright (c) 2012-2016 Codenvy, S.A.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
- *  [2012] - [2013] Codenvy, S.A.
- *  All Rights Reserved.
- *
- * NOTICE:  All information contained herein is, and remains
- * the property of Codenvy S.A. and its suppliers,
- * if any.  The intellectual and technical concepts contained
- * herein are proprietary to Codenvy S.A.
- * and its suppliers and may be covered by U.S. and Foreign Patents,
- * patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Codenvy S.A..
- */
-
+ * Contributors:
+ *   Codenvy, S.A. - initial API and implementation
+ *******************************************************************************/
 package org.everrest.assured;
 
 import com.jayway.restassured.RestAssured;
 
 import org.everrest.core.Filter;
+import org.everrest.core.FilterDescriptor;
+import org.everrest.core.ObjectFactory;
+import org.everrest.core.ObjectModel;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.ResponseFilter;
+import org.everrest.core.impl.EverrestApplication;
+import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.provider.ProviderDescriptorImpl;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
 import org.everrest.core.method.MethodInvokerFilter;
+import org.everrest.core.provider.ProviderDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.*;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestNGListener;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.annotations.Listeners;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.ext.*;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Field;
 
 
@@ -135,20 +145,17 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
     private void initRestResource(ITestNGMethod... testMethods) {
         for (ITestNGMethod testMethod : testMethods) {
             Object instance = testMethod.getInstance();
+
             if (hasEverrestJettyListenerTestHierarchy(instance.getClass())) {
+                EverrestApplication everrest = new EverrestApplication();
                 Field[] fields = instance.getClass().getDeclaredFields();
                 for (Field field : fields) {
                     try {
                         if (isRestResource(field.getType())) {
-                            field.setAccessible(true);
-                            Object fieldInstance = field.get(instance);
-                            if (fieldInstance != null) {
-                                httpServer.addSingleton(fieldInstance);
-                            } else {
-                                ///httpServer.addPerRequest(field.getType());
-                                httpServer.addFactory(new TestResourceFactory(field.getType(), instance, field));
+                            ObjectFactory<? extends ObjectModel> factory = createFactory(instance, field);
+                            if (factory != null) {
+                                everrest.addFactory(factory);
                             }
-
                         } else if (javax.servlet.Filter.class.isAssignableFrom(field.getType())) {
                             field.setAccessible(true);
                             Object fieldInstance = field.get(instance);
@@ -162,10 +169,11 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
                         LOG.error(e.getLocalizedMessage(), e);
                     }
                 }
-
+                if (everrest.getFactories().size() > 0) {
+                    httpServer.publish(everrest);
+                }
             }
         }
-
     }
 
 
@@ -202,7 +210,7 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
         return false;
     }
 
-    private boolean isRestResource(Class<? extends Object> resourceClass) {
+    private boolean isRestResource(Class<?> resourceClass) {
         return resourceClass.isAnnotationPresent(Path.class) ||
                resourceClass.isAnnotationPresent(Provider.class) ||
                resourceClass.isAnnotationPresent(Filter.class) ||
@@ -215,4 +223,18 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
                resourceClass.isAssignableFrom(ResponseFilter.class);
     }
 
+    public ObjectFactory<? extends ObjectModel> createFactory(Object testObject, Field field) {
+        Class clazz = (Class)field.getType();
+        if (clazz.getAnnotation(Provider.class) != null) {
+            ProviderDescriptor providerDescriptor = new ProviderDescriptorImpl(clazz);
+            return new TestResourceFactory<>(providerDescriptor, testObject, field);
+        } else if (clazz.getAnnotation(Filter.class) != null) {
+            FilterDescriptor filterDescriptor = new FilterDescriptorImpl(clazz);
+            return new TestResourceFactory<>(filterDescriptor, testObject, field);
+        } else if (clazz.getAnnotation(Path.class) != null) {
+            AbstractResourceDescriptor resourceDescriptor = new AbstractResourceDescriptor(clazz);
+            return new TestResourceFactory<>(resourceDescriptor, testObject, field);
+        }
+        return null;
+    }
 }

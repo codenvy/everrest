@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import java.util.List;
 public class ArrayValue extends JsonValue {
 
     /** List of children. */
-    private final List<JsonValue> children = new ArrayList<JsonValue>();
+    private final List<JsonValue> children = new ArrayList<>();
 
 
     @Override
@@ -49,12 +49,12 @@ public class ArrayValue extends JsonValue {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         int i = 0;
-        for (JsonValue v : children) {
+        for (JsonValue child : children) {
             if (i > 0) {
                 sb.append(',');
             }
             i++;
-            sb.append(v.toString());
+            sb.append(child.toString());
         }
         sb.append(']');
         return sb.toString();
@@ -64,8 +64,8 @@ public class ArrayValue extends JsonValue {
     @Override
     public void writeTo(JsonWriter writer) throws JsonException {
         writer.writeStartArray();
-        for (JsonValue v : children) {
-            v.writeTo(writer);
+        for (JsonValue child : children) {
+            child.writeTo(writer);
         }
         writer.writeEndArray();
     }

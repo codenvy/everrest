@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,7 +40,7 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer {
     private static final Map<String, Object> PRIMITIVE_TYPE_DEFAULTS;
 
     static {
-        Map<String, Class<?>> primitiveTypes = new HashMap<String, Class<?>>(7);
+        Map<String, Class<?>> primitiveTypes = new HashMap<>(7);
         primitiveTypes.put("boolean", Boolean.class);
         primitiveTypes.put("byte", Byte.class);
         primitiveTypes.put("short", Short.class);
@@ -52,15 +52,16 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer {
     }
 
     static {
-        Map<String, Object> primitiveTypesDefValues = new HashMap<String, Object>(7);
-        primitiveTypesDefValues.put("boolean", false);
-        primitiveTypesDefValues.put("byte", (byte)0);
-        primitiveTypesDefValues.put("short", (short)0);
-        primitiveTypesDefValues.put("int", 0);
-        primitiveTypesDefValues.put("long", 0L);
-        primitiveTypesDefValues.put("float", 0.0f);
-        primitiveTypesDefValues.put("double", 0.0d);
-        PRIMITIVE_TYPE_DEFAULTS = Collections.unmodifiableMap(primitiveTypesDefValues);
+        Map<String, Object> primitiveTypesDefaultValues = new HashMap<>(7);
+        primitiveTypesDefaultValues.put("boolean", false);
+        primitiveTypesDefaultValues.put("byte", (byte)0);
+        primitiveTypesDefaultValues.put("short", (short)0);
+        primitiveTypesDefaultValues.put("int", 0);
+        primitiveTypesDefaultValues.put("long", 0L);
+        primitiveTypesDefaultValues.put("float", 0.0f);
+        primitiveTypesDefaultValues.put("float", 0.0f);
+        primitiveTypesDefaultValues.put("double", 0.0d);
+        PRIMITIVE_TYPE_DEFAULTS = Collections.unmodifiableMap(primitiveTypesDefaultValues);
     }
 
     /** Class of object which will be created. */
