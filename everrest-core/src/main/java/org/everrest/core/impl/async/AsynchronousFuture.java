@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.everrest.core.impl.async;
 
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.resource.ResourceMethodDescriptor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
@@ -24,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 class AsynchronousFuture extends FutureTask<Object> implements AsynchronousJob {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AsynchronousFuture.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AsynchronousFuture.class);
 
     private final List<AsynchronousJobListener> jobListeners;
     private final Long                     jobId;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TemplatesHandler;
 import java.io.IOException;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 public class TemplatesParser {
     private EntityResolver resolver;
 
@@ -37,7 +39,7 @@ public class TemplatesParser {
             throw new RuntimeException("Unable convert to Input Source");
         }
 
-        SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
+        SAXTransformerFactory saxTransformerFactory = createFeaturedSaxTransformerFactory();
         TemplatesHandler templateHandler = saxTransformerFactory.newTemplatesHandler();
         XMLReader xmlReader = XMLReaderFactory.createXMLReader();
         if (resolver != null) {
@@ -52,5 +54,11 @@ public class TemplatesParser {
             throw new RuntimeException("Unable create templates from given source");
         }
         return templates;
+    }
+
+    private SAXTransformerFactory createFeaturedSaxTransformerFactory() throws TransformerConfigurationException {
+        SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
+        saxTransformerFactory.setFeature(FEATURE_SECURE_PROCESSING, true);
+        return saxTransformerFactory;
     }
 }

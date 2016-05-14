@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -28,6 +29,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
 
 @Provider
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
@@ -68,9 +71,16 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource> {
                         OutputStream entityStream) throws IOException {
         StreamResult streamResult = new StreamResult(entityStream);
         try {
-            TransformerFactory.newInstance().newTransformer().transform(saxSource, streamResult);
+            TransformerFactory factory = createFeaturedTransformerFactory();
+            factory.newTransformer().transform(saxSource, streamResult);
         } catch (TransformerException | TransformerFactoryConfigurationError e) {
             throw new IOException(String.format("Can't write to output stream, %s", e));
         }
+    }
+
+    private TransformerFactory createFeaturedTransformerFactory() throws TransformerConfigurationException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+        return factory;
     }
 }

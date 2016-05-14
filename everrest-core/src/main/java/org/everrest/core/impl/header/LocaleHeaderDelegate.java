@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,6 @@ public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Loca
 
         header = removeWhitespaces(header);
         int p = scan(header, ',');
-        // Can be set multiple content language, the take first one
         if (charAtIs(header, p, ',')) {
             header = header.substring(0, p);
         }
@@ -46,7 +45,6 @@ public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Loca
             throw new IllegalArgumentException();
         }
         String language = locale.getLanguage();
-        // For output if language does not set correctly then ignore it.
         if (language.isEmpty() || "*".equals(language)) {
             return null;
         }

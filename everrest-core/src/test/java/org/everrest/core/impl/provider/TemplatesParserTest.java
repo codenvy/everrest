@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.stream.StreamSource;
 
+import java.io.InputStream;
+
 import static org.junit.Assert.assertNotNull;
 
 public class TemplatesParserTest {
@@ -28,9 +30,11 @@ public class TemplatesParserTest {
     }
 
     @Test
-    public void parsesGiveSourceToTemplates() throws Exception {
-        Source source = new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt/book.xsl"));
-        Templates templates = templatesParser.parseTemplates(source);
-        assertNotNull(templates);
+    public void parsesGivenSourceToTemplates() throws Exception {
+        try (InputStream testXslResource = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt/book.xsl")) {
+            Source source = new StreamSource(testXslResource);
+            Templates templates = templatesParser.parseTemplates(source);
+            assertNotNull(templates);
+        }
     }
 }

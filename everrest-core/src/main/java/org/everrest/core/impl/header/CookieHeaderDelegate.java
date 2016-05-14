@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
 package org.everrest.core.impl.header;
+
+import com.google.common.collect.Iterables;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -25,10 +27,7 @@ public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Cook
         }
 
         List<Cookie> cookies = HeaderHelper.parseCookies(header);
-        if (cookies.isEmpty()) {
-            return null;
-        }
-        return cookies.get(0);
+        return Iterables.getFirst(cookies, null);
     }
 
 

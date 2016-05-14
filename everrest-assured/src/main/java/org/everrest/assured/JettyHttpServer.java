@@ -1,20 +1,13 @@
-/*
- * CODENVY CONFIDENTIAL
- * __________________
+/*******************************************************************************
+ * Copyright (c) 2012-2016 Codenvy, S.A.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
- *  [2012] - [2013] Codenvy, S.A.
- *  All Rights Reserved.
- *
- * NOTICE:  All information contained herein is, and remains
- * the property of Codenvy S.A. and its suppliers,
- * if any.  The intellectual and technical concepts contained
- * herein are proprietary to Codenvy S.A.
- * and its suppliers and may be covered by U.S. and Foreign Patents,
- * patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Codenvy S.A..
- */
+ * Contributors:
+ *   Codenvy, S.A. - initial API and implementation
+ *******************************************************************************/
 package org.everrest.assured;
 
 import org.eclipse.jetty.security.ConstraintMapping;
@@ -33,13 +26,12 @@ import org.eclipse.jetty.util.security.Password;
 import org.everrest.assured.util.AvailablePortFinder;
 import org.everrest.assured.util.IoUtil;
 import org.everrest.core.DependencySupplier;
-import org.everrest.core.ObjectFactory;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
+import org.everrest.core.impl.ApplicationProviderBinderHelper;
+import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.ResourceBinderImpl;
-import org.everrest.core.impl.RestComponentResolver;
-import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.servlet.EverrestInitializedListener;
 import org.everrest.core.servlet.EverrestServlet;
 import org.everrest.groovy.BaseResourceId;
@@ -48,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
+import javax.ws.rs.core.Application;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.EventListener;
@@ -104,7 +97,7 @@ public class JettyHttpServer {
         //set up security
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);
-        constraint.setRoles(new String[]{"cloud-admin", "users", "user"});
+        constraint.setRoles(new String[]{"cloud-admin", "users", "user", "temp_user"});
         constraint.setAuthenticate(true);
 
         ConstraintMapping constraintMapping = new ConstraintMapping();
@@ -119,6 +112,7 @@ public class JettyHttpServer {
                              new String[]{"cloud-admin",
                                           "users",
                                           "user",
+                                          "temp_user",
                                           "developer",
                                           "admin",
                                           "workspace/developer",
@@ -130,6 +124,7 @@ public class JettyHttpServer {
                              });
         loginService.putUser(MANAGER_USER_NAME, new Password(MANAGER_USER_PASSWORD), new String[]{"cloud-admin",
                                                                                                   "user",
+                                                                                                  "temp_user",
                                                                                                   "users"});
 
         securityHandler.setLoginService(loginService);
@@ -152,34 +147,19 @@ public class JettyHttpServer {
     public void stop() throws Exception {
         context = null;
         server.stop();
-
     }
 
     public void addUser(String userName, Credential credential, String[] roles) {
         ((HashLoginService)context.getSecurityHandler().getLoginService()).putUser(userName, credential, roles);
     }
 
-    public void addSingleton(Object instance) {
-        LOG.debug("addSingleton {}", instance.getClass());
-        ResourceBinder resources = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        ProviderBinder providers = (ProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
-        RestComponentResolver resolver = new RestComponentResolver(resources, providers);
-        resolver.addSingleton(instance);
-    }
-
-    public void addPerRequest(Class clazz) {
-        LOG.debug("addPerRequest << {}", clazz);
-        ResourceBinder resources = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        ProviderBinder providers = (ProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
-        RestComponentResolver resolver = new RestComponentResolver(resources, providers);
-        resolver.addPerRequest(clazz);
-    }
-
-    public void addFactory(ObjectFactory<ResourceDescriptor> factory) {
+    public void publish(Application application){
         ResourceBinder binder = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
-        binder.addResource(factory);
+        ApplicationProviderBinder providerBinder =
+                (ApplicationProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
+        ApplicationPublisher applicationPublisher = new ApplicationPublisher(binder, providerBinder);
+        applicationPublisher.publish(application);
     }
-
 
     public void publishPerRequestGroovyScript(String resourcePath, String name) {
         GroovyResourcePublisher groovyPublisher =
@@ -226,6 +206,10 @@ public class JettyHttpServer {
         LOG.debug("reset >>");
         ResourceBinder binder = (ResourceBinder)context.getServletContext().getAttribute(ResourceBinder.class.getName());
         ((ResourceBinderImpl)binder).clear();
+        ApplicationProviderBinder providerBinder =
+                (ApplicationProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
+
+        ApplicationProviderBinderHelper.resetApplicationProviderBinder(providerBinder);
         ProviderBinder.setInstance(null);
 
     }

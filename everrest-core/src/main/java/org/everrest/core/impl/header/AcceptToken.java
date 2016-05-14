@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,14 +21,15 @@ import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.scan;
 
 public class AcceptToken implements QualityValue {
+    private static final char PARAMETERS_SEPARATOR = ';';
 
     public static AcceptToken valueOf(String value) {
         if (value == null) {
             throw new IllegalArgumentException();
         }
         try {
-            int separator = scan(value, ';');
-            boolean hasParameters = charAtIs(value, separator, ';');
+            int separator = scan(value, PARAMETERS_SEPARATOR);
+            boolean hasParameters = charAtIs(value, separator, PARAMETERS_SEPARATOR);
             String token = hasParameters ? value.substring(0, separator).trim() : value.trim();
             token = token.trim();
 

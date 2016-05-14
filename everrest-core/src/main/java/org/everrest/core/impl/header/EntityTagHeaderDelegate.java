@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,19 +27,20 @@ public class EntityTagHeaderDelegate implements RuntimeDelegate.HeaderDelegate<E
         boolean isWeak = header.startsWith("W/");
 
         String value;
-        // cut 'W/' prefix if exists
         if (isWeak) {
-            value = header.substring(2);
+            value = cutWeakPrefix(header);
         } else {
             value = header;
         }
-        // remove quotes
         value = value.substring(1, value.length() - 1);
         value = HeaderHelper.removeQuoteEscapes(value);
 
         return new EntityTag(value, isWeak);
     }
 
+    private String cutWeakPrefix(String header) {
+        return header.substring(2);
+    }
 
     @Override
     public String toString(EntityTag entityTag) {

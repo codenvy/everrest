@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -109,7 +109,7 @@ public class AsynchronousJobService {
     public GenericEntity<List<AsynchronousProcess>> list() {
         AsynchronousJobPool pool = getJobPool();
         List<AsynchronousJob> jobs = pool.getAll();
-        List<AsynchronousProcess> processes = new ArrayList<AsynchronousProcess>(jobs.size());
+        List<AsynchronousProcess> processes = new ArrayList<>(jobs.size());
         for (AsynchronousJob job : jobs) {
             GenericContainerRequest request = (GenericContainerRequest)job.getContext().get("org.everrest.async.request");
             Principal principal = request.getUserPrincipal();

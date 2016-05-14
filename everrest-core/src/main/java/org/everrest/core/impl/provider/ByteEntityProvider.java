@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,6 @@ import com.google.common.io.ByteStreams;
 import org.everrest.core.provider.EntityProvider;
 import org.everrest.core.util.NoSyncByteArrayOutputStream;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -25,6 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
 
 /**
  * @author andrew00x
@@ -51,7 +52,7 @@ public class ByteEntityProvider implements EntityProvider<byte[]> {
     }
 
     private int getContentLength(MultivaluedMap<String, String> httpHeaders) {
-        String contentLength = httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
+        String contentLength = httpHeaders.getFirst(CONTENT_LENGTH);
         int length = 0;
         if (contentLength != null) {
             try {

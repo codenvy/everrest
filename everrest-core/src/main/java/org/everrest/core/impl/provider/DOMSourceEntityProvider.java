@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2014 Codenvy, S.A.
+ * Copyright (c) 2012-2016 Codenvy, S.A.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -34,6 +35,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
 
 @Provider
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
@@ -54,18 +57,29 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource> {
                               MultivaluedMap<String, String> httpHeaders,
                               InputStream entityStream) throws IOException {
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setNamespaceAware(true);
-            Document document = documentBuilderFactory.newDocumentBuilder().parse(entityStream);
-            return new DOMSource(document);
+            DocumentBuilderFactory factory = createFeaturedDocumentBuilderFactory();
+            factory.setNamespaceAware(true);
+            Document d = factory.newDocumentBuilder().parse(entityStream);
+            return new DOMSource(d);
         } catch (SAXParseException saxpe) {
-            if (LOG.isDebugEnabled()) {
-                LOG.error(saxpe.getMessage(), saxpe);
-            }
+            LOG.debug(saxpe.getMessage(), saxpe);
             return null;
         } catch (SAXException | ParserConfigurationException saxe) {
             throw new IOException(String.format("Can't read from input stream, %s", saxe));
         }
+    }
+
+    private DocumentBuilderFactory createFeaturedDocumentBuilderFactory() {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+        } catch (ParserConfigurationException e) {
+            LOG.debug(e.getMessage(), e);
+        }
+        return factory;
     }
 
     @Override
@@ -88,9 +102,16 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource> {
                         OutputStream entityStream) throws IOException {
         StreamResult streamResult = new StreamResult(entityStream);
         try {
-            TransformerFactory.newInstance().newTransformer().transform(domSource, streamResult);
+            TransformerFactory factory = createFeaturedTransformerFactory();
+            factory.newTransformer().transform(domSource, streamResult);
         } catch (TransformerException | TransformerFactoryConfigurationError e) {
             throw new IOException(String.format("Can't write to output stream, %s", e));
         }
+    }
+
+    private TransformerFactory createFeaturedTransformerFactory() throws TransformerConfigurationException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+        return factory;
     }
 }
