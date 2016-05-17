@@ -213,7 +213,7 @@ public class ResponseImplTest {
 
     @Test
     public void parsesDateHeader() throws Exception {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         Date date = new Date();
         MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
         headers.putSingle(DATE, dateFormat.format(date));
@@ -234,7 +234,7 @@ public class ResponseImplTest {
 
     @Test
     public void parsesLastModifiedHeader() throws Exception {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         Date date = new Date();
         MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
         headers.putSingle(LAST_MODIFIED, dateFormat.format(date));

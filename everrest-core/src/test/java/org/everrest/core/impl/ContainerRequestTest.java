@@ -312,7 +312,7 @@ public class ContainerRequestTest {
     }
 
     private String formatDateInRfc1123DateFormat(Date date) {
-        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         return format.format(date);
     }
 
