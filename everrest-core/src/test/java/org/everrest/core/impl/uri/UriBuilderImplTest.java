@@ -474,6 +474,25 @@ public class UriBuilderImplTest {
         };
     }
 
+    @UseDataProvider("forBuildsUriFromArrayEncodeSlashInPath")
+    @Test
+    public void buildsUriFromArrayEncodeSlashInPath(String source, boolean encodeSlashInPath, Object[] array, String expected) {
+        URI uri = UriBuilder.fromUri(source).build(array, encodeSlashInPath);
+        assertEquals(URI.create(expected), uri);
+    }
+
+    @DataProvider
+    public static Object[][] forBuildsUriFromArrayEncodeSlashInPath() {
+        return new Object[][]{
+                {"http://localhost:8080/a/b/c/{foo}/{bar}/baz/foo", false, new Object[]{"z", "y"}, "http://localhost:8080/a/b/c/z/y/baz/foo"},
+                {"http://localhost:8080/a/b/c/{foo}/{bar}/baz/foo", true, new Object[]{"z", "y"}, "http://localhost:8080/a/b/c/z/y/baz/foo"},
+                {"http://localhost:8080/a/b/c/{foo}/{bar}/{foo}/baz", false, new Object[]{"z", "y"}, "http://localhost:8080/a/b/c/z/y/z/baz"},
+                {"http://localhost:8080/a/b/c/{foo}/{bar}/{foo}/baz", true, new Object[]{"z", "y"}, "http://localhost:8080/a/b/c/z/y/z/baz"},
+                {"http://localhost:8080/a/b/c/{foo}/{bar}", false, new Object[]{"x/z", "y/x"}, "http://localhost:8080/a/b/c/x/z/y/x"},
+                {"http://localhost:8080/a/b/c/{foo}/{bar}", false, new Object[]{"x%2Fz", "y%2Fx"}, "http://localhost:8080/a/b/c/x%252Fz/y%252Fx"}
+        };
+    }
+
     @UseDataProvider("forBuildsUriFromEncodedArray")
     @Test
     public void buildsUriFromEncodedArray(String source, Object[] array, String expected) {
@@ -486,7 +505,9 @@ public class UriBuilderImplTest {
         return new Object[][]{
                 {"http://localhost:8080/a/b/c/{foo}/{bar}/{baz}/{foo}", new Object[]{"%25x", "%y", "z", "wrong"}, "http://localhost:8080/a/b/c/%25x/%25y/z/%25x"},
                 {"http://localhost:8080/a/b/c/{foo}/{bar}/baz/foo", new Object[]{"%25x", "%y", "wrong"}, "http://localhost:8080/a/b/c/%25x/%25y/baz/foo"},
-                {"http://localhost:8080/a/b/c/{foo}/{bar}/{foo}/baz", new Object[]{"%25x", "%y", "wrong"}, "http://localhost:8080/a/b/c/%25x/%25y/%25x/baz"}
+                {"http://localhost:8080/a/b/c/{foo}/{bar}/{foo}/baz", new Object[]{"%25x", "%y", "wrong"}, "http://localhost:8080/a/b/c/%25x/%25y/%25x/baz"},
+                {"http://localhost:8080/a/b/c/{foo}/{bar}", new Object[]{"x/z", "y/x"}, "http://localhost:8080/a/b/c/x/z/y/x"},
+                {"http://localhost:8080/a/b/c/{foo}/{bar}", new Object[]{"x%2Fz", "y%2Fx"}, "http://localhost:8080/a/b/c/x%2Fz/y%2Fx"}
         };
     }
 
