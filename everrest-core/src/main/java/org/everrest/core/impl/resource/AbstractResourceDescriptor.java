@@ -44,10 +44,12 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import static javax.ws.rs.core.MediaType.WILDCARD_TYPE;
@@ -206,11 +208,28 @@ public class AbstractResourceDescriptor extends BaseObjectModel implements Resou
 
     private List<Method> getAllMethods(Class<?> resourceClass) {
         List<Method> methods = new ArrayList<>();
-        Class<?> superclass = resourceClass;
+        Collections.addAll(methods, resourceClass.getDeclaredMethods());
+
+        List<Method> inheritedMethods = new ArrayList<>();
+        Class<?> superclass = resourceClass.getSuperclass();
         while (superclass != null && superclass != Object.class) {
-            Collections.addAll(methods, superclass.getDeclaredMethods());
+            Collections.addAll(inheritedMethods, superclass.getDeclaredMethods());
             superclass = superclass.getSuperclass();
         }
+
+        for (Method method : methods) {
+            for (Iterator<Method> iterator = inheritedMethods.iterator(); iterator.hasNext(); ) {
+                Method inheritedMethod = iterator.next();
+                if (Objects.equals(method.getName(), inheritedMethod.getName())
+                    && method.getReturnType() == inheritedMethod.getReturnType() &&
+                    Arrays.equals(method.getParameterTypes(), inheritedMethod.getParameterTypes())) {
+                    iterator.remove();
+                }
+            }
+        }
+
+        methods.addAll(inheritedMethods);
+
         return methods;
     }
 

@@ -886,4 +886,27 @@ public class AbstractResourceDescriptorTest {
     private List<FieldInjector> filterFieldsInsertedByJacocoFrameworkDuringInstrumentation(List<FieldInjector> initialList) {
         return initialList.stream().filter(fieldInjector -> !fieldInjector.getName().startsWith("$jacocoData")).collect(toList());
     }
+
+    @Test
+    public void processesResourceWithOverriddenMethods() throws Exception {
+        ResourceDescriptor resource = new AbstractResourceDescriptor(Resource2.class);
+        assertEquals(1, resource.getResourceMethods().get("GET").size());
+        assertEquals(1, resource.getResourceMethods().get("POST").size());
+    }
+
+    @Path("/a")
+    public static class Resource1 {
+        @GET
+        public void m1() {}
+
+        @POST
+        @Consumes("text/plain")
+        public void m2(String s) {}
+    }
+
+    @Path("/a")
+    public static class Resource2 extends Resource1 {
+        @Override
+        public void m1() {}
+    }
 }
