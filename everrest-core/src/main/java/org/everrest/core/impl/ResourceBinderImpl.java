@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -113,31 +114,34 @@ public class ResourceBinderImpl implements ResourceBinder {
     }
 
     @Override
-    public void addResource(ObjectFactory<ResourceDescriptor> resourceFactory) {
-        UriPattern pattern = resourceFactory.getObjectModel().getUriPattern();
+    public void addResource(ObjectFactory<ResourceDescriptor> newResourceFactory) {
+        UriPattern pattern = newResourceFactory.getObjectModel().getUriPattern();
         lock.lock();
         try {
             List<ObjectFactory<ResourceDescriptor>> snapshot = new ArrayList<>(resources);
-            for (ObjectFactory<ResourceDescriptor> resource : snapshot) {
-                if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern())) {
-                    if (resource.getObjectModel().getObjectClass() == resourceFactory.getObjectModel().getObjectClass()) {
-                        LOG.debug(String.format("Resource %s already registered.",
-                                                resourceFactory.getObjectModel().getObjectClass().getName()));
+            for (ObjectFactory<ResourceDescriptor> resourceFactory : snapshot) {
+                if (resourceFactory.getObjectModel().getUriPattern().equals(newResourceFactory.getObjectModel().getUriPattern())) {
+                    if (resourceFactory.getObjectModel().getObjectClass() == newResourceFactory.getObjectModel().getObjectClass()) {
+                        LOG.debug("Resource {} already registered", newResourceFactory.getObjectModel().getObjectClass().getName());
                         return;
                     }
                     throw new ResourcePublicationException(String.format(
-                            "Resource class %s can't be registered. Resource class %s with the same pattern %s already registered.",
-                            resourceFactory.getObjectModel().getObjectClass().getName(),
-                            resource.getObjectModel().getObjectClass().getName(), pattern));
+                            "Resource class %s loaded from %s can't be registered. Resource class %s loaded from %s with the same pattern %s already registered.",
+                            newResourceFactory.getObjectModel().getObjectClass().getName(), getCodeSource(newResourceFactory.getObjectModel().getObjectClass()),
+                            resourceFactory.getObjectModel().getObjectClass().getName(), getCodeSource(resourceFactory.getObjectModel().getObjectClass()), pattern));
                 }
             }
-            snapshot.add(resourceFactory);
+            snapshot.add(newResourceFactory);
             Collections.sort(snapshot, RESOURCE_COMPARATOR);
-            LOG.debug("Add resource: {}", resourceFactory.getObjectModel());
+            LOG.debug("Add resource: {}", newResourceFactory.getObjectModel());
             resources = snapshot;
         } finally {
             lock.unlock();
         }
+    }
+
+    private CodeSource getCodeSource(Class<?> aClass) {
+        return aClass.getProtectionDomain().getCodeSource();
     }
 
     /** Clear the list of resources. */
