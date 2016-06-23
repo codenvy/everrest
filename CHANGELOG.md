@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.12.3](https://github.com/codenvy/everrest/tree/1.12.3) (2016-06-23)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.12.2...1.12.3)
+
+**Pull requests merged:**
+
+- CODENVY-338 Set Guice to 4.1.0 version [\#24](https://github.com/codenvy/everrest/pull/24) ([mkuznyetsov](https://github.com/mkuznyetsov))
+
 ## [1.12.2](https://github.com/codenvy/everrest/tree/1.12.2) (2016-04-18)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.12.1...1.12.2)
 
