@@ -154,7 +154,6 @@ public final class UriComponent {
         LEGAL[QUERY]['.'] = 1;
         LEGAL[QUERY]['_'] = 1;
         LEGAL[QUERY]['*'] = 1;
-//        LEGAL[QUERY]['~'] = 1;
 //        LEGAL[QUERY]['!'] = 1;
 //        LEGAL[QUERY]['$'] = 1;
 //        LEGAL[QUERY]['\''] = 1;
@@ -162,10 +161,10 @@ public final class UriComponent {
 //        LEGAL[QUERY][')'] = 1;
 //        LEGAL[QUERY][','] = 1;
 //        LEGAL[QUERY][';'] = 1;
-//        LEGAL[QUERY][':'] = 1;
-//        LEGAL[QUERY]['@'] = 1;
+        LEGAL[QUERY][':'] = 1;
+        LEGAL[QUERY]['@'] = 1;
 //        LEGAL[QUERY]['?'] = 1;
-//        LEGAL[QUERY]['/'] = 1;
+        LEGAL[QUERY]['/'] = 1;
 
         set(LEGAL[QUERY], LEGAL[QUERY_STRING]);
         LEGAL[QUERY_STRING]['='] = 1;
