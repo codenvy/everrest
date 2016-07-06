@@ -12,12 +12,14 @@ package org.everrest.groovy;
 
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.net.URL;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author andrew00x
@@ -34,7 +36,7 @@ public class GroovyDependenciesTest extends BaseTest {
         root = Thread.currentThread().getContextClassLoader().getResource("repo");
         file = Thread.currentThread().getContextClassLoader().getResource("repo/dependencies/GDependency1.groovy");
         script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GMain1.groovy");
-        Assert.assertNotNull(script);
+        assertNotNull(script);
     }
 
     @Test
@@ -42,8 +44,8 @@ public class GroovyDependenciesTest extends BaseTest {
         groovyPublisher.publishPerRequest(script, new BaseResourceId("GMain1"), null, new SourceFolder[]{new SourceFolder(root)}, null);
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse resp = launcher.service("GET", "/a", "", null, null, writer, null);
-        Assert.assertEquals(200, resp.getStatus());
-        Assert.assertEquals("dependencies.GDependency1", new String(writer.getBody()));
+        assertEquals(200, resp.getStatus());
+        assertEquals("dependencies.GDependency1", new String(writer.getBody()));
     }
 
     @Test
@@ -51,7 +53,7 @@ public class GroovyDependenciesTest extends BaseTest {
         groovyPublisher.publishPerRequest(script, new BaseResourceId("GMain1"), null, null, new SourceFile[]{new SourceFile(file)});
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse resp = launcher.service("GET", "/a", "", null, null, writer, null);
-        Assert.assertEquals(200, resp.getStatus());
-        Assert.assertEquals("dependencies.GDependency1", new String(writer.getBody()));
+        assertEquals(200, resp.getStatus());
+        assertEquals("dependencies.GDependency1", new String(writer.getBody()));
     }
 }

@@ -11,7 +11,6 @@
 package org.everrest.core.impl.provider;
 
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.provider.EntityProvider;
 
@@ -38,23 +37,26 @@ import java.util.Map;
 @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
 @Produces({MediaType.APPLICATION_FORM_URLENCODED})
 public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedMap<String, String>> {
-    @Context
+
     private HttpServletRequest httpRequest;
+
+    public MultivaluedMapEntityProvider(@Context HttpServletRequest httpRequest) {
+        this.httpRequest = httpRequest;
+    }
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (type == MultivaluedMap.class) {
             try {
-                ParameterizedType t = (ParameterizedType)genericType;
-                Type[] ta = t.getActualTypeArguments();
-                return ta.length == 2 && ta[0] == String.class && ta[1] == String.class;
+                ParameterizedType parameterizedType = (ParameterizedType)genericType;
+                Type[] typeArguments = parameterizedType.getActualTypeArguments();
+                return typeArguments.length == 2 && typeArguments[0] == String.class && typeArguments[1] == String.class;
             } catch (ClassCastException e) {
                 return false;
             }
         }
         return false;
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -64,87 +66,89 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
                                                    MediaType mediaType,
                                                    MultivaluedMap<String, String> httpHeaders,
                                                    InputStream entityStream) throws IOException {
-        ApplicationContext context = ApplicationContextImpl.getCurrent();
-        Object o = context.getAttributes().get("org.everrest.provider.entity.form");
-        if (o != null) {
-            return (MultivaluedMap<String, String>)o;
+        ApplicationContext context = ApplicationContext.getCurrent();
+        Object decodedMap = context.getAttributes().get("org.everrest.provider.entity.decoded.form");
+        if (decodedMap != null) {
+            return (MultivaluedMap<String, String>)decodedMap;
         }
 
-        MultivaluedMap<String, String> form = new MultivaluedMapImpl();
+        MultivaluedMap<String, String> encodedForm = new MultivaluedMapImpl();
+        MultivaluedMap<String, String> decodedForm = new MultivaluedMapImpl();
         StringBuilder sb = new StringBuilder();
-        try {
-            int r;
-            while ((r = entityStream.read()) != -1) {
-                if (r != '&') {
-                    sb.append((char)r);
-                } else {
-                    addPair(sb.toString().trim(), form);
-                    sb.setLength(0);
-                }
+        int r;
+        while ((r = entityStream.read()) != -1) {
+            if (r != '&') {
+                sb.append((char)r);
+            } else {
+                parseKeyValuePair(sb.toString().trim(), encodedForm, decodedForm);
+                sb.setLength(0);
             }
-            // keep the last part
-            addPair(sb.toString(), form);
-
-            if (form.isEmpty()) {
-                httpRequest.getParameterMap()
-                           .entrySet()
-                           .stream()
-                           .filter(e -> e.getValue() != null)
-                           .forEach(e -> form.addAll(e.getKey(), e.getValue()));
-            }
-
-            context.getAttributes().put("org.everrest.provider.entity.form", form);
-
-            return form;
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException(e);
         }
-    }
+        parseKeyValuePair(sb.toString().trim(), encodedForm, decodedForm);
 
+        if (decodedForm.isEmpty() && httpRequest != null) {
+            httpRequest.getParameterMap()
+                       .entrySet()
+                       .stream()
+                       .filter(e -> e.getValue() != null)
+                       .forEach(e -> decodedForm.addAll(e.getKey(), e.getValue()));
+        }
+
+        context.getAttributes().put("org.everrest.provider.entity.decoded.form", decodedForm);
+        context.getAttributes().put("org.everrest.provider.entity.encoded.form", encodedForm);
+
+        return decodedForm;
+    }
 
     /**
      * Parse string and add key/value pair in the {@link MultivaluedMap}.
      *
-     * @param s
+     * @param pair
      *         string for processing
-     * @param f
-     *         {@link MultivaluedMap} to add result of parsing
+     * @param encodedForm
+     *         {@link MultivaluedMap} to add encoded result of parsing
+     * @param decodedForm
+     *         {@link MultivaluedMap} to add decoded result of parsing
      * @throws UnsupportedEncodingException
      *         if supplied string can't be decoded
      */
-    private static void addPair(String s, MultivaluedMap<String, String> f) throws UnsupportedEncodingException {
-        if (s.length() == 0) {
+    private void parseKeyValuePair(String pair, MultivaluedMap<String, String> encodedForm, MultivaluedMap<String, String> decodedForm) throws UnsupportedEncodingException {
+        if (pair.length() == 0) {
             return;
         }
-        int eq = s.indexOf('=');
-        String name;
-        String value;
+        int eq = pair.indexOf('=');
+        String encodedName;
+        String encodedValue;
+        String decodedName;
+        String decodedValue;
         if (eq < 0) {
-            name = URLDecoder.decode(s, "UTF-8");
-            value = "";
+            encodedName = pair;
+            encodedValue = "";
+            decodedName = URLDecoder.decode(encodedName, "UTF-8");
+            decodedValue = "";
         } else {
-            name = URLDecoder.decode(s.substring(0, eq), "UTF-8");
-            value = URLDecoder.decode(s.substring(eq + 1), "UTF-8");
+            encodedName = pair.substring(0, eq);
+            encodedValue = pair.substring(eq + 1);
+            decodedName = URLDecoder.decode(encodedName, "UTF-8");
+            decodedValue = URLDecoder.decode(encodedValue, "UTF-8");
         }
-        f.add(name, value);
+        encodedForm.add(encodedName, encodedValue);
+        decodedForm.add(decodedName, decodedValue);
     }
 
-
     @Override
-    public long getSize(MultivaluedMap<String, String> t, Class<?> type, Type genericType, Annotation[] annotations,
+    public long getSize(MultivaluedMap<String, String> multivaluedMap, Class<?> type, Type genericType, Annotation[] annotations,
                         MediaType mediaType) {
         return -1;
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return MultivaluedMap.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(MultivaluedMap<String, String> t,
+    public void writeTo(MultivaluedMap<String, String> multivaluedMap,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
@@ -152,7 +156,7 @@ public class MultivaluedMapEntityProvider implements EntityProvider<MultivaluedM
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
         int i = 0;
-        for (Map.Entry<String, List<String>> e : t.entrySet()) {
+        for (Map.Entry<String, List<String>> e : multivaluedMap.entrySet()) {
             for (String value : e.getValue()) {
                 if (i > 0) {
                     entityStream.write('&');

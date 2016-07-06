@@ -16,22 +16,22 @@ import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.InitialProperties;
 import org.everrest.core.ResourceBinder;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.RequestDispatcher;
+import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.impl.resource.ResourceDescriptorValidator;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
 import org.everrest.core.provider.ProviderDescriptor;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -127,7 +127,9 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         this.resources = resources;
         this.providers = providers;
         this.configuration = configuration;
-        this.processor = new EverrestProcessor(resources, providers, dependencies, configuration, null);
+        RequestDispatcher requestDispatcher = new RequestDispatcher(resources);
+        RequestHandlerImpl requestHandler = new RequestHandlerImpl(requestDispatcher, providers);
+        processor = new EverrestProcessor(configuration, dependencies, requestHandler, null);
     }
 
     protected SpringComponentsLoader() {
@@ -146,22 +148,18 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
                                       new SpringFileCollectorDestroyer(makeFileCollectorDestroyer()));
         EverrestApplication everrest = makeEverrestApplication();
 
-        ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         addAutowiredDependencies(beanFactory);
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
             Class<?> beanClass = beanFactory.getType(beanName);
             if (beanClass.getAnnotation(Provider.class) != null) {
-                ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(beanClass);
-                pDescriptor.accept(rdv);
-                everrest.addFactory(new SpringObjectFactory<>(pDescriptor, beanName, beanFactory));
+                ProviderDescriptor providerDescriptor = new ProviderDescriptorImpl(beanClass);
+                everrest.addFactory(new SpringObjectFactory<>(providerDescriptor, beanName, beanFactory));
             } else if (beanClass.getAnnotation(Filter.class) != null) {
-                FilterDescriptor fDescriptor = new FilterDescriptorImpl(beanClass);
-                fDescriptor.accept(rdv);
-                everrest.addFactory(new SpringObjectFactory<>(fDescriptor, beanName, beanFactory));
+                FilterDescriptor filterDescriptor = new FilterDescriptorImpl(beanClass);
+                everrest.addFactory(new SpringObjectFactory<>(filterDescriptor, beanName, beanFactory));
             } else if (beanClass.getAnnotation(Path.class) != null) {
-                AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(beanClass);
-                rDescriptor.accept(rdv);
-                everrest.addFactory(new SpringObjectFactory<>(rDescriptor, beanName, beanFactory));
+                ResourceDescriptor resourceDescriptor = new AbstractResourceDescriptor(beanClass);
+                everrest.addFactory(new SpringObjectFactory<>(resourceDescriptor, beanName, beanFactory));
             }
         }
 
@@ -197,7 +195,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         beanFactory.registerResolvableDependency(HttpHeaders.class, new ObjectFactory<HttpHeaders>() {
             @Override
             public HttpHeaders getObject() {
-                ApplicationContext context = ApplicationContextImpl.getCurrent();
+                ApplicationContext context = ApplicationContext.getCurrent();
                 if (context == null) {
                     throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
                 }
@@ -207,7 +205,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         beanFactory.registerResolvableDependency(InitialProperties.class, new ObjectFactory<InitialProperties>() {
             @Override
             public InitialProperties getObject() {
-                ApplicationContext context = ApplicationContextImpl.getCurrent();
+                ApplicationContext context = ApplicationContext.getCurrent();
                 if (context == null) {
                     throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
                 }
@@ -217,7 +215,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         beanFactory.registerResolvableDependency(Request.class, new ObjectFactory<Request>() {
             @Override
             public Request getObject() {
-                ApplicationContext context = ApplicationContextImpl.getCurrent();
+                ApplicationContext context = ApplicationContext.getCurrent();
                 if (context == null) {
                     throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
                 }
@@ -227,7 +225,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         beanFactory.registerResolvableDependency(SecurityContext.class, new ObjectFactory<SecurityContext>() {
             @Override
             public SecurityContext getObject() {
-                ApplicationContext context = ApplicationContextImpl.getCurrent();
+                ApplicationContext context = ApplicationContext.getCurrent();
                 if (context == null) {
                     throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
                 }
@@ -237,7 +235,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         beanFactory.registerResolvableDependency(UriInfo.class, new ObjectFactory<UriInfo>() {
             @Override
             public UriInfo getObject() {
-                ApplicationContext context = ApplicationContextImpl.getCurrent();
+                ApplicationContext context = ApplicationContext.getCurrent();
                 if (context == null) {
                     throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
                 }
@@ -247,7 +245,7 @@ public class SpringComponentsLoader implements BeanFactoryPostProcessor, Handler
         beanFactory.registerResolvableDependency(javax.ws.rs.core.Application.class, new ObjectFactory<javax.ws.rs.core.Application>() {
             @Override
             public javax.ws.rs.core.Application getObject() {
-                ApplicationContext context = ApplicationContextImpl.getCurrent();
+                ApplicationContext context = ApplicationContext.getCurrent();
                 if (context == null) {
                     throw new IllegalStateException("EverRest ApplicationContext is not initialized.");
                 }

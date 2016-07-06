@@ -11,33 +11,33 @@
 package org.everrest.core.impl.method;
 
 import org.everrest.core.ApplicationContext;
+import org.everrest.core.Parameter;
 import org.everrest.core.method.TypeProducer;
 
 import javax.ws.rs.HeaderParam;
 
 /**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: HeaderParameterResolver.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
+ * Creates object that might be injected to JAX-RS component through method (constructor) parameter or field annotated with
+ * &#064;HeaderParam annotation.
  */
-public class HeaderParameterResolver extends ParameterResolver<HeaderParam> {
-    /** See {@link HeaderParam}. */
-    private final HeaderParam headerParam;
+public class HeaderParameterResolver implements ParameterResolver<HeaderParam> {
+    private final HeaderParam         headerParam;
+    private final TypeProducerFactory typeProducerFactory;
 
     /**
      * @param headerParam
      *         HeaderParam
      */
-    HeaderParameterResolver(HeaderParam headerParam) {
+    HeaderParameterResolver(HeaderParam headerParam, TypeProducerFactory typeProducerFactory) {
         this.headerParam = headerParam;
+        this.typeProducerFactory = typeProducerFactory;
     }
 
 
     @Override
-    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
+    public Object resolve(Parameter parameter, ApplicationContext context) throws Exception {
         String param = this.headerParam.value();
-        TypeProducer typeProducer =
-                ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
+        TypeProducer typeProducer = typeProducerFactory.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
         return typeProducer.createValue(param, context.getHttpHeaders().getRequestHeaders(), parameter.getDefaultValue());
     }
 }

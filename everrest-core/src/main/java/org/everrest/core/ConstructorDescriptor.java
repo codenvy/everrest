@@ -10,20 +10,15 @@
  *******************************************************************************/
 package org.everrest.core;
 
-import org.everrest.core.resource.ResourceDescriptor;
-
 import java.lang.reflect.Constructor;
 import java.util.List;
 
 /**
- * Abstraction of constructor descriptor. Used for create object instance when
- * type is used in per-request lifecycle.
+ * Abstraction of constructor descriptor. Used for create object instance when type is used in per-request lifecycle.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public interface ConstructorDescriptor extends ResourceDescriptor {
-
+public interface ConstructorDescriptor {
     /**
      * @param context
      *         ApplicationContext
@@ -41,6 +36,5 @@ public interface ConstructorDescriptor extends ResourceDescriptor {
     Constructor<?> getConstructor();
 
     /** @return constructor's parameters */
-    List<ConstructorParameter> getParameters();
-
+    List<Parameter> getParameters();
 }

@@ -10,16 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.QualityValue;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * @author andrew00x
- */
+import static org.everrest.core.header.QualityValue.QVALUE;
+
 public class AcceptMediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<AcceptMediaType> {
 
     @Override
@@ -27,22 +24,20 @@ public class AcceptMediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDele
         if (header == null) {
             throw new IllegalArgumentException();
         }
-        MediaType mediaType = MediaType.valueOf(header);
-        return new AcceptMediaType(mediaType.getType(), mediaType.getSubtype(), mediaType.getParameters());
+        return new AcceptMediaType(MediaType.valueOf(header));
     }
 
     @Override
-    public String toString(AcceptMediaType acceptedMediaType) {
-        // Accept header maybe reused as content type header but need remove quality factor parameter.
-        if (acceptedMediaType == null) {
+    public String toString(AcceptMediaType acceptMediaType) {
+        if (acceptMediaType == null) {
             throw new IllegalArgumentException();
         }
-        final Map<String, String> parameters = acceptedMediaType.getParameters();
-        if (parameters.isEmpty() || (parameters.size() == 1 && parameters.containsKey(QualityValue.QVALUE))) {
-            return new MediaType(acceptedMediaType.getType(), acceptedMediaType.getSubtype()).toString();
+        final Map<String, String> parameters = acceptMediaType.getParameters();
+        if (parameters.isEmpty() || (parameters.size() == 1 && parameters.containsKey(QVALUE))) {
+            return acceptMediaType.getMediaType().toString();
         }
         final Map<String, String> copyParameters = new LinkedHashMap<>(parameters);
-        copyParameters.remove(QualityValue.QVALUE);
-        return new MediaType(acceptedMediaType.getType(), acceptedMediaType.getSubtype(), copyParameters).toString();
+        copyParameters.remove(QVALUE);
+        return new MediaType(acceptMediaType.getType(), acceptMediaType.getSubtype(), copyParameters).toString();
     }
 }

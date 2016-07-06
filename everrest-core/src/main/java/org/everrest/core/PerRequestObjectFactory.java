@@ -42,8 +42,8 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
 
     @Override
     public Object getInstance(ApplicationContext context) {
-        ConstructorDescriptor inj = model.getConstructorDescriptors().get(0);
-        Object object = inj.createInstance(context);
+        ConstructorDescriptor constructorDescriptor = model.getConstructorDescriptors().get(0);
+        Object object = constructorDescriptor.createInstance(context);
 
         List<FieldInjector> fieldInjectors = model.getFieldInjectors();
         if (fieldInjectors != null && fieldInjectors.size() > 0) {
@@ -56,18 +56,15 @@ public class PerRequestObjectFactory<T extends ObjectModel> implements ObjectFac
     }
 
     protected final void doPostConstruct(Object object, ApplicationContext context) {
-        if (context instanceof Lifecycle) {
-            LifecycleComponent lc = new LifecycleComponent(object);
-            lc.initialize();
-            @SuppressWarnings("unchecked")
-            List<LifecycleComponent> perRequest =
-                    (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
-            if (perRequest == null) {
-                perRequest = new ArrayList<>();
-                context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
-            }
-            perRequest.add(lc);
+        LifecycleComponent lifecycleComponent = new LifecycleComponent(object);
+        lifecycleComponent.initialize();
+        @SuppressWarnings("unchecked")
+        List<LifecycleComponent> perRequest = (List<LifecycleComponent>)context.getAttributes().get("org.everrest.lifecycle.PerRequest");
+        if (perRequest == null) {
+            perRequest = new ArrayList<>();
+            context.getAttributes().put("org.everrest.lifecycle.PerRequest", perRequest);
         }
+        perRequest.add(lifecycleComponent);
     }
 
     @Override

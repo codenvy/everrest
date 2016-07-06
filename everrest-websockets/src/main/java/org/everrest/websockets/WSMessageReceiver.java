@@ -15,8 +15,6 @@ import org.everrest.websockets.message.InputMessage;
 /**
  * Receives incoming messages. Implementation of this interface should be added to WSConnection.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
  * @see WSConnection#registerMessageReceiver(WSMessageReceiver)
  * @see WSConnection#removeMessageReceiver(WSMessageReceiver)
  */

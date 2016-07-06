@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.core;
 
+import org.everrest.core.impl.header.AcceptMediaType;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
@@ -18,9 +20,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-/**
- * @author andrew00x
- */
 public interface GenericContainerRequest extends Request, SecurityContext, ExtHttpHeaders {
     /**
      * Get read-only list of cookie header.
@@ -93,4 +92,10 @@ public interface GenericContainerRequest extends Request, SecurityContext, ExtHt
      *         read-only case insensitive {@link MultivaluedMap}
      */
     void setRequestHeaders(MultivaluedMap<String, String> httpHeaders);
+
+    /**
+     * If accept header does not presents or its length is null then list with one element will be returned. That one element is default
+     * media type, see {@link AcceptMediaType#DEFAULT}.
+     */
+    List<AcceptMediaType> getAcceptMediaTypeList();
 }

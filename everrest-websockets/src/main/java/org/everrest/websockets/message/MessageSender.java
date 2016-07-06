@@ -80,7 +80,7 @@ public class MessageSender {
 
     private boolean isMaxQueueCapacityExceeded() {
         final int newSize = sendQueue.size() + 1;
-        LOG.debug(" SendQueue sieze {} ,  maxNumberOfMessageInQueue {}", newSize, maxNumberOfMessageInQueue);
+        LOG.debug(" SendQueue size {} ,  maxNumberOfMessageInQueue {}", newSize, maxNumberOfMessageInQueue);
         return newSize > maxNumberOfMessageInQueue;
     }
 

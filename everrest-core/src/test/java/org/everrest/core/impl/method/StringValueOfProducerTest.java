@@ -10,86 +10,54 @@
  *******************************************************************************/
 package org.everrest.core.impl.method;
 
-import junit.framework.TestCase;
-
 import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.method.TypeProducer;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
-public class StringValueOfProducerTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-    public void testByte() throws Exception {
-        StringValueOfProducer stringValueOfProducer =
-                new StringValueOfProducer(Byte.class.getMethod("valueOf", String.class));
-        assertEquals(Byte.valueOf("127"), stringValueOfProducer.createValue("127"));
+public class StringValueOfProducerTest {
+    private StringValueOfProducer producer;
+
+    @Before
+    public void setUp() throws Exception {
+        producer = new StringValueOfProducer(Integer.class.getMethod("valueOf", String.class));
     }
 
-    public void testShort() throws Exception {
-        StringValueOfProducer stringValueOfProducer =
-                new StringValueOfProducer(Short.class.getMethod("valueOf", String.class));
-        assertEquals(Short.valueOf("32767"), stringValueOfProducer.createValue("32767"));
-    }
-
-    public void testInteger() throws Exception {
-        StringValueOfProducer stringValueOfProducer =
-                new StringValueOfProducer(Integer.class.getMethod("valueOf", String.class));
-        assertEquals(Integer.valueOf("2147483647"), stringValueOfProducer.createValue("2147483647"));
-    }
-
-    public void testLong() throws Exception {
-        StringValueOfProducer stringValueOfProducer =
-                new StringValueOfProducer(Long.class.getMethod("valueOf", String.class));
-        assertEquals(Long.valueOf("9223372036854775807"), stringValueOfProducer.createValue("9223372036854775807"));
-    }
-
-    public void testFloat() throws Exception {
-        StringValueOfProducer stringValueOfProducer =
-                new StringValueOfProducer(Float.class.getMethod("valueOf", String.class));
-        assertEquals(Float.valueOf("1.23456789"), stringValueOfProducer.createValue("1.23456789"));
-    }
-
-    public void testDouble() throws Exception {
-        StringValueOfProducer stringValueOfProducer =
-                new StringValueOfProducer(Double.class.getMethod("valueOf", String.class));
-        assertEquals(Double.valueOf("1.234567898765432"), stringValueOfProducer.createValue("1.234567898765432"));
-    }
-
-    public void testBoolean() throws Exception {
-        StringValueOfProducer stringValueOfProducer =
-                new StringValueOfProducer(Boolean.class.getMethod("valueOf", String.class));
-        assertEquals(Boolean.valueOf("true"), stringValueOfProducer.createValue("true"));
-    }
-
-    public void testCuctomTypeValueOf() throws Exception {
-        TypeProducer t = ParameterHelper.createTypeProducer(StringValueOf.class, null);
+    @Test
+    public void createsInstanceAndUsesSingleValueFromMap() throws Exception {
         MultivaluedMap<String, String> values = new MultivaluedMapImpl();
-        values.putSingle("key1", "valueof test");
-        StringValueOf o1 = (StringValueOf)t.createValue("key1", values, null);
-        assertEquals("valueof test", o1.getValue());
-        values.clear();
-        o1 = (StringValueOf)t.createValue("key1", values, "default value");
-        assertEquals("default value", o1.getValue());
+        values.putSingle("number", "2147483647");
+
+        Object result = producer.createValue("number", values, null);
+        assertEquals(new Integer("2147483647"), result);
     }
 
-    public static class StringValueOf {
-        private String value;
+    @Test
+    public void createsInstanceAndUsesFirstValueFromMap() throws Exception {
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+        values.addAll("number", "2147483647", "746384741");
 
-        private StringValueOf(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public static StringValueOf valueOf(String value) {
-            return new StringValueOf(value);
-        }
+        Object result = producer.createValue("number", values, null);
+        assertEquals(new Integer("2147483647"), result);
     }
 
+    @Test
+    public void createsInstanceAndUsesDefault() throws Exception {
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+
+        Object result = producer.createValue("number", values, "-777");
+        assertEquals(new Integer("-777"), result);
+    }
+
+    @Test
+    public void returnsNullWhenMapDoesNotContainRequiredValueAndDefaultValueIsNull() throws Exception {
+        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+
+        Object result = producer.createValue("number", values, null);
+        assertNull(result);
+    }
 }

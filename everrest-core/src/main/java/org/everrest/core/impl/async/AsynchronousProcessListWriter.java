@@ -24,10 +24,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
- */
 @Provider
 @Produces(MediaType.TEXT_PLAIN)
 public class AsynchronousProcessListWriter implements MessageBodyWriter<Iterable<AsynchronousProcess>> {
@@ -62,7 +58,7 @@ public class AsynchronousProcessListWriter implements MessageBodyWriter<Iterable
         try {
             writer.format(OUTPUT_FORMAT, "USER", "ID", "STAT", "PATH");
             for (AsynchronousProcess process : asynchronousProcesses) {
-                writer.format(OUTPUT_FORMAT, process.getOwner(), process.getId(), process.getStatus(), process.getPath());
+                writer.format(OUTPUT_FORMAT, process.getOwner() == null ? "unknown" : process.getOwner(), process.getId(), process.getStatus(), process.getPath());
             }
         } finally {
             writer.flush();

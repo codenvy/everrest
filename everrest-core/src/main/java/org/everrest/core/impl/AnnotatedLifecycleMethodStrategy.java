@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
+import com.google.common.base.Throwables;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 import org.everrest.core.LifecycleMethodStrategy;
 
 import javax.annotation.PostConstruct;
@@ -20,16 +25,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * Implementation of LifecycleComponent.LifecycleMethodStrategy that uses {@link PostConstruct} and {@link PreDestroy}
  * annotation to find "initialize" and "destroy" methods.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
  */
 public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodStrategy {
+
     private static class MethodFilter {
         private final Class<? extends Annotation> annotation;
 
@@ -48,25 +55,25 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodSt
          * <li>Method must not throw checked exception.</li>
          * </ul>
          *
-         * @param m
+         * @param method
          *         the method
          * @return <code>true</code> if method is matched to requirements above and false otherwise
          * @see PostConstruct
          * @see PreDestroy
          */
-        boolean accept(Method m) {
-            return (!Modifier.isStatic(m.getModifiers())) //
-                   && (m.getReturnType() == void.class || m.getReturnType() == Void.class) //
-                   && m.getParameterTypes().length == 0 //
-                   && noCheckedException(m)
-                   && m.getAnnotation(annotation) != null;
+        boolean accept(Method method) {
+            return (!Modifier.isStatic(method.getModifiers()))
+                   && (method.getReturnType() == void.class || method.getReturnType() == Void.class)
+                   && method.getParameterTypes().length == 0
+                   && noCheckedException(method)
+                   && method.getAnnotation(annotation) != null;
         }
 
-        private boolean noCheckedException(Method m) {
-            Class<?>[] exceptions = m.getExceptionTypes();
+        private boolean noCheckedException(Method method) {
+            Class<?>[] exceptions = method.getExceptionTypes();
             if (exceptions.length > 0) {
-                for (int i = 0; i < exceptions.length; i++) {
-                    if (!RuntimeException.class.isAssignableFrom(exceptions[i])) {
+                for (Class<?> exception : exceptions) {
+                    if (!RuntimeException.class.isAssignableFrom(exception)) {
                         return false;
                     }
                 }
@@ -78,24 +85,43 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodSt
     private static final MethodFilter POST_CONSTRUCT_METHOD_FILTER = new MethodFilter(PostConstruct.class);
     private static final MethodFilter PRE_DESTROY_METHOD_FILTER    = new MethodFilter(PreDestroy.class);
 
-    private final HelperCache<Class<?>, Method[]> initializeMethodsCache =
-            new HelperCache<Class<?>, Method[]>(60 * 1000, 250);
-    private final HelperCache<Class<?>, Method[]> destroyMethodsCache    =
-            new HelperCache<Class<?>, Method[]>(60 * 1000, 250);
+    private final LoadingCache<Class<?>, Method[]> initializeMethodsCache;
+    private final LoadingCache<Class<?>, Method[]> destroyMethodsCache;
+
+    public AnnotatedLifecycleMethodStrategy() {
+        initializeMethodsCache = CacheBuilder.newBuilder()
+                                             .concurrencyLevel(8)
+                                             .maximumSize(256)
+                                             .expireAfterAccess(10, MINUTES)
+                                             .build(new CacheLoader<Class<?>, Method[]>() {
+                                                 @Override
+                                                 public Method[] load(Class<?> aClass) {
+                                                     return getLifecycleMethods(aClass, POST_CONSTRUCT_METHOD_FILTER);
+                                                 }
+                                             });
+        destroyMethodsCache = CacheBuilder.newBuilder()
+                                          .concurrencyLevel(8)
+                                          .maximumSize(256)
+                                          .expireAfterAccess(10, MINUTES)
+                                          .build(new CacheLoader<Class<?>, Method[]>() {
+                                              @Override
+                                              public Method[] load(Class<?> aClass) {
+                                                  return getLifecycleMethods(aClass, PRE_DESTROY_METHOD_FILTER);
+                                              }
+                                          });
+    }
 
     /** @see LifecycleMethodStrategy#invokeInitializeMethods(java.lang.Object) */
     @Override
     public void invokeInitializeMethods(Object o) {
-        final Class<?> clazz = o.getClass();
-        Method[] initMethods;
-        synchronized (initializeMethodsCache) {
-            initMethods = initializeMethodsCache.get(clazz);
-            if (initMethods == null) {
-                initMethods = getLifecycleMethods(clazz, POST_CONSTRUCT_METHOD_FILTER);
-                initializeMethodsCache.put(clazz, initMethods);
-            }
+        final Class<?> aClass = o.getClass();
+        Method[] initMethods = null;
+        try {
+            initMethods = initializeMethodsCache.get(aClass);
+        } catch (ExecutionException e) {
+            Throwables.propagate(e);
         }
-        if (initMethods.length > 0) {
+        if (initMethods != null && initMethods.length > 0) {
             doInvokeLifecycleMethods(o, initMethods);
         }
     }
@@ -103,28 +129,25 @@ public final class AnnotatedLifecycleMethodStrategy implements LifecycleMethodSt
     /** @see LifecycleMethodStrategy#invokeDestroyMethods(java.lang.Object) */
     @Override
     public void invokeDestroyMethods(Object o) {
-        final Class<?> clazz = o.getClass();
-        Method[] destroyMethods;
-        synchronized (destroyMethodsCache) {
-            destroyMethods = destroyMethodsCache.get(clazz);
-            if (destroyMethods == null) {
-                destroyMethods = getLifecycleMethods(clazz, PRE_DESTROY_METHOD_FILTER);
-                destroyMethodsCache.put(clazz, destroyMethods);
-            }
+        final Class<?> aClass = o.getClass();
+        Method[] destroyMethods = null;
+        try {
+            destroyMethods = destroyMethodsCache.get(aClass);
+        } catch (ExecutionException e) {
+            Throwables.propagate(e);
         }
-        if (destroyMethods.length > 0) {
+        if (destroyMethods != null && destroyMethods.length > 0) {
             doInvokeLifecycleMethods(o, destroyMethods);
         }
     }
 
     private Method[] getLifecycleMethods(Class<?> cl, MethodFilter filter) {
         try {
-            LinkedList<Method> result = new LinkedList<Method>();
-            Set<String> names = new HashSet<String>();
+            List<Method> result = new LinkedList<>();
+            Set<String> names = new HashSet<>();
             for (; cl != Object.class; cl = cl.getSuperclass()) {
                 Method[] methods = cl.getDeclaredMethods();
-                for (int i = 0; i < methods.length; i++) {
-                    Method method = methods[i];
+                for (Method method : methods) {
                     if (filter.accept(method) && names.add(method.getName())) {
                         if (!Modifier.isPublic(method.getModifiers())) {
                             method.setAccessible(true);

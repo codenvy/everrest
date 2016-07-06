@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
+import com.google.common.io.ByteStreams;
+
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.provider.EntityProvider;
 
@@ -25,10 +27,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 @Provider
 public class FileEntityProvider implements EntityProvider<File> {
 
@@ -36,7 +34,6 @@ public class FileEntityProvider implements EntityProvider<File> {
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == File.class;
     }
-
 
     @Override
     public File readFrom(Class<File> type,
@@ -46,36 +43,32 @@ public class FileEntityProvider implements EntityProvider<File> {
                          MultivaluedMap<String, String> httpHeaders,
                          InputStream entityStream) throws IOException {
         File f = FileCollector.getInstance().createFile();
-        OutputStream out = new FileOutputStream(f);
-        try {
-            IOHelper.write(entityStream, out);
-        } finally {
-            out.close();
+        try (OutputStream out = new FileOutputStream(f)) {
+            ByteStreams.copy(entityStream, out);
         }
         return f;
     }
 
-
     @Override
-    public long getSize(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return t.length();
+    public long getSize(File file, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return file.length();
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return File.class.isAssignableFrom(type); // more flexible then '=='
+        return File.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-        InputStream in = new FileInputStream(t);
-        try {
-            IOHelper.write(in, entityStream);
-        } finally {
-            in.close();
+    public void writeTo(File file,
+                        Class<?> type,
+                        Type genericType,
+                        Annotation[] annotations,
+                        MediaType mediaType,
+                        MultivaluedMap<String, Object> httpHeaders,
+                        OutputStream entityStream) throws IOException {
+        try (InputStream in = new FileInputStream(file)) {
+            ByteStreams.copy(in, entityStream);
         }
     }
 }

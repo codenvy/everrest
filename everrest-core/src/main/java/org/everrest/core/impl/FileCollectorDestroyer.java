@@ -15,16 +15,15 @@ package org.everrest.core.impl;
  * loaded from .war file by the web application class loader. Do nothing if class is loaded by another class loader than
  * context class loader.
  *
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class FileCollectorDestroyer {
     public void stopFileCollector() {
-        FileCollector fc = FileCollector.getInstance();
-        Class<? extends FileCollector> fcClass = fc.getClass();
-        ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-        if (ccl == fcClass.getClassLoader()) {
-            fc.stop();
+        FileCollector fileCollector = FileCollector.getInstance();
+        Class<? extends FileCollector> fileCollectorClass = fileCollector.getClass();
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (contextClassLoader == fileCollectorClass.getClassLoader()) {
+            fileCollector.stop();
         }
     }
 }

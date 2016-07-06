@@ -11,8 +11,7 @@
 package org.everrest.core;
 
 /**
- * Implementation of this interface should be able provide object instance
- * dependent of component lifecycle.
+ * Implementation of this interface should be able provide object instance dependent of component lifecycle.
  *
  * @param <T>
  *         ObjectModel extensions

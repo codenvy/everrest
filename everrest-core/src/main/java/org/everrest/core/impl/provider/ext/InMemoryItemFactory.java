@@ -13,17 +13,12 @@ package org.everrest.core.impl.provider.ext;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 class InMemoryItemFactory implements FileItemFactory {
     private final int maxSize;
 
     public InMemoryItemFactory(int maxSize) {
         this.maxSize = maxSize;
     }
-
 
     @Override
     public FileItem createItem(String fieldName, String contentType, boolean isFormField, String fileName) {

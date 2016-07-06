@@ -16,10 +16,18 @@ import java.text.ParseException;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static org.everrest.core.impl.header.HeaderHelper.appendWithQuote;
+import static org.everrest.core.impl.header.HeaderHelper.removeWhitespaces;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.charAtIsNot;
+import static org.everrest.core.util.StringUtils.scan;
+
 /**
  * @author andrew00x
  */
 public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<MediaType> {
+    private static final char SUB_TYPE_SEPARATOR = '/';
+    private static final char PARAMS_SEPARATOR = ';';
 
     @Override
     public MediaType fromString(String header) {
@@ -28,32 +36,45 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
         }
 
         try {
-            int p = header.indexOf('/');
-            int col = header.indexOf(';');
+            int subTypeSeparatorIndex = scan(header, SUB_TYPE_SEPARATOR);
+            int paramsSeparatorIndex = scan(header, PARAMS_SEPARATOR);
 
             String type;
-            String subType = null;
+            String subType;
 
-            if (p < 0 && col < 0) // no '/' and ';'
-            {
+            if (charAtIsNot(header, subTypeSeparatorIndex, SUB_TYPE_SEPARATOR)
+                && charAtIsNot(header, paramsSeparatorIndex, PARAMS_SEPARATOR)) {
+
                 return new MediaType(header, null);
-            } else if (p > 0 && col < 0) // there is no ';' so no parameters
-            {
-                return new MediaType(HeaderHelper.removeWhitespaces(header.substring(0, p)),
-                                     HeaderHelper.removeWhitespaces(header.substring(p + 1)));
-            } else if (p < 0 && col == 0) { // string just start from ';'
+
+            } else if (charAtIs(header, subTypeSeparatorIndex, SUB_TYPE_SEPARATOR)
+                       && charAtIsNot(header, paramsSeparatorIndex, PARAMS_SEPARATOR)) {
+
+                return new MediaType(removeWhitespaces(header.substring(0, subTypeSeparatorIndex)),
+                                     removeWhitespaces(header.substring(subTypeSeparatorIndex + 1)));
+
+            } else if (charAtIsNot(header, subTypeSeparatorIndex, SUB_TYPE_SEPARATOR) && paramsSeparatorIndex == 0) {
+
+                // string just start from ';'
                 type = null;
-                // sub-type is null
-            } else if (p < 0 && col > 0) { // there is no '/' but present ';'
-                type = HeaderHelper.removeWhitespaces(header.substring(0, col));
-                // sub-type is null
-            } else { // presents '/' and ';'
-                type = HeaderHelper.removeWhitespaces(header.substring(0, p));
-                subType = header.substring(p + 1, col);
+                subType = null;
+
+            } else if (charAtIsNot(header, subTypeSeparatorIndex, SUB_TYPE_SEPARATOR)
+                       && charAtIs(header, paramsSeparatorIndex, PARAMS_SEPARATOR)) {
+
+                // there is no '/' but present ';'
+                type = removeWhitespaces(header.substring(0, paramsSeparatorIndex));
+                subType = null;
+
+            } else {
+
+                type = removeWhitespaces(header.substring(0, subTypeSeparatorIndex));
+                subType = header.substring(subTypeSeparatorIndex + 1, paramsSeparatorIndex);
+
             }
 
-            Map<String, String> m = new HeaderParameterParser().parse(header);
-            return new MediaType(type, subType, m);
+            Map<String, String> params = new HeaderParameterParser().parse(header);
+            return new MediaType(type, subType, params);
 
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
@@ -71,7 +92,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
 
         for (Entry<String, String> entry : mime.getParameters().entrySet()) {
             sb.append(';').append(entry.getKey()).append('=');
-            HeaderHelper.appendWithQuote(sb, entry.getValue());
+            appendWithQuote(sb, entry.getValue());
         }
 
         return sb.toString();

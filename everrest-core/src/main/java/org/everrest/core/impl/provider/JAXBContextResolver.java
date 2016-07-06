@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -18,6 +17,7 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Provide cache for {@link JAXBContext}.
@@ -25,11 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author andrew00x
  */
 @Provider
-@Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBContextResolver implements ContextResolver<JAXBContextResolver> {
     /** JAXBContext cache. */
-    private final ConcurrentHashMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<>();
 
     @Override
     public JAXBContextResolver getContext(Class<?> type) {
@@ -39,34 +38,18 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     /**
      * Return JAXBContext according to supplied type. If no one context found then try create new context and save it in cache.
      *
-     * @param clazz
+     * @param aClass
      *         class to be bound
      * @return JAXBContext
      * @throws JAXBException
      *         if JAXBContext creation failed
      */
-    public JAXBContext getJAXBContext(Class<?> clazz) throws JAXBException {
-        JAXBContext jaxbContext = jaxbContexts.get(clazz);
+    public JAXBContext getJAXBContext(Class<?> aClass) throws JAXBException {
+        JAXBContext jaxbContext = jaxbContexts.get(aClass);
         if (jaxbContext == null) {
-            jaxbContext = JAXBContext.newInstance(clazz);
-            jaxbContexts.put(clazz, jaxbContext);
+            jaxbContexts.putIfAbsent(aClass, JAXBContext.newInstance(aClass));
         }
-        return jaxbContext;
-    }
-
-    /**
-     * Create and add in cache JAXBContext for supplied set of classes.
-     *
-     * @param clazz
-     *         java class to be bound
-     * @return JAXBContext
-     * @throws JAXBException
-     *         if JAXBContext for supplied classes can't be created in any reasons
-     */
-    public JAXBContext createJAXBContext(Class<?> clazz) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-        addJAXBContext(jaxbContext, clazz);
-        return jaxbContext;
+        return jaxbContexts.get(aClass);
     }
 
     /**
@@ -74,10 +57,14 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
      *
      * @param jaxbContext
      *         JAXBContext
-     * @param clazz
+     * @param aClass
      *         java classes to be bound
      */
-    public void addJAXBContext(JAXBContext jaxbContext, Class<?> clazz) {
-        jaxbContexts.put(clazz, jaxbContext);
+    public void addJAXBContext(JAXBContext jaxbContext, Class<?> aClass) {
+        jaxbContexts.put(aClass, jaxbContext);
+    }
+
+    public void removeJAXBContext(Class<?> aClass) {
+        jaxbContexts.remove(aClass);
     }
 }

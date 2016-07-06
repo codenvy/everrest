@@ -16,8 +16,7 @@ import java.util.Map;
  * Container for properties, that may be injected in resource by &#64Context
  * annotation.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface InitialProperties {
 

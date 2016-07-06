@@ -10,77 +10,99 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.impl.ContainerRequest;
-import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.tools.EmptyInputStream;
-import org.everrest.core.tools.SimpleSecurityContext;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.CharStreams;
+
+import org.everrest.core.ApplicationContext;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Reader;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.StringReader;
 
-/**
- * @author andrew00x
- */
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class ReaderEntityProviderTest {
-    private MessageBodyReader reader;
-    private String            testString;
+    private static final String TEST_CONTENT = "\u041f\u0440\u0438\u0432\u0456\u0442";
+
+    private ReaderEntityProvider readerEntityProvider;
 
     @Before
     public void setUp() throws Exception {
-        reader = new ReaderEntityProvider();
-        testString = "\u041f\u0440\u0438\u0432\u0456\u0442";
-        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
-                new ContainerRequest("", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(),
-                                     new SimpleSecurityContext(false)), null, ProviderBinder.getInstance()));
+        readerEntityProvider = new ReaderEntityProvider();
+        ApplicationContext context = mock(ApplicationContext.class);
+        when(context.isAsynchronous()).thenReturn(false);
+        ApplicationContext.setCurrent(context);
     }
 
     @After
     public void tearDown() throws Exception {
-        ApplicationContextImpl.setCurrent(null);
+        ApplicationContext.setCurrent(null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testIsReadable() throws Exception {
-        Assert.assertTrue(reader.isReadable(Reader.class, null, null, null));
+    public void isReadableForReader() throws Exception {
+        assertTrue(readerEntityProvider.isReadable(Reader.class, null, null, null));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testReadWithCharset() throws Exception {
-        InputStream in = new ByteArrayInputStream(testString.getBytes("windows-1251"));
-        Map<String, String> p = new HashMap<>(1);
-        p.put("charset", "windows-1251");
-        MediaType mediaType = new MediaType("text", "plain", p);
-        Reader result = (Reader)reader.readFrom(Reader.class, null, null, mediaType, null, in);
-        char[] c = new char[1024];
-        int b = result.read(c);
-        String s = new String(c, 0, b);
-        Assert.assertEquals(testString, s);
+    public void isNotReadableForTypeOtherThanReader() throws Exception {
+        assertFalse(readerEntityProvider.isReadable(Object.class, null, null, null));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testReadWithoutCharset() throws Exception {
-        // Provoke encoding error, doesn't set encoding in media type
+    public void isWritableForReader() throws Exception {
+        assertTrue(readerEntityProvider.isWriteable(Reader.class, null, null, null));
+    }
+
+    @Test
+    public void isNotWritableForTypeOtherThanReader() throws Exception {
+        assertFalse(readerEntityProvider.isWriteable(Object.class, null, null, null));
+    }
+
+    @Test
+    public void readsContentOfEntityStreamAsReader() throws Exception {
+        MediaType mediaType = new MediaType("text", "plain", ImmutableMap.of("charset", "windows-1251"));
+        byte[] data = TEST_CONTENT.getBytes("windows-1251");
+        Reader result = readerEntityProvider.readFrom(Reader.class, String.class, null, mediaType, null, new ByteArrayInputStream(data));
+
+        assertEquals(TEST_CONTENT, CharStreams.toString(result));
+    }
+
+    @Test
+    public void readsContentOfEntityStreamAsUtf8Reader() throws Exception {
         MediaType mediaType = new MediaType("text", "plain");
-        InputStream in = new ByteArrayInputStream(testString.getBytes("windows-1251"));
-        Reader result = (Reader)reader.readFrom(Reader.class, null, null, mediaType, null, in);
-        char[] c = new char[1024];
-        int b = result.read(c);
-        String s = new String(c, 0, b);
-        Assert.assertNotEquals(testString, s);
+        byte[] data = TEST_CONTENT.getBytes("UTF-8");
+        Reader result = readerEntityProvider.readFrom(Reader.class, String.class, null, mediaType, null, new ByteArrayInputStream(data));
+
+        assertEquals(TEST_CONTENT, CharStreams.toString(result));
+    }
+
+    @Test
+    public void writesReaderToOutputStream() throws Exception {
+        MediaType mediaType = new MediaType("text", "plain", ImmutableMap.of("charset", "windows-1251"));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        readerEntityProvider.writeTo(new StringReader(TEST_CONTENT), String.class, null, null, mediaType, new MultivaluedHashMap<>(), out);
+
+        assertArrayEquals(TEST_CONTENT.getBytes("windows-1251"), out.toByteArray());
+    }
+
+    @Test
+    public void writesUtf8ReaderToOutputStream() throws Exception {
+        MediaType mediaType = new MediaType("text", "plain");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        readerEntityProvider.writeTo(new StringReader(TEST_CONTENT), String.class, null, null, mediaType, new MultivaluedHashMap<>(), out);
+
+        assertArrayEquals(TEST_CONTENT.getBytes("UTF-8"), out.toByteArray());
     }
 }

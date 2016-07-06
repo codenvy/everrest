@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.everrest.exoplatform.container;
 
-import org.everrest.core.impl.ApplicationContextImpl;
+import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;
@@ -20,7 +20,6 @@ import org.everrest.core.tools.EmptyInputStream;
 import org.everrest.core.tools.SimpleSecurityContext;
 import org.everrest.exoplatform.StandaloneBaseTest;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.picocontainer.ComponentAdapter;
@@ -47,6 +46,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.everrest.core.ApplicationContext.anApplicationContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author andrew00x
  */
@@ -58,17 +61,19 @@ public class LookupComponentsTest extends StandaloneBaseTest {
     public void setUp() throws Exception {
         super.setUp();
         restfulContainer = new RestfulContainer(container);
-        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
-                new ContainerRequest("XXX", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(),
-                                     new SimpleSecurityContext(false)),
-                new ContainerResponse(new DummyContainerResponseWriter()), ProviderBinder.getInstance()));
+        ApplicationContext applicationContext = anApplicationContext()
+                .withProviders((ProviderBinder)container.getComponentInstanceOfType(ProviderBinder.class))
+                .withRequest(new ContainerRequest("XXX", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(), new SimpleSecurityContext(false)))
+                .withResponse(new ContainerResponse(new DummyContainerResponseWriter()))
+                .build();
+        ApplicationContext.setCurrent(applicationContext);
     }
 
     @After
     @Override
     public void tearDown() throws Exception {
         restfulContainer.stop();
-        ApplicationContextImpl.setCurrent(null);
+        ApplicationContext.setCurrent(null);
         super.tearDown();
     }
 
@@ -78,9 +83,9 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         List<String> params = new ArrayList<>();
         ComponentAdapter xAdapter = restfulContainer.getMatchedResource("/x/message", params);
         Object x = xAdapter.getComponentInstance(restfulContainer);
-        Assert.assertTrue(x instanceof X);
-        Assert.assertEquals(1, params.size());
-        Assert.assertEquals("/message", params.get(0));
+        assertTrue(x instanceof X);
+        assertEquals(1, params.size());
+        assertEquals("/message", params.get(0));
     }
 
     @Test
@@ -92,10 +97,10 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         // since it has more characters in @Path template.
         ComponentAdapter yAdapter = restfulContainer.getMatchedResource("/x/message", params);
         Object y = yAdapter.getComponentInstance(restfulContainer);
-        Assert.assertTrue(y instanceof Y);
-        Assert.assertEquals(2, params.size());
-        Assert.assertEquals("message", params.get(0));
-        Assert.assertEquals(null, params.get(1));
+        assertTrue(y instanceof Y);
+        assertEquals(2, params.size());
+        assertEquals("message", params.get(0));
+        assertEquals(null, params.get(1));
     }
 
     @Test
@@ -103,7 +108,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation("W", W.class);
         MessageBodyWriter<ToWrite> writer =
                 restfulContainer.getMessageBodyWriter(ToWrite.class, null, null, MediaType.TEXT_PLAIN_TYPE);
-        Assert.assertTrue(writer instanceof W);
+        assertTrue(writer instanceof W);
     }
 
     @Test
@@ -114,7 +119,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
                 restfulContainer.getMessageBodyWriter(ToWrite.class, null, null, MediaType.TEXT_PLAIN_TYPE);
         // Writer W_TEXT must be selected since it has Produces annotation with media
         // types for which it may be used.
-        Assert.assertTrue(writer instanceof W_TEXT);
+        assertTrue(writer instanceof W_TEXT);
     }
 
     @Test
@@ -124,7 +129,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         MessageBodyWriter<ToWrite> writer =
                 restfulContainer.getMessageBodyWriter(ToWrite.class, null, null, MediaType.APPLICATION_JSON_TYPE);
         // Writer W must be selected since it is able to process any media types.
-        Assert.assertTrue(writer instanceof W);
+        assertTrue(writer instanceof W);
     }
 
     @Test
@@ -132,7 +137,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation("R", R.class);
         MessageBodyReader<ToRead> reader =
                 restfulContainer.getMessageBodyReader(ToRead.class, null, null, MediaType.TEXT_PLAIN_TYPE);
-        Assert.assertTrue(reader instanceof R);
+        assertTrue(reader instanceof R);
     }
 
     @Test
@@ -143,7 +148,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
                 restfulContainer.getMessageBodyReader(ToRead.class, null, null, MediaType.TEXT_PLAIN_TYPE);
         // Reader R_TEXT must be selected since it has Consumes annotation with media
         // types for which it may be used.
-        Assert.assertTrue(reader instanceof R_TEXT);
+        assertTrue(reader instanceof R_TEXT);
     }
 
     @Test
@@ -153,7 +158,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         MessageBodyReader<ToRead> reader =
                 restfulContainer.getMessageBodyReader(ToRead.class, null, null, MediaType.APPLICATION_JSON_TYPE);
         // Reader R must be selected since it is able to process any media types.
-        Assert.assertTrue(reader instanceof R);
+        assertTrue(reader instanceof R);
     }
 
     @Test
@@ -161,7 +166,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation("E1", E1.class);
         restfulContainer.registerComponentImplementation("E2", E2.class);
         ExceptionMapper<Exception> mapper = restfulContainer.getExceptionMapper(Exception.class);
-        Assert.assertTrue(mapper instanceof E1);
+        assertTrue(mapper instanceof E1);
     }
 
     @Test
@@ -169,7 +174,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation("E1", E1.class);
         restfulContainer.registerComponentImplementation("E2", E2.class);
         ExceptionMapper<MyException> mapper = restfulContainer.getExceptionMapper(MyException.class);
-        Assert.assertTrue(mapper instanceof E2);
+        assertTrue(mapper instanceof E2);
     }
 
     @Test
@@ -177,7 +182,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         restfulContainer.registerComponentImplementation("C", C.class);
         ContextResolver<ToResolve> resolver =
                 restfulContainer.getContextResolver(ToResolve.class, MediaType.APPLICATION_XML_TYPE);
-        Assert.assertTrue(resolver instanceof C);
+        assertTrue(resolver instanceof C);
     }
 
     @Test
@@ -188,7 +193,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
                 restfulContainer.getContextResolver(ToResolve.class, MediaType.APPLICATION_XML_TYPE);
         // C_XML must be selected since it has @Produces annotation and media type
         // in that annotation is matched to "application/xml".
-        Assert.assertTrue(resolver instanceof C_XML);
+        assertTrue(resolver instanceof C_XML);
     }
 
     @Test
@@ -198,7 +203,7 @@ public class LookupComponentsTest extends StandaloneBaseTest {
         ContextResolver<ToResolve> resolver =
                 restfulContainer.getContextResolver(ToResolve.class, MediaType.APPLICATION_JSON_TYPE);
         // C must be selected since it supports any media types.
-        Assert.assertTrue(resolver instanceof C);
+        assertTrue(resolver instanceof C);
     }
 
     @Path("x")

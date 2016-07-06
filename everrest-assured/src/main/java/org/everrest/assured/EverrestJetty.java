@@ -21,11 +21,9 @@ import org.everrest.core.ResponseFilter;
 import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.impl.resource.ResourceDescriptorValidator;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.provider.ProviderDescriptor;
-import org.everrest.core.resource.AbstractResourceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.IInvokedMethod;
@@ -168,7 +166,7 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
                             }
                         }
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        LOG.error(e.getLocalizedMessage(), e);
                     }
                 }
                 if (everrest.getFactories().size() > 0) {
@@ -212,7 +210,7 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
         return false;
     }
 
-    private boolean isRestResource(Class<? extends Object> resourceClass) {
+    private boolean isRestResource(Class<?> resourceClass) {
         return resourceClass.isAnnotationPresent(Path.class) ||
                resourceClass.isAnnotationPresent(Provider.class) ||
                resourceClass.isAnnotationPresent(Filter.class) ||
@@ -226,20 +224,16 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
     }
 
     public ObjectFactory<? extends ObjectModel> createFactory(Object testObject, Field field) {
-        ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         Class clazz = (Class)field.getType();
         if (clazz.getAnnotation(Provider.class) != null) {
-            ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz);
-            pDescriptor.accept(rdv);
-            return new TestResourceFactory<>(pDescriptor, testObject, field);
+            ProviderDescriptor providerDescriptor = new ProviderDescriptorImpl(clazz);
+            return new TestResourceFactory<>(providerDescriptor, testObject, field);
         } else if (clazz.getAnnotation(Filter.class) != null) {
-            FilterDescriptor fDescriptor = new FilterDescriptorImpl(clazz);
-            fDescriptor.accept(rdv);
-            return new TestResourceFactory<>(fDescriptor, testObject, field);
+            FilterDescriptor filterDescriptor = new FilterDescriptorImpl(clazz);
+            return new TestResourceFactory<>(filterDescriptor, testObject, field);
         } else if (clazz.getAnnotation(Path.class) != null) {
-            AbstractResourceDescriptor rDescriptor = new AbstractResourceDescriptorImpl(clazz);
-            rDescriptor.accept(rdv);
-            return new TestResourceFactory<>(rDescriptor, testObject, field);
+            AbstractResourceDescriptor resourceDescriptor = new AbstractResourceDescriptor(clazz);
+            return new TestResourceFactory<>(resourceDescriptor, testObject, field);
         }
         return null;
     }

@@ -28,9 +28,6 @@ import static com.jayway.restassured.RestAssured.expect;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- *
- */
 @Listeners(value = {EverrestJetty.class, MockitoTestNGListener.class})
 public class BookServiceTest {
     @Mock

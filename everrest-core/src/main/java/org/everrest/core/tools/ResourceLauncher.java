@@ -41,26 +41,7 @@ public class ResourceLauncher {
         this.processor = processor;
     }
 
-    /**
-     * @param method
-     *         HTTP method
-     * @param requestURI
-     *         full requested URI
-     * @param baseURI
-     *         base requested URI
-     * @param headers
-     *         HTTP headers
-     * @param data
-     *         data
-     * @param writer
-     *         response writer
-     * @param env
-     *         environment context
-     * @return response
-     * @throws Exception
-     *         if any error occurs
-     */
-    public ContainerResponse service(String method,
+    public ContainerResponse service(String httpMethod,
                                      String requestURI,
                                      String baseURI,
                                      Map<String, List<String>> headers,
@@ -80,17 +61,18 @@ public class ResourceLauncher {
             requestURI = '/' + requestURI;
         }
 
-        if (headers == null) {
-            headers = new MultivaluedMapImpl();
+        Map<String, List<String>> headersCopy = new MultivaluedMapImpl();
+        if (headers != null) {
+            headersCopy.putAll(headers);
         }
 
         InputStream in;
         if (data != null) {
             in = new ByteArrayInputStream(data);
-            headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList(Integer.toString(data.length)));
+            headersCopy.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList(Integer.toString(data.length)));
         } else {
             in = new EmptyInputStream();
-            headers.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList("0"));
+            headersCopy.put(HttpHeaders.CONTENT_LENGTH, Arrays.asList("0"));
         }
 
         if (env == null) {
@@ -107,36 +89,19 @@ public class ResourceLauncher {
             securityContext = new SimpleSecurityContext(false);
         }
 
-        ContainerRequest request = new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in,
-                                                        new InputHeadersMap(headers), securityContext);
+        ContainerRequest request = new ContainerRequest(httpMethod, URI.create(requestURI), URI.create(baseURI), in,
+                                                        new InputHeadersMap(headersCopy), securityContext);
         ContainerResponse response = new ContainerResponse(writer);
         processor.process(request, response, env);
         return response;
     }
 
-    /**
-     * @param method
-     *         HTTP method
-     * @param requestURI
-     *         full requested URI
-     * @param baseURI
-     *         base requested URI
-     * @param headers
-     *         HTTP headers
-     * @param data
-     *         data
-     * @param env
-     *         environment context
-     * @return response
-     * @throws Exception
-     *         if any error occurs
-     */
-    public ContainerResponse service(String method,
+    public ContainerResponse service(String httpMethod,
                                      String requestURI,
                                      String baseURI,
                                      Map<String, List<String>> headers,
                                      byte[] data,
                                      EnvironmentContext env) throws Exception {
-        return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter(), env);
+        return service(httpMethod, requestURI, baseURI, headers, data, new DummyContainerResponseWriter(), env);
     }
 }

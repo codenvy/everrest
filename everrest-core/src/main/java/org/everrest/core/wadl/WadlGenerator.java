@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.wadl;
 
-import org.everrest.core.method.MethodParameter;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.Parameter;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.everrest.core.wadl.research.Application;
 import org.everrest.core.wadl.research.Param;
@@ -21,11 +21,9 @@ import org.everrest.core.wadl.research.Resources;
 import javax.ws.rs.core.MediaType;
 
 /**
- * A WadGenerator creates structure that can be reflected to WADL
- * representation.
+ * A WadGenerator creates structure that can be reflected to WADL representation.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface WadlGenerator {
 
@@ -41,11 +39,11 @@ public interface WadlGenerator {
 
     /**
      * @param rd
-     *         See {@link AbstractResourceDescriptor}
+     *         See {@link org.everrest.core.resource.ResourceDescriptor}
      * @return {@link org.everrest.core.wadl.research.Resource.Resource}
      * describes application resource, each resource identified by a URI
      */
-    org.everrest.core.wadl.research.Resource createResource(AbstractResourceDescriptor rd);
+    org.everrest.core.wadl.research.Resource createResource(ResourceDescriptor rd);
 
     /**
      * @param path
@@ -96,13 +94,13 @@ public interface WadlGenerator {
 
     /**
      * @param methodParameter
-     *         See {@link MethodParameter}
+     *         See {@link Parameter}
      * @return {@link Param} describes a parameterized component of its parent
      * element resource, request, response
      * @see org.everrest.core.wadl.research.Resource
      * @see org.everrest.core.wadl.research.Request
      * @see org.everrest.core.wadl.research.Response
      */
-    Param createParam(MethodParameter methodParameter);
+    Param createParam(Parameter methodParameter);
 
 }

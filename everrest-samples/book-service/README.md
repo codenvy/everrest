@@ -53,19 +53,26 @@ EverRest components
 
     ```java
     public class BookApplication extends Application {
-       @Override
-       public Set<Class<?>> getClasses() {
-          Set<Class<?>> cls = new HashSet<Class<?>>(1);
-          cls.add(BookService.class);
-          return cls;
-       }
 
-       @Override
-       public Set<Object> getSingletons() {
-          Set<Object> objs = new HashSet<Object>(1);
-          objs.add(new BookNotFoundExceptionMapper());
-          return objs;
-       }
+        private final Set<Class<?>> classes;
+        private final Set<Object> singletons;
+
+        public BookApplication() {
+            classes = new HashSet<>(1);
+            singletons = new HashSet<>(1);
+            classes.add(BookService.class);
+            singletons.add(new BookNotFoundExceptionMapper());
+        }
+
+        @Override
+        public Set<Class<?>> getClasses() {
+            return classes;
+        }
+
+        @Override
+        public Set<Object> getSingletons() {
+            return singletons;
+        }
     }
     ```
 

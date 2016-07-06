@@ -10,37 +10,46 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
-import com.google.common.base.Predicate;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
+import org.everrest.core.impl.header.HeaderHelper;
+import org.everrest.core.impl.provider.StringEntityProvider;
+import org.everrest.core.util.CaselessMultivaluedMap;
 import org.everrest.core.util.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.EventObject;
 import java.util.List;
+
+import static javax.ws.rs.HttpMethod.HEAD;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
 
 /**
  * @author andrew00x
  */
 public class ContainerResponse implements GenericContainerResponse {
-   /* ----------------- Write response helpers ---------------- */
+    private static final Logger LOG = LoggerFactory.getLogger(ContainerResponse.class);
 
     /**
      * Wrapper for underlying MessageBodyWriter. Need such wrapper to give possibility update HTTP headers but commit them before writing
@@ -51,9 +60,8 @@ public class ContainerResponse implements GenericContainerResponse {
     private static class BodyWriter implements MessageBodyWriter<Object> {
         private final MessageBodyWriter<Object> delegate;
         private final OutputListener            writeListener;
-        private static final Logger LOG = LoggerFactory.getLogger(BodyWriter.class);
 
-        public BodyWriter(MessageBodyWriter<Object> writer, OutputListener writeListener) {
+        BodyWriter(MessageBodyWriter<Object> writer, OutputListener writeListener) {
             this.delegate = writer;
             this.writeListener = writeListener;
         }
@@ -81,16 +89,11 @@ public class ContainerResponse implements GenericContainerResponse {
                 delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders,
                                  new NotifiesOutputStream(entityStream, writeListener));
             } catch (Exception e) {
-                if (Iterables.any(Throwables.getCausalChain(e), new Predicate<Throwable>() {
-                    @Override
-                    public boolean apply(Throwable input) {
-                        return "org.apache.catalina.connector.ClientAbortException".equals(input.getClass().getName());
-                    }
-                })) {
+                if (Throwables.getCausalChain(e).stream().anyMatch(throwable -> "org.apache.catalina.connector.ClientAbortException".equals(throwable.getClass().getName()))) {
                     LOG.warn("Client has aborted connection. Response writing omitted.");
-                    return;
+                } else {
+                    throw e;
                 }
-                throw e;
             }
         }
     }
@@ -99,56 +102,62 @@ public class ContainerResponse implements GenericContainerResponse {
      * Use underlying output stream as data stream. Pass all invocations to the back-end stream and notify OutputListener about changes in
      * back-end stream.
      */
-    private static class NotifiesOutputStream extends OutputStream {
-        OutputStream   delegate;
+    private static class NotifiesOutputStream extends FilterOutputStream {
         OutputListener writeListener;
 
-        public NotifiesOutputStream(OutputStream output, OutputListener writeListener) {
-            this.delegate = output;
+        NotifiesOutputStream(OutputStream output, OutputListener writeListener) {
+            super(output);
             this.writeListener = writeListener;
         }
 
         @Override
         public void write(int b) throws IOException {
-            writeListener.onChange(null);
-            delegate.write(b);
+            writeListener.onChange(new EventObject(this));
+            out.write(b);
         }
 
         @Override
         public void write(byte[] b) throws IOException {
-            writeListener.onChange(null);
-            delegate.write(b);
+            writeListener.onChange(new EventObject(this));
+            out.write(b);
         }
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
-            writeListener.onChange(null);
-            delegate.write(b, off, len);
+            writeListener.onChange(new EventObject(this));
+            out.write(b, off, len);
         }
 
         @Override
         public void flush() throws IOException {
-            writeListener.onChange(null);
-            delegate.flush();
+            writeListener.onChange(new EventObject(this));
+            out.flush();
         }
 
         @Override
         public void close() throws IOException {
-            writeListener.onChange(null);
-            delegate.close();
+            writeListener.onChange(new EventObject(this));
+            out.close();
         }
     }
 
     /** Listen any changes in response output stream, e.g. write, flush, close, */
-    private static interface OutputListener {
-        void onChange(java.util.EventObject event) throws IOException;
+    private interface OutputListener {
+        void onChange(EventObject event) throws IOException;
     }
 
-   /* --------------------------------------------------------- */
-
-    /** Logger. */
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ContainerResponse.class);
-
+    /** HTTP status. */
+    private int status;
+    /** Entity type. */
+    private Type entityType;
+    /** Entity. */
+    private Object entity;
+    /** HTTP response headers. */
+    private MultivaluedMap<String, Object> headers;
+    /** Response entity content-type. */
+    private MediaType contentType;
+    /** See {@link Response}, {@link ResponseBuilder}. */
+    private Response response;
     /** See {@link ContainerResponseWriter}. */
     private ContainerResponseWriter responseWriter;
 
@@ -159,27 +168,6 @@ public class ContainerResponse implements GenericContainerResponse {
     public ContainerResponse(ContainerResponseWriter responseWriter) {
         this.responseWriter = responseWriter;
     }
-
-    // GenericContainerResponse
-
-    /** HTTP status. */
-    private int status;
-
-    /** Entity type. */
-    private Type entityType;
-
-    /** Entity. */
-    private Object entity;
-
-    /** HTTP response headers. */
-    private MultivaluedMap<String, Object> headers;
-
-    /** Response entity content-type. */
-    private MediaType contentType;
-
-    /** See {@link Response}, {@link ResponseBuilder}. */
-    private Response response;
-
 
     @Override
     public void setResponse(Response response) {
@@ -197,114 +185,101 @@ public class ContainerResponse implements GenericContainerResponse {
             entity = response.getEntity();
 
             if (entity instanceof GenericEntity) {
-                GenericEntity ge = (GenericEntity)entity;
-                entity = ge.getEntity();
-                entityType = ge.getType();
+                GenericEntity genericEntity = (GenericEntity)entity;
+                entity = genericEntity.getEntity();
+                entityType = genericEntity.getType();
             } else if (entity != null) {
                 entityType = entity.getClass();
             }
 
-            Object contentTypeHeader = getHttpHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
-            if (contentTypeHeader instanceof MediaType) {
-                contentType = (MediaType)contentTypeHeader;
-            } else if (contentTypeHeader != null) {
-                contentType = MediaType.valueOf(contentTypeHeader.toString());
-            } else {
-                contentType = null;
+            if (headers != null) {
+                Object contentTypeHeader = headers.getFirst(CONTENT_TYPE);
+                if (contentTypeHeader instanceof MediaType) {
+                    contentType = (MediaType)contentTypeHeader;
+                } else if (contentTypeHeader != null) {
+                    contentType = MediaType.valueOf(HeaderHelper.getHeaderAsString(contentTypeHeader));
+                } else {
+                    contentType = null;
+                }
             }
         }
     }
-
 
     @Override
     public Response getResponse() {
         return response;
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     public void writeResponse() throws IOException {
         if (entity == null) {
-            if (Tracer.isTracingEnabled()) {
-                Tracer.addTraceHeaders(this);
-            }
-
-            responseWriter.writeHeaders(this);
+            writeResponseWithoutEntity();
             return;
         }
 
-        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        ApplicationContext context = ApplicationContext.getCurrent();
         MediaType contentType = getContentType();
 
-        // if content-type is still not preset try determine it
-        if (contentType == null || (contentType.isWildcardType() && contentType.isWildcardSubtype())) {
-            List<MediaType> availableWriters = context.getProviders().getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
-            MediaType mediaType;
-            if (availableWriters.isEmpty() ||
-                (availableWriters.size() == 1 && (mediaType = availableWriters.get(0)).isWildcardType() && mediaType.isWildcardSubtype())) {
-                // getAcceptableMediaTypes() return list which contains at least one element even HTTP header 'accept' is absent
+        if (isNullOrWildcard(contentType)) {
+            List<MediaType> acceptableWriterMediaTypes = context.getProviders().getAcceptableWriterMediaTypes(entity.getClass(), entityType, null);
+            if (isEmptyOrContainsSingleWildcardMediaType(acceptableWriterMediaTypes)) {
                 contentType = context.getContainerRequest().getAcceptableMediaTypes().get(0);
             } else {
-                contentType = context.getContainerRequest().getAcceptableMediaType(availableWriters);
+                contentType = context.getContainerRequest().getAcceptableMediaType(acceptableWriterMediaTypes);
             }
 
-            if (contentType == null || contentType.isWildcardType() || contentType.isWildcardSubtype()) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+            if (isNullOrWildcard(contentType)) {
+                contentType = APPLICATION_OCTET_STREAM_TYPE;
             }
 
             this.contentType = contentType;
-            getHttpHeaders().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
+            getHttpHeaders().putSingle(CONTENT_TYPE, contentType);
         }
 
         MessageBodyWriter entityWriter = context.getProviders().getMessageBodyWriter(entity.getClass(), entityType, null, contentType);
 
         if (entityWriter == null) {
-            String message = "Not found writer for " + entity.getClass() + " and MIME type " + contentType;
-            if (context.getContainerRequest().getMethod().equals(HttpMethod.HEAD)) {
-                // just warning here, HEAD method we do not need write entity
+            String message = String.format("Not found writer for %s and MIME type %s", entity.getClass(), contentType);
+            if (HEAD.equals(context.getContainerRequest().getMethod())) {
                 LOG.warn(message);
-                getHttpHeaders().putSingle(HttpHeaders.CONTENT_LENGTH, Long.toString(-1));
+                getHttpHeaders().putSingle(CONTENT_LENGTH, Long.toString(-1));
             } else {
                 LOG.error(message);
-
-                Response notAcceptableResponse = Response
-                        .status(Response.Status.NOT_ACCEPTABLE)
-                        .entity(message)
-                        .type(MediaType.TEXT_PLAIN)
-                        .build();
-                setResponse(notAcceptableResponse);
-                // MessageBodyWriter for String is embedded.
-                entityWriter = context.getProviders().getMessageBodyWriter(String.class, null, null, contentType);
+                setResponse(Response.status(NOT_ACCEPTABLE)
+                                    .entity(message)
+                                    .type(TEXT_PLAIN)
+                                    .build());
+                entityWriter = new StringEntityProvider();
             }
         } else {
             if (Tracer.isTracingEnabled()) {
-                Tracer.trace("Matched MessageBodyWriter for type " + entity.getClass()
-                             + ", media type " + contentType
-                             + " = (" + entityWriter + ")");
+                Tracer.trace("Matched MessageBodyWriter for type %s, media type %s = (%s)", entity.getClass(), contentType, entityWriter);
             }
 
-            if (getHttpHeaders().getFirst(HttpHeaders.CONTENT_LENGTH) == null) {
+            if (getHttpHeaders().getFirst(CONTENT_LENGTH) == null) {
                 long contentLength = entityWriter.getSize(entity, entity.getClass(), entityType, null, contentType);
                 if (contentLength >= 0) {
-                    getHttpHeaders().putSingle(HttpHeaders.CONTENT_LENGTH, Long.toString(contentLength));
+                    getHttpHeaders().putSingle(CONTENT_LENGTH, Long.toString(contentLength));
                 }
             }
         }
 
-        if (context.getContainerRequest().getMethod().equals(HttpMethod.HEAD)) {
-            entity = null;
+        if (context.getContainerRequest().getMethod().equals(HEAD)) {
+            writeResponseWithoutEntity();
+            return;
         }
 
         OutputListener headersWriter = new OutputListener() {
             private boolean done;
 
             @Override
-            public void onChange(java.util.EventObject event) throws IOException {
-                if (!done) {
-                    done = true;
-                    responseWriter.writeHeaders(ContainerResponse.this);
+            public void onChange(EventObject event) throws IOException {
+                if (done) {
+                    return;
                 }
+                done = true;
+                responseWriter.writeHeaders(ContainerResponse.this);
             }
         };
 
@@ -313,36 +288,68 @@ public class ContainerResponse implements GenericContainerResponse {
         }
 
         responseWriter.writeBody(this, new BodyWriter(entityWriter, headersWriter));
-        headersWriter.onChange(null); // Be sure headers were written.
     }
 
+    private void writeResponseWithoutEntity() throws IOException {
+        if (Tracer.isTracingEnabled()) {
+            Tracer.addTraceHeaders(this);
+        }
+
+        responseWriter.writeHeaders(this);
+    }
+
+    private boolean isEmptyOrContainsSingleWildcardMediaType(List<MediaType> acceptableWriterMediaTypes) {
+        if (acceptableWriterMediaTypes.isEmpty()) {
+            return true;
+        }
+        if (acceptableWriterMediaTypes.size() == 1) {
+            MediaType mediaType = acceptableWriterMediaTypes.get(0);
+            if (mediaType.isWildcardType() && mediaType.isWildcardSubtype()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNullOrWildcard(MediaType contentType) {
+        return contentType == null || contentType.isWildcardType() || contentType.isWildcardSubtype();
+    }
 
     @Override
     public MediaType getContentType() {
         return contentType;
     }
 
-
     @Override
     public Type getEntityType() {
         return entityType;
     }
-
 
     @Override
     public Object getEntity() {
         return entity;
     }
 
-
     @Override
     public MultivaluedMap<String, Object> getHttpHeaders() {
+        if (headers == null) {
+            headers = new CaselessMultivaluedMap<>();
+        }
         return headers;
     }
-
 
     @Override
     public int getStatus() {
         return status;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                          .add("Status", status)
+                          .add("Content type", contentType)
+                          .add("Entity type", entityType)
+                          .omitNullValues()
+                          .toString();
     }
 }

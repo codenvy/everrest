@@ -15,6 +15,8 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.ProviderBinder;
+import org.everrest.core.impl.RequestDispatcher;
+import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.tools.ResourceLauncher;
 import org.junit.After;
 import org.junit.Before;
@@ -44,7 +46,9 @@ public abstract class BaseTest {
 
     @Before
     public void start() throws Exception {
-        processor = new EverrestProcessor(resources, providers, dependencies, new EverrestConfiguration(), null);
+        RequestDispatcher requestDispatcher = new RequestDispatcher(resources);
+        RequestHandlerImpl requestHandler = new RequestHandlerImpl(requestDispatcher, providers);
+        processor = new EverrestProcessor(new EverrestConfiguration(), dependencies, requestHandler, null);
         launcher = new ResourceLauncher(processor);
     }
 

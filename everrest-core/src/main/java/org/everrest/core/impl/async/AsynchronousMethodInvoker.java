@@ -12,7 +12,8 @@ package org.everrest.core.impl.async;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.method.DefaultMethodInvoker;
-import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.impl.method.ParameterResolverFactory;
+import org.everrest.core.resource.GenericResourceMethod;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 
 import javax.ws.rs.WebApplicationException;
@@ -20,27 +21,25 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Invoker for Resource and Sub-Resource methods. This invoker does not process methods by oneself but post
- * asynchronous
- * job in AsynchronousJobPool. As result method
- * {@link #invokeMethod(Object, GenericMethodResource, Object[], ApplicationContext)} return status 202 if job
- * successfully added in AsynchronousJobPool or response with error status (500) if job can't be accepted by
- * AsynchronousJobPool (e.g. if pool is overloaded). If job is accepted for execution then response includes a pointer
- * to a result in Location header and in entity.
+ * Invoker for Resource and Sub-Resource methods. This invoker does not process methods by oneself but post asynchronous job in
+ * AsynchronousJobPool. As result method {@link #invokeMethod(Object, GenericResourceMethod, Object[], ApplicationContext)} returns status
+ * 202 if job successfully added in AsynchronousJobPool or response with error status (500) if job can't be accepted by AsynchronousJobPool
+ * (e.g. if pool is overloaded). If job is accepted for execution then response includes a pointer to a result in Location header and in
+ * entity.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public class AsynchronousMethodInvoker extends DefaultMethodInvoker {
     private final AsynchronousJobPool pool;
 
-    public AsynchronousMethodInvoker(AsynchronousJobPool pool) {
+    public AsynchronousMethodInvoker(AsynchronousJobPool pool, ParameterResolverFactory parameterResolverFactory) {
+        super(parameterResolverFactory);
         this.pool = pool;
     }
 
     @Override
     public Object invokeMethod(Object resource,
-                               GenericMethodResource methodResource,
+                               GenericResourceMethod methodResource,
                                Object[] params,
                                ApplicationContext context) {
         try {

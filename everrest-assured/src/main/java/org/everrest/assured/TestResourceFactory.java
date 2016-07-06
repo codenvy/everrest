@@ -17,7 +17,6 @@ import org.everrest.core.ObjectModel;
 import org.everrest.core.PerRequestObjectFactory;
 import org.everrest.core.SingletonObjectFactory;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
-import org.everrest.core.impl.resource.ResourceDescriptorValidator;
 import org.everrest.core.provider.ProviderDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,6 @@ public class TestResourceFactory<T extends ObjectModel> implements ObjectFactory
             Object object = resourceField.get(testParent);
             if (object != null) {
                 ProviderDescriptor descriptor = new ProviderDescriptorImpl(object);
-                descriptor.accept(ResourceDescriptorValidator.getInstance());
                 List<FieldInjector> fieldInjectors = model.getFieldInjectors();
                 if (fieldInjectors != null && fieldInjectors.size() > 0) {
                     fieldInjectors.stream()
@@ -58,7 +56,6 @@ public class TestResourceFactory<T extends ObjectModel> implements ObjectFactory
                 return new SingletonObjectFactory<>(descriptor, object).getInstance(context);
             } else {
                 ProviderDescriptor descriptor = new ProviderDescriptorImpl(resourceField.getType());
-                descriptor.accept(ResourceDescriptorValidator.getInstance());
                 return new PerRequestObjectFactory<>(descriptor).getInstance(context);
             }
 

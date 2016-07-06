@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.everrest.exoplatform;
 
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author andrew00x
@@ -19,9 +20,9 @@ import org.junit.Test;
 public class StandaloneLoadComponentsTest extends StandaloneBaseTest {
     @Test
     public void testLoadComponents() {
-        Assert.assertNotNull(dependencySupplier);
-        Assert.assertNotNull(providers);
-        Assert.assertNotNull(resources);
-        Assert.assertNotNull(processor);
+        assertNotNull(dependencySupplier);
+        assertNotNull(providers);
+        assertNotNull(resources);
+        assertNotNull(processor);
     }
 }

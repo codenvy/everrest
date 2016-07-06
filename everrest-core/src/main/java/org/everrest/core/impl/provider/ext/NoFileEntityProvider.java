@@ -24,19 +24,21 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+
 /**
  * This provider useful in environment where need disable access to file system.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @Provider
 public class NoFileEntityProvider extends FileEntityProvider {
 
     @Override
-    public long getSize(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
-                "File is not supported as method's parameter.").type(MediaType.TEXT_PLAIN).build());
+    public long getSize(File file, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        throw new WebApplicationException(Response.status(BAD_REQUEST).entity(
+                "File is not supported as method's parameter.").type(TEXT_PLAIN).build());
     }
 
 
@@ -47,20 +49,20 @@ public class NoFileEntityProvider extends FileEntityProvider {
                          MediaType mediaType,
                          MultivaluedMap<String, String> httpHeaders,
                          InputStream entityStream) throws IOException {
-        throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
-                "File is not supported as method's parameter.").type(MediaType.TEXT_PLAIN).build());
+        throw new WebApplicationException(Response.status(BAD_REQUEST).entity(
+                "File is not supported as method's parameter.").type(TEXT_PLAIN).build());
     }
 
 
     @Override
-    public void writeTo(File t,
+    public void writeTo(File file,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
-                "File is not supported as method's parameter.").type(MediaType.TEXT_PLAIN).build());
+        throw new WebApplicationException(Response.status(BAD_REQUEST).entity(
+                "File is not supported as method's parameter.").type(TEXT_PLAIN).build());
     }
 }

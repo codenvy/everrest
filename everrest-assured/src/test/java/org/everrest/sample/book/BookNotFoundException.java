@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.everrest.sample.book;
 
-/**
- */
 @SuppressWarnings("serial")
 public class BookNotFoundException extends Exception {
     public BookNotFoundException(String id) {

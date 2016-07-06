@@ -16,10 +16,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class SimpleSecurityContext implements SecurityContext {
     private final String      authenticationScheme;
     private final Principal   principal;
@@ -30,32 +26,27 @@ public class SimpleSecurityContext implements SecurityContext {
         this.principal = principal;
         this.authenticationScheme = authenticationScheme;
         this.secure = secure;
-        this.userRoles = userRoles == null
-                         ? Collections.<String>emptySet() : Collections.unmodifiableSet(new HashSet<String>(userRoles));
+        this.userRoles = userRoles == null ? Collections.<String>emptySet() : Collections.unmodifiableSet(new HashSet<>(userRoles));
     }
 
     public SimpleSecurityContext(boolean secure) {
         this(null, null, null, secure);
     }
 
-
     @Override
     public String getAuthenticationScheme() {
         return authenticationScheme;
     }
-
 
     @Override
     public Principal getUserPrincipal() {
         return principal;
     }
 
-
     @Override
     public boolean isSecure() {
         return secure;
     }
-
 
     @Override
     public boolean isUserInRole(String role) {

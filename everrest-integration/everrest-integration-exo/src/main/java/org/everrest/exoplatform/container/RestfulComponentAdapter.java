@@ -18,10 +18,9 @@ import org.everrest.core.ObjectFactory;
 import org.everrest.core.ObjectModel;
 import org.everrest.core.PerRequestObjectFactory;
 import org.everrest.core.SingletonObjectFactory;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.FilterDescriptorImpl;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.PicoContainer;
 import org.picocontainer.PicoInitializationException;
@@ -48,8 +47,8 @@ import java.util.List;
 public class RestfulComponentAdapter implements ComponentAdapter {
     public static boolean isRestfulComponent(Object classOrInstance) {
         Class<?> clazz = (classOrInstance instanceof Class) ? (Class<?>)classOrInstance : classOrInstance.getClass();
-        return clazz.isAnnotationPresent(Path.class) //
-               || clazz.isAnnotationPresent(Provider.class) //
+        return clazz.isAnnotationPresent(Path.class)
+               || clazz.isAnnotationPresent(Provider.class)
                || clazz.isAnnotationPresent(Filter.class);
     }
 
@@ -91,7 +90,7 @@ public class RestfulComponentAdapter implements ComponentAdapter {
 
         ObjectModel objectModel;
         if (clazz.isAnnotationPresent(Path.class)) {
-            objectModel = instance == null ? new AbstractResourceDescriptorImpl(clazz) : new AbstractResourceDescriptorImpl(instance);
+            objectModel = instance == null ? new AbstractResourceDescriptor(clazz) : new AbstractResourceDescriptor(instance);
         } else if (clazz.isAnnotationPresent(Provider.class)) {
             objectModel = instance == null ? new ProviderDescriptorImpl(clazz) : new ProviderDescriptorImpl(instance);
         } else if (clazz.isAnnotationPresent(Filter.class)) {
@@ -121,7 +120,7 @@ public class RestfulComponentAdapter implements ComponentAdapter {
         // ComponentAdapter always create instance of component by using ObjectFactory instance.
         // PicoContainer (version 1.x) can't provide all required dependencies.
         // ComponentAdapter in this case is just facade for ObjectFactory.
-        final ApplicationContext context = ApplicationContextImpl.getCurrent();
+        final ApplicationContext context = ApplicationContext.getCurrent();
         if (context == null) {
             throw new IllegalStateException("ApplicationContext is not initialized. ");
         }
@@ -129,14 +128,14 @@ public class RestfulComponentAdapter implements ComponentAdapter {
         try {
             context.setDependencySupplier(new BaseDependencySupplier() {
                 @Override
-                public Object getComponent(Class<?> type) {
+                public Object getInstance(Class<?> type) {
                     Object object = container.getComponentInstanceOfType(type);
                     if (object != null) {
                         return object;
                     }
                     DependencySupplier contextDependencySupplier = context.getDependencySupplier();
                     if (contextDependencySupplier != null) {
-                        return contextDependencySupplier.getComponent(type);
+                        return contextDependencySupplier.getInstance(type);
                     }
                     return null;
                 }
@@ -168,7 +167,7 @@ public class RestfulComponentAdapter implements ComponentAdapter {
 
     @Override
     public String toString() {
-        return "RestfulComponentAdapter [" + getComponentKey() + "]";
+        return String.format("RestfulComponentAdapter [%s]", getComponentKey());
     }
 
     //
@@ -187,10 +186,8 @@ public class RestfulComponentAdapter implements ComponentAdapter {
             }
 
             if (implementedInterfaces.size() == 0) {
-                throw new IllegalArgumentException("Type " + type
-                                                   +
-                                                   " annotated with @javax.ws.rs.ext.Provider but does not implement any of the interfaces: "
-                                                   + Arrays.toString(KNOWN_INTERFACES));
+                throw new IllegalArgumentException(
+                        String.format("Type %s annotated with @javax.ws.rs.ext.Provider but does not implement any of the interfaces: %s", type, Arrays.toString(KNOWN_INTERFACES)));
             }
 
             return implementedInterfaces.toArray(new ParameterizedType[implementedInterfaces.size()]);

@@ -13,14 +13,7 @@ package org.everrest.core.impl.provider.json;
 import java.util.Collections;
 import java.util.Iterator;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public abstract class JsonValue {
-
-    // Set defaults for specific types.
-    // It will be overridden.
 
     /** @return true if value is 'object', false otherwise. Should be overridden. */
     public boolean isObject() {
@@ -118,9 +111,6 @@ public abstract class JsonValue {
         return 0;
     }
 
-    // Prepared values of know type.
-    // It will be overridden.
-
     /** @return string value. Should be overridden. */
     public String getStringValue() {
         return null;
@@ -133,7 +123,7 @@ public abstract class JsonValue {
 
     /** @return Number value. Should be overridden. */
     public Number getNumberValue() {
-        return getIntValue();
+        return getDoubleValue();
     }
 
     /** @return byte value. Should be overridden. */
@@ -166,9 +156,6 @@ public abstract class JsonValue {
         return 0.0;
     }
 
-    //  must be implemented
-
-
     @Override
     public abstract String toString();
 
@@ -181,5 +168,4 @@ public abstract class JsonValue {
      *         if any errors occurs.
      */
     public abstract void writeTo(JsonWriter writer) throws JsonException;
-
 }

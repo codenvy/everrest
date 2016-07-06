@@ -10,17 +10,21 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.everrest.core.header.QualityValue;
-
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * @author andrew00x
- */
+import static com.google.common.base.Strings.nullToEmpty;
+import static org.everrest.core.header.QualityValue.QVALUE;
+import static org.everrest.core.impl.header.HeaderHelper.parseQualityValue;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.scan;
+
 public class AcceptLanguageHeaderDelegate implements RuntimeDelegate.HeaderDelegate<AcceptLanguage> {
+
+    private static final char QUALITY_SEPARATOR = ';';
+    private static final char SUB_TAG_SEPARATOR = '-';
 
     @Override
     public AcceptLanguage fromString(String header) {
@@ -31,35 +35,32 @@ public class AcceptLanguageHeaderDelegate implements RuntimeDelegate.HeaderDeleg
         try {
             header = HeaderHelper.removeWhitespaces(header);
             String tag;
-            Map<String, String> m = null;
+            Map<String, String> params = null;
 
-            int p = header.indexOf(';');
-            if (p != -1 && p < header.length() - 1) { // header has quality value
+            int p = scan(header, QUALITY_SEPARATOR);
+            if (charAtIs(header, p, QUALITY_SEPARATOR)) {
                 tag = header.substring(0, p);
-                m = new HeaderParameterParser().parse(header);
-            } else { // no quality value
+                params = new HeaderParameterParser().parse(header);
+            } else {
                 tag = header;
             }
 
-            p = tag.indexOf('-');
-            String primaryTag;
-            String subTag = null;
+            String lang;
+            String country = null;
 
-            if (p != -1 && p < tag.length() - 1) { // has sub-tag
-                primaryTag = tag.substring(0, p);
-                subTag = tag.substring(p + 1);
-            } else { // no sub-tag
-                primaryTag = tag;
-            }
-
-            if (m == null) // no quality value
-            {
-                return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""));
+            p = scan(header, SUB_TAG_SEPARATOR);
+            if (charAtIs(header, p, SUB_TAG_SEPARATOR)) {
+                lang = tag.substring(0, p);
+                country = tag.substring(p + 1);
             } else {
-                return new AcceptLanguage(new Locale(primaryTag, subTag != null ? subTag : ""), HeaderHelper
-                        .parseQualityValue(m.get(QualityValue.QVALUE)));
+                lang = tag;
             }
 
+            if (params == null || params.get(QVALUE) == null) {
+                return new AcceptLanguage(new Language(new Locale(lang, nullToEmpty(country))));
+            }
+
+            return new AcceptLanguage(new Locale(lang, nullToEmpty(country)), parseQualityValue(params.get(QVALUE)));
         } catch (ParseException e) {
             throw new IllegalArgumentException("Accept language header malformed");
         }
@@ -68,10 +69,9 @@ public class AcceptLanguageHeaderDelegate implements RuntimeDelegate.HeaderDeleg
 
     @Override
     public String toString(AcceptLanguage language) {
-        // Maybe reused as response header but need remove quality factor parameter.
         if (language == null) {
             throw new IllegalArgumentException();
         }
-        return new Language(language.getLocale()).toString();
+        return language.getLanguage().toString();
     }
 }

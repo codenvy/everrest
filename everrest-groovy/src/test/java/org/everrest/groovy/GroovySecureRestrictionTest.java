@@ -12,11 +12,14 @@ package org.everrest.groovy;
 
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.tools.ByteArrayContainerResponseWriter;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author andrew00x
@@ -29,9 +32,9 @@ public class GroovySecureRestrictionTest extends BaseTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Assert.assertNotNull("SecurityManager not installed", System.getSecurityManager());
+        assertNotNull("SecurityManager not installed", System.getSecurityManager());
         script = Thread.currentThread().getContextClassLoader().getResourceAsStream("a/b/GroovyResource3.groovy");
-        Assert.assertNotNull(script);
+        assertNotNull(script);
     }
 
     @Test
@@ -39,7 +42,7 @@ public class GroovySecureRestrictionTest extends BaseTest {
         groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null, null, null);
         ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
         ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
-        Assert.assertEquals(500, resp.getStatus());
-        Assert.assertTrue(new String(writer.getBody()).startsWith("access denied"));
+        assertEquals(500, resp.getStatus());
+        assertTrue(new String(writer.getBody()).startsWith("access denied"));
     }
 }

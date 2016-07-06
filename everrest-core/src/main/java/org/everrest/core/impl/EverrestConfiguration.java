@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
-import org.everrest.core.impl.method.MethodInvokerDecoratorFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +53,11 @@ public class EverrestConfiguration {
     }
 
     public EverrestConfiguration(EverrestConfiguration other) {
-        properties = new HashMap<>(other.properties);
+        properties = new HashMap<>(other.getAllProperties());
+    }
+
+    public Map<String, String> getAllProperties() {
+        return new HashMap<>(properties);
     }
 
     public boolean isCheckSecurity() {

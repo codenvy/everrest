@@ -29,16 +29,17 @@ import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
 import org.everrest.core.impl.FilterDescriptorImpl;
+import org.everrest.core.impl.RequestDispatcher;
+import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousJobService;
 import org.everrest.core.impl.async.AsynchronousProcessListWriter;
 import org.everrest.core.impl.method.filter.SecurityConstraint;
 import org.everrest.core.impl.provider.ProviderDescriptorImpl;
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.impl.resource.ResourceDescriptorValidator;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
 import org.everrest.core.provider.ProviderDescriptor;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 import org.everrest.guice.BindingPath;
 import org.everrest.guice.EverrestConfigurationModule;
@@ -102,7 +103,9 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
         everrest.addApplication(application);
 
         processBindings(injector, everrest);
-        EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+        RequestDispatcher requestDispatcher = new RequestDispatcher(resources);
+        RequestHandlerImpl requestHandler = new RequestHandlerImpl(requestDispatcher, providers);
+        EverrestProcessor processor = new EverrestProcessor(config, dependencySupplier, requestHandler, everrest);
         processor.start();
 
         servletContext.setAttribute(EverrestConfiguration.class.getName(), config);
@@ -138,7 +141,7 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
     }
 
     private List<Module> createModules() {
-        List<Module> all = new ArrayList<Module>();
+        List<Module> all = new ArrayList<>();
         ServletModule servletModule = getServletModule();
         if (servletModule != null) {
             all.add(servletModule);
@@ -195,30 +198,26 @@ public abstract class EverrestGuiceContextListener extends GuiceServletContextLi
 
     @SuppressWarnings({"unchecked"})
     protected void processBindings(Injector injector, EverrestApplication everrest) {
-        ResourceDescriptorValidator rdv = ResourceDescriptorValidator.getInstance();
         for (Binding<?> binding : injector.getBindings().values()) {
             Key<?> bindingKey = binding.getKey();
             Type type = bindingKey.getTypeLiteral().getType();
             if (type instanceof Class) {
                 Class clazz = (Class)type;
                 if (clazz.getAnnotation(Provider.class) != null) {
-                    ProviderDescriptor pDescriptor = new ProviderDescriptorImpl(clazz);
-                    pDescriptor.accept(rdv);
-                    everrest.addFactory(new GuiceObjectFactory<>(pDescriptor, binding.getProvider()));
+                    ProviderDescriptor providerDescriptor = new ProviderDescriptorImpl(clazz);
+                    everrest.addFactory(new GuiceObjectFactory<>(providerDescriptor, binding.getProvider()));
                 } else if (clazz.getAnnotation(Filter.class) != null) {
-                    FilterDescriptor fDescriptor = new FilterDescriptorImpl(clazz);
-                    fDescriptor.accept(rdv);
-                    everrest.addFactory(new GuiceObjectFactory<>(fDescriptor, binding.getProvider()));
+                    FilterDescriptor filterDescriptor = new FilterDescriptorImpl(clazz);
+                    everrest.addFactory(new GuiceObjectFactory<>(filterDescriptor, binding.getProvider()));
                 } else if (clazz.getAnnotation(Path.class) != null) {
-                    AbstractResourceDescriptor rDescriptor;
+                    ResourceDescriptor resourceDescriptor;
                     if (bindingKey.getAnnotation() != null && bindingKey.getAnnotationType().isAssignableFrom(BindingPath.class)) {
                         String path = ((BindingPath)bindingKey.getAnnotation()).value();
-                        rDescriptor = new AbstractResourceDescriptorImpl(path, clazz);
+                        resourceDescriptor = new AbstractResourceDescriptor(path, clazz);
                     } else {
-                        rDescriptor = new AbstractResourceDescriptorImpl(clazz);
+                        resourceDescriptor = new AbstractResourceDescriptor(clazz);
                     }
-                    rDescriptor.accept(rdv);
-                    everrest.addFactory(new GuiceObjectFactory<>(rDescriptor, binding.getProvider()));
+                    everrest.addFactory(new GuiceObjectFactory<>(resourceDescriptor, binding.getProvider()));
                 }
             }
         }

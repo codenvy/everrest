@@ -12,20 +12,18 @@ package org.everrest.core;
 
 import org.everrest.core.impl.resource.PathValue;
 import org.everrest.core.method.MethodInvokerFilter;
-import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.uri.UriPattern;
 
 /**
  * Description of filter.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  * @see Filter
  * @see RequestFilter
  * @see ResponseFilter
  * @see MethodInvokerFilter
  */
-public interface FilterDescriptor extends ResourceDescriptor, ObjectModel {
+public interface FilterDescriptor extends ObjectModel {
 
     /** @return See {@link PathValue} */
     PathValue getPathValue();

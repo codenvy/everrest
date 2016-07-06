@@ -10,114 +10,88 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
-import org.junit.Assert;
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.List;
+import javax.ws.rs.ext.RuntimeDelegate;
+import java.util.Locale;
 
-/**
- * @author andrew00x
- */
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(DataProviderRunner.class)
 public class AcceptLanguageTest {
+    private RuntimeDelegate.HeaderDelegate<AcceptLanguage> headerDelegate;
 
-    @Test
-    public void testValueOfLanguageWithCountryWithQValue() {
-        String al = "en-gb;q=0.8";
-        AcceptLanguage acceptedLanguage = AcceptLanguage.valueOf(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("gb", acceptedLanguage.getSubTag());
-        Assert.assertEquals(0.8F, acceptedLanguage.getQvalue(), 0.0F);
+    @SuppressWarnings("unchecked")
+    @Before
+    public void setUp() throws Exception {
+        headerDelegate = mock(RuntimeDelegate.HeaderDelegate.class);
+
+        RuntimeDelegate runtimeDelegate = mock(RuntimeDelegate.class);
+        when(runtimeDelegate.createHeaderDelegate(AcceptLanguage.class)).thenReturn(headerDelegate);
+
+        RuntimeDelegate.setInstance(runtimeDelegate);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        RuntimeDelegate.setInstance(null);
     }
 
     @Test
-    public void testValueOfLanguageWithQValue() {
-        String al = "en;q=0.8";
-        AcceptLanguage acceptedLanguage = acceptedLanguage = AcceptLanguage.valueOf(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("", acceptedLanguage.getSubTag());
-        Assert.assertEquals(0.8F, acceptedLanguage.getQvalue(), 0.0F);
+    public void testValueOf() {
+        AcceptLanguage acceptLanguage = acceptLanguage("en", "us");
+        when(headerDelegate.fromString("en-us")).thenReturn(acceptLanguage);
+
+        assertSame(acceptLanguage, AcceptLanguage.valueOf("en-us"));
     }
 
     @Test
-    public void testValueOfLanguage() {
-        String al = "en";
-        AcceptLanguage acceptedLanguage = acceptedLanguage = AcceptLanguage.valueOf(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("", acceptedLanguage.getSubTag());
-        Assert.assertEquals(1F, acceptedLanguage.getQvalue(), 0.0F);
+    public void testToString() {
+        AcceptLanguage acceptLanguage = acceptLanguage("en", "us");
+        when(headerDelegate.toString(acceptLanguage)).thenReturn("en-us");
+
+        assertEquals("en-us", acceptLanguage.toString());
+        verify(headerDelegate).toString(acceptLanguage);
+    }
+
+    @DataProvider
+    public static Object[][] forTestIsCompatible() {
+        return new Object[][]{
+                {acceptLanguage("en", ""),   null,                       false},
+                {acceptLanguage("*", ""),    acceptLanguage("en", ""),   true},
+                {acceptLanguage("en", ""),   acceptLanguage("en", ""),   true},
+                {acceptLanguage("en", "gb"), acceptLanguage("en", ""),   false},
+                {acceptLanguage("en", ""),   acceptLanguage("en", "gb"), true},
+                {acceptLanguage("en", "us"), acceptLanguage("en", "gb"), false},
+                {acceptLanguage("en", ""),   acceptLanguage("fr", ""),   false},
+                };
+    }
+
+    @UseDataProvider("forTestIsCompatible")
+    @Test
+    public void testIsCompatible(AcceptLanguage acceptLanguage, AcceptLanguage checkAcceptLanguage, boolean expectedResult) {
+        assertEquals(expectedResult, acceptLanguage.isCompatible(checkAcceptLanguage));
     }
 
     @Test
-    public void testValueOfLanguageWithCountry() {
-        String al = "en-GB";
-        AcceptLanguage acceptedLanguage = acceptedLanguage = AcceptLanguage.valueOf(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("gb", acceptedLanguage.getSubTag());
-        Assert.assertEquals(1F, acceptedLanguage.getQvalue(), 0.0F);
+    public void retrievesLocaleFromLanguage() {
+        Locale locale = new Locale("en", "us");
+        AcceptLanguage acceptLanguage = new AcceptLanguage(new Language(locale));
+        assertEquals(locale, acceptLanguage.getLocale());
     }
 
-    @Test
-    public void testFromStringLanguageWithCountryWithQValue() {
-        AcceptLanguageHeaderDelegate hd = new AcceptLanguageHeaderDelegate();
-        String al = "en-gb;q=0.8";
-        AcceptLanguage acceptedLanguage = hd.fromString(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("gb", acceptedLanguage.getSubTag());
-        Assert.assertEquals(0.8F, acceptedLanguage.getQvalue(), 0.0F);
+    private static AcceptLanguage acceptLanguage(String primaryTag, String subTag) {
+        return new AcceptLanguage(new Locale(primaryTag, subTag));
     }
-
-    @Test
-    public void testFromStringLanguageWIthQValue() {
-        AcceptLanguageHeaderDelegate hd = new AcceptLanguageHeaderDelegate();
-        String al = "en;q=0.8";
-        AcceptLanguage acceptedLanguage = hd.fromString(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("", acceptedLanguage.getSubTag());
-        Assert.assertEquals(0.8F, acceptedLanguage.getQvalue(), 0.0F);
-    }
-
-    @Test
-    public void testFromStringLanguage() {
-        AcceptLanguageHeaderDelegate hd = new AcceptLanguageHeaderDelegate();
-        String al = "en";
-        AcceptLanguage acceptedLanguage = hd.fromString(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("", acceptedLanguage.getSubTag());
-        Assert.assertEquals(1F, acceptedLanguage.getQvalue(), 0.0F);
-    }
-
-    @Test
-    public void testFromStringLanguageWithCountry() {
-        AcceptLanguageHeaderDelegate hd = new AcceptLanguageHeaderDelegate();
-        String al = "en-GB";
-        AcceptLanguage acceptedLanguage = hd.fromString(al);
-        Assert.assertEquals("en", acceptedLanguage.getPrimaryTag());
-        Assert.assertEquals("gb", acceptedLanguage.getSubTag());
-        Assert.assertEquals(1F, acceptedLanguage.getQvalue(), 0.0F);
-    }
-
-    @Test
-    public void testLanguageList() {
-        List<AcceptLanguage> l = HeaderHelper.createAcceptedLanguageList(null);
-        Assert.assertEquals(1, l.size());
-        l = HeaderHelper.createAcceptedLanguageList("");
-        Assert.assertEquals(1, l.size());
-
-        String ln = "da;q=0.825,   en-GB,  en;q=0.8";
-        l = HeaderHelper.createAcceptedLanguageList(ln);
-        Assert.assertEquals(3, l.size());
-
-        Assert.assertEquals("en", l.get(0).getPrimaryTag());
-        Assert.assertEquals("gb", l.get(0).getSubTag());
-        Assert.assertEquals(1.0F, l.get(0).getQvalue(), 0.0F);
-
-        Assert.assertEquals("da", l.get(1).getPrimaryTag());
-        Assert.assertEquals("", l.get(1).getSubTag());
-        Assert.assertEquals(0.825F, l.get(1).getQvalue(), 0.0F);
-
-        Assert.assertEquals("en", l.get(2).getPrimaryTag());
-        Assert.assertEquals("", l.get(2).getSubTag());
-        Assert.assertEquals(0.8F, l.get(2).getQvalue(), 0.0F);
-    }
-
 }

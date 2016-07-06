@@ -14,22 +14,16 @@ import org.everrest.core.header.QualityValue;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.util.Map;
 
-/**
- * @author andrew00x
- */
-public class AcceptMediaType extends MediaType implements QualityValue {
+import static org.everrest.core.impl.header.HeaderHelper.parseQualityValue;
+
+public class AcceptMediaType implements QualityValue {
     /** Default accepted media type, it minds any content type is acceptable. */
     public static final AcceptMediaType DEFAULT = new AcceptMediaType("*", "*");
 
     /** Quality value for 'accepted' HTTP headers, e. g. text/plain;q=0.9 */
     private final float qValue;
-
-    /** See {@link RuntimeDelegate#createHeaderDelegate(Class)}. */
-    private static final HeaderDelegate<AcceptMediaType> DELEGATE =
-            RuntimeDelegate.getInstance().createHeaderDelegate(AcceptMediaType.class);
 
     /**
      * Creates a new instance of AcceptedMediaType by parsing the supplied string.
@@ -39,16 +33,18 @@ public class AcceptMediaType extends MediaType implements QualityValue {
      * @return AcceptedMediaType
      */
     public static AcceptMediaType valueOf(String header) {
-        return DELEGATE.fromString(header);
+        return RuntimeDelegate.getInstance().createHeaderDelegate(AcceptMediaType.class).fromString(header);
     }
+
+    private final MediaType mediaType;
 
     /** Creates a new instance of MediaType, both type and sub-type are wildcards and set quality value to default quality value. */
     public AcceptMediaType() {
-        this.qValue = DEFAULT_QUALITY_VALUE;
+        this(new MediaType());
     }
 
     /**
-     * Constructs AcceptedMediaType with supplied quality value. If map parameters is null or does not contains value with key 'q' then
+     * Constructs AcceptedMediaType with supplied quality value. If map parameters is null or does not contain value with key 'q' then
      * default quality value will be used.
      *
      * @param type
@@ -59,13 +55,7 @@ public class AcceptMediaType extends MediaType implements QualityValue {
      *         addition header parameters
      */
     public AcceptMediaType(String type, String subtype, Map<String, String> parameters) {
-        super(type, subtype, parameters);
-        String qString;
-        if (parameters != null && (qString = parameters.get(QVALUE)) != null) {
-            this.qValue = HeaderHelper.parseQualityValue(qString);
-        } else {
-            this.qValue = DEFAULT_QUALITY_VALUE;
-        }
+        this(new MediaType(type, subtype, parameters));
     }
 
     /**
@@ -77,15 +67,83 @@ public class AcceptMediaType extends MediaType implements QualityValue {
      *         media sub-type
      */
     public AcceptMediaType(String type, String subtype) {
-        super(type, subtype);
-        this.qValue = DEFAULT_QUALITY_VALUE;
+        this(new MediaType(type, subtype));
     }
 
-    // QualityValue
+    public AcceptMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
+        if (mediaType.getParameters() != null && mediaType.getParameters().get(QVALUE) != null) {
+            this.qValue = parseQualityValue(mediaType.getParameters().get(QVALUE));
+        } else {
+            this.qValue = DEFAULT_QUALITY_VALUE;
+        }
+    }
 
+    public AcceptMediaType(MediaType mediaType, float qValue) {
+        this.mediaType = mediaType;
+        this.qValue = qValue;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
+    }
+
+    public String getType() {
+        return mediaType.getType();
+    }
+
+    public boolean isWildcardType() {
+        return mediaType.isWildcardType();
+    }
+
+    public String getSubtype() {
+        return mediaType.getSubtype();
+    }
+
+    public boolean isWildcardSubtype() {
+        return mediaType.isWildcardSubtype();
+    }
+
+    public Map<String, String> getParameters() {
+        return mediaType.getParameters();
+    }
+
+    public boolean isCompatible(MediaType other) {
+        return mediaType.isCompatible(other);
+    }
+
+    public boolean isCompatible(AcceptMediaType other) {
+        return isCompatible(other.getMediaType());
+    }
 
     @Override
     public float getQvalue() {
         return qValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AcceptMediaType)) {
+            return false;
+        }
+
+        AcceptMediaType other = (AcceptMediaType)o;
+        return Float.compare(other.qValue, qValue) == 0 && mediaType.equals(other.mediaType);
+    }
+
+    @Override
+    public int hashCode() {
+        int hashcode = 8;
+        hashcode = hashcode * 31 + (qValue == 0.0F ? 0 : Float.floatToIntBits(qValue));
+        hashcode = hashcode * 31 + mediaType.hashCode();
+        return hashcode;
+    }
+
+    @Override
+    public String toString() {
+        return RuntimeDelegate.getInstance().createHeaderDelegate(AcceptMediaType.class).toString(this);
     }
 }

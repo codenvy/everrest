@@ -12,24 +12,39 @@ package org.everrest.core.impl.provider.multipart;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * @author andrew00x
  */
 @Provider
 @Produces({"multipart/*"})
-public class CollectionMultipartFormDataMessageBodyWriter extends BaseMultipartFormDataWriter
-        implements MessageBodyWriter<Collection<OutputItem>> {
+public class CollectionMultipartFormDataMessageBodyWriter implements MessageBodyWriter<Collection<OutputItem>> {
+
+    private final MultipartFormDataWriter multipartFormDataWriter;
+
+    public CollectionMultipartFormDataMessageBodyWriter(@Context Providers providers) {
+        this(new MultipartFormDataWriter(providers));
+    }
+
+    CollectionMultipartFormDataMessageBodyWriter(MultipartFormDataWriter multipartFormDataWriter) {
+        this.multipartFormDataWriter = multipartFormDataWriter;
+    }
+
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (Collection.class.isAssignableFrom(type) && genericType instanceof ParameterizedType) {
@@ -53,8 +68,14 @@ public class CollectionMultipartFormDataMessageBodyWriter extends BaseMultipartF
         if (boundary == null) {
             boundary = Long.toString(System.currentTimeMillis());
         }
-        httpHeaders.putSingle("Content-type", mediaType.toString() + "; boundary=" + boundary);
+        httpHeaders.putSingle("Content-type", createMediaTypeWithBoundary(mediaType, boundary));
         final byte[] boundaryBytes = boundary.getBytes();
-        writeItems(items, entityStream, boundaryBytes);
+        multipartFormDataWriter.writeItems(items, entityStream, boundaryBytes);
+    }
+
+    private MediaType createMediaTypeWithBoundary(MediaType mediaType, String boundary) {
+        Map<String, String> parameters = newHashMap(mediaType.getParameters());
+        parameters.put("boundary", boundary);
+        return new MediaType(mediaType.getType(), mediaType.getSubtype(), parameters);
     }
 }

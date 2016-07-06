@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider.json;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class StringValue extends JsonValue {
     /** Value. */
     private final String value;
@@ -89,6 +85,6 @@ public class StringValue extends JsonValue {
 
     @Override
     public void writeTo(JsonWriter writer) throws JsonException {
-        writer.writeString(value);
+        writer.writeValue(value);
     }
 }

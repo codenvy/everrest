@@ -24,10 +24,6 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collection;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 @Path("books")
 public class BookService {
     @Autowired

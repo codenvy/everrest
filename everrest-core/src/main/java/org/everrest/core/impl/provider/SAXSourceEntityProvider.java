@@ -32,22 +32,14 @@ import java.lang.reflect.Type;
 
 import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: SAXSourceEntityProvider.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
- */
 @Provider
 @Consumes({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class SAXSourceEntityProvider implements EntityProvider<SAXSource> {
-
-
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type == SAXSource.class;
     }
-
 
     @Override
     public SAXSource readFrom(Class<SAXSource> type,
@@ -59,38 +51,36 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource> {
         return new SAXSource(new InputSource(entityStream));
     }
 
-
     @Override
     public long getSize(SAXSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
-
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return SAXSource.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(SAXSource t,
+    public void writeTo(SAXSource saxSource,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException {
-        StreamResult out = new StreamResult(entityStream);
+        StreamResult streamResult = new StreamResult(entityStream);
         try {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
-            factory.newTransformer().transform(t, out);
-        } catch (TransformerConfigurationException e) {
-            throw new IOException("Can't write to output stream " + e);
-        } catch (TransformerException e) {
-            throw new IOException("Can't write to output stream " + e);
-        } catch (TransformerFactoryConfigurationError e) {
-            throw new IOException("Can't write to output stream " + e);
+            TransformerFactory factory = createFeaturedTransformerFactory();
+            factory.newTransformer().transform(saxSource, streamResult);
+        } catch (TransformerException | TransformerFactoryConfigurationError e) {
+            throw new IOException(String.format("Can't write to output stream, %s", e));
         }
+    }
+
+    private TransformerFactory createFeaturedTransformerFactory() throws TransformerConfigurationException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+        return factory;
     }
 }

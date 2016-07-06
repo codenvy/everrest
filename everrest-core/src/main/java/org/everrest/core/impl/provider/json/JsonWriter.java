@@ -16,10 +16,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
-/**
- * @author andrew00x
- */
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.everrest.core.impl.provider.json.JsonUtils.JsonToken.array;
+import static org.everrest.core.impl.provider.json.JsonUtils.JsonToken.key;
+import static org.everrest.core.impl.provider.json.JsonUtils.JsonToken.object;
+
 public class JsonWriter {
 
     /** Stack for control position in document. */
@@ -55,7 +58,7 @@ public class JsonWriter {
      *         OutputStream.
      */
     public JsonWriter(OutputStream out) {
-        this(new OutputStreamWriter(out, JsonUtils.DEFAULT_CHARSET));
+        this(new OutputStreamWriter(out, Charset.forName("UTF-8")));
     }
 
     public final boolean isWriteNulls() {
@@ -69,25 +72,22 @@ public class JsonWriter {
     public void writeStartObject() throws JsonException {
         writeCurrentKey();
         JsonToken token = stack.peek();
-        // Object can be stated after key with followed ':' or as array item.
-        if (token != null && token != JsonToken.key && token != JsonToken.array) {
+        if (token == null || token == key || token == array) {
+            try {
+                if (commaFirst) {
+                    writer.write(',');
+                }
+                writer.write('{');
+                if (token == key) {
+                    stack.pop();
+                }
+                stack.push(object);
+                commaFirst = false;
+            } catch (IOException e) {
+                throw new JsonException(e.getMessage(), e);
+            }
+        } else {
             throw new JsonException("Syntax error. Unexpected element '{'.");
-        }
-        try {
-            if (commaFirst) {
-                // needed ',' before
-                writer.write(',');
-            }
-            writer.write('{');
-            // if at the top of stack is 'key' then remove it.
-            if (token == JsonToken.key) {
-                stack.pop();
-            }
-            // remember new object opened
-            stack.push(JsonToken.object);
-            commaFirst = false;
-        } catch (IOException e) {
-            throw new JsonException(e.getMessage(), e);
         }
     }
 
@@ -95,13 +95,12 @@ public class JsonWriter {
     public void writeEndObject() throws JsonException {
         try {
             JsonToken token = stack.pop();
-            if (token != JsonToken.object) {
-                //System.out.println(token);
-                // wrong JSON structure.
+            if (token == object) {
+                writer.write('}');
+                commaFirst = true;
+            } else {
                 throw new JsonException("Syntax error. Unexpected element '}'.");
             }
-            writer.write('}');
-            commaFirst = true;
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -111,25 +110,22 @@ public class JsonWriter {
     public void writeStartArray() throws JsonException {
         writeCurrentKey();
         JsonToken token = stack.peek();
-        //if (token != JsonToken.key && token != JsonToken.array)
-        if (token != null && token != JsonToken.key && token != JsonToken.array) {
+        if (token == null || token == key || token == array) {
+            try {
+                if (commaFirst) {
+                    writer.write(',');
+                }
+                writer.write('[');
+                if (token == key) {
+                    stack.pop();
+                }
+                stack.push(array);
+                commaFirst = false;
+            } catch (IOException e) {
+                throw new JsonException(e.getMessage(), e);
+            }
+        } else {
             throw new JsonException("Syntax error. Unexpected element '['.");
-        }
-        try {
-            if (commaFirst) {
-                // needed ',' before
-                writer.write(',');
-            }
-            writer.write('[');
-            if (token == JsonToken.key) {
-                // if at the top of stack is 'key' then remove it.
-                stack.pop();
-            }
-            // remember new array opened
-            stack.push(JsonToken.array);
-            commaFirst = false;
-        } catch (IOException e) {
-            throw new JsonException(e.getMessage(), e);
         }
     }
 
@@ -137,12 +133,12 @@ public class JsonWriter {
     public void writeEndArray() throws JsonException {
         JsonToken token = stack.pop();
         try {
-            if (token != JsonToken.array) {
-                // wrong JSON structure
+            if (token == array) {
+                writer.write(']');
+                commaFirst = true;
+            } else {
                 throw new JsonException("Syntax error. Unexpected element ']'.");
             }
-            writer.write(']');
-            commaFirst = true;
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -150,20 +146,25 @@ public class JsonWriter {
 
 
     public void writeKey(String key) throws JsonException {
-        if (key == null) {
-            throw new JsonException("Key is null.");
+        if (isNullOrEmpty(key)) {
+            throw new JsonException("Key is null or empty");
+        }
+
+        key = key.trim();
+        if (key.isEmpty()) {
+            throw new JsonException("Empty key");
         }
 
         if (currentKey != null) {
-            throw new IllegalStateException();
+            throw new JsonException("Syntax error. Sequence of two keys");
         }
 
         JsonToken token = stack.peek();
-        if (token != JsonToken.object) {
-            throw new JsonException("Syntax error. Unexpected characters '" + key + "'.");
+        if (token == object) {
+            currentKey = key;
+        } else {
+            throw new JsonException(String.format("Syntax error. Unexpected characters '%s'.", key));
         }
-
-        currentKey = key;
     }
 
 
@@ -175,18 +176,22 @@ public class JsonWriter {
             if (commaFirst) {
                 writer.write(',');
             }
-            // create JSON representation for given string.
             writer.write(JsonUtils.getJsonString(currentKey));
             writer.write(':');
             commaFirst = false;
-            stack.push(JsonToken.key);
+            stack.push(key);
             currentKey = null;
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
     }
 
+    /** @deprecated use {@link #writeValue(String)}*/
     public void writeString(String value) throws JsonException {
+        writeValue(value);
+    }
+
+    public void writeValue(String value) throws JsonException {
         writeCurrentKey();
         write(JsonUtils.getJsonString(value));
     }
@@ -230,17 +235,17 @@ public class JsonWriter {
     private void write(String value) throws JsonException {
         JsonToken token = stack.peek();
         try {
-            if (token != JsonToken.key && token != JsonToken.array) {
-                throw new JsonException("Syntax error. Unexpected characters '" + value + "'.");
-            }
-            if (commaFirst) {
-                writer.write(',');
-            }
-            writer.write(value);
-            commaFirst = true;
-            if (token == JsonToken.key) {
-                // if at the top of stack is 'key' then remove it.
-                stack.pop();
+            if (token == key || token == array) {
+                if (commaFirst) {
+                    writer.write(',');
+                }
+                writer.write(value);
+                commaFirst = true;
+                if (token == key) {
+                    stack.pop();
+                }
+            } else {
+                throw new JsonException(String.format("Syntax error. Unexpected characters '%s'.", value));
             }
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);

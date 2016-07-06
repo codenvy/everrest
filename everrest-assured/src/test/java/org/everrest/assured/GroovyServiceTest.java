@@ -18,9 +18,6 @@ import org.testng.annotations.Test;
 import static com.jayway.restassured.RestAssured.expect;
 import static org.everrest.assured.EverrestJetty.JETTY_SERVER;
 
-/**
- *
- */
 @Listeners(value = {EverrestJetty.class})
 public class GroovyServiceTest {
 

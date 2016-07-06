@@ -12,7 +12,7 @@ package org.everrest.exoplatform.container;
 
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.ProviderDescriptor;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.uri.UriPattern;
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.Parameter;
@@ -32,6 +32,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +48,8 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
     private static final Set<ComponentFilter> COMPONENT_FILTERS = new LinkedHashSet<>();
 
     static {
-        for (ComponentFilter f : ServiceLoader.load(ComponentFilter.class)) {
-            COMPONENT_FILTERS.add(f);
+        for (ComponentFilter componentFilter : ServiceLoader.load(ComponentFilter.class)) {
+            COMPONENT_FILTERS.add(componentFilter);
         }
     }
 
@@ -58,8 +59,8 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         }
         List<ComponentAdapter> result = new ArrayList<>();
         for (ComponentAdapter component : source) {
-            for (ComponentFilter f : COMPONENT_FILTERS) {
-                if (f.accept(component)) {
+            for (ComponentFilter componentFilter : COMPONENT_FILTERS) {
+                if (componentFilter.accept(component)) {
                     result.add(component);
                 }
             }
@@ -102,12 +103,12 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
                 Map<UriPattern, ComponentAdapter> matched = new HashMap<>();
                 for (ComponentAdapter adapter : components) {
                     if (adapter instanceof RestfulComponentAdapter) {
-                        AbstractResourceDescriptor resource =
-                                (AbstractResourceDescriptor)((RestfulComponentAdapter)adapter).getObjectModel();
+                        ResourceDescriptor resource =
+                                (ResourceDescriptor)((RestfulComponentAdapter)adapter).getObjectModel();
                         if (resource.getUriPattern().match(requestPath, parameterValues)) {
                             String tail = parameterValues.get(parameterValues.size() - 1);
-                            if (tail == null //
-                                || "/".equals(tail) //
+                            if (tail == null
+                                || "/".equals(tail)
                                 || (resource.getSubResourceMethods().size() + resource.getSubResourceLocators().size()) > 0) {
                                 matched.put(resource.getUriPattern(), adapter);
                             }
@@ -135,11 +136,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
-            components.addAll(
-                    withFilters(
-                            ((RestfulContainer)pico).getComponentAdapters(annotation)
-                               )
-                             );
+            components.addAll(withFilters(((RestfulContainer)pico).getComponentAdapters(annotation)));
         }
     }
 
@@ -165,7 +162,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             components.clear();
             try {
                 super.traverse(container);
-                MediaTypeHelper.MediaTypeRange mediaTypeRange = new MediaTypeHelper.MediaTypeRange(mediaType);
+                Iterator<MediaType> mediaTypeRange = MediaTypeHelper.createDescendingMediaTypeIterator(mediaType);
                 while (mediaTypeRange.hasNext()) {
                     MediaType next = mediaTypeRange.next();
                     for (ComponentAdapter adapter : components) {
@@ -189,11 +186,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
-            components.addAll(
-                    withFilters(
-                            ((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyWriter.class, annotation)
-                               )
-                             );
+            components.addAll(withFilters(((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyWriter.class, annotation)));
         }
     }
 
@@ -219,7 +212,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             components.clear();
             try {
                 super.traverse(container);
-                MediaTypeHelper.MediaTypeRange mediaTypeRange = new MediaTypeHelper.MediaTypeRange(mediaType);
+                Iterator<MediaType> mediaTypeRange = MediaTypeHelper.createDescendingMediaTypeIterator(mediaType);
                 while (mediaTypeRange.hasNext()) {
                     MediaType next = mediaTypeRange.next();
                     for (ComponentAdapter adapter : components) {
@@ -244,11 +237,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
-            components.addAll(
-                    withFilters(
-                            ((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyReader.class, annotation)
-                               )
-                             );
+            components.addAll(withFilters(((RestfulContainer)pico).getComponentAdaptersOfType(MessageBodyReader.class, annotation)));
         }
     }
 
@@ -286,11 +275,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
-            components.addAll(
-                    withFilters(
-                            ((RestfulContainer)pico).getComponentAdaptersOfType(ExceptionMapper.class, annotation)
-                               )
-                             );
+            components.addAll(withFilters(((RestfulContainer)pico).getComponentAdaptersOfType(ExceptionMapper.class, annotation)));
         }
     }
 
@@ -310,7 +295,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
             components.clear();
             try {
                 super.traverse(container);
-                MediaTypeHelper.MediaTypeRange mediaTypeRange = new MediaTypeHelper.MediaTypeRange(mediaType);
+                Iterator<MediaType> mediaTypeRange = MediaTypeHelper.createDescendingMediaTypeIterator(mediaType);
                 while (mediaTypeRange.hasNext()) {
                     MediaType next = mediaTypeRange.next();
                     for (ComponentAdapter adapter : components) {
@@ -344,11 +329,7 @@ abstract class ComponentsFinder extends AbstractPicoVisitor {
         @Override
         public void visitContainer(PicoContainer pico) {
             checkTraversal();
-            components.addAll(
-                    withFilters(
-                            ((RestfulContainer)pico).getComponentAdaptersOfType(ContextResolver.class, annotation)
-                               )
-                             );
+            components.addAll(withFilters(((RestfulContainer)pico).getComponentAdaptersOfType(ContextResolver.class, annotation)));
         }
     }
 

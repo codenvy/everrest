@@ -5,7 +5,7 @@ import com.jayway.restassured.RestAssured;
 
 import org.everrest.core.Filter;
 import org.everrest.core.method.MethodInvokerFilter;
-import org.everrest.core.resource.GenericMethodResource;
+import org.everrest.core.resource.GenericResourceMethod;
 import org.everrest.sample.book.Book;
 import org.everrest.sample.book.BookService;
 import org.everrest.sample.book.BookStorage;
@@ -37,7 +37,7 @@ public class MethodInvokerFilterTest {
         String id;
 
         @Override
-        public void accept(GenericMethodResource genericMethodResource, Object[] params) throws WebApplicationException {
+        public void accept(GenericResourceMethod resourceMethod, Object[] params) throws WebApplicationException {
             if (id.equals("00000")) {
                 params[0] = "123-1235-555";
             }

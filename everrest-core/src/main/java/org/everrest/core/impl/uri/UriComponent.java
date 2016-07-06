@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.impl.uri;
 
+import com.google.common.base.Strings;
+
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.util.NoSyncByteArrayOutputStream;
 
@@ -24,10 +26,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+import static com.google.common.base.Preconditions.checkArgument;
+
 public final class UriComponent {
     // Components of URI, see http://gbiv.com/protocols/uri/rfc/rfc3986.htm
     /** Scheme URI component. */
@@ -57,6 +57,9 @@ public final class UriComponent {
     /** Scheme-specific part. */
     public static final int SSP = 8;
 
+    public static final int MATRIX_PARAM = 9;
+    public static final int QUERY_STRING = 10;
+
     /** Encoded '%' character. */
     public static final String PERCENT = "%25";
 
@@ -65,14 +68,14 @@ public final class UriComponent {
     /** Characters that used for percent encoding. */
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    private static final char[][][] ENCODED = new char[9][128][3];
+    private static final char[][][] ENCODED = new char[11][128][3];
 
     /** Array of legal characters for each component of URI. */
-    private static final int[][] LEGAL = new int[9][128];
+    private static final int[][] LEGAL = new int[11][128];
 
     // fill table
     static {
-        for (int i = SCHEME; i <= SSP; i++) {
+        for (int i = SCHEME; i <= QUERY_STRING; i++) {
             LEGAL[i] = new int[128];
         }
 
@@ -104,14 +107,14 @@ public final class UriComponent {
         gendelim['@'] = 1;
       /* Sub-delims characters. */
         int[] subdelim = new int[128];
+        subdelim['*'] = 1;
+        subdelim['+'] = 1;
         subdelim['!'] = 1;
         subdelim['$'] = 1;
         subdelim['&'] = 1;
         subdelim['\''] = 1;
         subdelim['('] = 1;
         subdelim[')'] = 1;
-        subdelim['*'] = 1;
-        subdelim['+'] = 1;
         subdelim[','] = 1;
         subdelim[';'] = 1;
         subdelim['='] = 1;
@@ -134,7 +137,11 @@ public final class UriComponent {
         set(unreserved, LEGAL[PATH_SEGMENT]);
         set(subdelim, LEGAL[PATH_SEGMENT]);
         LEGAL[PATH_SEGMENT][':'] = 1;
+        LEGAL[PATH_SEGMENT][';'] = 0;
         LEGAL[PATH_SEGMENT]['@'] = 1;
+
+        set(LEGAL[PATH_SEGMENT], LEGAL[MATRIX_PARAM]);
+        LEGAL[MATRIX_PARAM]['='] = 0;
 
         set(unreserved, LEGAL[PATH]);
         set(subdelim, LEGAL[PATH]);
@@ -146,19 +153,22 @@ public final class UriComponent {
         LEGAL[QUERY]['-'] = 1;
         LEGAL[QUERY]['.'] = 1;
         LEGAL[QUERY]['_'] = 1;
-        LEGAL[QUERY]['~'] = 1;
-        LEGAL[QUERY]['!'] = 1;
-        LEGAL[QUERY]['$'] = 1;
-        LEGAL[QUERY]['\''] = 1;
-        LEGAL[QUERY]['('] = 1;
-        LEGAL[QUERY][')'] = 1;
         LEGAL[QUERY]['*'] = 1;
-        LEGAL[QUERY][','] = 1;
-        LEGAL[QUERY][';'] = 1;
+//        LEGAL[QUERY]['!'] = 1;
+//        LEGAL[QUERY]['$'] = 1;
+//        LEGAL[QUERY]['\''] = 1;
+//        LEGAL[QUERY]['('] = 1;
+//        LEGAL[QUERY][')'] = 1;
+//        LEGAL[QUERY][','] = 1;
+//        LEGAL[QUERY][';'] = 1;
         LEGAL[QUERY][':'] = 1;
         LEGAL[QUERY]['@'] = 1;
-        LEGAL[QUERY]['?'] = 1;
+//        LEGAL[QUERY]['?'] = 1;
         LEGAL[QUERY]['/'] = 1;
+
+        set(LEGAL[QUERY], LEGAL[QUERY_STRING]);
+        LEGAL[QUERY_STRING]['='] = 1;
+        LEGAL[QUERY_STRING]['&'] = 1;
 
         System.arraycopy(LEGAL[QUERY], 0, LEGAL[FRAGMENT], 0, LEGAL[QUERY].length);
 
@@ -166,7 +176,7 @@ public final class UriComponent {
         set(subdelim, LEGAL[SSP]);
         set(gendelim, LEGAL[SSP]);
 
-        for (int i = SCHEME; i <= SSP; i++) {
+        for (int i = SCHEME; i <= QUERY_STRING; i++) {
             for (int j = 0; j < 128; j++) {
                 if (LEGAL[i][j] == 0) {
                     ENCODED[i][j] = new char[]{'%', HEX_DIGITS[j >> 4], HEX_DIGITS[j & 0x0F]};
@@ -208,6 +218,9 @@ public final class UriComponent {
      */
     public static URI normalize(URI uri) {
         String oldPath = uri.getRawPath();
+        if (Strings.isNullOrEmpty(oldPath)) {
+            return uri;
+        }
         String normalizedPath = normalize(oldPath);
         if (normalizedPath.equals(oldPath)) {
             // nothing to do, URI was normalized
@@ -254,7 +267,9 @@ public final class UriComponent {
                     continue;
                 }
                 inputBuffer = inputBuffer.substring(inputBuffer.indexOf('/', 1), inputBuffer.length());
-                outputBuffer.delete(outputBuffer.lastIndexOf("/"), outputBuffer.length());
+                if (outputBuffer.lastIndexOf("/") >= 0) {
+                    outputBuffer.delete(outputBuffer.lastIndexOf("/"), outputBuffer.length());
+                }
                 continue;
             }
             // if the input buffer consists only of "." or "..", then remove that from
@@ -309,7 +324,7 @@ public final class UriComponent {
         if (str == null) {
             throw new IllegalArgumentException();
         }
-        return encodingInt(str, component, containsUriParams, false);
+        return _encode(str, component, containsUriParams, false);
     }
 
     /**
@@ -323,7 +338,7 @@ public final class UriComponent {
      *         true if the source string contains URI parameters
      * @return the source string
      */
-    public static String validate(String str, int component, boolean containsUriParams) {
+    public static String validateUriComponent(String str, int component, boolean containsUriParams) {
         for (int i = 0; i < str.length(); i++) {
             char ch = str.charAt(i);
             if (ch == '%'
@@ -334,6 +349,17 @@ public final class UriComponent {
             throw new IllegalArgumentException("Illegal character, index " + i + ": " + str);
         }
         return str;
+    }
+
+    public static boolean isUriComponentContainsValidCharacters(int component, String str) {
+        int[] allowed = LEGAL[component];
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            if (allowed.length <= ch || allowed[ch] == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -355,7 +381,7 @@ public final class UriComponent {
         if (str == null) {
             throw new IllegalArgumentException();
         }
-        return encodingInt(str, component, containsUriParams, true);
+        return _encode(str, component, containsUriParams, true);
     }
 
     /**
@@ -369,7 +395,7 @@ public final class UriComponent {
      *         must check string to avoid double encoding
      * @return valid string
      */
-    private static String encodingInt(String str, int component, boolean containsUriParams, boolean recognizeEncoded) {
+    private static String _encode(String str, int component, boolean containsUriParams, boolean recognizeEncoded) {
         int length = str.length();
         StringBuilder sb = new StringBuilder(length);
         boolean encode = false;
@@ -384,8 +410,15 @@ public final class UriComponent {
                 } else {
                     sb.append(PERCENT);
                 }
-            } else if (containsUriParams && (ch == '{' || ch == '}')) {
-                sb.append(ch);
+            } else if (containsUriParams && (ch == '{'/* || ch == '}'*/)) {
+                 int x = find(str, i+1, length, '}');
+                if (x==-1){
+                    throw  new IllegalArgumentException();
+                }
+                sb.append('{');
+                sb.append(str.substring(i+1, x));
+                sb.append('}');
+                i=x;
             } else if (ch < 128) {
                 if (needEncode(ch, component)) {
                     sb.append(ENCODED[component][ch]);
@@ -401,6 +434,16 @@ public final class UriComponent {
         }
         return str;
     }
+
+    private static int find(String chars, int begin, int end, char stopChar) {
+        for (int i = begin; i < end; i++) {
+            if (chars.charAt(i) == stopChar) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
     /**
      * Decode percent encoded URI string.
@@ -420,13 +463,13 @@ public final class UriComponent {
 
         int length = str.length();
 
-        if (length < 3 && str.indexOf('%') > 0) {
-            throw new IllegalArgumentException("Malformed string " + str);
+        if (length < 3 && str.indexOf('%') >= 0) {
+            throw new IllegalArgumentException("Malformed string: " + str);
         }
 
         int p = str.lastIndexOf('%');
         if (p > 0 && p > (length - 3)) {
-            throw new IllegalArgumentException("Malformed string at index " + p);
+            throw new IllegalArgumentException("Malformed string '" + str + "' at index " + p);
         }
 
         p = 0; // reset pointer
@@ -436,6 +479,9 @@ public final class UriComponent {
             char c = str.charAt(p);
             switch (c) {
                 case '%':
+                    if (p + 2 > length) {
+                        throw new IllegalArgumentException("Malformed string '" + str + "' at index " + p);
+                    }
                     if (buff == null) {
                         buff = new NoSyncByteArrayOutputStream(4);
                     } else {
@@ -554,14 +600,14 @@ public final class UriComponent {
      * Extract character from given string and check is it one of valid for hex
      * sequence.
      *
-     * @param s
+     * @param str
      *         source string
      * @param p
      *         position of character in string
      * @return character
      */
-    private static char getHexCharacter(String s, int p) {
-        char c = s.charAt(p);
+    private static char getHexCharacter(String str, int p) {
+        char c = str.charAt(p);
         if (c >= '0' && c <= '9') {
             return c;
         }
@@ -571,7 +617,7 @@ public final class UriComponent {
         if (c >= 'a' && c <= 'f') {
             return Character.toUpperCase(c); // (char)(c - 32);
         }
-        throw new IllegalArgumentException("Malformed string at index " + p);
+        throw new IllegalArgumentException("Malformed string '" + str + "' at index " + p);
     }
 
     /**
@@ -584,7 +630,7 @@ public final class UriComponent {
      * @return List of {@link PathSegment}
      */
     public static List<PathSegment> parsePathSegments(String path, boolean decode) {
-        List<PathSegment> result = new ArrayList<PathSegment>();
+        List<PathSegment> result = new ArrayList<>();
         if (!(path == null || path.isEmpty())) {
             // remove leading slash
             if (path.charAt(0) == '/') {
@@ -648,147 +694,22 @@ public final class UriComponent {
         return result;
     }
 
-    public static UriBuilderImpl parseTemplate(String template) {
-        char[] c = template.toCharArray();
-        int l = c.length;
-        int n;
-        int p;
-        n = 0;
-        char[] empty = new char[0];
-        char[] illegal = new char[]{'/', '?', '#'};
-        boolean[] errFlag = new boolean[]{false};
-
-        p = find(c, n, l, illegal, ':', errFlag);
-        if (errFlag[0]) {
-            throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
+    public static URI resolve(URI baseUri, URI resolvingUri) {
+        checkArgument(baseUri != null, "Null base uri isn't allowed");
+        checkArgument(resolvingUri != null, "Null resolving uri isn't allowed");
+        String resolvingUriStr = resolvingUri.toString();
+        if (resolvingUriStr.isEmpty()) {
+            return baseUri;
         }
-        String scheme = null;
-        String userInfo = null;
-        String host = null;
-        String path = null;
-        String query = null;
-        String fragment = null;
-        int port = -1;
-        if (p < l) {
-            // 0 - 48
-            // 9 - 57
-            // A - 65
-            // Z - 90
-            // a - 97
-            // z - 122
-            if (c[n] != '{' && ((c[n] < 65 || c[n] > 90)) && ((c[n] < 97 || c[n] > 122))) {
-                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + n);
+        if (resolvingUriStr.startsWith("?")) {
+            String baseUriStr = baseUri.toString();
+            int q = baseUriStr.indexOf('?');
+            if (q > 0) {
+                return normalize(URI.create(baseUriStr.substring(0, q) + resolvingUriStr));
             }
-            for (int i = 1; i < p; i++) {
-                if (LEGAL[SCHEME][c[i]] == 0 && c[i] != '{' && c[i] != '}') {
-                    throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + i);
-                }
-            }
-            scheme = template.substring(n, p);
-            p++;
+            return normalize(URI.create(baseUriStr + resolvingUriStr));
         }
-        n = p;
-        if (c[n] == '/' && c[n + 1] == '/') {
-            n += 2;
-        }
-        errFlag[0] = false;
-        p = find(c, n, l, empty, '/', errFlag);
-        if (errFlag[0]) {
-            throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
-        }
-        if (p > n) {
-            errFlag[0] = false;
-            int x = find(c, n, p, illegal, '@', errFlag);
-            if (errFlag[0]) {
-                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
-            }
-            if (x > n && x < p) {
-                userInfo = template.substring(n, x);
-                n = x + 1;
-            }
-            errFlag[0] = false;
-            x = find(c, n, p, illegal, ':', errFlag);
-            if (errFlag[0]) {
-                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
-            }
-            if (x > n && x < p) {
-                host = template.substring(n, x);
-                port = Integer.parseInt(template.substring(x + 1, p));
-            } else {
-                host = template.substring(n, p);
-            }
-        }
-        n = p;
-        errFlag[0] = false;
-        p = find(c, n, l, empty, new char[]{'#', '?'}, errFlag);
-        if (errFlag[0]) {
-            throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
-        }
-        if (p > n) {
-            path = template.substring(n, p);
-        }
-        n = p;
-        if (n < l) {
-            n++;
-            errFlag[0] = false;
-            p = find(c, n, l, empty, '?', errFlag);
-            if (errFlag[0]) {
-                throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
-            }
-            if (p > n) {
-                query = template.substring(n, p);
-            }
-            n = p;
-            if (n < l) {
-                n++;
-                errFlag[0] = false;
-                p = find(c, n, l, empty, '#', errFlag);
-                if (errFlag[0]) {
-                    throw new IllegalArgumentException("Invalid template " + template + ". Illegal character at " + p);
-                }
-                if (p > n) {
-                    fragment = template.substring(n, p);
-                }
-            }
-        }
-        return (UriBuilderImpl)new UriBuilderImpl().scheme(scheme).userInfo(userInfo).host(host).port(port).replacePath(path)
-                                                   .replaceQuery(query).fragment(fragment);
-    }
-
-    private static int find(char[] c, int begin, int end, char[] illegal, char stop, boolean[] errFlag) {
-        for (int i = begin; i < end; i++) {
-            if (illegal.length > 0 && contains(illegal, c[i])) {
-                errFlag[0] = true;
-                return i;
-            }
-            if (c[i] == stop) {
-                return i;
-            }
-        }
-        return end;
-    }
-
-    private static int find(char[] c, int begin, int end, char[] illegal, char[] stop, boolean[] errFlag) {
-        for (int i = begin; i < end; i++) {
-            if (illegal.length > 0 && contains(illegal, c[i])) {
-                errFlag[0] = true;
-                return i;
-            }
-            if (stop.length > 0 && contains(stop, c[i])) {
-                return i;
-            }
-        }
-        return end;
-    }
-
-
-    private static boolean contains(char[] a, char test) {
-        for (int i = 0, l = a.length; i < l; i++) {
-            if (a[i] == test) {
-                return true;
-            }
-        }
-        return false;
+        return normalize(baseUri.resolve(resolvingUri));
     }
 
     private UriComponent() {

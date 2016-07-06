@@ -16,7 +16,6 @@ import com.google.inject.ProvisionException;
 
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.EnvironmentContext;
 
 import javax.servlet.ServletConfig;
@@ -34,7 +33,7 @@ public class EverrestModule extends AbstractModule {
     public static class HttpHeadersProvider implements Provider<HttpHeaders> {
         @Override
         public HttpHeaders get() {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new ProvisionException("EverRest ApplicationContext is not initialized.");
             }
@@ -45,7 +44,7 @@ public class EverrestModule extends AbstractModule {
     public static class InitialPropertiesProvider implements Provider<InitialProperties> {
         @Override
         public InitialProperties get() {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new ProvisionException("EverRest ApplicationContext is not initialized.");
             }
@@ -56,7 +55,7 @@ public class EverrestModule extends AbstractModule {
     public static class ProvidersProvider implements Provider<Providers> {
         @Override
         public Providers get() {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new ProvisionException("EverRest ApplicationContext is not initialized.");
             }
@@ -67,7 +66,7 @@ public class EverrestModule extends AbstractModule {
     public static class RequestProvider implements Provider<Request> {
         @Override
         public Request get() {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new ProvisionException("EverRest ApplicationContext is not initialized.");
             }
@@ -78,7 +77,7 @@ public class EverrestModule extends AbstractModule {
     public static class SecurityContextProvider implements Provider<SecurityContext> {
         @Override
         public SecurityContext get() {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new ProvisionException("EverRest ApplicationContext is not initialized.");
             }
@@ -100,7 +99,7 @@ public class EverrestModule extends AbstractModule {
     public static class UriInfoProvider implements Provider<UriInfo> {
         @Override
         public UriInfo get() {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new ProvisionException("EverRest ApplicationContext is not initialized.");
             }
@@ -111,7 +110,7 @@ public class EverrestModule extends AbstractModule {
     public static class ApplicationProvider implements Provider<Application> {
         @Override
         public Application get() {
-            ApplicationContext context = ApplicationContextImpl.getCurrent();
+            ApplicationContext context = ApplicationContext.getCurrent();
             if (context == null) {
                 throw new ProvisionException("EverRest ApplicationContext is not initialized.");
             }

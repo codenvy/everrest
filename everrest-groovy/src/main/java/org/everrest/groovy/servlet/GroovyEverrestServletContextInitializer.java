@@ -119,16 +119,16 @@ public class GroovyEverrestServletContextInitializer extends EverrestServletCont
                                     boolean added = scanned.add(clazz);
                                     if (added) {
                                         if (LOG.isDebugEnabled()) {
-                                            LOG.debug("Add class : " + clazz);
+                                            LOG.debug("Add class : {}", clazz);
                                         }
                                     } else {
-                                        LOG.warn("Skip duplicated class: " + clazz);
+                                        LOG.warn("Skip duplicated class: {}", clazz);
                                     }
                                 }
                             }
                         }
                     } else {
-                        LOG.warn("Skip URL : " + path + ". Protocol '" + protocol + "' is not supported for scan JAX-RS components. ");
+                        LOG.warn("Skip URL : {}. Protocol '{}' is not supported for scan JAX-RS components", path, protocol);
                     }
                 }
                 groovyApplication = new Application() {

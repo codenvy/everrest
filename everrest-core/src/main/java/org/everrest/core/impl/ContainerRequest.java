@@ -10,14 +10,16 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
+
+import org.everrest.core.ApplicationContext;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.impl.header.AcceptLanguage;
 import org.everrest.core.impl.header.AcceptMediaType;
 import org.everrest.core.impl.header.HeaderHelper;
-import org.everrest.core.impl.header.Language;
 import org.everrest.core.impl.header.MediaTypeHelper;
 
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
@@ -26,16 +28,29 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.stream.Collectors.toList;
+import static javax.ws.rs.HttpMethod.GET;
+import static javax.ws.rs.HttpMethod.HEAD;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static org.everrest.core.impl.header.HeaderHelper.convertToString;
+import static org.everrest.core.impl.header.HeaderHelper.createAcceptMediaTypeList;
+import static org.everrest.core.impl.header.HeaderHelper.createAcceptedLanguageList;
 
 /**
  * @author andrew00x
@@ -63,10 +78,10 @@ public class ContainerRequest implements GenericContainerRequest {
     private Locale contentLanguage;
 
     /** List of accepted media type, HTTP header Accept. List is sorted by quality value factor. */
-    private List<MediaType> acceptMediaType;
+    private List<AcceptMediaType> acceptableMediaTypes;
 
     /** List of accepted language, HTTP header Accept-Language. List is sorted by quality value factor. */
-    private List<Locale> acceptLanguage;
+    private List<Locale> acceptLanguages;
 
     /** Full request URI, includes query string and fragment. */
     private URI requestUri;
@@ -76,6 +91,8 @@ public class ContainerRequest implements GenericContainerRequest {
 
     /** Security context. */
     private SecurityContext securityContext;
+
+    private VariantsHandler variantsHandler = new VariantsHandler();
 
     /**
      * Constructs new instance of ContainerRequest.
@@ -103,68 +120,64 @@ public class ContainerRequest implements GenericContainerRequest {
         this.securityContext = securityContext;
     }
 
-    // GenericContainerRequest
-
-
     @Override
     public MediaType getAcceptableMediaType(List<MediaType> mediaTypes) {
-        for (MediaType at : getAcceptableMediaTypes()) {
-            for (MediaType rt : mediaTypes) {
-                if (MediaTypeHelper.isMatched(at, rt)) {
-                    return rt;
+        for (MediaType acceptMediaType : getAcceptableMediaTypes()) {
+            for (MediaType checkMediaType : mediaTypes) {
+                if (MediaTypeHelper.isMatched(acceptMediaType, checkMediaType)) {
+                    return checkMediaType;
                 }
             }
         }
         return null;
     }
 
-
     @Override
     public List<String> getCookieHeaders() {
         if (cookieHeaders == null) {
-            List<String> c = getRequestHeader(COOKIE);
-            if (c != null && c.size() > 0) {
-                cookieHeaders = Collections.unmodifiableList(getRequestHeader(COOKIE));
+            List<String> cookieHeaders = getRequestHeader(COOKIE);
+            if (cookieHeaders == null || cookieHeaders.isEmpty()) {
+                this.cookieHeaders = emptyList();
             } else {
-                cookieHeaders = Collections.emptyList();
+                this.cookieHeaders = unmodifiableList(cookieHeaders);
             }
         }
         return cookieHeaders;
     }
-
 
     @Override
     public InputStream getEntityStream() {
         return entityStream;
     }
 
-
     @Override
     public URI getRequestUri() {
         return requestUri;
     }
-
 
     @Override
     public URI getBaseUri() {
         return baseUri;
     }
 
+    @Override
+    public String getMethod() {
+        return method;
+    }
 
     @Override
     public void setMethod(String method) {
         this.method = method;
     }
 
-
     @Override
     public void setEntityStream(InputStream entityStream) {
         this.entityStream = entityStream;
 
-        // reset form data, it should be recreated
-        ApplicationContextImpl.getCurrent().getAttributes().remove("org.everrest.provider.entity.form");
+        ApplicationContext context = ApplicationContext.getCurrent();
+        context.getAttributes().remove("org.everrest.provider.entity.decoded.form");
+        context.getAttributes().remove("org.everrest.provider.entity.encoded.form");
     }
-
 
     @Override
     public void setUris(URI requestUri, URI baseUri) {
@@ -172,183 +185,145 @@ public class ContainerRequest implements GenericContainerRequest {
         this.baseUri = baseUri;
     }
 
-
     @Override
     public void setCookieHeaders(List<String> cookieHeaders) {
         this.cookieHeaders = cookieHeaders;
-
-        // reset parsed cookies
         this.cookies = null;
     }
-
 
     @Override
     public void setRequestHeaders(MultivaluedMap<String, String> httpHeaders) {
         this.httpHeaders = httpHeaders;
 
-        // reset dependent fields
         this.cookieHeaders = null;
         this.cookies = null;
         this.contentType = null;
         this.contentLanguage = null;
-        this.acceptMediaType = null;
-        this.acceptLanguage = null;
+        this.acceptableMediaTypes = null;
+        this.acceptLanguages = null;
     }
-
-    // javax.ws.rs.core.SecurityContext
-
 
     @Override
     public String getAuthenticationScheme() {
         return securityContext.getAuthenticationScheme();
     }
 
-
     @Override
     public Principal getUserPrincipal() {
         return securityContext.getUserPrincipal();
     }
-
 
     @Override
     public boolean isSecure() {
         return securityContext.isSecure();
     }
 
-
     @Override
     public boolean isUserInRole(String role) {
         return securityContext.isUserInRole(role);
     }
 
-    // javax.ws.rs.core.Request
-
-
     @Override
     public ResponseBuilder evaluatePreconditions(EntityTag etag) {
-        ResponseBuilder rb = evaluateIfMatch(etag);
-        if (rb != null) {
-            return rb;
+        checkArgument(etag != null, "Null ETag is not supported");
+        ResponseBuilder responseBuilder = evaluateIfMatch(etag);
+        if (responseBuilder == null) {
+            responseBuilder = evaluateIfNoneMatch(etag);
         }
-
-        return evaluateIfNoneMatch(etag);
+        return responseBuilder;
     }
-
 
     @Override
     public ResponseBuilder evaluatePreconditions(Date lastModified) {
+        checkArgument(lastModified != null, "Null last modification date is not supported");
         long lastModifiedTime = lastModified.getTime();
-        ResponseBuilder rb = evaluateIfModified(lastModifiedTime);
-        if (rb != null) {
-            return rb;
+        ResponseBuilder responseBuilder = evaluateIfModified(lastModifiedTime);
+        if (responseBuilder == null) {
+            responseBuilder = evaluateIfUnmodified(lastModifiedTime);
         }
-
-        return evaluateIfUnmodified(lastModifiedTime);
-
+        return responseBuilder;
     }
-
 
     @Override
     public ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag etag) {
-        ResponseBuilder rb = evaluateIfMatch(etag);
-        if (rb != null) {
-            return rb;
+        checkArgument(lastModified != null, "Null last modification date is not supported");
+        checkArgument(etag != null, "Null ETag is not supported");
+
+        ResponseBuilder responseBuilder = evaluateIfMatch(etag);
+        if (responseBuilder != null) {
+            return responseBuilder;
         }
 
         long lastModifiedTime = lastModified.getTime();
-        rb = evaluateIfModified(lastModifiedTime);
-        if (rb != null) {
-            return rb;
+        responseBuilder = evaluateIfModified(lastModifiedTime);
+        if (responseBuilder != null) {
+            return responseBuilder;
         }
 
-        rb = evaluateIfNoneMatch(etag);
-        if (rb != null) {
-            return rb;
+        responseBuilder = evaluateIfNoneMatch(etag);
+        if (responseBuilder != null) {
+            return responseBuilder;
         }
 
         return evaluateIfUnmodified(lastModifiedTime);
-
     }
 
     @Override
     public ResponseBuilder evaluatePreconditions() {
         List<String> ifMatch = getRequestHeader(IF_MATCH);
-        return (ifMatch == null || ifMatch.isEmpty()) ? null : Response.status(Response.Status.PRECONDITION_FAILED);
-    }
-
-
-    @Override
-    public String getMethod() {
-        return method;
+        return (ifMatch == null || ifMatch.isEmpty()) ? null : Response.status(PRECONDITION_FAILED);
     }
 
 
     @Override
     public Variant selectVariant(List<Variant> variants) {
-        if (variants == null || variants.isEmpty()) {
-            throw new IllegalArgumentException("The list of variants is null or empty");
-        }
-        // TODO constructs and set 'Vary' header in response
-        // Response will be set in RequestDispatcher if set Response
-        // now then it will be any way rewrite in RequestDispatcher.
-        return VariantsHandler.handleVariants(this, variants);
+        checkArgument(!(variants == null || variants.isEmpty()), "The list of variants is null or empty");
+        return variantsHandler.handleVariants(this, variants);
     }
-
-    // javax.ws.rs.core.HttpHeaders
 
     /**
      * If accept-language header does not present or its length is null then default language list will be returned. This list contains
      * only one element Locale with language '*', and it minds any language accepted.
-     * {@inheritDoc}
      */
     @Override
     public List<Locale> getAcceptableLanguages() {
-        if (acceptLanguage == null) {
-            List<AcceptLanguage> l =
-                    HeaderHelper.createAcceptedLanguageList(HeaderHelper.convertToString(getRequestHeader(ACCEPT_LANGUAGE)));
-            List<Locale> t = new ArrayList<>(l.size());
-            // extract Locales from AcceptLanguage
-            for (AcceptLanguage al : l) {
-                t.add(al.getLocale());
-            }
+        if (acceptLanguages == null) {
+            List<AcceptLanguage> acceptLanguages = createAcceptedLanguageList(convertToString(getRequestHeader(ACCEPT_LANGUAGE)));
+            List<Locale> locales = new ArrayList<>(acceptLanguages.size());
+            locales.addAll(acceptLanguages.stream().map(language -> language.getLanguage().getLocale()).collect(toList()));
 
-            acceptLanguage = Collections.unmodifiableList(t);
+            this.acceptLanguages = unmodifiableList(locales);
         }
 
-        return acceptLanguage;
+        return acceptLanguages;
     }
 
-    /**
-     * If accept header does not presents or its length is null then list with one element will be returned. That one element is default
-     * media type, see {@link AcceptMediaType#DEFAULT}.
-     * {@inheritDoc}
-     */
     @Override
     public List<MediaType> getAcceptableMediaTypes() {
-        if (acceptMediaType == null) {
-            // 'extract' MediaType from AcceptMediaType
-            List<MediaType> t = new ArrayList<MediaType>(HeaderHelper.createAcceptedMediaTypeList(
-                    HeaderHelper.convertToString(getRequestHeader(ACCEPT))));
-            acceptMediaType = Collections.unmodifiableList(t);
-        }
-
-        return acceptMediaType;
+        return getAcceptMediaTypeList().stream().map(AcceptMediaType::getMediaType).collect(toList());
     }
 
+    @Override
+    public List<AcceptMediaType> getAcceptMediaTypeList() {
+        if (acceptableMediaTypes == null) {
+            acceptableMediaTypes = createAcceptMediaTypeList(convertToString(getRequestHeader(ACCEPT)));
+        }
+        return acceptableMediaTypes;
+    }
 
     @Override
     public Map<String, Cookie> getCookies() {
-        if (cookies == null) {
-            Map<String, Cookie> t = new HashMap<>();
+        if (this.cookies == null) {
+            Map<String, Cookie> cookies = new HashMap<>();
 
-            for (String ch : getCookieHeaders()) {
-                List<Cookie> l = HeaderHelper.parseCookies(ch);
-                for (Cookie c : l) {
-                    t.put(c.getName(), c);
+            for (String cookieHeader : getCookieHeaders()) {
+                List<Cookie> parsedCookies = HeaderHelper.parseCookies(cookieHeader);
+                for (Cookie cookie : parsedCookies) {
+                    cookies.put(cookie.getName(), cookie);
                 }
             }
 
-            cookies = Collections.unmodifiableMap(t);
+            this.cookies = unmodifiableMap(cookies);
         }
 
         return cookies;
@@ -366,16 +341,14 @@ public class ContainerRequest implements GenericContainerRequest {
         return length == null ? -1 : Integer.parseInt(length);
     }
 
-
     @Override
     public Locale getLanguage() {
         if (contentLanguage == null && httpHeaders.getFirst(CONTENT_LANGUAGE) != null) {
-            contentLanguage = Language.getLocale(httpHeaders.getFirst(CONTENT_LANGUAGE));
+            contentLanguage = RuntimeDelegate.getInstance().createHeaderDelegate(Locale.class).fromString(httpHeaders.getFirst(CONTENT_LANGUAGE));
         }
 
         return contentLanguage;
     }
-
 
     @Override
     public MediaType getMediaType() {
@@ -386,7 +359,6 @@ public class ContainerRequest implements GenericContainerRequest {
         return contentType;
     }
 
-
     @Override
     public List<String> getRequestHeader(String name) {
         return httpHeaders.get(name);
@@ -394,9 +366,8 @@ public class ContainerRequest implements GenericContainerRequest {
 
     @Override
     public String getHeaderString(String name) {
-        return HeaderHelper.convertToString(getRequestHeader(name));
+        return convertToString(getRequestHeader(name));
     }
-
 
     @Override
     public MultivaluedMap<String, String> getRequestHeaders() {
@@ -408,30 +379,21 @@ public class ContainerRequest implements GenericContainerRequest {
      *
      * @param etag
      *         the ETag
-     * @return ResponseBuilder with status 412 (precondition failed) if If-Match header is NOT MATCH to ETag or null otherwise
+     * @return ResponseBuilder with status 412 (precondition failed) if If-Match header does NOT MATCH to ETag or null otherwise
      */
     private ResponseBuilder evaluateIfMatch(EntityTag etag) {
         String ifMatch = getRequestHeaders().getFirst(IF_MATCH);
-        // Strong comparison is required.
-        // From specification:
-        // The strong comparison function: in order to be considered equal,
-        // both validators MUST be identical in every way, and both MUST
-        // NOT be weak.
 
-        if (ifMatch == null) {
+        if (isNullOrEmpty(ifMatch)) {
             return null;
         }
 
         EntityTag otherEtag = EntityTag.valueOf(ifMatch);
 
-        if (etag.isWeak() || otherEtag.isWeak()
-            || (!"*".equals(otherEtag.getValue()) && !etag.getValue().equals(otherEtag.getValue()))) {
-            return Response.status(Response.Status.PRECONDITION_FAILED);
+        if (eTagsStrongEqual(etag, otherEtag)) {
+            return null;
         }
-
-        // if tags are not matched then do as tag 'if-match' is absent
-        return null;
-
+        return Response.status(PRECONDITION_FAILED);
     }
 
     /**
@@ -446,32 +408,35 @@ public class ContainerRequest implements GenericContainerRequest {
     private ResponseBuilder evaluateIfNoneMatch(EntityTag etag) {
         String ifNoneMatch = getRequestHeaders().getFirst(IF_NONE_MATCH);
 
-        if (ifNoneMatch == null) {
+        if (Strings.isNullOrEmpty(ifNoneMatch)) {
             return null;
         }
 
         EntityTag otherEtag = EntityTag.valueOf(ifNoneMatch);
         String httpMethod = getMethod();
-        // The weak comparison function can only be used with GET or HEAD requests.
-        if (httpMethod.equals(HttpMethod.GET) || httpMethod.equals(HttpMethod.HEAD)) {
-
-            if ("*".equals(otherEtag.getValue()) || etag.getValue().equals(otherEtag.getValue())) {
+        if (httpMethod.equals(GET) || httpMethod.equals(HEAD)) {
+            if (eTagsWeakEqual(etag, otherEtag)) {
                 return Response.notModified(etag);
             }
-
         } else {
-            // Use strong comparison (ignore weak tags) because HTTP method is not GET
-            // or HEAD. If one of tag is weak then tags are not identical.
-            if (!etag.isWeak() && !otherEtag.isWeak()
-                && ("*".equals(otherEtag.getValue()) || etag.getValue().equals(otherEtag.getValue()))) {
-                return Response.status(Response.Status.PRECONDITION_FAILED);
+            if (eTagsStrongEqual(etag, otherEtag)) {
+                return Response.status(PRECONDITION_FAILED);
             }
-
         }
-
-        // if tags are matched then do as tag 'if-none-match' is absent
         return null;
+    }
 
+    private boolean eTagsStrongEqual(EntityTag etag, EntityTag otherEtag) {
+        // Strong comparison is required.
+        // From specification:
+        // The strong comparison function: in order to be considered equal,
+        // both validators MUST be identical in every way, and both MUST NOT be weak.
+        return !etag.isWeak() && !otherEtag.isWeak()
+               && ("*".equals(otherEtag.getValue()) || etag.getValue().equals(otherEtag.getValue()));
+    }
+
+    private boolean eTagsWeakEqual(EntityTag etag, EntityTag otherEtag) {
+        return "*".equals(otherEtag.getValue()) || etag.getValue().equals(otherEtag.getValue());
     }
 
     /**
@@ -482,20 +447,18 @@ public class ContainerRequest implements GenericContainerRequest {
      * @return ResponseBuilder with status 412 (precondition failed) if lastModified time is greater then unmodifiedSince otherwise return
      * null. If date format in header If-Unmodified-Since is wrong also null returned
      */
-    private ResponseBuilder evaluateIfModified(long lastModified) {
+    private ResponseBuilder evaluateIfUnmodified(long lastModified) {
         String ifUnmodified = getRequestHeaders().getFirst(IF_UNMODIFIED_SINCE);
 
-        if (ifUnmodified == null) {
+        if (isNullOrEmpty(ifUnmodified)) {
             return null;
         }
         try {
             long unmodifiedSince = HeaderHelper.parseDateHeader(ifUnmodified).getTime();
             if (lastModified > unmodifiedSince) {
-                return Response.status(Response.Status.PRECONDITION_FAILED);
+                return Response.status(PRECONDITION_FAILED);
             }
-
-        } catch (IllegalArgumentException e) {
-            // If the specified date is invalid, the header is ignored.
+        } catch (IllegalArgumentException ignored) {
         }
 
         return null;
@@ -509,22 +472,33 @@ public class ContainerRequest implements GenericContainerRequest {
      * @return ResponseBuilder with status 304 (not modified) if lastModified time is greater then modifiedSince otherwise return null. If
      * date format in header If-Modified-Since is wrong also null returned
      */
-    private ResponseBuilder evaluateIfUnmodified(long lastModified) {
+    private ResponseBuilder evaluateIfModified(long lastModified) {
         String ifModified = getRequestHeaders().getFirst(IF_MODIFIED_SINCE);
 
-        if (ifModified == null) {
+        if (isNullOrEmpty(ifModified)) {
             return null;
         }
         try {
             long modifiedSince = HeaderHelper.parseDateHeader(ifModified).getTime();
-            if (lastModified < modifiedSince) {
+            if (lastModified <= modifiedSince) {
                 return Response.notModified();
             }
-
         } catch (IllegalArgumentException ignored) {
-            // If the specified date is invalid, the header is ignored.
         }
 
         return null;
+    }
+
+    void setVariantsHandler(VariantsHandler variantsHandler) {
+        this.variantsHandler = variantsHandler;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                          .add("Method", method)
+                          .add("BaseUri", baseUri)
+                          .add("RequestUri", requestUri)
+                          .toString();
     }
 }

@@ -13,7 +13,6 @@ package org.everrest.core.impl;
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.impl.resource.PathValue;
-import org.everrest.core.resource.ResourceDescriptorVisitor;
 import org.everrest.core.uri.UriPattern;
 
 import javax.ws.rs.Path;
@@ -59,11 +58,6 @@ public class FilterDescriptorImpl extends BaseObjectModel implements FilterDescr
             this.path = new PathValue(DEFAULT_PATH);
             this.uriPattern = new UriPattern(DEFAULT_PATH);
         }
-    }
-
-    @Override
-    public void accept(ResourceDescriptorVisitor visitor) {
-        visitor.visitFilterDescriptor(this);
     }
 
     @Override

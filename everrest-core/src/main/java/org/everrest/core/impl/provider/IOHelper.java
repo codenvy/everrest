@@ -27,56 +27,17 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public final class IOHelper {
 
     /** Default character set name. */
-    static final String DEFAULT_CHARSET_NAME = "UTF-8";
+    @Deprecated
+    private static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
     /** If character set was not specified then this will be used. */
-    static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
+    @Deprecated
+    private static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
 
-    /** Constructor. */
     private IOHelper() {
-    }
-
-    /**
-     * Write data from {@link InputStream} to {@link OutputStream}.
-     *
-     * @param in
-     *         See {@link InputStream}
-     * @param out
-     *         See {@link OutputStream}
-     * @throws IOException
-     *         if i/o errors occurs
-     */
-    public static void write(InputStream in, OutputStream out) throws IOException {
-        byte[] buf = new byte[1024];
-        int rd;
-        while ((rd = in.read(buf)) != -1) {
-            out.write(buf, 0, rd);
-        }
-    }
-
-    /**
-     * Write data from {@link Reader} to {@link Writer}.
-     *
-     * @param in
-     *         See {@link Reader}
-     * @param out
-     *         See {@link Writer}
-     * @throws IOException
-     *         if i/o errors occurs
-     */
-    public static void write(Reader in, Writer out) throws IOException {
-        char[] buf = new char[1024];
-        int rd;
-        while ((rd = in.read(buf)) != -1) {
-            out.write(buf, 0, rd);
-        }
     }
 
     /**
@@ -91,6 +52,7 @@ public final class IOHelper {
      * @throws IOException
      *         if i/o errors occurs
      */
+    @Deprecated // Guava used instead in everrest-core, in other modules will be replaced with Guava also
     public static String readString(InputStream in, String cs) throws IOException {
         Charset charset;
         // Must respect application specified character set.
@@ -125,6 +87,7 @@ public final class IOHelper {
      * @throws IOException
      *         if i/o errors occurs
      */
+    @Deprecated // Guava used instead in everrest-core, in other modules will be replaced with Guava also
     public static void writeString(String s, OutputStream out, String cs) throws IOException {
         Charset charset;
         // Must respect application specified character set.
@@ -140,7 +103,6 @@ public final class IOHelper {
             w.write(s);
         } finally {
             w.flush();
-            //w.close();
         }
     }
 
@@ -158,24 +120,23 @@ public final class IOHelper {
      */
     public static InputStream bufferStream(InputStream in, int maxMemSize) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] b = new byte[8192];
-        int r;
+        byte[] buffer = new byte[8192];
+        int bytesNum;
         boolean overflow = false;
-        while ((!overflow) && (r = in.read(b)) != -1) {
-            bos.write(b, 0, r);
+        while ((!overflow) && (bytesNum = in.read(buffer)) != -1) {
+            bos.write(buffer, 0, bytesNum);
             overflow = bos.size() > maxMemSize;
         }
 
         if (overflow) {
-            File f = FileCollector.getInstance().createFile();
-
-            try(FileOutputStream fos = new FileOutputStream(f)) {
+            File file = FileCollector.getInstance().createFile();
+            try (FileOutputStream fos = new FileOutputStream(file)) {
                 bos.writeTo(fos);
-                while ((r = in.read(b)) != -1) {
-                    fos.write(b, 0, r);
+                while ((bytesNum = in.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesNum);
                 }
             }
-            return new DeleteOnCloseFIS(f);
+            return new DeleteOnCloseFIS(file);
         }
         return new ByteArrayInputStream(bos.toByteArray());
     }

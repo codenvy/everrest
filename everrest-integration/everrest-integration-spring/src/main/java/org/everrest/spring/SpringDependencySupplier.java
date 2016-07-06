@@ -25,7 +25,7 @@ public final class SpringDependencySupplier extends BaseDependencySupplier imple
     private BeanFactory beanFactory;
 
     @Override
-    public Object getComponent(Class<?> type) {
+    public Object getInstance(Class<?> type) {
         try {
             return beanFactory.getBean(type);
         } catch (NoSuchBeanDefinitionException be) {
@@ -34,7 +34,7 @@ public final class SpringDependencySupplier extends BaseDependencySupplier imple
     }
 
     @Override
-    public Object getComponentByName(String name) {
+    public Object getInstanceByName(String name) {
         try {
             return beanFactory.getBean(name);
         } catch (NoSuchBeanDefinitionException be) {

@@ -109,43 +109,49 @@ public class EverrestApplication extends Application {
     public void addApplication(Application application) {
         if (application != null) {
             Set<Object> appSingletons = application.getSingletons();
-            if (appSingletons != null && appSingletons.size() > 0) {
-                Set<Object> tmp = new LinkedHashSet<>(this.singletons.size() + appSingletons.size());
-                tmp.addAll(appSingletons);
-                tmp.addAll(this.singletons);
+            if (appSingletons != null && !appSingletons.isEmpty()) {
+                Set<Object> allSingletons = new LinkedHashSet<>(this.singletons.size() + appSingletons.size());
+                allSingletons.addAll(appSingletons);
+                allSingletons.addAll(this.singletons);
                 this.singletons.clear();
-                this.singletons.addAll(tmp);
+                this.singletons.addAll(allSingletons);
             }
             Set<Class<?>> appClasses = application.getClasses();
-            if (appClasses != null && appClasses.size() > 0) {
-                Set<Class<?>> tmp = new LinkedHashSet<>(this.classes.size() + appClasses.size());
-                tmp.addAll(appClasses);
-                tmp.addAll(this.classes);
+            if (appClasses != null && !appClasses.isEmpty()) {
+                Set<Class<?>> allClasses = new LinkedHashSet<>(this.classes.size() + appClasses.size());
+                allClasses.addAll(appClasses);
+                allClasses.addAll(this.classes);
                 this.classes.clear();
-                this.classes.addAll(tmp);
+                this.classes.addAll(allClasses);
             }
             if (application instanceof EverrestApplication) {
                 EverrestApplication everrest = (EverrestApplication)application;
                 Set<ObjectFactory<? extends ObjectModel>> appFactories = everrest.getFactories();
-                Set<ObjectFactory<? extends ObjectModel>> tmp1 = new LinkedHashSet<>(this.factories.size() + appFactories.size());
-                tmp1.addAll(appFactories);
-                tmp1.addAll(this.factories);
-                this.factories.clear();
-                this.factories.addAll(tmp1);
+                if (!appFactories.isEmpty()) {
+                    Set<ObjectFactory<? extends ObjectModel>> allFactories = new LinkedHashSet<>(this.factories.size() + appFactories.size());
+                    allFactories.addAll(appFactories);
+                    allFactories.addAll(this.factories);
+                    this.factories.clear();
+                    this.factories.addAll(allFactories);
+                }
 
                 Map<String, Class<?>> appResourceClasses = everrest.getResourceClasses();
-                Map<String, Class<?>> tmp2 = new LinkedHashMap<>(this.resourceClasses.size() + appResourceClasses.size());
-                tmp2.putAll(appResourceClasses);
-                tmp2.putAll(this.resourceClasses);
-                this.resourceClasses.clear();
-                this.resourceClasses.putAll(tmp2);
+                if (!appResourceClasses.isEmpty()) {
+                    Map<String, Class<?>> allResourceClasses = new LinkedHashMap<>(this.resourceClasses.size() + appResourceClasses.size());
+                    allResourceClasses.putAll(appResourceClasses);
+                    allResourceClasses.putAll(this.resourceClasses);
+                    this.resourceClasses.clear();
+                    this.resourceClasses.putAll(allResourceClasses);
+                }
 
                 Map<String, Object> appResourceSingletons = everrest.getResourceSingletons();
-                Map<String, Object> tmp3 = new LinkedHashMap<>(this.resourceSingletons.size() + appResourceSingletons.size());
-                tmp3.putAll(appResourceSingletons);
-                tmp3.putAll(this.resourceSingletons);
-                this.resourceSingletons.clear();
-                this.resourceSingletons.putAll(tmp3);
+                if (!appResourceSingletons.isEmpty()) {
+                    Map<String, Object> allResourceSingletons = new LinkedHashMap<>(this.resourceSingletons.size() + appResourceSingletons.size());
+                    allResourceSingletons.putAll(appResourceSingletons);
+                    allResourceSingletons.putAll(this.resourceSingletons);
+                    this.resourceSingletons.clear();
+                    this.resourceSingletons.putAll(allResourceSingletons);
+                }
             }
         }
     }

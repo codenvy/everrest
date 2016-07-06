@@ -230,11 +230,11 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
             for (ParameterizedType genericInterface : implementedInterfaces) {
                 Class<?> rawType = (Class<?>)genericInterface.getRawType();
                 // @Consumes makes sense for MessageBodyReader ONLY
-                Set<MediaType> consumes = MessageBodyReader.class == rawType //
+                Set<MediaType> consumes = MessageBodyReader.class == rawType
                                           ? new HashSet<>(MediaTypeHelper.createConsumesList(type.getAnnotation(Consumes.class)))
                                           : null;
                 // @Produces makes sense for MessageBodyWriter or ContextResolver
-                Set<MediaType> produces = ContextResolver.class == rawType || MessageBodyWriter.class == rawType//
+                Set<MediaType> produces = ContextResolver.class == rawType || MessageBodyWriter.class == rawType
                                           ? new HashSet<>(MediaTypeHelper.createProducesList(type.getAnnotation(Produces.class)))
                                           : null;
                 keys.add(new ProviderKey(consumes, produces, genericInterface));
@@ -256,8 +256,7 @@ public class RestfulContainer extends ConcurrentPicoContainer implements Provide
                     for (Key key : keys) {
                         ComponentAdapter previous = copy.put(key, componentAdapter);
                         if (previous != null) {
-                            throw new PicoRegistrationException("Cannot register component " + componentAdapter
-                                                                + " because already registered component " + previous);
+                            throw new PicoRegistrationException(String.format("Cannot register component %s because already registered component %s", componentAdapter, previous));
                         }
                     }
                     super.registerComponent(componentAdapter);

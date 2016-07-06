@@ -10,21 +10,24 @@
  *******************************************************************************/
 package org.everrest.pico;
 
-import org.everrest.core.DependencySupplier;
-import org.everrest.core.ResourceBinder;
-import org.everrest.core.impl.ApplicationProviderBinder;
-import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.tools.ResourceLauncher;
 import org.everrest.pico.servlet.EverrestPicoFilter;
-import org.everrest.test.mock.MockServletContext;
 import org.junit.After;
 import org.junit.Before;
+import org.mockito.ArgumentCaptor;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.behaviors.Caching;
 
 import javax.servlet.ServletContext;
+
+import static java.util.Collections.emptyEnumeration;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andrew00x
@@ -52,7 +55,10 @@ public abstract class BaseTest {
         DefaultPicoContainer sesContainer = new DefaultPicoContainer();
         DefaultPicoContainer reqContainer = new DefaultPicoContainer();
         Composer composer = getComposer();
-        MockServletContext servletContext = new MockServletContext();
+
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getInitParameterNames()).thenReturn(emptyEnumeration());
+
         composer.composeApplication(appContainer, servletContext);
         composer.composeSession(sesContainer);
         composer.composeRequest(reqContainer);
@@ -64,13 +70,16 @@ public abstract class BaseTest {
         picoFilter.setRequestContainer(reqContainer);
         picoFilter.initAdditionalScopedComponents(sesContainer, reqContainer);
 
-        DependencySupplier dependencies = (DependencySupplier)servletContext.getAttribute(DependencySupplier.class.getName());
-        ResourceBinder resources = (ResourceBinder)servletContext.getAttribute(ResourceBinder.class.getName());
-        ApplicationProviderBinder providers =
-                (ApplicationProviderBinder)servletContext.getAttribute(ApplicationProviderBinder.class.getName());
-        processor = new EverrestProcessor(resources, providers, dependencies, new EverrestConfiguration(), null);
+        processor = retrieveComponentFromServletContext(EverrestProcessor.class, servletContext);
         launcher = new ResourceLauncher(processor);
     }
+
+    private <T> T retrieveComponentFromServletContext(Class<T> componentType, ServletContext servletContext) {
+        ArgumentCaptor<T> argumentCaptor = ArgumentCaptor.forClass(componentType);
+        verify(servletContext, atLeastOnce()).setAttribute(eq(componentType.getName()), argumentCaptor.capture());
+        return argumentCaptor.getValue();
+    }
+
 
     @After
     public void tearDown() throws Exception {

@@ -13,6 +13,10 @@ package org.everrest.core.impl.header;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.everrest.core.impl.header.HeaderHelper.addQuotesIfHasWhitespace;
+import static org.everrest.core.impl.header.HeaderHelper.parseNewCookie;
+
 /**
  * @author andrew00x
  */
@@ -20,38 +24,45 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
 
     @Override
     public NewCookie fromString(String header) {
-        throw new UnsupportedOperationException("NewCookie used only for response headers.");
+        checkArgument(header != null);
+        return parseNewCookie(header);
     }
-
 
     @Override
     public String toString(NewCookie cookie) {
-        if (cookie == null) {
-            throw new IllegalArgumentException();
-        }
+        checkArgument(cookie != null);
         StringBuilder sb = new StringBuilder();
-        sb.append(cookie.getName()).append('=').append(HeaderHelper.addQuotesIfHasWhitespace(cookie.getValue()));
+        sb.append(cookie.getName()).append('=').append(addQuotesIfHasWhitespace(cookie.getValue()));
 
         sb.append(';').append("Version=").append(cookie.getVersion());
 
         if (cookie.getComment() != null) {
-            sb.append(';').append("Comment=").append(HeaderHelper.addQuotesIfHasWhitespace(cookie.getComment()));
+            sb.append(';').append("Comment=").append(addQuotesIfHasWhitespace(cookie.getComment()));
         }
 
         if (cookie.getDomain() != null) {
-            sb.append(';').append("Domain=").append(HeaderHelper.addQuotesIfHasWhitespace(cookie.getDomain()));
+            sb.append(';').append("Domain=").append(addQuotesIfHasWhitespace(cookie.getDomain()));
         }
 
         if (cookie.getPath() != null) {
-            sb.append(';').append("Path=").append(HeaderHelper.addQuotesIfHasWhitespace(cookie.getPath()));
+            sb.append(';').append("Path=").append(addQuotesIfHasWhitespace(cookie.getPath()));
         }
 
         if (cookie.getMaxAge() != -1) {
-            sb.append(';').append("Max-Age=").append(HeaderHelper.addQuotesIfHasWhitespace("" + cookie.getMaxAge()));
+            sb.append(';').append("Max-Age=").append(addQuotesIfHasWhitespace(Integer.toString(cookie.getMaxAge())));
+        }
+
+        if (cookie.getExpiry() != null) {
+            sb.append(';').append("Expires=");
+            sb.append(HeaderHelper.formatDate(cookie.getExpiry()));
         }
 
         if (cookie.isSecure()) {
             sb.append(';').append("Secure");
+        }
+
+        if (cookie.isHttpOnly()) {
+            sb.append(';').append("HttpOnly");
         }
 
         return sb.toString();

@@ -14,10 +14,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 @Provider
 public class BookNotFoundExceptionMapper implements ExceptionMapper<BookNotFoundException> {
     @Override

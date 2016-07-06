@@ -17,7 +17,7 @@ import org.everrest.core.LifecycleMethodStrategy;
  *
  * @see LifecycleMethodStrategy
  */
-public final class LifecycleComponent {
+public class LifecycleComponent {
     private static final LifecycleMethodStrategy defaultStrategy = new AnnotatedLifecycleMethodStrategy();
 
     private final Object                  component;
@@ -38,5 +38,9 @@ public final class LifecycleComponent {
 
     public void destroy() {
         lifecycleStrategy.invokeDestroyMethods(component);
+    }
+
+    public Object getComponent() {
+        return component;
     }
 }

@@ -10,85 +10,60 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
+import com.google.common.base.MoreObjects;
+
 import org.everrest.core.BaseObjectModel;
-import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.provider.ProviderDescriptor;
-import org.everrest.core.resource.ResourceDescriptorVisitor;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+import static org.everrest.core.impl.header.MediaTypeHelper.createConsumesList;
+import static org.everrest.core.impl.header.MediaTypeHelper.createProducesList;
+
 /**
  * @author andrew00x
  */
 public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderDescriptor {
-    /**
-     * List of media types which this method can consume. See
-     * {@link javax.ws.rs.Consumes} .
-     */
+    /** List of media types which this method can consume. See {@link javax.ws.rs.Consumes} */
     private final List<MediaType> consumes;
 
-    /**
-     * List of media types which this method can produce. See
-     * {@link javax.ws.rs.Produces} .
-     */
+    /** List of media types which this method can produce. See {@link javax.ws.rs.Produces} */
     private final List<MediaType> produces;
 
-    /**
-     * @param providerClass
-     *         provider class
-     */
     public ProviderDescriptorImpl(Class<?> providerClass) {
         super(providerClass);
-        this.consumes = MediaTypeHelper.createConsumesList(providerClass.getAnnotation(Consumes.class));
-        this.produces = MediaTypeHelper.createProducesList(providerClass.getAnnotation(Produces.class));
+        this.consumes = createConsumesList(providerClass.getAnnotation(Consumes.class));
+        this.produces = createProducesList(providerClass.getAnnotation(Produces.class));
     }
 
-    /**
-     * @param provider
-     *         provider
-     */
     public ProviderDescriptorImpl(Object provider) {
         super(provider);
         final Class<?> providerClass = provider.getClass();
-        this.consumes = MediaTypeHelper.createConsumesList(providerClass.getAnnotation(Consumes.class));
-        this.produces = MediaTypeHelper.createProducesList(providerClass.getAnnotation(Produces.class));
+        this.consumes = createConsumesList(providerClass.getAnnotation(Consumes.class));
+        this.produces = createProducesList(providerClass.getAnnotation(Produces.class));
     }
-
-
-    @Override
-    public void accept(ResourceDescriptorVisitor visitor) {
-        visitor.visitProviderDescriptor(this);
-    }
-
 
     @Override
     public List<MediaType> consumes() {
         return consumes;
     }
 
-
     @Override
     public List<MediaType> produces() {
         return produces;
     }
 
-
     public String toString() {
-        StringBuilder sb = new StringBuilder("[ ProviderDescriptorImpl: ");
-        sb.append("provider class: ");
-        sb.append(getObjectClass());
-        sb.append("; produces media type: ");
-        sb.append(produces());
-        sb.append("; consumes media type: ");
-        sb.append(consumes());
-        sb.append("; ");
-        sb.append(getConstructorDescriptors());
-        sb.append("; ");
-        sb.append(getFieldInjectors());
-        sb.append(" ]");
-        return sb.toString();
+        return MoreObjects.toStringHelper(ProviderDescriptorImpl.class)
+                          .add("provider class", clazz)
+                          .add("produces media type", produces.isEmpty() ? null : produces)
+                          .add("consumes media type", consumes.isEmpty() ? null : consumes)
+                          .addValue(constructors.isEmpty() ? null : constructors)
+                          .addValue(fields.isEmpty() ? null : fields)
+                          .omitNullValues()
+                          .toString();
     }
 }

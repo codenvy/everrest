@@ -10,220 +10,266 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider.json;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
+import groovy.lang.GroovyObject;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.CharStreams;
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
+
+import org.everrest.core.impl.provider.json.tst.BeanWithClassField;
+import org.everrest.core.impl.provider.json.tst.BeanWithEnums;
+import org.everrest.core.impl.provider.json.tst.BeanWithPrimitiveFields;
+import org.everrest.core.impl.provider.json.tst.BeanWithTransientField;
+import org.everrest.core.impl.provider.json.tst.Book;
+import org.everrest.core.impl.provider.json.tst.BookArrays;
+import org.everrest.core.impl.provider.json.tst.BookCollections;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
-public class JsonGeneratorTest extends JsonTest {
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.everrest.core.impl.provider.json.tst.BeanWithClassField.createBeanWithClassField;
+import static org.everrest.core.impl.provider.json.tst.BeanWithEnums.createBeanWithEnums;
+import static org.everrest.core.impl.provider.json.tst.BeanWithPrimitiveFields.createBeanWithPrimitiveFields;
+import static org.everrest.core.impl.provider.json.tst.Book.createCSharpBook;
+import static org.everrest.core.impl.provider.json.tst.Book.createJavaScriptBook;
+import static org.everrest.core.impl.provider.json.tst.Book.createJunitBook;
+import static org.everrest.core.impl.provider.json.tst.BookArrays.createBookArrays;
+import static org.everrest.core.impl.provider.json.tst.BookCollections.createBookCollections;
+import static org.everrest.core.impl.provider.json.tst.BookWrapperOne.createBookWrapperOne;
+import static org.everrest.core.impl.provider.json.tst.BookWrapperThree.createBookWrapperThree;
+import static org.everrest.core.impl.provider.json.tst.BookWrapperTwo.createBookWrapperTwo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+@RunWith(DataProviderRunner.class)
+public class JsonGeneratorTest {
+    private Book junitBook;
+    private Book csharpBook;
+    private Book javaScriptBook;
+
+    private JsonAssertionHelper assertionHelper;
+
+    @Before
+    public void setUp() throws Exception {
+        junitBook = createJunitBook();
+        csharpBook = createCSharpBook();
+        javaScriptBook = createJavaScriptBook();
+        assertionHelper = new JsonAssertionHelper();
     }
 
-    public void testBean() throws Exception {
-        JsonValue jsonValue = JsonGenerator.createJsonObject(junitBook);
+    @Test
+    public void convertsObjectToJson() throws Exception {
+        JsonValue json = JsonGenerator.createJsonObject(junitBook);
+        assertTrue(json.isObject());
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(junitBook, json);
+    }
+
+    @Test
+    public void convertsNullObjectToJson() throws Exception {
+        JsonValue json = JsonGenerator.createJsonObject(null);
+        assertTrue(json.isNull());
+    }
+
+    @Test
+    public void convertsArrayToJson() throws Exception {
+        Book[] books = new Book[]{junitBook, csharpBook, javaScriptBook};
+        JsonValue jsonArray = JsonGenerator.createJsonArray(books);
+        assertTrue(jsonArray.isArray());
+        assertionHelper.assertThatJsonArrayHasAllItemsFromArray(books, jsonArray);
+    }
+
+    @Test(expected = JsonException.class)
+    public void doesNotAcceptOtherThanArrayArgumentsWhenCreateJsonArray() throws Exception {
+        JsonGenerator.createJsonArray(junitBook);
+    }
+
+    @Test
+    public void convertsNullArrayToJson() throws Exception {
+        JsonValue jsonValue = JsonGenerator.createJsonArray((Object)null);
+        assertTrue(jsonValue.isNull());
+    }
+
+    @Test
+    public void convertsListToJson() throws Exception {
+        List<Book> books = newArrayList(junitBook, csharpBook, javaScriptBook);
+        JsonValue jsonArray = JsonGenerator.createJsonArray(books);
+        assertTrue(jsonArray.isArray());
+        assertionHelper.assertThatJsonArrayHasAllItemsFromCollection(books, jsonArray);
+    }
+
+    @Test
+    public void convertsSetToJsonArray() throws Exception {
+        Set<Book> books = newHashSet(junitBook, csharpBook, javaScriptBook);
+        JsonValue jsonArray = JsonGenerator.createJsonArray(books);
+        assertTrue(jsonArray.isArray());
+        assertionHelper.assertThatJsonArrayHasAllItemsFromCollection(books, jsonArray);
+    }
+
+    @Test
+    public void convertsNullCollectionToJson() throws Exception {
+        JsonValue jsonValue = JsonGenerator.createJsonArray(null);
+        assertTrue(jsonValue.isNull());
+    }
+
+    @Test
+    public void convertsMapToJson() throws Exception {
+        Map<String, Book> books = ImmutableMap.of("0", junitBook,
+                                                  "1", csharpBook,
+                                                  "2", javaScriptBook);
+        JsonValue jsonValue = JsonGenerator.createJsonObjectFromMap(books);
         assertTrue(jsonValue.isObject());
-        assertEquals(junitBook.getAuthor(), jsonValue.getElement("author").getStringValue());
-        assertEquals(junitBook.getTitle(), jsonValue.getElement("title").getStringValue());
-        assertEquals(junitBook.getPages(), jsonValue.getElement("pages").getIntValue());
-        assertEquals(junitBook.getPrice(), jsonValue.getElement("price").getDoubleValue());
-        assertEquals(junitBook.getIsdn(), jsonValue.getElement("isdn").getLongValue());
-        assertEquals(junitBook.getDelivery(), jsonValue.getElement("delivery").getBooleanValue());
-        assertEquals(junitBook.isAvailability(), jsonValue.getElement("availability").getBooleanValue());
+        assertionHelper.assertThatJsonHasAllItemsFromMap(books, jsonValue);
     }
 
-    public void testArray() throws Exception {
-        Book[] a = new Book[]{junitBook, csharpBook, javaScriptBook};
-        JsonValue jsonValue = JsonGenerator.createJsonArray(a);
+    @Test
+    public void convertsNullMapToJson() throws Exception {
+        JsonValue jsonValue = JsonGenerator.createJsonObjectFromMap(null);
+        assertTrue(jsonValue.isNull());
+    }
+
+
+    @DataProvider
+    public static Object[][] complexObjectsForConvertToJson() {
+        return new Object[][] {
+                {createBookWrapperOne(createJunitBook())},
+                {createBookWrapperTwo(createJavaScriptBook())},
+                {createBookWrapperThree(createCSharpBook())}
+        };
+    }
+
+    @UseDataProvider("complexObjectsForConvertToJson")
+    @Test
+    public void convertsComplexObjectToJson(Object object) throws Exception {
+        JsonValue jsonValue = JsonGenerator.createJsonObject(object);
+        assertTrue(jsonValue.isObject());
+
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(object, jsonValue);
+    }
+
+
+    @DataProvider
+    public static Object[][] collectionsOfComplexObjectsForConvertToJson() {
+        return new Object[][] {
+                {newArrayList(createBookWrapperOne(createJunitBook()))},
+                {newArrayList(createBookWrapperOne(createJunitBook()), createBookWrapperTwo(createJavaScriptBook()))},
+                {newArrayList(createBookWrapperTwo(createJavaScriptBook()), createBookWrapperThree(createCSharpBook()))}
+        };
+    }
+
+    @UseDataProvider("collectionsOfComplexObjectsForConvertToJson")
+    @Test
+    public void convertsCollectionsOfComplexObjectsToJson(Collection<Object> objects) throws Exception {
+        JsonValue jsonValue = JsonGenerator.createJsonArray(objects);
         assertTrue(jsonValue.isArray());
-        Iterator<JsonValue> iterator = jsonValue.getElements();
-        assertEquals(a[0].getTitle(), iterator.next().getElement("title").getStringValue());
-        assertEquals(a[1].getTitle(), iterator.next().getElement("title").getStringValue());
-        assertEquals(a[2].getTitle(), iterator.next().getElement("title").getStringValue());
-        //System.out.println(jsonValue);
+
+        assertionHelper.assertThatJsonArrayHasAllItemsFromCollection(objects, jsonValue);
     }
 
-    public void testArrayNull() throws Exception {
-        Book[] a = null;
-        JsonValue jsonValue = JsonGenerator.createJsonArray(a);
-        assertTrue(jsonValue.isNull());
-    }
+    @Test
+    public void convertsObjectThatContainsCollectionsOfComplexObjects() throws Exception {
+        BookCollections bookCollections = createBookCollections();
 
-    public void testCollection() throws Exception {
-        List<Book> l = Arrays.asList(junitBook, csharpBook, javaScriptBook);
-        JsonValue jsonValue = JsonGenerator.createJsonArray(l);
-        assertTrue(jsonValue.isArray());
-        Iterator<JsonValue> iterator = jsonValue.getElements();
-        assertEquals(l.get(0).getTitle(), iterator.next().getElement("title").getStringValue());
-        assertEquals(l.get(1).getTitle(), iterator.next().getElement("title").getStringValue());
-        assertEquals(l.get(2).getTitle(), iterator.next().getElement("title").getStringValue());
-        //System.out.println(jsonValue);
-    }
-
-    public void testCollectionNull() throws Exception {
-        List<Book> l = null;
-        JsonValue jsonValue = JsonGenerator.createJsonArray(l);
-        assertTrue(jsonValue.isNull());
-    }
-
-    public void testMap() throws Exception {
-        Map<String, Book> m = new HashMap<String, Book>();
-        m.put("junit", junitBook);
-        m.put("csharp", csharpBook);
-        m.put("js", javaScriptBook);
-        JsonValue jsonValue = JsonGenerator.createJsonObjectFromMap(m);
+        JsonValue jsonValue = JsonGenerator.createJsonObject(bookCollections);
         assertTrue(jsonValue.isObject());
-        assertEquals(junitBook.getTitle(), jsonValue.getElement("junit").getElement("title").getStringValue());
-        assertEquals(csharpBook.getTitle(), jsonValue.getElement("csharp").getElement("title").getStringValue());
-        assertEquals(javaScriptBook.getTitle(), jsonValue.getElement("js").getElement("title").getStringValue());
-        //System.out.println(jsonValue);
+
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(bookCollections, jsonValue);
     }
 
-    public void testMapNull() throws Exception {
-        Map<String, Book> m = null;
-        JsonValue jsonValue = JsonGenerator.createJsonObjectFromMap(m);
-        assertTrue(jsonValue.isNull());
-    }
+    @Test
+    public void convertsObjectThatContainsArraysOfComplexObjects() throws Exception {
+        BookArrays bookArrays = createBookArrays();
 
-    public void testBeanWrapper() throws Exception {
-        BookWrapper bookWrapper = new BookWrapper();
-        bookWrapper.setBook(junitBook);
-        JsonValue jsonValue = JsonGenerator.createJsonObject(bookWrapper);
+        JsonValue jsonValue = JsonGenerator.createJsonObject(bookArrays);
         assertTrue(jsonValue.isObject());
-        assertEquals(junitBook.getAuthor(), jsonValue.getElement("book").getElement("author").getStringValue());
-        assertEquals(junitBook.getTitle(), jsonValue.getElement("book").getElement("title").getStringValue());
-        assertEquals(junitBook.getPages(), jsonValue.getElement("book").getElement("pages").getIntValue());
-        assertEquals(junitBook.getPrice(), jsonValue.getElement("book").getElement("price").getDoubleValue());
-        assertEquals(junitBook.getIsdn(), jsonValue.getElement("book").getElement("isdn").getLongValue());
-        assertEquals(junitBook.getDelivery(), jsonValue.getElement("book").getElement("delivery").getBooleanValue());
-        assertEquals(junitBook.isAvailability(), jsonValue.getElement("book").getElement("availability")
-                                                          .getBooleanValue());
+
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(bookArrays, jsonValue);
     }
 
-    public void testBeanCollection() throws Exception {
-        List<Book> l = new ArrayList<Book>();
-        l.add(junitBook);
-        l.add(csharpBook);
-        l.add(javaScriptBook);
-        BookStorage bookStorage = new BookStorage();
-        bookStorage.setBooks(l);
-
-        JsonValue jsonValue = JsonGenerator.createJsonObject(bookStorage);
-        assertTrue(jsonValue.isObject());
-        Iterator<JsonValue> iterator = jsonValue.getElement("books").getElements();
-        assertEquals(l.get(0).getTitle(), iterator.next().getElement("title").getStringValue());
-        assertEquals(l.get(1).getTitle(), iterator.next().getElement("title").getStringValue());
-        assertEquals(l.get(2).getTitle(), iterator.next().getElement("title").getStringValue());
-    }
-
-    public void testBeanMap() throws Exception {
-        JavaMapBean mb = new JavaMapBean();
-
-        Map<String, Book> m = new HashMap<String, Book>();
-        m.put("test", junitBook);
-        mb.setHashMap((HashMap<String, Book>)m);
-
-        Book[] books = new Book[3];
-        books[0] = junitBook;
-        books[1] = csharpBook;
-        books[2] = javaScriptBook;
-
-        Map<String, List<Book>> hu = new HashMap<String, List<Book>>();
-        hu.put("1", Arrays.asList(books));
-        hu.put("2", Arrays.asList(books));
-        hu.put("3", Arrays.asList(books));
-        mb.setMapList(hu);
-
-        Map<String, Book[]> arrayMap = new HashMap<String, Book[]>();
-        arrayMap.put("1", books);
-        arrayMap.put("2", books);
-        arrayMap.put("3", books);
-        mb.setMapArray(arrayMap);
-
-        Map<String, String> str = new HashMap<String, String>();
-        str.put("key1", "value1");
-        str.put("key2", "value2");
-        str.put("key3", "value3");
-        mb.setStrings(str);
-
-        JsonValue jsonValue = JsonGenerator.createJsonObject(mb);
-
-        assertEquals(str.get("key2"), jsonValue.getElement("strings").getElement("key2").getStringValue());
-        assertNotNull(jsonValue.getElement("hashMap"));
-        assertNotNull(jsonValue.getElement("mapList"));
-        assertEquals("JUnit in Action",
-                     jsonValue.getElement("mapList").getElement("3").getElements().next().getElement("title").getStringValue());
-        assertNotNull(jsonValue.getElement("mapArray"));
-        assertEquals("JUnit in Action",
-                     jsonValue.getElement("mapArray").getElement("3").getElements().next().getElement("title").getStringValue());
-        // System.out.println(jsonValue);
-    }
-
-    public void testBeanTransientField() throws Exception {
-        BeanWithTransientField trBean = new BeanWithTransientField();
-        JsonValue jsonValue = JsonGenerator.createJsonObject(trBean);
+    @Test
+    public void ignoresTransientFields() throws Exception {
+        BeanWithTransientField bean = new BeanWithTransientField();
+        JsonValue jsonValue = JsonGenerator.createJsonObject(bean);
         assertEquals("visible", jsonValue.getElement("field").getStringValue());
         assertNull(jsonValue.getElement("transientField"));
     }
 
-    public void testBeanEnum() throws Exception {
-        BeanWithSimpleEnum be = new BeanWithSimpleEnum();
-        be.setName("name");
-        be.setCount(StringEnum.TWO);
-        be.setCounts(new StringEnum[]{StringEnum.ONE, StringEnum.TWO});
-        be.setCountList(Arrays.asList(StringEnum.ONE, StringEnum.TWO, StringEnum.TREE));
-        JsonValue jsonValue = JsonGenerator.createJsonObject(be);
-        //System.out.println(jsonValue);
+    @Test
+    public void ignoresFieldsAnnotatedWithJsonTransient() throws Exception {
+        BeanWithTransientField bean = new BeanWithTransientField();
+        JsonValue jsonValue = JsonGenerator.createJsonObject(bean);
+        assertEquals("visible", jsonValue.getElement("field").getStringValue());
+        assertNull(jsonValue.getElement("jsonTransientField"));
+    }
 
-        assertEquals("name", jsonValue.getElement("name").getStringValue());
+    @Test
+    public void convertsObjectWithEnumsToJson() throws Exception {
+        BeanWithEnums beanWithEnums = createBeanWithEnums();
 
-        assertEquals(StringEnum.TWO.name(), jsonValue.getElement("count").getStringValue());
+        JsonValue jsonValue = JsonGenerator.createJsonObject(beanWithEnums);
 
-        JsonValue countValues = jsonValue.getElement("counts");
-        List<String> tmp = new ArrayList<String>();
-        for (Iterator<JsonValue> counts = countValues.getElements(); counts.hasNext(); ) {
-            tmp.add(counts.next().getStringValue());
+        assertTrue(jsonValue.isObject());
+
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(beanWithEnums, jsonValue);
+    }
+
+    @Test
+    public void convertsObjectWithClassFieldToJson() throws Exception {
+        BeanWithClassField beanWithClassField = createBeanWithClassField();
+        JsonValue jsonValue = JsonGenerator.createJsonObject(beanWithClassField);
+        assertEquals(BeanWithClassField.class.getName(), jsonValue.getElement("klass").getStringValue());
+    }
+
+    @Test
+    public void convertsObjectWithPrimitiveFieldsAndTheirArraysToJson() throws Exception {
+        BeanWithPrimitiveFields beanWithPrimitiveFields = createBeanWithPrimitiveFields();
+        JsonValue jsonValue = JsonGenerator.createJsonObject(beanWithPrimitiveFields);
+
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(beanWithPrimitiveFields, jsonValue);
+    }
+
+    @Test
+    public void convertsSimpleGroovyBeanToJson() throws Exception {
+        Class<?> aClass = parseGroovyClass("SimpleBean.groovy");
+        GroovyObject groovyObject = (GroovyObject)aClass.newInstance();
+        groovyObject.invokeMethod("setValue", new Object[]{"test serialize groovy bean"});
+        JsonValue jsonValue = JsonGenerator.createJsonObject(groovyObject);
+
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(groovyObject, jsonValue);
+    }
+
+    @Test
+    public void convertsComplexGroovyBeanToJson() throws Exception {
+        Class<?> aClass = parseGroovyClass("BookStorage.groovy");
+        Object groovyObject = aClass.getDeclaredMethod("createBookStorage").invoke(null);
+
+        JsonValue jsonValue = JsonGenerator.createJsonObject(groovyObject);
+
+        assertionHelper.assertThatJsonHasAllFieldsFromObject(groovyObject, jsonValue);
+    }
+
+    private GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
+
+    private Class<?> parseGroovyClass(String fileName) throws IOException {
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+             Reader reader = new InputStreamReader(stream)) {
+            String script = CharStreams.toString(reader);
+            return groovyClassLoader.parseClass(new GroovyCodeSource(script, fileName, "groovy/script"));
         }
-        assertEquals(2, tmp.size());
-        assertTrue(tmp.contains(StringEnum.ONE.name()));
-        assertTrue(tmp.contains(StringEnum.TWO.name()));
-
-        JsonValue countListValues = jsonValue.getElement("countList");
-        tmp = new ArrayList<String>();
-        for (Iterator<JsonValue> counts = countListValues.getElements(); counts.hasNext(); ) {
-            tmp.add(counts.next().getStringValue());
-        }
-        assertEquals(3, tmp.size());
-        assertTrue(tmp.contains(StringEnum.ONE.name()));
-        assertTrue(tmp.contains(StringEnum.TWO.name()));
-        assertTrue(tmp.contains(StringEnum.TREE.name()));
-    }
-
-    public void testBeanEnumObject() throws Exception {
-        BeanWithBookEnum be = new BeanWithBookEnum();
-        be.setBook(BookEnum.JUNIT_IN_ACTION);
-        JsonValue jsonValue = JsonGenerator.createJsonObject(be);
-        //System.out.println(jsonValue);
-        assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
-    }
-
-    public void testBeanClassTransf() throws Exception {
-        ClassTransfBean be = new ClassTransfBean();
-        be.setKlass(ForTestClass000.class);
-        JsonValue jsonValue = JsonGenerator.createJsonObject(be);
-        //System.out.println(jsonValue);
-        assertEquals(ForTestClass000.class.getName(), jsonValue.getElement("klass").getStringValue());
-    }
-
-    public static class ForTestClass000 {
     }
 }

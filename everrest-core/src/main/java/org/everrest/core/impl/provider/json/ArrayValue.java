@@ -14,14 +14,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class ArrayValue extends JsonValue {
 
     /** List of children. */
-    private final List<JsonValue> children = new ArrayList<JsonValue>();
+    private final List<JsonValue> children = new ArrayList<>();
 
 
     @Override
@@ -53,12 +49,12 @@ public class ArrayValue extends JsonValue {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         int i = 0;
-        for (JsonValue v : children) {
+        for (JsonValue child : children) {
             if (i > 0) {
                 sb.append(',');
             }
             i++;
-            sb.append(v.toString());
+            sb.append(child.toString());
         }
         sb.append(']');
         return sb.toString();
@@ -68,8 +64,8 @@ public class ArrayValue extends JsonValue {
     @Override
     public void writeTo(JsonWriter writer) throws JsonException {
         writer.writeStartArray();
-        for (JsonValue v : children) {
-            v.writeTo(writer);
+        for (JsonValue child : children) {
+            child.writeTo(writer);
         }
         writer.writeEndArray();
     }

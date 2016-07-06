@@ -18,6 +18,8 @@ import org.everrest.core.impl.EverrestApplication;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.FileCollectorDestroyer;
+import org.everrest.core.impl.RequestDispatcher;
+import org.everrest.core.impl.RequestHandlerImpl;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.impl.async.AsynchronousJobPool;
 import org.everrest.core.impl.async.AsynchronousJobService;
@@ -28,6 +30,7 @@ import org.everrest.exoplatform.ExoDependencySupplier;
 import org.everrest.exoplatform.StartableApplication;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.StandaloneContainer;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
@@ -74,7 +77,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
 
         public static final String PREFIX_WAR = "war:";
 
-        private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(StandaloneContainerStarter.class);
+        private static final Logger LOG = LoggerFactory.getLogger(StandaloneContainerStarter.class);
 
         private StandaloneContainer container;
 
@@ -132,7 +135,7 @@ public abstract class EverrestExoContextListener implements ServletContextListen
         ResourceBinderImpl resources = new ResourceBinderImpl();
         ApplicationProviderBinder providers = new ApplicationProviderBinder();
         DependencySupplier dependencySupplier = new ExoDependencySupplier();
-        EverrestConfiguration config = everrestInitializer.getConfiguration();
+        EverrestConfiguration config = everrestInitializer.createConfiguration();
         Application application = everrestInitializer.getApplication();
         EverrestApplication everrest = new EverrestApplication();
         if (config.isAsynchronousSupported()) {
@@ -153,7 +156,9 @@ public abstract class EverrestExoContextListener implements ServletContextListen
             }
             everrest.addApplication(startable);
         }
-        EverrestProcessor processor = new EverrestProcessor(resources, providers, dependencySupplier, config, everrest);
+        RequestDispatcher requestDispatcher = new RequestDispatcher(resources);
+        RequestHandlerImpl requestHandler = new RequestHandlerImpl(requestDispatcher, providers);
+        EverrestProcessor processor = new EverrestProcessor(config, dependencySupplier, requestHandler, everrest);
         processor.start();
 
         servletContext.setAttribute(EverrestConfiguration.class.getName(), config);

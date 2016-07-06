@@ -14,20 +14,14 @@ import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
 
-/**
- * Provides store for temporary files.
- *
- * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id$
- */
+/** Provides store for temporary files. */
 public final class FileCollector {
     private static final String PREF = "everrest";
     private static final String SUFF = ".tmp";
 
     private static class FileCollectorHolder {
-        private static final String        name      = PREF + Long.toString(Math.abs(new SecureRandom().nextLong()));
-        private static final FileCollector collector = new FileCollector( //
-                                                                          new File(System.getProperty("java.io.tmpdir"), name));
+        private static final String        name      = String.format("%s%s", PREF, Long.toString(Math.abs(new SecureRandom().nextLong())));
+        private static final FileCollector collector = new FileCollector(new File(System.getProperty("java.io.tmpdir"), name));
     }
 
     public static FileCollector getInstance() {
@@ -35,15 +29,16 @@ public final class FileCollector {
     }
 
     private final File store;
-    private final Thread cleaner = new Thread() {
-        @Override
-        public void run() {
-            clean();
-        }
-    };
+    private final Thread cleaner;
 
     private FileCollector(File store) {
         this.store = store;
+        cleaner = new Thread() {
+            @Override
+            public void run() {
+                clean();
+            }
+        };
         try {
             Runtime.getRuntime().addShutdownHook(cleaner);
         } catch (IllegalStateException ignored) {
@@ -58,11 +53,11 @@ public final class FileCollector {
     }
 
     public void stop() {
-        clean();
         try {
             Runtime.getRuntime().removeShutdownHook(cleaner);
         } catch (IllegalStateException ignored) {
         }
+        clean();
     }
 
     /**
@@ -105,9 +100,9 @@ public final class FileCollector {
     private void delete(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory()) {
             File[] children = fileOrDirectory.listFiles();
-            if (children.length > 0) {
-                for (File ch : children) {
-                    delete(ch);
+            if (children != null && children.length > 0) {
+                for (File child : children) {
+                    delete(child);
                 }
             }
         }

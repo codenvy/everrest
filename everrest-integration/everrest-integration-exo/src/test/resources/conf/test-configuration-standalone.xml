@@ -31,6 +31,12 @@
         <type>org.everrest.core.impl.ResourceBinderImpl</type>
     </component>
     <component>
+        <type>org.everrest.core.impl.RequestDispatcher</type>
+    </component>
+    <component>
+        <type>org.everrest.core.impl.RequestHandlerImpl</type>
+    </component>
+    <component>
         <type>org.everrest.core.impl.EverrestProcessor</type>
     </component>
     <component>

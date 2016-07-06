@@ -10,9 +10,10 @@
  *******************************************************************************/
 package org.everrest.core.impl.resource;
 
-import org.everrest.core.method.MethodParameter;
-import org.everrest.core.resource.AbstractResourceDescriptor;
-import org.everrest.core.resource.ResourceDescriptorVisitor;
+import com.google.common.base.MoreObjects;
+
+import org.everrest.core.Parameter;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.SubResourceLocatorDescriptor;
 import org.everrest.core.uri.UriPattern;
 
@@ -20,11 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: SubResourceLocatorDescriptorImpl.java 285 2009-10-15 16:21:30Z
- *          aparfonov $
- */
 public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescriptor {
 
     /** See {@link PathValue}. */
@@ -37,13 +33,12 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
     private final Method method;
 
     /**
-     * Parent resource for this method resource, in other words class which
-     * contains this method.
+     * Parent resource for this method resource, in other words class which contains this method.
      */
-    private final AbstractResourceDescriptor parentResource;
+    private final ResourceDescriptor parentResource;
 
-    /** List of method's parameters. See {@link MethodParameter} . */
-    private final List<MethodParameter> parameters;
+    /** List of method's parameters. See {@link Parameter} . */
+    private final List<Parameter> parameters;
 
     private final Annotation[] additional;
 
@@ -55,7 +50,7 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
      * @param method
      *         See {@link Method}
      * @param parameters
-     *         list of method parameters. See {@link MethodParameter}
+     *         list of method parameters. See {@link Parameter}
      * @param parentResource
      *         parent resource for this method
      * @param additional
@@ -63,8 +58,8 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
      */
     SubResourceLocatorDescriptorImpl(PathValue path,
                                      Method method,
-                                     List<MethodParameter> parameters,
-                                     AbstractResourceDescriptor parentResource,
+                                     List<Parameter> parameters,
+                                     ResourceDescriptor parentResource,
                                      Annotation[] additional) {
         this.path = path;
         this.uriPattern = new UriPattern(path.getPath());
@@ -88,25 +83,19 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
 
 
     @Override
-    public void accept(ResourceDescriptorVisitor visitor) {
-        visitor.visitSubResourceLocatorDescriptor(this);
-    }
-
-
-    @Override
     public Method getMethod() {
         return method;
     }
 
 
     @Override
-    public List<MethodParameter> getMethodParameters() {
+    public List<Parameter> getMethodParameters() {
         return parameters;
     }
 
 
     @Override
-    public AbstractResourceDescriptor getParentResource() {
+    public ResourceDescriptor getParentResource() {
         return parentResource;
     }
 
@@ -125,14 +114,10 @@ public class SubResourceLocatorDescriptorImpl implements SubResourceLocatorDescr
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[ SubResourceMethodDescriptorImpl: ");
-        sb.append("resource: ");
-        sb.append(getParentResource());
-        sb.append("; path: ");
-        sb.append(getPathValue());
-        sb.append("; return type: ");
-        sb.append(getResponseType());
-        sb.append(" ]");
-        return sb.toString();
+        return MoreObjects.toStringHelper(this)
+                          .add("resource", parentResource.getObjectClass())
+                          .add("path", path)
+                          .add("returned type", getResponseType())
+                          .toString();
     }
 }

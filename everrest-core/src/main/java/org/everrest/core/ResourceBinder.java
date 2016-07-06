@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.everrest.core;
 
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.uri.UriPattern;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -25,11 +25,11 @@ public interface ResourceBinder {
 
     /**
      * Get list of all registered root resources. Returned list is the copy of original list. Any changes in this list
-     * does not impact to original list.
+     * do not impact to original list.
      *
      * @return all registered root resources
      */
-    List<ObjectFactory<AbstractResourceDescriptor>> getResources();
+    List<ObjectFactory<ResourceDescriptor>> getResources();
 
     /** @return number of bound resources */
     int getSize();
@@ -159,7 +159,7 @@ public interface ResourceBinder {
      *         because resource with the sane {@link UriPattern} already
      *         registered
      */
-    void addResource(ObjectFactory<AbstractResourceDescriptor> resourceFactory);
+    void addResource(ObjectFactory<ResourceDescriptor> resourceFactory);
 
     /**
      * Get root resource matched to <code>requestPath</code>.
@@ -171,7 +171,7 @@ public interface ResourceBinder {
      * @return root resource matched to <code>requestPath</code> or
      * <code>null</code>
      */
-    ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues);
+    ObjectFactory<ResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues);
 
     /**
      * Remove root resource of supplied class from root resource collection.
@@ -181,7 +181,7 @@ public interface ResourceBinder {
      * @return removed resource or <code>null</code> if resource of specified
      * class not found
      */
-    ObjectFactory<AbstractResourceDescriptor> removeResource(Class<?> clazz);
+    ObjectFactory<ResourceDescriptor> removeResource(Class<?> clazz);
 
     /**
      * Remove root resource with specified UriTemplate from root resource
@@ -192,6 +192,6 @@ public interface ResourceBinder {
      * @return removed resource or <code>null</code> if resource for specified
      * template not found
      */
-    ObjectFactory<AbstractResourceDescriptor> removeResource(String path);
+    ObjectFactory<ResourceDescriptor> removeResource(String path);
 
 }

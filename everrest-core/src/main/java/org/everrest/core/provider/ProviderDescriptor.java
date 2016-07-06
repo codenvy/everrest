@@ -11,19 +11,16 @@
 package org.everrest.core.provider;
 
 import org.everrest.core.ObjectModel;
-import org.everrest.core.resource.ResourceDescriptor;
 
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
- * Descriptor of Provider. Provider is annotated with &#64;Provider and
- * implement interface defined by JAX-RS.
+ * Descriptor of Provider. Provider is annotated with &#64;Provider and implement interface defined by JAX-RS.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public interface ProviderDescriptor extends ResourceDescriptor, ObjectModel {
+public interface ProviderDescriptor extends ObjectModel {
 
     /**
      * Get list of {@link MediaType} which current provider consumes.

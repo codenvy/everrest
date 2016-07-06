@@ -27,19 +27,20 @@ public class EntityTagHeaderDelegate implements RuntimeDelegate.HeaderDelegate<E
         boolean isWeak = header.startsWith("W/");
 
         String value;
-        // cut 'W/' prefix if exists
         if (isWeak) {
-            value = header.substring(2);
+            value = cutWeakPrefix(header);
         } else {
             value = header;
         }
-        // remove quotes
         value = value.substring(1, value.length() - 1);
-        value = HeaderHelper.filterEscape(value);
+        value = HeaderHelper.removeQuoteEscapes(value);
 
         return new EntityTag(value, isWeak);
     }
 
+    private String cutWeakPrefix(String header) {
+        return header.substring(2);
+    }
 
     @Override
     public String toString(EntityTag entityTag) {

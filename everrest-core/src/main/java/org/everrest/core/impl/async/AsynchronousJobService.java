@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.impl.async;
 
+import org.everrest.core.ApplicationContext;
 import org.everrest.core.GenericContainerRequest;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.impl.ProviderBinder;
 
 import javax.ws.rs.DELETE;
@@ -34,9 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service to get result of invocation asynchronous job from {@link AsynchronousJobPool}.
- * Instance of AsynchronousJobPool obtained in instance of this class via mechanism of injections.
- * This resource must always be deployed as per-request resource.
+ * Service to get results of invocation asynchronous job from {@link AsynchronousJobPool}. Instance of AsynchronousJobPool obtained in
+ * in this class via mechanism of injections. This resource must always be deployed as per-request resource.
  *
  * @author andrew00x
  */
@@ -48,16 +47,16 @@ public class AsynchronousJobService {
     @GET
     @Path("{job}")
     public Object get(@PathParam("job") Long jobId, @Context UriInfo uriInfo, @Context SecurityContext securityContext) {
-        AsynchronousJobPool pool = getJobPool();
+        final AsynchronousJobPool pool = getJobPool();
         final AsynchronousJob job = pool.getJob(jobId);
         if (job == null) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                                                      .entity("Job " + jobId + " not found. ")
+                                                      .entity(String.format("Job %d not found. ", jobId))
                                                       .type(MediaType.TEXT_PLAIN).build());
         }
 
         // Get original request which initialize asynchronous job.
-        GenericContainerRequest request = (GenericContainerRequest)job.getContext().get("org.everrest.async.request");
+        final GenericContainerRequest request = (GenericContainerRequest)job.getContext().get("org.everrest.async.request");
         if (securityContext.isUserInRole("administrators")
             || principalMatched(request.getUserPrincipal(), securityContext.getUserPrincipal())) {
             if (job.isDone()) {
@@ -67,7 +66,7 @@ public class AsynchronousJobService {
                 } finally {
                     pool.removeJob(jobId);
                     // Restore resource specific set of providers.
-                    ApplicationContextImpl.getCurrent().setProviders((ProviderBinder)job.getContext().get("org.everrest.async.providers"));
+                    ApplicationContext.getCurrent().setProviders((ProviderBinder)job.getContext().get("org.everrest.async.providers"));
                 }
 
                 // This response will be sent to client side.
@@ -87,7 +86,7 @@ public class AsynchronousJobService {
                 }
 
                 // Result of job. Client get this response.
-                ApplicationContextImpl.getCurrent().getContainerResponse().setResponse(response);
+                ApplicationContext.getCurrent().getContainerResponse().setResponse(response);
 
                 // This response (204) never sent to client side.
                 return null;
@@ -100,7 +99,7 @@ public class AsynchronousJobService {
             }
         } else {
             throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN)
-                                                      .entity("GET: (" + jobId + ") - Operation not permitted. ")
+                                                      .entity(String.format("GET: (%d) - Operation not permitted. ", jobId))
                                                       .type(MediaType.TEXT_PLAIN).build());
         }
     }
@@ -110,7 +109,7 @@ public class AsynchronousJobService {
     public GenericEntity<List<AsynchronousProcess>> list() {
         AsynchronousJobPool pool = getJobPool();
         List<AsynchronousJob> jobs = pool.getAll();
-        List<AsynchronousProcess> processes = new ArrayList<AsynchronousProcess>(jobs.size());
+        List<AsynchronousProcess> processes = new ArrayList<>(jobs.size());
         for (AsynchronousJob job : jobs) {
             GenericContainerRequest request = (GenericContainerRequest)job.getContext().get("org.everrest.async.request");
             Principal principal = request.getUserPrincipal();
@@ -120,8 +119,6 @@ public class AsynchronousJobService {
                     request.getRequestUri().getPath(),
                     job.isDone() ? "done" : "running"));
         }
-        // Wrap list with GenericEntity to have chance to determine suitable MessageBodyWriter.
-        // Without such wrapper generic type information is not available.
         return new GenericEntity<List<AsynchronousProcess>>(processes) {
         };
     }
@@ -132,9 +129,8 @@ public class AsynchronousJobService {
         AsynchronousJobPool pool = getJobPool();
         AsynchronousJob job = pool.getJob(jobId);
         if (job == null) {
-            throw new WebApplicationException(Response
-                                                      .status(Response.Status.NOT_FOUND)
-                                                      .entity("Job " + jobId + " not found. ")
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                                                      .entity(String.format("Job %d not found. ", jobId))
                                                       .type(MediaType.TEXT_PLAIN).build());
         }
 
@@ -143,9 +139,8 @@ public class AsynchronousJobService {
                                 securityContext.getUserPrincipal())) {
             pool.removeJob(jobId);
         } else {
-            throw new WebApplicationException(Response
-                                                      .status(Response.Status.FORBIDDEN)
-                                                      .entity("DELETE: (" + jobId + ") - Operation not permitted. ")
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN)
+                                                      .entity(String.format("DELETE: (%d) - Operation not permitted. ", jobId))
                                                       .type(MediaType.TEXT_PLAIN).build());
         }
     }
@@ -167,8 +162,7 @@ public class AsynchronousJobService {
 
     private AsynchronousJobPool getJobPool() {
         if (providers != null) {
-            ContextResolver<AsynchronousJobPool> asyncJobsResolver =
-                    providers.getContextResolver(AsynchronousJobPool.class, null);
+            ContextResolver<AsynchronousJobPool> asyncJobsResolver = providers.getContextResolver(AsynchronousJobPool.class, null);
             if (asyncJobsResolver != null) {
                 return asyncJobsResolver.getContext(null);
             }

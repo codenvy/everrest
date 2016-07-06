@@ -10,13 +10,9 @@
  *******************************************************************************/
 package org.everrest.sample.book;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 @SuppressWarnings("serial")
 public class BookNotFoundException extends Exception {
     public BookNotFoundException(String id) {
-        super("Book with id " + id + " not found.");
+        super(String.format("Book with id %s not found.", id));
     }
 }

@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
+import com.google.common.io.CharStreams;
+
 import org.everrest.core.ApplicationContext;
-import org.everrest.core.impl.ApplicationContextImpl;
 import org.everrest.core.provider.EntityProvider;
 
 import javax.ws.rs.core.MediaType;
@@ -26,7 +27,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * @author andrew00x
@@ -39,46 +41,45 @@ public class ReaderEntityProvider implements EntityProvider<Reader> {
         return type == Reader.class;
     }
 
-
     @Override
     public Reader readFrom(Class<Reader> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException {
-        String cs = mediaType != null ? mediaType.getParameters().get("charset") : null;
-        Charset charset = cs != null ? Charset.forName(cs) : IOHelper.DEFAULT_CHARSET;
-
-        ApplicationContext context = ApplicationContextImpl.getCurrent();
+        ApplicationContext context = ApplicationContext.getCurrent();
         if (context.isAsynchronous()) {
-            // If request is asynchronous spool content of stream to file or memory.
             int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
-            return new InputStreamReader(IOHelper.bufferStream(entityStream, bufferSize), charset);
+            return new InputStreamReader(IOHelper.bufferStream(entityStream, bufferSize), getCharsetOrUtf8(mediaType));
         }
 
-        return new InputStreamReader(entityStream, charset);
+        return new InputStreamReader(entityStream, getCharsetOrUtf8(mediaType));
     }
-
 
     @Override
     public long getSize(Reader t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return Reader.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void writeTo(Reader t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+    public void writeTo(Reader reader, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-        Writer out = new OutputStreamWriter(entityStream);
+        Writer out = new OutputStreamWriter(entityStream, getCharsetOrUtf8(mediaType));
         try {
-            IOHelper.write(t, out);
+            CharStreams.copy(reader, out);
         } finally {
             out.flush();
-            t.close();
+            reader.close();
         }
     }
 
+    private String getCharsetOrUtf8(MediaType mediaType) {
+        String charset = mediaType == null ? null : mediaType.getParameters().get("charset");
+        if (isNullOrEmpty(charset)) {
+            charset = "UTF-8";
+        }
+        return charset;
+    }
 }

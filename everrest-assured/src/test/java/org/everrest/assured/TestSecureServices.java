@@ -21,9 +21,6 @@ import javax.ws.rs.Path;
 import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
 
-/**
- *
- */
 @Listeners(value = {EverrestJetty.class})
 public class TestSecureServices {
     @Path("/secure-test")

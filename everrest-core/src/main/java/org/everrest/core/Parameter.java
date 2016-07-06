@@ -16,8 +16,7 @@ import java.lang.reflect.Type;
 /**
  * Abstraction of method's, constructor's parameter or object field.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public interface Parameter {
 
@@ -25,10 +24,8 @@ public interface Parameter {
     Annotation[] getAnnotations();
 
     /**
-     * @return <i>main</i> annotation. It mind this annotation describe which
-     * value will be used for initialize parameter, e. g.
-     * {@link javax.ws.rs.PathParam}, {@link javax.ws.rs.QueryParam},
-     * etc.
+     * @return <i>main</i> annotation. It mind this annotation describe which value will be used for initialize parameter, e. g. {@link
+     * javax.ws.rs.PathParam}, {@link javax.ws.rs.QueryParam}, etc.
      */
     Annotation getAnnotation();
 
@@ -49,5 +46,4 @@ public interface Parameter {
      * @see java.lang.reflect.Method#getParameterTypes()
      */
     Class<?> getParameterClass();
-
 }

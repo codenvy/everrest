@@ -19,7 +19,6 @@ import javax.ws.rs.core.UriInfo
 @Path('books')
 class BookService {
 
-    @Inject
     BookStorage bookStorage
 
     @Path('{id}')

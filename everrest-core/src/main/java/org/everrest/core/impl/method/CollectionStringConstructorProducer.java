@@ -13,14 +13,11 @@ package org.everrest.core.impl.method;
 import java.lang.reflect.Constructor;
 
 /**
- * Produce collections each element of it is object which has constructor with
- * single String argument.
+ * Produces collections each element of it is object of class which has constructor with single String argument.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: CollectionStringConstructorProducer.java 285 2009-10-15
- *          16:21:30Z aparfonov $
+ * @author andrew00x
  */
-public final class CollectionStringConstructorProducer extends BaseCollectionProducer {
+public class CollectionStringConstructorProducer extends BaseCollectionProducer {
 
     /** This constructor will be used for creation collection elements. */
     private Constructor<?> constructor;
@@ -41,7 +38,7 @@ public final class CollectionStringConstructorProducer extends BaseCollectionPro
 
 
     @Override
-    protected Object createValue(String value) throws Exception {
+    protected Object createCollectionItem(String value) throws Exception {
         if (value == null) {
             return null;
         }

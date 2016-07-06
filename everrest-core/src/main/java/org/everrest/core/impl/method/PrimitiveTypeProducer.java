@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.everrest.core.impl.method;
 
+import org.everrest.core.util.ReflectionUtils;
+
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -17,10 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Construct a primitive type from string value.
+ * Constructs a primitive type from string value.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public final class PrimitiveTypeProducer extends BaseTypeProducer {
 
@@ -39,33 +40,34 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer {
     private static final Map<String, Object> PRIMITIVE_TYPE_DEFAULTS;
 
     static {
-        Map<String, Class<?>> m = new HashMap<String, Class<?>>(7);
-        m.put("boolean", Boolean.class);
-        m.put("byte", Byte.class);
-        m.put("short", Short.class);
-        m.put("int", Integer.class);
-        m.put("long", Long.class);
-        m.put("float", Float.class);
-        m.put("double", Double.class);
-        PRIMITIVE_TYPES_MAP = Collections.unmodifiableMap(m);
+        Map<String, Class<?>> primitiveTypes = new HashMap<>(7);
+        primitiveTypes.put("boolean", Boolean.class);
+        primitiveTypes.put("byte", Byte.class);
+        primitiveTypes.put("short", Short.class);
+        primitiveTypes.put("int", Integer.class);
+        primitiveTypes.put("long", Long.class);
+        primitiveTypes.put("float", Float.class);
+        primitiveTypes.put("double", Double.class);
+        PRIMITIVE_TYPES_MAP = Collections.unmodifiableMap(primitiveTypes);
     }
 
     static {
-        Map<String, Object> m = new HashMap<String, Object>(7);
-        m.put("boolean", false);
-        m.put("byte", (byte)0);
-        m.put("short", (short)0);
-        m.put("int", 0);
-        m.put("long", 0l);
-        m.put("float", 0.0f);
-        m.put("double", 0.0d);
-        PRIMITIVE_TYPE_DEFAULTS = Collections.unmodifiableMap(m);
+        Map<String, Object> primitiveTypesDefaultValues = new HashMap<>(7);
+        primitiveTypesDefaultValues.put("boolean", false);
+        primitiveTypesDefaultValues.put("byte", (byte)0);
+        primitiveTypesDefaultValues.put("short", (short)0);
+        primitiveTypesDefaultValues.put("int", 0);
+        primitiveTypesDefaultValues.put("long", 0L);
+        primitiveTypesDefaultValues.put("float", 0.0f);
+        primitiveTypesDefaultValues.put("float", 0.0f);
+        primitiveTypesDefaultValues.put("double", 0.0d);
+        PRIMITIVE_TYPE_DEFAULTS = Collections.unmodifiableMap(primitiveTypesDefaultValues);
     }
 
     /** Class of object which will be created. */
     private Class<?> clazz;
 
-    /** This will be used if defaultValue is null. */
+    /** This will be used if defaultValue is {@code null}. */
     private Object defaultDefaultValue;
 
     /**
@@ -76,29 +78,15 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer {
      */
     PrimitiveTypeProducer(Class<?> clazz) {
         this.clazz = clazz;
-
-        /**
-         * If class is represents primitive type then method
-         * {@link Class#getName()} return name of primitive type. See
-         * #PRIMITIVE_TYPES_MAP.
-         */
         this.defaultDefaultValue = PRIMITIVE_TYPE_DEFAULTS.get(clazz.getName());
     }
 
 
     @Override
     protected Object createValue(String value) throws Exception {
-
-        /**
-         * If class is represents primitive type then method
-         * {@link Class#getName()} return name of primitive type. See
-         * #PRIMITIVE_TYPES_MAP.
-         */
         Class<?> c = PRIMITIVE_TYPES_MAP.get(clazz.getName());
-        Method method = ParameterHelper.getStringValueOfMethod(c);
-
-        // invoke valueOf method for creation object
-        return method.invoke(null, value);
+        Method stringValueOfMethod = ReflectionUtils.getStringValueOfMethod(c);
+        return stringValueOfMethod.invoke(null, value);
     }
 
 

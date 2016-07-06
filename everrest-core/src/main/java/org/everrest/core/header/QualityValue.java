@@ -17,17 +17,14 @@ package org.everrest.core.header;
  * @author andrew00x
  */
 public interface QualityValue {
-
     /**
-     * Default quality value. It should be used if quality value is not specified
-     * in accept token.
+     * Default quality value. It should be used if quality value is not specified in accept token.
      */
-    public static final float DEFAULT_QUALITY_VALUE = 1.0F;
+    float DEFAULT_QUALITY_VALUE = 1.0F;
 
     /** Quality value. */
-    public static final String QVALUE = "q";
+    String QVALUE = "q";
 
     /** @return value of quality parameter */
     float getQvalue();
-
 }

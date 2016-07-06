@@ -68,7 +68,7 @@ public class ExoDependencySupplier extends BaseDependencySupplier {
     }
 
     @Override
-    public Object getComponent(Class<?> type) {
+    public Object getInstance(Class<?> type) {
         javax.inject.Provider<?> provider = getProvider(ExoContainerContext.getCurrentContainer(), type);
         if (provider != null) {
             return provider.get();
@@ -77,7 +77,7 @@ public class ExoDependencySupplier extends BaseDependencySupplier {
     }
 
     @Override
-    public Object getComponentByName(String name) {
+    public Object getInstanceByName(String name) {
         return ExoContainerContext.getCurrentContainer().getComponentInstance(name);
     }
 }

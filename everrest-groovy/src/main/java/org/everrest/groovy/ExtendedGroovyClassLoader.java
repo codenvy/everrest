@@ -241,7 +241,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
         try {
             return new URL("file", "", codeBase);
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Unable create code source URL from: " + codeBase + ". " + e.getMessage());
+            throw new IllegalArgumentException(String.format("Unable create code source URL from: %s. %s", codeBase, e.getMessage()));
         }
     }
 }

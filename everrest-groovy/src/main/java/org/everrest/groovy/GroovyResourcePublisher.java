@@ -17,7 +17,7 @@ import org.everrest.core.ObjectFactory;
 import org.everrest.core.PerRequestObjectFactory;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.ResourcePublicationException;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.uri.UriPattern;
 
 import javax.ws.rs.Path;
@@ -51,7 +51,7 @@ public class GroovyResourcePublisher {
 
     protected final ResourceBinder binder;
 
-    protected final Map<ResourceId, String> resources = Collections.synchronizedMap(new HashMap<ResourceId, String>());
+    protected final Map<ResourceId, String> resources = Collections.synchronizedMap(new HashMap<>());
 
     protected final GroovyClassLoaderProvider classLoaderProvider;
 
@@ -104,14 +104,14 @@ public class GroovyResourcePublisher {
      *         resource id
      * @return resource or <code>null</code>
      */
-    public ObjectFactory<AbstractResourceDescriptor> getResource(ResourceId resourceId) {
+    public ObjectFactory<ResourceDescriptor> getResource(ResourceId resourceId) {
         String path = resources.get(resourceId);
         if (path == null) {
             return null;
         }
 
         UriPattern pattern = new UriPattern(path);
-        for (ObjectFactory<AbstractResourceDescriptor> res : binder.getResources()) {
+        for (ObjectFactory<ResourceDescriptor> res : binder.getResources()) {
             if (res.getObjectModel().getUriPattern().equals(pattern)) {
                 return res;
             }
@@ -298,12 +298,12 @@ public class GroovyResourcePublisher {
      * @return <code>true</code> if resource was published and <code>false</code> otherwise, e.g. because there is not resource corresponded
      * to supplied <code>resourceId</code>
      */
-    public ObjectFactory<AbstractResourceDescriptor> unpublishResource(ResourceId resourceId) {
+    public ObjectFactory<ResourceDescriptor> unpublishResource(ResourceId resourceId) {
         String path = resources.get(resourceId);
         if (path == null) {
             return null;
         }
-        ObjectFactory<AbstractResourceDescriptor> resource = binder.removeResource(path);
+        ObjectFactory<ResourceDescriptor> resource = binder.removeResource(path);
         if (resource != null) {
             resources.remove(resourceId);
         }
@@ -335,7 +335,7 @@ public class GroovyResourcePublisher {
             }
             Object[] parameters = new Object[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
-                Object param = dependencies.getComponent(parameterTypes[i]);
+                Object param = dependencies.getInstance(parameterTypes[i]);
                 if (param == null) {
                     continue l;
                 }
@@ -343,8 +343,7 @@ public class GroovyResourcePublisher {
             }
             return c.newInstance(parameters);
         }
-        throw new ResourcePublicationException("Unable create instance of class " + clazz.getName()
-                                               + ". Required constructor's dependencies can't be resolved. ");
+        throw new ResourcePublicationException(String.format("Unable create instance of class %s. Required constructor's dependencies can't be resolved. ", clazz.getName()));
     }
 
     /**

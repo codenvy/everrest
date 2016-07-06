@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.everrest.core.impl.async;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
- */
 @SuppressWarnings("serial")
 public class AsynchronousJobRejectedException extends Exception {
     public AsynchronousJobRejectedException(String message) {

@@ -16,11 +16,9 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Faster not synchronized version of ByteArrayOutputStream. Method
- * {@link #getBytes()} gives direct access to byte buffer.
+ * Faster not synchronized version of ByteArrayOutputStream. Method {@link #getBytes()} gives direct access to byte buffer.
  *
- * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream {
     public NoSyncByteArrayOutputStream() {
@@ -121,7 +119,7 @@ public final class NoSyncByteArrayOutputStream extends ByteArrayOutputStream {
     }
 
     /**
-     * Expand buffer size to <code>newSize</code>.
+     * Expand buffer size to {@code newSize}.
      *
      * @param newSize
      *         new buffer size

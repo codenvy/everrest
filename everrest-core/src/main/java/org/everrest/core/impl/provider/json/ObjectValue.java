@@ -15,10 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class ObjectValue extends JsonValue {
 
     /** Children. */
@@ -51,14 +47,14 @@ public class ObjectValue extends JsonValue {
 
     @Override
     public String toString() {
-        StringWriter w = new StringWriter();
-        JsonWriter jw = new JsonWriter(w);
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter jsonWriter = new JsonWriter(stringWriter);
         try {
-            writeTo(jw);
+            writeTo(jsonWriter);
         } catch (JsonException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-        return w.toString();
+        return stringWriter.toString();
     }
 
 

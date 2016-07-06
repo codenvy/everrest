@@ -20,6 +20,7 @@ import org.everrest.core.impl.provider.json.JsonValue;
 import org.everrest.core.impl.provider.json.JsonWriter;
 import org.everrest.core.impl.provider.json.ObjectBuilder;
 import org.everrest.core.provider.EntityProvider;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.activation.DataSource;
@@ -51,15 +52,7 @@ import java.util.Map;
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 public class JsonEntityProvider<T> implements EntityProvider<T> {
-
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(JsonEntityProvider.class);
-
-    // It is common task for #isReadable() and #isWriteable
-    // Not sure it is required but ...
-    // Investigation about checking can type be write as JSON (useful JSON).
-    // Probably should be better added this checking in JSON framework.
-    // Or probably enough check only content type 'application/json'
-    // and if this content type set trust it and try parse/write
+    private static final Logger LOG = LoggerFactory.getLogger(JsonEntityProvider.class);
 
     /** Do not process via JSON "known" JAX-RS types and some other. */
     private static final Class<?>[] IGNORED = new Class<?>[]{byte[].class, char[].class, DataSource.class,
@@ -82,8 +75,6 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        // say as support all objects
-        //return Object.class.isAssignableFrom(type);
         return isSupported(type);
     }
 
@@ -100,30 +91,27 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
             jsonParser.parse(entityStream);
             JsonValue jsonValue = jsonParser.getJsonObject();
 
-            // If requested object is JsonValue then stop processing here.
             if (JsonValue.class.isAssignableFrom(type)) {
                 return (T)jsonValue;
             }
 
-            Types jType = JsonUtils.getType(type);
-            if (jType == Types.ARRAY_BOOLEAN || jType == Types.ARRAY_BYTE || jType == Types.ARRAY_SHORT
-                || jType == Types.ARRAY_INT || jType == Types.ARRAY_LONG || jType == Types.ARRAY_FLOAT
-                || jType == Types.ARRAY_DOUBLE || jType == Types.ARRAY_CHAR || jType == Types.ARRAY_STRING
-                || jType == Types.ARRAY_OBJECT) {
+            Types jsonType = JsonUtils.getType(type);
+            if (jsonType == Types.ARRAY_BOOLEAN || jsonType == Types.ARRAY_BYTE || jsonType == Types.ARRAY_SHORT
+                || jsonType == Types.ARRAY_INT || jsonType == Types.ARRAY_LONG || jsonType == Types.ARRAY_FLOAT
+                || jsonType == Types.ARRAY_DOUBLE || jsonType == Types.ARRAY_CHAR || jsonType == Types.ARRAY_STRING
+                || jsonType == Types.ARRAY_OBJECT) {
                 return (T)ObjectBuilder.createArray(type, jsonValue);
             }
-            if (jType == Types.COLLECTION) {
-                Class c = type;
-                return (T)ObjectBuilder.createCollection(c, genericType, jsonValue);
+            if (jsonType == Types.COLLECTION) {
+                return (T)ObjectBuilder.createCollection((Class)type, genericType, jsonValue);
             }
-            if (jType == Types.MAP) {
-                Class c = type;
-                return (T)ObjectBuilder.createObject(c, genericType, jsonValue);
+            if (jsonType == Types.MAP) {
+                return (T)ObjectBuilder.createObject((Class)type, genericType, jsonValue);
             }
             return ObjectBuilder.createObject(type, jsonValue);
         } catch (JsonException e) {
             LOG.debug(e.getMessage(), e);
-            throw new IOException("Can't read from input stream " + e, e);
+            throw new IOException(String.format("Can't read from input stream %s", e), e);
         }
     }
 
@@ -134,8 +122,6 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        // say as support all objects
-        //return Object.class.isAssignableFrom(type);
         return isSupported(type);
     }
 
@@ -151,7 +137,6 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
         try {
             JsonValue jsonValue;
             if (t instanceof JsonValue) {
-                // Don't do any transformation if object is prepared JsonValue.
                 jsonValue = (JsonValue)t;
             } else {
                 Types jType = JsonUtils.getType(type);
@@ -173,7 +158,7 @@ public class JsonEntityProvider<T> implements EntityProvider<T> {
             jsonWriter.flush();
         } catch (JsonException e) {
             LOG.debug(e.getMessage(), e);
-            throw new IOException("Can't write to output stream. " + e.getMessage(), e);
+            throw new IOException(String.format("Can't write to output stream. %s", e.getMessage()), e);
         }
     }
 }

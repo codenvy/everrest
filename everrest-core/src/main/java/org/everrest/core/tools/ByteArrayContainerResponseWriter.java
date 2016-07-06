@@ -12,7 +12,7 @@ package org.everrest.core.tools;
 
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
-import org.everrest.core.impl.OutputHeadersMap;
+import org.everrest.core.util.CaselessMultivaluedMap;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -25,14 +25,10 @@ import java.io.IOException;
  * @author andrew00x
  */
 public class ByteArrayContainerResponseWriter implements ContainerResponseWriter {
-    /** Message body. */
     private byte[] body;
-
-    /** HTTP headers. */
     private MultivaluedMap<String, Object> headers;
 
     private boolean committed;
-
 
     @Override
     @SuppressWarnings({"unchecked"})
@@ -55,16 +51,14 @@ public class ByteArrayContainerResponseWriter implements ContainerResponseWriter
         if (committed) {
             return;
         }
-        headers = new OutputHeadersMap(response.getHttpHeaders());
+        headers = new CaselessMultivaluedMap<>(response.getHttpHeaders());
         committed = true;
     }
 
-    /** @return message body */
     public byte[] getBody() {
         return body;
     }
 
-    /** @return HTTP headers */
     public MultivaluedMap<String, Object> getHeaders() {
         return headers;
     }

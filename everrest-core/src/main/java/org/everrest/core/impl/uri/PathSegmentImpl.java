@@ -10,15 +10,19 @@
  *******************************************************************************/
 package org.everrest.core.impl.uri;
 
+import com.google.common.base.MoreObjects;
+
 import org.everrest.core.impl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import java.util.Objects;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.everrest.core.impl.uri.UriComponent.PATH_SEGMENT;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.scan;
+
 public final class PathSegmentImpl implements PathSegment {
     /** Path. */
     private final String path;
@@ -48,59 +52,52 @@ public final class PathSegmentImpl implements PathSegment {
      */
     public static PathSegment fromString(String pathSegment, boolean decode) {
         String path = "";
-        MultivaluedMap<String, String> m = new MultivaluedMapImpl();
-        if (pathSegment == null || pathSegment.length() == 0) {
-            return new PathSegmentImpl(path, m);
+        MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl();
+        if (isNullOrEmpty(pathSegment)) {
+            return new PathSegmentImpl(path, matrixParameters);
         }
 
-        int n = 0;
-        // first ';' the start point for matrix parameter
-        int p = pathSegment.indexOf(';', n);
+        int p, n, k;
 
-        if (p > 0) {
-            path = pathSegment.substring(0, p);
+        p = scan(pathSegment, ';');
+
+        boolean hasMatrixParameters = charAtIs(pathSegment, p, ';');
+        if (hasMatrixParameters) {
+            if (p > 0) {
+                path = pathSegment.substring(0, p);
+            }
         } else {
             path = pathSegment;
         }
+
         if (decode) {
-            path = UriComponent.decode(path, UriComponent.PATH_SEGMENT);
+            path = UriComponent.decode(path, PATH_SEGMENT);
         }
 
-        if (p < 0) // no matrix parameters
-        {
-            return new PathSegmentImpl(path, m);
+        if (!hasMatrixParameters) {
+            return new PathSegmentImpl(path, matrixParameters);
         }
 
-        p++; // next character after ';'
+        ++p;
         int length = pathSegment.length();
         while (p < length) {
-            n = pathSegment.indexOf(';', p); // find next ';'
-            String pair; // should look like 'a=b', but value can absent
-            if (n < 0) { // last pair in the string
-                n = pathSegment.length();
-                pair = pathSegment.substring(p);
-            } else {
-                pair = pathSegment.substring(p, n);
-            }
-
+            n = scan(pathSegment, p, ';');
             String name;
-            String value = ""; // default value
-            int eq = pair.indexOf('=');
-            if (eq == -1) // no value, default is ""
-            {
-                name = pair;
+            String value = "";
+            k = scan(pathSegment, p, '=', n);
+            if (charAtIs(pathSegment, k, '=')) {
+                name = pathSegment.substring(p, k);
+                value = pathSegment.substring(k + 1, n);
             } else {
-                name = pair.substring(0, eq);
-                value = pair.substring(eq + 1);
+                name = pathSegment.substring(p, n);
             }
-
-            m.add(decode ? UriComponent.decode(name, UriComponent.PATH_SEGMENT) : name, decode ? UriComponent.decode(
-                    value, UriComponent.PATH_SEGMENT) : value);
-
+            if (!name.isEmpty()) {
+                matrixParameters.add(UriComponent.decode(name, PATH_SEGMENT),
+                                     decode ? UriComponent.decode(value, PATH_SEGMENT) : value);
+            }
             p = n + 1;
         }
-
-        return new PathSegmentImpl(path, m);
+        return new PathSegmentImpl(path, matrixParameters);
     }
 
 
@@ -109,9 +106,34 @@ public final class PathSegmentImpl implements PathSegment {
         return matrixParameters;
     }
 
-
     @Override
     public String getPath() {
         return path;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PathSegmentImpl)) {
+            return false;
+        }
+
+        PathSegmentImpl other = (PathSegmentImpl)o;
+        return Objects.equals(path, other.path) && Objects.equals(matrixParameters, other.matrixParameters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path, matrixParameters);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                          .add("path", path)
+                          .add("matrixParameters", matrixParameters)
+                          .toString();
     }
 }

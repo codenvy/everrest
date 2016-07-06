@@ -16,10 +16,11 @@ import org.everrest.core.impl.header.CacheControlHeaderDelegate;
 import org.everrest.core.impl.header.CookieHeaderDelegate;
 import org.everrest.core.impl.header.DateHeaderDelegate;
 import org.everrest.core.impl.header.EntityTagHeaderDelegate;
+import org.everrest.core.impl.header.LinkHeaderDelegate;
 import org.everrest.core.impl.header.LocaleHeaderDelegate;
 import org.everrest.core.impl.header.MediaTypeHeaderDelegate;
 import org.everrest.core.impl.header.NewCookieHeaderDelegate;
-import org.everrest.core.impl.header.RangeHeaderDelegate;
+import org.everrest.core.impl.header.RangesHeaderDelegate;
 import org.everrest.core.impl.header.StringHeaderDelegate;
 import org.everrest.core.impl.header.URIHeaderDelegate;
 import org.everrest.core.impl.uri.LinkBuilderImpl;
@@ -35,6 +36,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * @author andrew00x
@@ -54,50 +57,49 @@ public class RuntimeDelegateImpl extends RuntimeDelegate {
     }
 
     private void init() {
-        // JSR-311
         addHeaderDelegate(new MediaTypeHeaderDelegate());
         addHeaderDelegate(new CacheControlHeaderDelegate());
         addHeaderDelegate(new CookieHeaderDelegate());
         addHeaderDelegate(new NewCookieHeaderDelegate());
         addHeaderDelegate(new EntityTagHeaderDelegate());
         addHeaderDelegate(new DateHeaderDelegate());
-        // external
         addHeaderDelegate(new AcceptLanguageHeaderDelegate());
         addHeaderDelegate(new AcceptMediaTypeHeaderDelegate());
         addHeaderDelegate(new StringHeaderDelegate());
         addHeaderDelegate(new URIHeaderDelegate());
         addHeaderDelegate(new LocaleHeaderDelegate());
-        addHeaderDelegate(new RangeHeaderDelegate());
+        addHeaderDelegate(new RangesHeaderDelegate());
+        addHeaderDelegate(new LinkHeaderDelegate());
     }
 
-    public void addHeaderDelegate(HeaderDelegate<?> header) {
-        headerDelegates.put(getHeaderType(header), header);
+    public void addHeaderDelegate(HeaderDelegate<?> headerDelegate) {
+        headerDelegates.put(getHeaderType(headerDelegate), headerDelegate);
     }
 
     private Class<?> getHeaderType(HeaderDelegate<?> headerDelegate) {
-        Class<?> eventType = null;
-        Class<?> clazz = headerDelegate.getClass();
-        while (clazz != null && eventType == null) {
-            for (Type type : clazz.getGenericInterfaces()) {
-                if (type instanceof ParameterizedType) {
-                    final ParameterizedType parameterizedType = (ParameterizedType)type;
+        Class<?> typeSupportedByHeaderDelegate = null;
+        Class<?> headerDelegateClass = headerDelegate.getClass();
+        while (headerDelegateClass != null && typeSupportedByHeaderDelegate == null) {
+            for (Type genericType : headerDelegateClass.getGenericInterfaces()) {
+                if (genericType instanceof ParameterizedType) {
+                    final ParameterizedType parameterizedType = (ParameterizedType)genericType;
                     final Type rawType = parameterizedType.getRawType();
                     if (HeaderDelegate.class == rawType) {
-                        final Type[] typeArguments = parameterizedType.getActualTypeArguments();
-                        if (typeArguments.length == 1) {
-                            if (typeArguments[0] instanceof Class) {
-                                eventType = (Class)typeArguments[0];
+                        final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                        if (actualTypeArguments.length == 1) {
+                            if (actualTypeArguments[0] instanceof Class) {
+                                typeSupportedByHeaderDelegate = (Class)actualTypeArguments[0];
                             }
                         }
                     }
                 }
             }
-            clazz = clazz.getSuperclass();
+            headerDelegateClass = headerDelegateClass.getSuperclass();
         }
-        if (eventType == null) {
+        if (typeSupportedByHeaderDelegate == null) {
             throw new IllegalArgumentException(String.format("Unable determine type of headers processed by %s", headerDelegate));
         }
-        return eventType;
+        return typeSupportedByHeaderDelegate;
     }
 
     /** End Points is not supported. {@inheritDoc} */
@@ -106,31 +108,27 @@ public class RuntimeDelegateImpl extends RuntimeDelegate {
         throw new UnsupportedOperationException("End Points is not supported");
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type) {
+        checkArgument(type != null, "Null type is not supported");
         return headerDelegates.get(type);
     }
-
 
     @Override
     public Link.Builder createLinkBuilder() {
         return new LinkBuilderImpl();
     }
 
-
     @Override
     public ResponseBuilder createResponseBuilder() {
         return new ResponseImpl.ResponseBuilderImpl();
     }
 
-
     @Override
     public UriBuilder createUriBuilder() {
         return new UriBuilderImpl();
     }
-
 
     @Override
     public VariantListBuilder createVariantListBuilder() {

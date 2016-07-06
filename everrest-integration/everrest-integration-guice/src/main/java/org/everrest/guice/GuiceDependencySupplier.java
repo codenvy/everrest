@@ -25,7 +25,7 @@ public class GuiceDependencySupplier extends BaseDependencySupplier {
     }
 
     @Override
-    public Object getComponent(Class<?> type) {
+    public Object getInstance(Class<?> type) {
         return injector.getInstance(type);
     }
 }

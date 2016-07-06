@@ -10,38 +10,86 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider.json;
 
-import org.everrest.core.impl.HelperCache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 import org.everrest.core.impl.provider.json.JsonUtils.Types;
 
-import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
-/** @author andrew00x */
+import static com.google.common.base.Throwables.propagateIfPossible;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_BOOLEAN;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_BYTE;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_CHAR;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_DOUBLE;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_FLOAT;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_INT;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_LONG;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_OBJECT;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_SHORT;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.ARRAY_STRING;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.COLLECTION;
+import static org.everrest.core.impl.provider.json.JsonUtils.Types.MAP;
+import static org.everrest.core.impl.provider.json.JsonUtils.getFieldName;
+import static org.everrest.core.impl.provider.json.JsonUtils.getTransientFields;
+
 public class JsonGenerator {
-    private static final Collection<String> SKIP_METHODS = new HashSet<String>();
+    private static final Collection<String> SKIP_METHODS = newHashSet("getClass", "getMetaClass");
 
-    private static final int CACHE_NUM  = 1 << 3;
-    private static final int CACHE_MASK = CACHE_NUM - 1;
+    private static LoadingCache<Class<?>, JsonMethod[]> methodsCache = CacheBuilder.newBuilder()
+                                                                                   .concurrencyLevel(8)
+                                                                                   .maximumSize(256)
+                                                                                   .expireAfterAccess(10, MINUTES)
+                                                                                   .build(new CacheLoader<Class<?>, JsonMethod[]>() {
+                                                                                       @Override
+                                                                                       public JsonMethod[] load(Class<?> aClass)
+                                                                                               throws Exception {
+                                                                                           return getGetters(aClass);
+                                                                                       }
+                                                                                   });
 
-    @SuppressWarnings("unchecked")
-    private static HelperCache<Class<?>, JsonMethod[]>[] methodsCache = new HelperCache[CACHE_NUM];
-
-    static {
-        // Prevent discovering of Java class.
-        SKIP_METHODS.add("getClass");
-        SKIP_METHODS.add("getMetaClass"); // for groovy
-        for (int i = 0; i < CACHE_NUM; i++) {
-            methodsCache[i] = new HelperCache<Class<?>, JsonMethod[]>(60 * 1000, 50);
+    private static JsonMethod[] getGetters(Class<?> aClass) {
+        Set<String> transientFieldNames = getTransientFields(aClass);
+        List<JsonMethod> result = new ArrayList<>();
+        for (Method method : aClass.getMethods()) {
+            if (shouldBeProcessed(method)) {
+                String field = getFieldName(method);
+                if (!transientFieldNames.contains(field)) {
+                    result.add(new JsonMethod(method, field));
+                }
+            }
         }
+        return result.toArray(new JsonMethod[result.size()]);
     }
+
+    private static boolean shouldBeProcessed(Method method) {
+        return !SKIP_METHODS.contains(method.getName()) && isGetter(method);
+    }
+
+    private static boolean isGetter(Method method) {
+        String methodName = method.getName();
+        Class<?> returnType = method.getReturnType();
+        if (methodName.startsWith("get") && methodName.length() > 3) {
+            return method.getParameterTypes().length == 0;
+        } else if (methodName.startsWith("is") && methodName.length() > 2) {
+            return method.getParameterTypes().length == 0
+                   && (returnType == Boolean.class || returnType == boolean.class);
+        }
+        return false;
+    }
+
+    /* ------------------------------------------------------------------------------ */
 
     /**
      * Create JSON array from specified collection.
@@ -54,7 +102,10 @@ public class JsonGenerator {
      *         representation
      */
     public static JsonValue createJsonArray(Collection<?> collection) throws JsonException {
-        return createJsonValue(collection);
+        if (collection == null) {
+            return new NullValue();
+        }
+        return createJsonValue(collection, COLLECTION);
     }
 
     /**
@@ -71,11 +122,19 @@ public class JsonGenerator {
         if (array == null) {
             return new NullValue();
         }
-        Types t = JsonUtils.getType(array);
-        if (t == Types.ARRAY_BOOLEAN || t == Types.ARRAY_BYTE || t == Types.ARRAY_SHORT || t == Types.ARRAY_INT
-            || t == Types.ARRAY_LONG || t == Types.ARRAY_FLOAT || t == Types.ARRAY_DOUBLE || t == Types.ARRAY_CHAR
-            || t == Types.ARRAY_STRING || t == Types.ARRAY_OBJECT) {
-            return createJsonValue(array);
+        Types type = JsonUtils.getType(array);
+        if (type == ARRAY_BOOLEAN
+            || type == ARRAY_BYTE
+            || type == ARRAY_SHORT
+            || type == ARRAY_INT
+            || type == ARRAY_LONG
+            || type == ARRAY_FLOAT
+            || type == ARRAY_DOUBLE
+            || type == ARRAY_CHAR
+            || type == ARRAY_STRING
+            || type == ARRAY_OBJECT) {
+
+            return createJsonValue(array, type);
         } else {
             throw new JsonException("Invalid argument, must be array.");
         }
@@ -91,23 +150,10 @@ public class JsonGenerator {
      *         if map can't be transformed in JSON representation
      */
     public static JsonValue createJsonObjectFromMap(Map<String, ?> map) throws JsonException {
-        return createJsonValue(map);
-    }
-
-    /**
-     * Create JSON object from specified string imply it is JSON object in String
-     * format.
-     *
-     * @param s
-     *         source string
-     * @return JSON representation of map
-     * @throws JsonException
-     *         if map can't be transformed in JSON representation
-     */
-    public JsonValue createJsonObjectFromString(String s) throws JsonException {
-        JsonParser parser = new JsonParser();
-        parser.parse(new StringReader(s));
-        return parser.getJsonObject();
+        if (map == null) {
+            return new NullValue();
+        }
+        return createJsonValue(map, MAP);
     }
 
     /**
@@ -121,81 +167,36 @@ public class JsonGenerator {
      *         if map can't be transformed in JSON representation
      */
     public static JsonValue createJsonObject(Object object) throws JsonException {
-        Class<?> clazz = object.getClass();
+        if (object == null) {
+            return new NullValue();
+        }
+        Class<?> aClass = object.getClass();
         JsonValue jsonRootValue = new ObjectValue();
-        JsonMethod[] jsonMethods = getJsonMethods(clazz);
-        if (jsonMethods != null && jsonMethods.length > 0) {
-            for (JsonMethod getMethod : jsonMethods) {
-                try {
-                    // Get result of invoke method get...
-                    Object invokeResult = getMethod.method.invoke(object);
-                    if (JsonUtils.getType(invokeResult) != null) {
-                        jsonRootValue.addElement(getMethod.field, createJsonValue(invokeResult));
-                    } else {
-                        jsonRootValue.addElement(getMethod.field, createJsonObject(invokeResult));
-                    }
-                } catch (InvocationTargetException e) {
-                    throw new JsonException(e.getMessage(), e);
-                } catch (IllegalAccessException e) {
-                    throw new JsonException(e.getMessage(), e);
+        JsonMethod[] getters;
+        try {
+            getters = methodsCache.get(aClass);
+        } catch (ExecutionException e) {
+            propagateIfPossible(e.getCause());
+            throw new JsonException(e.getCause());
+        }
+        for (JsonMethod getter : getters) {
+            try {
+                Object getterResult = getter.method.invoke(object);
+                Types getterResultType = JsonUtils.getType(getterResult);
+                if (getterResultType == null) {
+                    jsonRootValue.addElement(getter.field, createJsonObject(getterResult));
+                } else {
+                    jsonRootValue.addElement(getter.field, createJsonValue(getterResult, getterResultType));
                 }
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new JsonException(e.getMessage(), e);
             }
         }
         return jsonRootValue;
     }
 
-    private static JsonMethod[] getJsonMethods(Class<?> clazz) {
-         /*
-          * Method must be as follow:
-          * 1. Name starts from "get" plus at least one character or
-          * starts from "is" plus one more character and return boolean type;
-          * 2. Must be without parameters;
-          * 3. Not be in SKIP_METHODS set.
-          */
-        HelperCache<Class<?>, JsonMethod[]> partition = methodsCache[clazz.hashCode() & CACHE_MASK];
-        synchronized (partition) {
-            JsonMethod[] methods = partition.get(clazz);
-            if (methods == null) {
-                Set<String> transientFieldNames = JsonUtils.getTransientFields(clazz);
-                List<JsonMethod> result = new ArrayList<JsonMethod>();
-                for (Method method : clazz.getMethods()) {
-                    String methodName = method.getName();
-                    if (!SKIP_METHODS.contains(methodName) && method.getParameterTypes().length == 0) {
-                        Class<?> returnType = method.getReturnType();
-                        String field = null;
-                        if (methodName.startsWith("get") && methodName.length() > 3) {
-                            field = methodName.substring(3);
-                        } else if (methodName.startsWith("is") && methodName.length() > 2
-                                   && (returnType == Boolean.class || returnType == boolean.class)) {
-                            field = methodName.substring(2);
-                        }
-                        if (field != null) {
-                            field = (field.length() > 1) ? Character.toLowerCase(field.charAt(0)) + field.substring(1)
-                                                         : field.toLowerCase();
-                            if (!transientFieldNames.contains(field)) {
-                                result.add(new JsonMethod(method, field));
-                            }
-                        }
-                    }
-                }
-                partition.put(clazz, methods = result.toArray(new JsonMethod[result.size()]));
-            }
-            return methods;
-        }
-    }
-
-    /**
-     * Create JsonValue corresponding to Java object.
-     *
-     * @param object
-     *         source object.
-     * @return JsonValue.
-     * @throws JsonException
-     *         if any errors occurs.
-     */
     @SuppressWarnings({"unchecked"})
-    private static JsonValue createJsonValue(Object object) throws JsonException {
-        Types type = JsonUtils.getType(object);
+    private static JsonValue createJsonValue(Object object, Types type) throws JsonException {
         switch (type) {
             case NULL:
                 return new NullValue();
@@ -297,23 +298,25 @@ public class JsonGenerator {
                 JsonValue jsonArray = new ArrayValue();
                 int length = Array.getLength(object);
                 for (int i = 0; i < length; i++) {
-                    Object el = Array.get(object, i);
-                    if (JsonUtils.getType(el) != null) {
-                        jsonArray.addElement(createJsonValue(el));
+                    Object item = Array.get(object, i);
+                    Types itemType = JsonUtils.getType(item);
+                    if (itemType == null) {
+                        jsonArray.addElement(createJsonObject(item));
                     } else {
-                        jsonArray.addElement(createJsonObject(el));
+                        jsonArray.addElement(createJsonValue(item, itemType));
                     }
                 }
                 return jsonArray;
             }
             case COLLECTION: {
                 JsonValue jsonArray = new ArrayValue();
-                List<Object> list = new ArrayList<Object>((Collection<?>)object);
-                for (Object o : list) {
-                    if (JsonUtils.getType(o) != null) {
-                        jsonArray.addElement(createJsonValue(o));
+                List<Object> list = new ArrayList<>((Collection<?>)object);
+                for (Object item : list) {
+                    Types itemType = JsonUtils.getType(item);
+                    if (itemType == null) {
+                        jsonArray.addElement(createJsonObject(item));
                     } else {
-                        jsonArray.addElement(createJsonObject(o));
+                        jsonArray.addElement(createJsonValue(item, itemType));
                     }
                 }
                 return jsonArray;
@@ -322,18 +325,18 @@ public class JsonGenerator {
                 JsonValue jsonObject = new ObjectValue();
                 Map<String, Object> map = (Map<String, Object>)object;
                 Set<String> keys = map.keySet();
-                for (String k : keys) {
-                    Object o = map.get(k);
-                    if (JsonUtils.getType(o) != null) {
-                        jsonObject.addElement(k, createJsonValue(o));
+                for (String key : keys) {
+                    Object item = map.get(key);
+                    Types itemType = JsonUtils.getType(item);
+                    if (itemType == null) {
+                        jsonObject.addElement(key, createJsonObject(item));
                     } else {
-                        jsonObject.addElement(k, createJsonObject(o));
+                        jsonObject.addElement(key, createJsonValue(item, itemType));
                     }
                 }
                 return jsonObject;
             default:
-                // Must not be here!
-                return null;
+                throw new IllegalStateException(String.format("Unsupported type %s", type));
         }
     }
 

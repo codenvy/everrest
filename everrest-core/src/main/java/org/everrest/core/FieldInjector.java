@@ -10,23 +10,18 @@
  *******************************************************************************/
 package org.everrest.core;
 
-import org.everrest.core.resource.ResourceDescriptor;
-
 /**
- * Object field. Useful for initialization object field if type is used in
- * per-request mode.
+ * Object field. Useful for initialization object field if type is used in* per-request mode.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public interface FieldInjector extends Parameter, ResourceDescriptor {
+public interface FieldInjector extends Parameter {
 
     /** @return field name */
     String getName();
 
     /**
-     * Set Object {@link java.lang.reflect.Field} using ApplicationContext for
-     * resolve actual field value.
+     * Set Object {@link java.lang.reflect.Field} using ApplicationContext for resolve actual field value.
      *
      * @param resource
      *         root resource or provider

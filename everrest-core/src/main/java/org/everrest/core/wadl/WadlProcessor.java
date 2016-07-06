@@ -10,14 +10,13 @@
  *******************************************************************************/
 package org.everrest.core.wadl;
 
-import org.everrest.core.impl.resource.AbstractResourceDescriptorImpl;
-import org.everrest.core.method.MethodParameter;
-import org.everrest.core.resource.AbstractResourceDescriptor;
+import org.everrest.core.Parameter;
+import org.everrest.core.impl.resource.AbstractResourceDescriptor;
+import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
-import org.everrest.core.resource.ResourceMethodMap;
 import org.everrest.core.resource.SubResourceLocatorDescriptor;
 import org.everrest.core.resource.SubResourceMethodDescriptor;
-import org.everrest.core.resource.SubResourceMethodMap;
+import org.everrest.core.uri.UriPattern;
 import org.everrest.core.wadl.research.Application;
 import org.everrest.core.wadl.research.Param;
 import org.everrest.core.wadl.research.ParamStyle;
@@ -33,13 +32,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class manages process of creation WADL document which describe
- * {@link AbstractResourceDescriptor}.
+ * This class manages process of creation WADL document which describe {@link org.everrest.core.resource.ResourceDescriptor}.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
-public final class WadlProcessor {
+public class WadlProcessor {
 
     /** See {@link WadlGenerator}. */
     private final WadlGenerator wadlGenerator;
@@ -60,16 +57,16 @@ public final class WadlProcessor {
     }
 
     /**
-     * Process {@link AbstractResourceDescriptor} for build its WADL
+     * Process {@link org.everrest.core.resource.ResourceDescriptor} for build its WADL
      * representation.
      *
      * @param resourceDescriptor
-     *         see {@link AbstractResourceDescriptor}
+     *         see {@link org.everrest.core.resource.ResourceDescriptor}
      * @param baseURI
      *         base URI of resource, e. g. servlet context
      * @return {@link Application}
      */
-    public Application process(AbstractResourceDescriptor resourceDescriptor, URI baseURI) {
+    public Application process(ResourceDescriptor resourceDescriptor, URI baseURI) {
         // Root component of WADL representation
         Application wadlApp = wadlGenerator.createApplication();
         // Container for resources
@@ -87,16 +84,16 @@ public final class WadlProcessor {
 
     /**
      * @param resourceDescriptor
-     *         see {@link AbstractResourceDescriptor}
+     *         see {@link org.everrest.core.resource.ResourceDescriptor}
      * @return see {@link WadlGenerator#createResponse()}
      */
-    private org.everrest.core.wadl.research.Resource processResource(AbstractResourceDescriptor resourceDescriptor) {
+    private org.everrest.core.wadl.research.Resource processResource(ResourceDescriptor resourceDescriptor) {
         org.everrest.core.wadl.research.Resource wadlResource = wadlGenerator.createResource(resourceDescriptor);
 
         // Keeps common parameters for resource.
         Map<String, Param> wadlResourceParams = new HashMap<String, Param>();
 
-        ResourceMethodMap<ResourceMethodDescriptor> resourceMethods = resourceDescriptor.getResourceMethods();
+        Map<String, List<ResourceMethodDescriptor>> resourceMethods = resourceDescriptor.getResourceMethods();
         for (List<ResourceMethodDescriptor> l : resourceMethods.values()) {
             for (ResourceMethodDescriptor rmd : l) {
                 org.everrest.core.wadl.research.Method wadlMethod = processMethod(rmd, wadlResourceParams);
@@ -125,10 +122,10 @@ public final class WadlProcessor {
      * @param wadlResource
      *         see {@link org.everrest.core.wadl.research.Resource}
      * @param resourceDescriptor
-     *         see {@link AbstractResourceDescriptor}
+     *         see {@link org.everrest.core.resource.ResourceDescriptor}
      */
     private void processSubResourceMethods(org.everrest.core.wadl.research.Resource wadlResource,
-                                           AbstractResourceDescriptor resourceDescriptor) {
+                                           ResourceDescriptor resourceDescriptor) {
 
         // Keeps common parameter for sub-resource.
         Map<String, Map<String, Param>> wadlCommonSubResourceParams = new HashMap<String, Map<String, Param>>();
@@ -136,8 +133,8 @@ public final class WadlProcessor {
         Map<String, org.everrest.core.wadl.research.Resource> wadlSubResources =
                 new HashMap<String, org.everrest.core.wadl.research.Resource>();
 
-        SubResourceMethodMap subresourceMethods = resourceDescriptor.getSubResourceMethods();
-        for (ResourceMethodMap<SubResourceMethodDescriptor> rmm : subresourceMethods.values()) {
+        Map<UriPattern, Map<String, List<SubResourceMethodDescriptor>>> subresourceMethods = resourceDescriptor.getSubResourceMethods();
+        for (Map<String, List<SubResourceMethodDescriptor>> rmm : subresourceMethods.values()) {
             for (List<SubResourceMethodDescriptor> l : rmm.values()) {
                 for (SubResourceMethodDescriptor srmd : l) {
                     String path = srmd.getPathValue().getPath();
@@ -188,12 +185,12 @@ public final class WadlProcessor {
      * @param wadlResource
      *         see {@link org.everrest.core.wadl.research.Resource}
      * @param resourceDescriptor
-     *         see {@link AbstractResourceDescriptor}
+     *         see {@link org.everrest.core.resource.ResourceDescriptor}
      */
     private void processSubResourceLocators(org.everrest.core.wadl.research.Resource wadlResource,
-                                            AbstractResourceDescriptor resourceDescriptor) {
+                                            ResourceDescriptor resourceDescriptor) {
         for (SubResourceLocatorDescriptor srld : resourceDescriptor.getSubResourceLocators().values()) {
-            AbstractResourceDescriptor subResourceDescriptor = new AbstractResourceDescriptorImpl(srld.getMethod().getReturnType()) {
+            ResourceDescriptor subResourceDescriptor = new AbstractResourceDescriptor(srld.getMethod().getReturnType()) {
                 @Override
                 protected void processConstructors() {
                 }
@@ -247,7 +244,7 @@ public final class WadlProcessor {
     private org.everrest.core.wadl.research.Request processRequest(ResourceMethodDescriptor rmd,
                                                                    Map<String, Param> wadlResourceParams) {
         org.everrest.core.wadl.research.Request wadlRequest = wadlGenerator.createRequest();
-        for (MethodParameter methodParameter : rmd.getMethodParameters()) {
+        for (Parameter methodParameter : rmd.getMethodParameters()) {
             if (methodParameter.getAnnotation() == null) {
                 for (MediaType mediaType : rmd.consumes()) {
                     RepresentationType wadlRepresentation = wadlGenerator.createRequestRepresentation(mediaType);
@@ -297,10 +294,10 @@ public final class WadlProcessor {
 
     /**
      * @param methodParameter
-     *         see {@link MethodParameter}
+     *         see {@link Parameter}
      * @return {@link Param}
      */
-    private Param processParam(MethodParameter methodParameter) {
+    private Param processParam(Parameter methodParameter) {
         Param wadlParam = null;
         // Skip parameters without annotation (entity) and parameters with javax.ws.rs.core.Context.
         // Context parameter dependent of environment and not used in WADL representation

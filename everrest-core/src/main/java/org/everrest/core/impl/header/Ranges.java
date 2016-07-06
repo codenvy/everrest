@@ -10,16 +10,16 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
+import com.google.common.base.MoreObjects;
+
 import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Represents set of ranges provided by client in 'Range' header.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 public final class Ranges {
     /** Represents one range from provided by client in HTTP header 'Range'. */
@@ -60,22 +60,21 @@ public final class Ranges {
         }
 
         /**
-         * Normalize and validate range. The calling this method should have the
-         * next effect:
+         * Normalize and validate range. The calling this method has next effect:
          * <ul>
-         * <li>If <code>start</code> of range is -1 (range without start position)
-         * <code>start</code> position should be set to
-         * <code>length - (-1 * start)</code>, <code>end</code> will be set to
+         * <li>If {@code start} of range is -1 (range without start position)
+         * {@code start} position should be set to
+         * <code>length - (-1 * start)</code>, {@code end} will be set to
          * <code>length - 1</code></li>
-         * <li>If <code>end</code> of range is -1 (range without end position)
-         * <code>end</code> will be set to <code>length - 1</code></li>
-         * <li>If <code>end</code> of range is greater then <code>length</code>
+         * <li>If {@code end} of range is -1 (range without end position)
+         * {@code end} will be set to <code>length - 1</code></li>
+         * <li>If {@code end} of range is greater then {@code length}
          * will be set to <code>length - 1</code></li>
          * </ul>
          *
          * @param length
          *         total length of content
-         * @return <code>true</code> if range is valid and <code>false</code>
+         * @return {@code true} if range is valid and {@code false}
          * otherwise
          */
         public boolean validate(long length) {
@@ -96,13 +95,40 @@ public final class Ranges {
             }
             return (start >= 0) && (end >= 0) && (end >= start);
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Range)) {
+                return false;
+            }
+
+            Range range = (Range)o;
+            return start == range.start && end == range.end;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int hashcode = 8;
+            hashcode = 31 * hashcode + (int)(start ^ (start >>> 32));
+            hashcode = 31 * hashcode + (int)(end ^ (end >>> 32));
+            return hashcode;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(getClass())
+                              .add("start", start)
+                              .add("end", end)
+                              .toString();
+        }
     }
 
-    private static final HeaderDelegate<Ranges> DELEGATE =
-            RuntimeDelegate.getInstance().createHeaderDelegate(Ranges.class);
-
     public static Ranges valueOf(String range) {
-        return DELEGATE.fromString(range);
+        return RuntimeDelegate.getInstance().createHeaderDelegate(Ranges.class).fromString(range);
     }
 
     private final List<Range> ranges;
@@ -120,4 +146,22 @@ public final class Ranges {
         return ranges;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Ranges)) {
+            return false;
+        }
+        return ranges.equals(((Ranges)o).ranges);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int hashcode = 8;
+        hashcode = 31 * hashcode + ranges.hashCode();
+        return hashcode;
+    }
 }

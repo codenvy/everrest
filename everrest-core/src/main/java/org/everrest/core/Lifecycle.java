@@ -13,8 +13,7 @@ package org.everrest.core;
 /**
  * Interface provides methods lifecycle control.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @author andrew00x
  */
 public interface Lifecycle {
     /**

@@ -83,7 +83,7 @@ public class EverrestConfigurationModule extends ServletModule {
 
         @Override
         public EverrestConfiguration get() {
-            final EverrestConfiguration configuration = new EverrestServletContextInitializer(servletContext).getConfiguration();
+            final EverrestConfiguration configuration = new EverrestServletContextInitializer(servletContext).createConfiguration();
             setConfigurationPropertyIfNotNull(configuration, EVERREST_ASYNCHRONOUS, asynchronous);
             setConfigurationPropertyIfNotNull(configuration, EVERREST_ASYNCHRONOUS_CACHE_SIZE, asynchronousCacheSize);
             setConfigurationPropertyIfNotNull(configuration, EVERREST_ASYNCHRONOUS_JOB_TIMEOUT, asynchronousJobTimeout);

@@ -18,17 +18,11 @@ import java.util.Map;
 
 /**
  * Read only case insensitive {@link MultivaluedMap}.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
  */
 public final class InputHeadersMap extends CaselessUnmodifiableMultivaluedMap<String> {
     private static final long serialVersionUID = -96963220577144285L;
 
-    public InputHeadersMap() {
-    }
-
-    public InputHeadersMap(Map<String, List<String>> m) {
-        super(m);
+    public InputHeadersMap(Map<String, List<String>> map) {
+        super(map);
     }
 }

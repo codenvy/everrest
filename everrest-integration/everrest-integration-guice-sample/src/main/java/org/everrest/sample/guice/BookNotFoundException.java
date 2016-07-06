@@ -16,6 +16,6 @@ package org.everrest.sample.guice;
 @SuppressWarnings("serial")
 public class BookNotFoundException extends Exception {
     public BookNotFoundException(String id) {
-        super("Book with id " + id + " not found.");
+        super(String.format("Book with id %s not found.", id));
     }
 }

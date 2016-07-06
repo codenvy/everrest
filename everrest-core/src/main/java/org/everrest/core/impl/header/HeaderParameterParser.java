@@ -10,190 +10,122 @@
  *******************************************************************************/
 package org.everrest.core.impl.header;
 
+import org.everrest.core.util.StringUtils;
+
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.lang.Character.isWhitespace;
+import static org.everrest.core.util.StringUtils.charAtIs;
+import static org.everrest.core.util.StringUtils.charAtIsNot;
+import static org.everrest.core.util.StringUtils.scan;
+
 public class HeaderParameterParser {
-    /** Parameter separator. */
-    private static final char SEPARATOR = ';';
+    private static final char   PARAMS_SEPARATOR  = ';';
+    private static final String NAME_TERMINATORS  = "=;";
+    private static final String VALUE_TERMINATORS = ";";
 
     /** Current position in the parsed string. */
-    private int pos = 0;
+    private int pos;
 
-    /** Token's start. */
-    private int i1 = 0;
+    /** Parsed String */
+    private String source;
 
-    /** Token's end. */
-    private int i2 = 0;
-
-    /** String to be parsed. */
-    private char[] chars = null;
-
-    /** Parsed string length. */
-    private int length = 0;
+    /** Length of parsed string */
+    private int sourceLength;
 
     /**
-     * Parse header string for parameters.
+     * Parses header string to map of parameters.
      *
      * @param header
-     *         source header string
+     *         header header string
      * @return header parameter
      * @throws ParseException
-     *         if string can't be parsed or contains illegal
-     *         characters
+     *         if string can't be parsed or contains illegal characters
      */
     public Map<String, String> parse(String header) throws ParseException {
         init(header);
 
-        if (pos < 0) {
-            return null;
-        }
+        Map<String, String> parameters = new HashMap<>();
 
         pos++; // skip first ';'
-        Map<String, String> m = null;
-        while (hasChars()) {
-
-            String name = readToken(new char[]{'=', SEPARATOR});
-
+        while (hasRemainingChars()) {
+            String name = readToken(NAME_TERMINATORS);
             String value = null;
-            if (hasChars() && chars[pos] == '=') {
+            if (charAtIs(source, pos, '=')) {
                 pos++; // skip '='
-                if (chars[pos] == '"') // quoted string
-                {
+                if (charAtIs(source, pos, '"')) {
                     value = readQuotedString();
-                } else {
-                    value = readToken(new char[]{SEPARATOR});
+                } else if (hasRemainingChars()) {
+                    value = readToken(VALUE_TERMINATORS);
                 }
             }
 
-            if (hasChars() && chars[pos] == SEPARATOR) {
+            if (charAtIs(source, pos, PARAMS_SEPARATOR)) {
                 pos++; // skip ';'
             }
 
-            if (name != null && name.length() > 0) {
-                if (m == null) {
-                    m = new HashMap<String, String>();
-                }
-                m.put(name, value);
+            if (!isNullOrEmpty(name)) {
+                parameters.put(name, value);
             }
 
         }
-        return m;
+        return parameters;
     }
 
-    /**
-     * @param removeQuotes
-     *         must leading and trailing quotes be skipped
-     * @return parsed token
-     */
-    private String getToken(boolean removeQuotes) {
-        // leading whitespace
-        while ((i1 < i2) && Character.isWhitespace(chars[i1])) {
-            i1++;
-        }
-        // tail whitespace
-        while ((i2 > i1) && Character.isWhitespace(chars[i2 - 1])) {
-            i2--;
-        }
-
-        // remove quotes
-        if (removeQuotes && chars[i1] == '"' && chars[i2 - 1] == '"') {
-            i1++;
-            i2--;
-        }
-
-        String token = null;
-        if (i2 > i1) {
-            token = new String(chars, i1, i2 - i1);
-        }
-
-        return token;
+    private boolean hasRemainingChars() {
+        return pos < sourceLength;
     }
 
-    /**
-     * Check are there any character to be parsed.
-     *
-     * @return true if there are unparsed characters, false otherwise
-     */
-    private boolean hasChars() {
-        return pos < length;
-    }
-
-    /**
-     * Initialize character array for parsing.
-     *
-     * @param source
-     *         source string for parsing
-     */
-    private void init(String source) {
-        // looking for start parameters position
-        // e.g. text/plain ; charset=utf-8
-        pos = source.indexOf(SEPARATOR);
-        if (pos < 0)
-        // header string does not contains parameters
-        {
+    private void init(String header) {
+        pos = scan(header, PARAMS_SEPARATOR);
+        if (charAtIsNot(header, pos, PARAMS_SEPARATOR)) {
             return;
         }
-        chars = source.toCharArray();
-        length = chars.length;
-        i1 = 0;
-        i2 = 0;
+        source = header;
+        sourceLength = header.length();
     }
 
-    /**
-     * Process quoted string, it minds remove escape characters for quotes.
-     *
-     * @return processed string
-     * @throws ParseException
-     *         if string can't be parsed
-     * @see HeaderHelper#filterEscape(String)
-     */
     private String readQuotedString() throws ParseException {
-        i1 = pos;
-        i2 = pos;
+        int startOfToken = pos;
+        int endOfToken = pos;
 
         // indicate was previous character '\'
         boolean escape = false;
         // indicate is final '"' already found
-        boolean quote = false;
+        boolean inQuotes = false;
 
-        while (hasChars()) {
-            char c = chars[pos];
-
-            if (c == SEPARATOR && !quote) {
+        while (hasRemainingChars()) {
+            if (!inQuotes && charAtIs(source, pos, PARAMS_SEPARATOR)) {
                 break;
             }
 
-            if (c == '"' && !escape) {
-                quote = !quote;
+            if (!escape && charAtIs(source, pos, '"')) {
+                inQuotes = !inQuotes;
             }
 
-            escape = !escape && c == '\\';
+            escape = !escape && charAtIs(source, pos, '\\');
+
             pos++;
-            i2++;
+            endOfToken++;
         }
 
-        if (quote) {
+        if (inQuotes) {
             throw new ParseException("String must be ended with quote.", pos);
         }
 
-        String token = getToken(true);
+        String token = readToken(startOfToken, endOfToken);
         if (token != null) {
-            token = HeaderHelper.filterEscape(getToken(true));
+            token = HeaderHelper.removeQuoteEscapes(token);
         }
         return token;
     }
 
     /**
-     * Read token from source string, token is not quoted string and does not
-     * contains any separators. See <a
-     * href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html">HTTP1.1
-     * specification</a>.
+     * Reads token from header string, token is not quoted string and does not contains any separators.
+     * See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html">HTTP1.1 specification</a>.
      *
      * @param terminators
      *         characters which indicate end of token
@@ -201,45 +133,47 @@ public class HeaderParameterParser {
      * @throws ParseException
      *         if token contains illegal characters
      */
-    private String readToken(char[] terminators) throws ParseException {
-        i1 = pos;
-        i2 = pos;
-        while (hasChars()) {
-            char c = chars[pos];
-            if (checkChar(c, terminators)) {
+    private String readToken(String terminators) throws ParseException {
+        int startOfToken = pos;
+        int endOfToken = pos;
+        while (hasRemainingChars()) {
+            char c = source.charAt(pos);
+            if (StringUtils.contains(terminators, c)) {
                 break;
             }
             pos++;
-            i2++;
+            endOfToken++;
         }
 
-        String token = getToken(false);
+        String token = readToken(startOfToken, endOfToken);
         if (token != null) {
-            // check is it valid token
             int err;
             if ((err = HeaderHelper.isToken(token)) != -1) {
-                throw new ParseException("Token '" + token + "' contains not legal characters at " + err, err);
+                throw new ParseException(String.format("Token '%s' contains not legal characters at %d", token, err), err);
             }
         }
 
         return token;
     }
 
-    /**
-     * Check does char array <tt>chs</tt> contains char <tt>c</tt>.
-     *
-     * @param c
-     *         char
-     * @param chs
-     *         char array
-     * @return true if char array contains character <tt>c</tt>, false otherwise
-     */
-    private boolean checkChar(char c, char[] chs) {
-        for (int i = 0; i < chs.length; i++) {
-            if (c == chs[i]) {
-                return true;
-            }
+    private String readToken(int startOfToken, int endOfToken) {
+        while ((startOfToken < endOfToken) && isWhitespace(source.charAt(startOfToken))) {
+            startOfToken++;
         }
-        return false;
+        while ((endOfToken > startOfToken) && isWhitespace(source.charAt(endOfToken - 1))) {
+            endOfToken--;
+        }
+
+        if (charAtIs(source, startOfToken, '"') && charAtIs(source, endOfToken - 1, '"')) {
+            startOfToken++;
+            endOfToken--;
+        }
+
+        String token = null;
+        if (endOfToken > startOfToken) {
+            token = source.substring(startOfToken, endOfToken);
+        }
+
+        return token;
     }
 }

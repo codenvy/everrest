@@ -19,83 +19,88 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.google.common.base.Preconditions.checkState;
+
 /**
  * See {@link VariantListBuilder}.
- *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
  */
 public class VariantListBuilderImpl extends VariantListBuilder {
     /** Languages. */
-    private final List<Locale> languages = new ArrayList<Locale>();
-
+    private final List<Locale> languages;
     /** Encodings. */
-    private final List<String> encodings = new ArrayList<String>();
-
+    private final List<String> encodings;
     /** Media Types. */
-    private final List<MediaType> mediaTypes = new ArrayList<MediaType>();
+    private final List<MediaType> mediaTypes;
 
     /** List of {@link Variant}. */
     private List<Variant> variants;
 
+    public VariantListBuilderImpl() {
+        languages = new ArrayList<>();
+        encodings = new ArrayList<>();
+        mediaTypes = new ArrayList<>();
+    }
 
     @Override
     public VariantListBuilder add() {
+        checkState(!(mediaTypes.isEmpty() && languages.isEmpty() && encodings.isEmpty()),
+                   "At least one media type, language or encoding must be set");
+
         if (variants == null) {
-            variants = new ArrayList<Variant>();
+            variants = new ArrayList<>();
         }
 
         Iterator<MediaType> mediaTypesIterator = mediaTypes.iterator();
-
-        // do iteration at least one time, even all list are empty
         do {
             MediaType mediaType = mediaTypesIterator.hasNext() ? mediaTypesIterator.next() : null;
             Iterator<Locale> languagesIterator = languages.iterator();
-
             do {
                 Locale language = languagesIterator.hasNext() ? languagesIterator.next() : null;
                 Iterator<String> encodingsIterator = encodings.iterator();
-
                 do {
                     String encoding = encodingsIterator.hasNext() ? encodingsIterator.next() : null;
                     variants.add(new Variant(mediaType, language, encoding));
-                }
-                while (encodingsIterator.hasNext());
-
-            }
-            while (languagesIterator.hasNext());
-
-        }
-        while (mediaTypesIterator.hasNext());
+                } while (encodingsIterator.hasNext());
+            } while (languagesIterator.hasNext());
+        } while (mediaTypesIterator.hasNext());
 
         clearAll();
         return this;
     }
 
-
     @Override
     public List<Variant> build() {
-        return variants == null ? variants = new ArrayList<Variant>() : variants;
+        if (mediaTypes.isEmpty() && languages.isEmpty() && encodings.isEmpty()) {
+            if (variants == null) {
+                variants = new ArrayList<>();
+            }
+        } else {
+            add();
+        }
+        return variants;
     }
 
-
     @Override
-    public VariantListBuilder encodings(String... encs) {
-        Collections.addAll(encodings, encs);
+    public VariantListBuilder encodings(String... encodings) {
+        if (encodings != null) {
+            Collections.addAll(this.encodings, encodings);
+        }
         return this;
     }
 
-
     @Override
-    public VariantListBuilder languages(Locale... langs) {
-        Collections.addAll(languages, langs);
+    public VariantListBuilder languages(Locale... languages) {
+        if (languages != null) {
+            Collections.addAll(this.languages, languages);
+        }
         return this;
     }
-
 
     @Override
     public VariantListBuilder mediaTypes(MediaType... mediaTypes) {
-        Collections.addAll(this.mediaTypes, mediaTypes);
+        if (mediaTypes != null) {
+            Collections.addAll(this.mediaTypes, mediaTypes);
+        }
         return this;
     }
 

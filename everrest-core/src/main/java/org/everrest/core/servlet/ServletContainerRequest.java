@@ -29,7 +29,7 @@ import java.security.Principal;
 import java.util.Enumeration;
 
 /** @author andrew00x */
-public final class ServletContainerRequest extends ContainerRequest {
+public class ServletContainerRequest extends ContainerRequest {
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ServletContainerRequest.class);
 

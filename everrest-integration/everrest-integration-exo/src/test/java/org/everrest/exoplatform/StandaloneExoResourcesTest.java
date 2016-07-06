@@ -11,7 +11,6 @@
 package org.everrest.exoplatform;
 
 import org.everrest.core.impl.provider.IOHelper;
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -30,6 +29,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author andrew00x
@@ -64,8 +65,7 @@ public class StandaloneExoResourcesTest extends StandaloneBaseTest {
         public Message readFrom(Class<Message> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                                 MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
                 throws IOException, WebApplicationException {
-            return new Message(IOHelper.readString(entityStream,
-                                                   mediaType != null ? mediaType.getParameters().get("charset") : null));
+            return new Message(IOHelper.readString(entityStream, mediaType != null ? mediaType.getParameters().get("charset") : null));
         }
 
         public void writeTo(Message t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
@@ -79,7 +79,7 @@ public class StandaloneExoResourcesTest extends StandaloneBaseTest {
     public static class Resource1 {
         @GET
         public void m(Message m) {
-            Assert.assertEquals(messageBody, m.getMessage());
+            assertEquals(messageBody, m.getMessage());
         }
     }
 
@@ -89,7 +89,7 @@ public class StandaloneExoResourcesTest extends StandaloneBaseTest {
     public static class Resource2 {
         @GET
         public void m(Message m) {
-            Assert.assertEquals(messageBody, m.getMessage());
+            assertEquals(messageBody, m.getMessage());
         }
     }
 
@@ -107,15 +107,11 @@ public class StandaloneExoResourcesTest extends StandaloneBaseTest {
 
     @Test
     public void testResource() throws Exception {
-        Assert.assertEquals(204,
-                            launcher.service("GET", "/StandaloneExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null)
-                                    .getStatus());
+        assertEquals(204, launcher.service("GET", "/StandaloneExoResourcesTest.Resource1", "", null, messageBody.getBytes(), null).getStatus());
     }
 
     @Test
     public void testApplicationResource() throws Exception {
-        Assert.assertEquals(204,
-                            launcher.service("GET", "/StandaloneExoResourcesTest.Resource2", "", null, messageBody.getBytes(), null)
-                                    .getStatus());
+        assertEquals(204, launcher.service("GET", "/StandaloneExoResourcesTest.Resource2", "", null, messageBody.getBytes(), null).getStatus());
     }
 }

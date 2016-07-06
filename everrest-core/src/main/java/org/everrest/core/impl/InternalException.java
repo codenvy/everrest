@@ -10,31 +10,32 @@
  *******************************************************************************/
 package org.everrest.core.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Should not be used by custom services. They have to use
  * {@link javax.ws.rs.WebApplicationException} instead. This Exception is used
  * as wrapper for exception that may occur during request processing.
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  */
 @SuppressWarnings("serial")
 public final class InternalException extends RuntimeException {
     /**
-     * @param s
+     * @param message
      *         message
-     * @param throwable
+     * @param cause
      *         cause
      */
-    public InternalException(String s, Throwable throwable) {
-        super(s, throwable);
+    public InternalException(String message, Throwable cause) {
+        super(message, checkNotNull(cause));
     }
 
     /**
-     * @param throwable
+     * @param cause
      *         cause
      */
-    public InternalException(Throwable throwable) {
-        super(throwable);
+    public InternalException(Throwable cause) {
+        super(checkNotNull(cause));
     }
 }

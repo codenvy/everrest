@@ -21,10 +21,6 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 @Provider
 public class StreamingDataSourceEntityProvider extends DataSourceEntityProvider {
     @Override
@@ -34,6 +30,6 @@ public class StreamingDataSourceEntityProvider extends DataSourceEntityProvider 
                                MediaType mediaType,
                                MultivaluedMap<String, String> httpHeaders,
                                InputStream entityStream) throws IOException {
-        return new StreamingDataSource(entityStream, mediaType != null ? mediaType.toString() : null);
+        return new StreamingDataSource(entityStream, mediaType == null ? null : mediaType.toString());
     }
 }

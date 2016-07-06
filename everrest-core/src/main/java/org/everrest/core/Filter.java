@@ -24,8 +24,7 @@ import java.lang.annotation.Target;
  * (RequestFilter), responses (ResponseFilter) or all resource methods
  * (MethodInvokerFilter).
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @author andrew00x
  * @see RequestFilter
  * @see ResponseFilter
  * @see MethodInvokerFilter

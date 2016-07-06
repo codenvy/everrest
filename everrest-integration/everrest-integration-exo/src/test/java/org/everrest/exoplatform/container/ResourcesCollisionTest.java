@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 /**
  * @author andrew00x
  */
+// TODO : refactor!!
 public class ResourcesCollisionTest extends StandaloneBaseTest {
     private RestfulContainer restfulContainer;
 

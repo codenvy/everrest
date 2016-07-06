@@ -4,53 +4,82 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * <p/>
  * Contributors:
- *   Codenvy, S.A. - initial API and implementation
+ * Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
 package org.everrest.core.impl.method;
 
-import junit.framework.TestCase;
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
-public class PrimitiveTypeProducerTest extends TestCase {
+import org.everrest.core.impl.MultivaluedMapImpl;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-    public void testByte() throws Exception {
-        PrimitiveTypeProducer primitiveTypeProducer = new PrimitiveTypeProducer(Byte.TYPE);
-        assertEquals((byte)127, primitiveTypeProducer.createValue("127"));
+import javax.ws.rs.core.MultivaluedMap;
+
+import static org.junit.Assert.assertEquals;
+
+@RunWith(DataProviderRunner.class)
+public class PrimitiveTypeProducerTest {
+
+    @DataProvider
+    public static Object[][] testData() {
+        return new Object[][]{
+                {Boolean.TYPE, singletonMultiValuedMap("true", "false"), null, true},
+                {Boolean.TYPE, singletonMultiValuedMap("foo", "false"),  null, false},
+                {Boolean.TYPE, singletonMultiValuedMap("true"),          null, true},
+                {Boolean.TYPE, singletonMultiValuedMap(),               "true", true},
+                {Boolean.TYPE, singletonMultiValuedMap(),                null, false},
+
+                {Byte.TYPE, singletonMultiValuedMap("55", "33"), null, (byte)55},
+                {Byte.TYPE, singletonMultiValuedMap("33"),       null, (byte)33},
+                {Byte.TYPE, singletonMultiValuedMap(),           "55", (byte)55},
+                {Byte.TYPE, singletonMultiValuedMap(),           null, (byte)0},
+
+                {Short.TYPE, singletonMultiValuedMap("555", "333"), null, (short)555},
+                {Short.TYPE, singletonMultiValuedMap("333"),        null, (short)333},
+                {Short.TYPE, singletonMultiValuedMap(),             "555", (short)555},
+                {Short.TYPE, singletonMultiValuedMap(),             null, (short)0},
+
+                {Integer.TYPE, singletonMultiValuedMap("55555", "33333"), null,   55555},
+                {Integer.TYPE, singletonMultiValuedMap("33333"),          null,   33333},
+                {Integer.TYPE, singletonMultiValuedMap(),                "55555", 55555},
+                {Integer.TYPE, singletonMultiValuedMap(),                 null,   0},
+
+                {Long.TYPE, singletonMultiValuedMap("55555555555", "33333333333"), null,         55555555555L},
+                {Long.TYPE, singletonMultiValuedMap("33333333333"),                null,         33333333333L},
+                {Long.TYPE, singletonMultiValuedMap(),                            "33333333333", 33333333333L},
+                {Long.TYPE, singletonMultiValuedMap(),                             null,         0L},
+
+                {Float.TYPE, singletonMultiValuedMap("5.5", "3.3"), null,  5.5F},
+                {Float.TYPE, singletonMultiValuedMap("3.3"),        null,  3.3F},
+                {Float.TYPE, singletonMultiValuedMap(),             "5.5", 5.5F},
+                {Float.TYPE, singletonMultiValuedMap(),             null,  0.0F},
+
+                {Double.TYPE, singletonMultiValuedMap("5.5", "3.3"), null,  5.5D},
+                {Double.TYPE, singletonMultiValuedMap("3.3"),        null,  3.3D},
+                {Double.TYPE, singletonMultiValuedMap(),             "5.5", 5.5D},
+                {Double.TYPE, singletonMultiValuedMap(),             null,  0.0D}
+        };
     }
 
-    public void testShort() throws Exception {
-        PrimitiveTypeProducer primitiveTypeProducer = new PrimitiveTypeProducer(Short.TYPE);
-        assertEquals((short)32767, primitiveTypeProducer.createValue("32767"));
+    @UseDataProvider("testData")
+    @Test
+    public void createsPrimitiveValue(Class<?> primitiveTypeWrapper,
+                                      MultivaluedMap<String, String> values,
+                                      String defaultValue,
+                                      Object expected) throws Exception {
+        PrimitiveTypeProducer producer = new PrimitiveTypeProducer(primitiveTypeWrapper);
+        Object result = producer.createValue("value", values, defaultValue);
+        assertEquals(expected, result);
     }
 
-    public void testInt() throws Exception {
-        PrimitiveTypeProducer primitiveTypeProducer = new PrimitiveTypeProducer(Integer.TYPE);
-        assertEquals(2147483647, primitiveTypeProducer.createValue("2147483647"));
+    private static MultivaluedMap<String, String> singletonMultiValuedMap(String... values) {
+        MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+        map.addAll("value", values);
+        return map;
     }
-
-    public void testLong() throws Exception {
-        PrimitiveTypeProducer primitiveTypeProducer = new PrimitiveTypeProducer(Long.TYPE);
-        assertEquals(9223372036854775807L, primitiveTypeProducer.createValue("9223372036854775807"));
-    }
-
-    public void testFloat() throws Exception {
-        PrimitiveTypeProducer primitiveTypeProducer = new PrimitiveTypeProducer(Float.TYPE);
-        assertEquals(1.23456789F, primitiveTypeProducer.createValue("1.23456789"));
-    }
-
-    public void testDouble() throws Exception {
-        PrimitiveTypeProducer primitiveTypeProducer = new PrimitiveTypeProducer(Double.TYPE);
-        assertEquals(1.234567898765432D, primitiveTypeProducer.createValue("1.234567898765432"));
-    }
-
-    public void testBoolean() throws Exception {
-        PrimitiveTypeProducer primitiveTypeProducer = new PrimitiveTypeProducer(Boolean.TYPE);
-        assertEquals(true, primitiveTypeProducer.createValue("true"));
-    }
-
 }

@@ -10,157 +10,89 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider.json;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** @author andrew00x */
+import static com.google.common.collect.Sets.newHashSet;
+
 public final class JsonUtils {
-
-    static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-
     /** Known types. */
     public enum Types {
-
-        /** Byte. */
         BYTE,
-
-        /** Short. */
         SHORT,
-
-        /** Integer. */
         INT,
-
-        /** Long. */
         LONG,
-
-        /** Float. */
         FLOAT,
-
-        /** Double. */
         DOUBLE,
-
-        /** Boolean. */
         BOOLEAN,
-
-        /** Char. */
         CHAR,
-
-        /** String. */
         STRING,
-
-        /** Corresponding to null value. */
         NULL,
-
-        /** Array of Bytes. */
         ARRAY_BYTE,
-
-        /** Array of Shorts. */
         ARRAY_SHORT,
-
-        /** Array of Integers. */
         ARRAY_INT,
-
-        /** Array of Longs. */
         ARRAY_LONG,
-
-        /** Array of Floats. */
         ARRAY_FLOAT,
-
-        /** Array of Doubles. */
         ARRAY_DOUBLE,
-
-        /** Array of Boolean. */
         ARRAY_BOOLEAN,
-
-        /** Array of Chars. */
         ARRAY_CHAR,
-
-        /** Array of Strings. */
         ARRAY_STRING,
-
-        /** Array of Java Objects (beans). */
         ARRAY_OBJECT,
-
-        /** Collection. */
         COLLECTION,
-
-        /** Map. */
         MAP,
-
-        /** Enum. */
         ENUM,
-
-        /** java.lang.Class */
         CLASS
     }
 
     /** Types of Json tokens. */
     public enum JsonToken {
-        /** JSON object, "key":{value1, ... } . */
         object,
-
-        /** JSON array "key":[value1, ... ] . */
         array,
-
-        /** Key. */
         key,
-
-        /** Value. */
         value
     }
 
     /** Map of known types. */
-    private static final Map<String, Types> KNOWN_TYPES = new HashMap<String, Types>();
+    private static final Map<String, Types> KNOWN_TYPES = new HashMap<>();
 
     static {
-        // wrappers for primitive types
         KNOWN_TYPES.put(Boolean.class.getName(), Types.BOOLEAN);
-
         KNOWN_TYPES.put(Byte.class.getName(), Types.BYTE);
         KNOWN_TYPES.put(Short.class.getName(), Types.SHORT);
         KNOWN_TYPES.put(Integer.class.getName(), Types.INT);
         KNOWN_TYPES.put(Long.class.getName(), Types.LONG);
         KNOWN_TYPES.put(Float.class.getName(), Types.FLOAT);
         KNOWN_TYPES.put(Double.class.getName(), Types.DOUBLE);
-
         KNOWN_TYPES.put(Character.class.getName(), Types.CHAR);
         KNOWN_TYPES.put(String.class.getName(), Types.STRING);
-
         KNOWN_TYPES.put(Class.class.getName(), Types.CLASS);
-
-        // primitive types
         KNOWN_TYPES.put("boolean", Types.BOOLEAN);
-
         KNOWN_TYPES.put("byte", Types.BYTE);
         KNOWN_TYPES.put("short", Types.SHORT);
         KNOWN_TYPES.put("int", Types.INT);
         KNOWN_TYPES.put("long", Types.LONG);
         KNOWN_TYPES.put("float", Types.FLOAT);
         KNOWN_TYPES.put("double", Types.DOUBLE);
-
         KNOWN_TYPES.put("char", Types.CHAR);
-
         KNOWN_TYPES.put("null", Types.NULL);
-
-        // arrays
         KNOWN_TYPES.put(boolean[].class.getName(), Types.ARRAY_BOOLEAN);
-
         KNOWN_TYPES.put(byte[].class.getName(), Types.ARRAY_BYTE);
         KNOWN_TYPES.put(short[].class.getName(), Types.ARRAY_SHORT);
         KNOWN_TYPES.put(int[].class.getName(), Types.ARRAY_INT);
         KNOWN_TYPES.put(long[].class.getName(), Types.ARRAY_LONG);
         KNOWN_TYPES.put(double[].class.getName(), Types.ARRAY_DOUBLE);
         KNOWN_TYPES.put(float[].class.getName(), Types.ARRAY_FLOAT);
-
         KNOWN_TYPES.put(char[].class.getName(), Types.ARRAY_CHAR);
         KNOWN_TYPES.put(String[].class.getName(), Types.ARRAY_STRING);
     }
@@ -176,58 +108,47 @@ public final class JsonUtils {
         if (string == null || string.length() == 0) {
             return "\"\"";
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("\"");
+        StringBuilder jsonString = new StringBuilder();
+        jsonString.append("\"");
         char[] charArray = string.toCharArray();
         for (char c : charArray) {
             switch (c) {
                 case '\n':
-                    sb.append("\\n");
+                    jsonString.append("\\n");
                     break;
                 case '\r':
-                    sb.append("\\r");
+                    jsonString.append("\\r");
                     break;
                 case '\t':
-                    sb.append("\\t");
+                    jsonString.append("\\t");
                     break;
                 case '\b':
-                    sb.append("\\b");
+                    jsonString.append("\\b");
                     break;
                 case '\f':
-                    sb.append("\\f");
+                    jsonString.append("\\f");
                     break;
                 case '\\':
-                    sb.append("\\\\");
+                    jsonString.append("\\\\");
                     break;
                 case '"':
-                    sb.append("\\\"");
+                    jsonString.append("\\\"");
                     break;
                 default:
                     if (c < '\u0010') {
-                        sb.append("\\u000").append(Integer.toHexString(c));
+                        jsonString.append("\\u000").append(Integer.toHexString(c));
                     } else if ((c < '\u0020' && c > '\u0009') || (c >= '\u0080' && c < '\u00a0')) {
-                        sb.append("\\u00").append(Integer.toHexString(c));
+                        jsonString.append("\\u00").append(Integer.toHexString(c));
                     } else if (c >= '\u2000' && c < '\u2100') {
-                        sb.append("\\u").append(Integer.toHexString(c));
+                        jsonString.append("\\u").append(Integer.toHexString(c));
                     } else {
-                        sb.append(c);
+                        jsonString.append(c);
                     }
                     break;
             }
         }
-        sb.append("\"");
-        return sb.toString();
-    }
-
-    /**
-     * Check is given Object is known.
-     *
-     * @param o
-     *         Object.
-     * @return true if Object is known, false otherwise.
-     */
-    public static boolean isKnownType(Object o) {
-        return (o == null) || isKnownType(o.getClass());
+        jsonString.append("\"");
+        return jsonString.toString();
     }
 
     /**
@@ -301,136 +222,133 @@ public final class JsonUtils {
      * {@link JsonTransient} annotation . Transient fields will be not serialized
      * in JSON representation.
      *
-     * @param clazz
+     * @param aClass
      *         the class.
      * @return set of fields which must be skipped.
      */
-    public static Set<String> getTransientFields(Class<?> clazz) {
-        Set<String> set = new HashSet<String>();
-        Class<?> myClazz = clazz;
-        while (myClazz != null && myClazz != Object.class) {
-            for (Field f : myClazz.getDeclaredFields()) {
-                if (Modifier.isTransient(f.getModifiers()) || f.getAnnotation(JsonTransient.class) != null) {
-                    set.add(f.getName());
+    public static Set<String> getTransientFields(Class<?> aClass) {
+        Set<String> transientFields = new HashSet<>();
+        Class<?> superClass = aClass;
+        while (superClass != null && superClass != Object.class) {
+            for (Field field : superClass.getDeclaredFields()) {
+                if (Modifier.isTransient(field.getModifiers()) || field.isAnnotationPresent(JsonTransient.class)) {
+                    transientFields.add(field.getName());
                 }
             }
-            myClazz = myClazz.getSuperclass();
+            superClass = superClass.getSuperclass();
         }
-        return set;
+        return transientFields;
     }
 
-    public static <T> T createProxy(Class<T> interf) {
-        if (interf == null) {
-            throw new NullPointerException();
+    @SuppressWarnings({"unchecked"})
+    public static <T> T createProxy(Class<T> anInterface) {
+        if (anInterface == null) {
+            throw new IllegalArgumentException();
         }
-        if (!interf.isInterface()) {
-            throw new IllegalArgumentException("Type '" + interf.getSimpleName() + "' is not interface. ");
+        if (anInterface.isInterface()) {
+            return (T)Proxy.newProxyInstance(anInterface.getClassLoader(), new Class[]{anInterface}, new ProxyObject(anInterface));
         }
-        return (T)Proxy.newProxyInstance(interf.getClassLoader(), new Class[]{interf}, new ProxyObject(interf));
+        throw new IllegalArgumentException(String.format("Type '%s' is not interface. ", anInterface.getSimpleName()));
     }
+
+    static String getFieldName(Method method) {
+        String methodName = method.getName();
+        Class<?> returnType = method.getReturnType();
+        String fieldName = null;
+        if (methodName.startsWith("set") && methodName.length() > 3) {
+            fieldName = methodName.substring(3);
+        } else if (methodName.startsWith("get") && methodName.length() > 3) {
+            fieldName = methodName.substring(3);
+        } else if (methodName.startsWith("is") && methodName.length() > 2 && (returnType == Boolean.class || returnType == boolean.class)) {
+            fieldName = methodName.substring(2);
+        }
+        if (fieldName != null) {
+            fieldName = (fieldName.length() > 1)
+                        ? Character.toLowerCase(fieldName.charAt(0)) + fieldName.substring(1)
+                        : fieldName.toLowerCase();
+        }
+        return fieldName;
+    }
+
 
     private static final class ProxyObject implements InvocationHandler {
-        private final Map<String, Object> values = new HashMap<String, Object>();
-        private final Class<?> interf;
+        private static final Set<String> IGNORED_METHODS = newHashSet("getClass", "getMetaClass", "setMetaClass");
 
-        private ProxyObject(Class<?> interf) {
-            this.interf = interf;
+        private final Map<String, Object> values;
+        private final Class<?> anInterface;
+
+        private ProxyObject(Class<?> anInterface) {
+            this.anInterface = anInterface;
+            values = new HashMap<>();
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            String key = key(method);
+            String key = getKey(method);
             if (key != null) {
-                // It is getter if there is no argument.
                 if (args == null) {
-                    return value(key, method);
+                    return getValue(key, method);
                 }
-
-                // Setter.
                 values.put(key, args[0]);
-                return null;
-            } else if ("toString".equals(method.getName())) {
-                // EVERREST-41
-                // Simplify viewing all properties of object.
-                StringBuilder buf = new StringBuilder();
-                buf.append('{');
-                Method[] allMethods = interf.getMethods();
-                for (int i = 0, length = allMethods.length; i < length; i++) {
-                    // Check all 'getters'. Such method must have not parameters
-                    // and must have name 'getXXX' or 'isXXX' (for boolean only).
-                    if (allMethods[i].getParameterTypes().length == 0 && (key = key(allMethods[i])) != null) {
-                        if (i > 0) {
-                            buf.append(',');
-                            buf.append(' ');
-                        }
-                        buf.append(key);
-                        buf.append('=');
-                        buf.append(value(key, allMethods[i]));
-                    }
-                }
-                return buf.append('}').toString();
+            } else if ("toString".equals(method.getName()) && args == null) {
+                return invokeToString();
             }
-            // Neither toString nor getter nor setter. Cannot process such methods.
             return null;
         }
 
-        private Object value(String key, Method method) {
+        private Object invokeToString() {
+            Method[] allMethods = anInterface.getMethods();
+            ToStringHelper toStringHelper = MoreObjects.toStringHelper(anInterface);
+            for (Method method : allMethods) {
+                String key;
+                if ((key = getKey(method)) != null && method.getParameterTypes().length == 0) {
+                    toStringHelper.add(key, getValue(key, method));
+                }
+            }
+            return toStringHelper.toString();
+        }
+
+        private Object getValue(String key, Method method) {
             Object value = values.get(key);
-            Class<?> valueType;
-            if (value != null) {
-                return value;
-            } else if ((valueType = method.getReturnType()).isPrimitive()) {
-                // Cannot return null for primitive types return default value instead.
-                if (Boolean.TYPE == valueType) {
-                    return false;
-                } else if (Byte.TYPE == valueType) {
-                    return (byte)0;
-                } else if (Short.TYPE == valueType) {
-                    return (short)0;
-                } else if (Character.TYPE == valueType) {
-                    return (char)0;
-                } else if (Integer.TYPE == valueType) {
-                    return 0;
-                } else if (Long.TYPE == valueType) {
-                    return 0l;
-                } else if (Float.TYPE == valueType) {
-                    return 0.0f;
-                } else if (Double.TYPE == valueType) {
-                    return 0.0d;
-                }
+            if (value == null && method.getReturnType().isPrimitive()) {
+                value = getDefaultValue(method.getReturnType());
+            }
+            return value;
+        }
+
+        private Object getDefaultValue(Class<?> valueType) {
+            if (Boolean.TYPE == valueType) {
+                return false;
+            } else if (Byte.TYPE == valueType) {
+                return (byte)0;
+            } else if (Short.TYPE == valueType) {
+                return (short)0;
+            } else if (Character.TYPE == valueType) {
+                return (char)0;
+            } else if (Integer.TYPE == valueType) {
+                return 0;
+            } else if (Long.TYPE == valueType) {
+                return 0L;
+            } else if (Float.TYPE == valueType) {
+                return 0.0F;
+            } else if (Double.TYPE == valueType) {
+                return 0.0;
             }
             return null;
         }
 
-        private String key(Method method) {
-            String name = method.getName();
-            Class<?>[] parameters = method.getParameterTypes();
-            if (parameters.length > 1 || "getClass".equals(name) || "getMetaClass".equals(name) || "setMetaClass".equals(name)) {
-                /* Neither getter nor setter if has more then one argument. */
+        private String getKey(Method method) {
+            if (isIgnoredMethod(method)) {
                 return null;
             }
+            return getFieldName(method);
+        }
 
-            String key = null;
-            if (parameters.length == 1) {
-                if (name.startsWith("set") && name.length() > 3) {
-                    key = name.substring(3);
-                }
-            } else {
-                if (name.startsWith("get") && name.length() > 3) {
-                    key = name.substring(3);
-                } else if (name.startsWith("is") && name.length() > 2
-                           && (method.getReturnType() == boolean.class || method.getReturnType() == Boolean.class)) {
-                    key = name.substring(2);
-                }
-            }
-            if (key != null) {
-                key = key.length() > 1 ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
-            }
-            return key;
+        private boolean isIgnoredMethod(Method method) {
+            return IGNORED_METHODS.contains(method.getName()) || method.getParameterTypes().length > 1;
         }
     }
 
-    /** Must not be created. */
     private JsonUtils() {
     }
 }

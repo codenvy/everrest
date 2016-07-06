@@ -21,11 +21,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BaseCollectionProducer.java 285 2009-10-15 16:21:30Z aparfonov
- *          $
- */
 public abstract class BaseCollectionProducer implements TypeProducer {
     /** Class of collection. */
     private Class<?> collectionClass;
@@ -42,63 +37,59 @@ public abstract class BaseCollectionProducer implements TypeProducer {
     }
 
     /**
-     * Create collection's element.
+     * Creates collection's element.
      *
      * @param value
      *         this String will be used for creation object, usually String
      *         will be used as parameter for constructor or static method
-     *         <code>valueOf</code>
+     *         {@code valueOf}
      * @return newly created collection's element
      * @throws Exception
      *         if any error occurs
      */
-    protected abstract Object createValue(String value) throws Exception;
+    protected abstract Object createCollectionItem(String value) throws Exception;
 
     /**
-     * Create Object (it is Collection) and add in it elements. Elements must
-     * either: <li>To be a Sting</li> <li>Have a constructor that accepts a
-     * single String argument.</li> <li>Have a static method named
-     * <code>valueOf</code> that accepts a single String argument</li>. If values
-     * map does not contains any value for parameter <i>param</i> then
-     * <i>defaultValue</i> will be used, in this case Collection will contains
+     * Creates Object (it is Collection) and adds elements in it. Each element either:
+     * <ul><li>Is a Sting</li> <li>Has a constructor that accepts a
+     * single String argument</li> <li>Has a static method named
+     * {@code valueOf} that accepts a single String argument</li></ul>. If values
+     * map does not contain any value for parameter {@code param} then
+     * {@code defaultValue} will be used, in this case Collection will contains
      * single element. {@inheritDoc}
      */
     @Override
     public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception {
         List<String> list = values.get(param);
-        if (list != null) {
-            Collection<Object> coll = getCollection();
-
-            for (String v : list) {
-                coll.add(createValue(v));
+        if (values.get(param) != null) {
+            Collection<Object> result = getCollection();
+            for (String item : list) {
+                result.add(createCollectionItem(item));
             }
-
-            return coll;
+            return result;
         } else if (defaultValue != null) {
-            Collection<Object> coll = getCollection();
-            coll.add(createValue(defaultValue));
-            return coll;
+            Collection<Object> result = getCollection();
+            result.add(createCollectionItem(defaultValue));
+            return result;
         }
 
         return null;
     }
 
     /**
-     * Create instance of collection corresponding to collection class, see
-     * {@link #collectionClass} .
+     * Creates instance of collection corresponding to collection class, see {@link #collectionClass} .
      *
      * @return newly created collection
      */
     private Collection<Object> getCollection() {
         if (collectionClass == List.class) {
-            return new ArrayList<Object>();
+            return new ArrayList<>();
         } else if (collectionClass == Set.class) {
-            return new HashSet<Object>();
+            return new HashSet<>();
         } else if (collectionClass == SortedSet.class) {
-            return new TreeSet<Object>();
+            return new TreeSet<>();
         } else {
             throw new IllegalArgumentException();
         }
     }
-
 }

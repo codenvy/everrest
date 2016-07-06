@@ -14,22 +14,25 @@ import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
- */
 public class BookApplication extends Application {
+
+    private final Set<Class<?>> classes;
+    private final Set<Object> singletons;
+
+    public BookApplication() {
+        classes = new HashSet<>(1);
+        singletons = new HashSet<>(1);
+        classes.add(BookService.class);
+        singletons.add(new BookNotFoundExceptionMapper());
+    }
+
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> cls = new HashSet<Class<?>>(1);
-        cls.add(BookService.class);
-        return cls;
+        return classes;
     }
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> objs = new HashSet<Object>(1);
-        objs.add(new BookNotFoundExceptionMapper());
-        return objs;
+        return singletons;
     }
 }

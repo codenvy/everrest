@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.everrest.sample.book;
 
-/**
- */
 public class Book {
     private String title;
 

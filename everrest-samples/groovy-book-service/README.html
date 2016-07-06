@@ -77,18 +77,19 @@
     <p><i>org.everrest.sample.groovy.BookApplication.groovy</i> - application deployer. We decide to have all components
         as singleton.</p>
       <pre>
-      class BookApplication extends javax.ws.rs.core.Application
-      {
-         Set&lt;Class&lt;?&gt;&gt; getClasses()
-         {
-           new HashSet&lt;Class&lt;?&gt;&gt;([])
-         }
+      class BookApplication extends javax.ws.rs.core.Application {
+          def bookService
+          def bookNotFoundExceptionMapper
 
-         Set&lt;Object&gt; getSingletons()
-         {
-            new HashSet&lt;Object&gt;([new BookService(bookStorage:new BookStorage()), new BookNotFoundExceptionMapper()])
-         }
-      }      
+          BookApplication() {
+              bookService = new BookService(bookStorage: new BookStorage())
+              bookNotFoundExceptionMapper = new BookNotFoundExceptionMapper()
+          }
+
+          Set&lt;Object&gt; getSingletons() {
+              new HashSet&lt;Object&gt;([bookService, this.bookNotFoundExceptionMapper])
+          }
+      }
       </pre>
     <p><i>org.everrest.sample.groovy.Book.groovy</i> - contains simple Groovy Bean that will be used to transfer data
         via JSON.</p>

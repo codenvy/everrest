@@ -10,69 +10,75 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.ApplicationContextImpl;
-import org.everrest.core.impl.ContainerRequest;
-import org.everrest.core.impl.MultivaluedMapImpl;
-import org.everrest.core.impl.ProviderBinder;
-import org.everrest.core.tools.EmptyInputStream;
-import org.everrest.core.tools.SimpleSecurityContext;
+import com.google.common.io.ByteStreams;
+
+import org.everrest.core.ApplicationContext;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.URI;
-import java.util.Arrays;
+import java.util.Random;
 
-/**
- * @author andrew00x
- */
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class InputStreamEntityProviderTest {
+    private byte[] testContent;
+    private InputStreamEntityProvider inputStreamEntityProvider = new InputStreamEntityProvider();
+
     @Before
     public void setUp() throws Exception {
-        ApplicationContextImpl.setCurrent(new ApplicationContextImpl(
-                new ContainerRequest("", URI.create(""), URI.create(""), new EmptyInputStream(), new MultivaluedMapImpl(),
-                                     new SimpleSecurityContext(false)), null, ProviderBinder.getInstance()));
+        testContent = new byte[16];
+        new Random().nextBytes(testContent);
+        ApplicationContext context = mock(ApplicationContext.class, RETURNS_DEEP_STUBS);
+        when(context.getEverrestConfiguration().getMaxBufferSize()).thenReturn(100);
+        ApplicationContext.setCurrent(context);
     }
 
     @After
     public void tearDown() throws Exception {
-        ApplicationContextImpl.setCurrent(null);
+        ApplicationContext.setCurrent(null);
     }
 
     @Test
-    @SuppressWarnings({"unchecked"})
-    public void testRead() throws Exception {
-        MessageBodyReader reader = new InputStreamEntityProvider();
-        Assert.assertTrue(reader.isReadable(InputStream.class, null, null, null));
-        byte[] data = new byte[16];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = (byte)i;
-        }
-        InputStream in = new ByteArrayInputStream(data);
-        InputStream result = (InputStream)reader.readFrom(InputStream.class, null, null, null, null, in);
-        byte[] data2 = new byte[16];
-        result.read(data2);
-        Assert.assertTrue(Arrays.equals(data, data2));
+    public void isReadableForInputStream() throws Exception {
+        assertTrue(inputStreamEntityProvider.isReadable(InputStream.class, null, null, null));
     }
 
     @Test
-    @SuppressWarnings({"unchecked"})
-    public void testWrite() throws Exception {
-        MessageBodyWriter writer = new InputStreamEntityProvider();
-        Assert.assertTrue(writer.isWriteable(InputStream.class, null, null, null));
-        byte[] data = new byte[16];
-        for (int i = data.length - 1; i >= 0; i--) {
-            data[i] = (byte)i;
-        }
-        InputStream source = new ByteArrayInputStream(data);
+    public void isNotReadableForTypeOtherThanInputStream() throws Exception {
+        assertFalse(inputStreamEntityProvider.isReadable(String.class, null, null, null));
+    }
+
+    @Test
+    public void isWritableForInputStream() throws Exception {
+        assertTrue(inputStreamEntityProvider.isWriteable(InputStream.class, null, null, null));
+    }
+
+    @Test
+    public void isNotWritableForTypeOtherThanInputStream() throws Exception {
+        assertFalse(inputStreamEntityProvider.isWriteable(String.class, null, null, null));
+    }
+
+    @Test
+    public void readsContentOfEntityStreamAsInputStream() throws Exception {
+        InputStream in = new ByteArrayInputStream(testContent);
+        InputStream result = inputStreamEntityProvider.readFrom(InputStream.class, null, null, null, null, in);
+        assertArrayEquals(testContent, ByteStreams.toByteArray(result));
+    }
+
+    @Test
+    public void writesInputStreamToOutputStream() throws Exception {
+        InputStream source = new ByteArrayInputStream(testContent);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.writeTo(source, InputStream.class, null, null, null, null, out);
-        Assert.assertTrue(Arrays.equals(data, out.toByteArray()));
+        inputStreamEntityProvider.writeTo(source, InputStream.class, null, null, null, null, out);
+        assertArrayEquals(testContent, out.toByteArray());
     }
 }

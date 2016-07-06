@@ -10,63 +10,63 @@
  *******************************************************************************/
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.impl.BaseTest;
-import org.junit.Assert;
+import com.google.common.io.Files;
+
+import org.everrest.core.impl.FileCollector;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Arrays;
 
-/**
- * @author andrew00x
- */
-public class FileEntityProviderTest extends BaseTest {
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-    @Test
-    @SuppressWarnings({"unchecked"})
-    public void testRead() throws Exception {
-        MessageBodyReader reader = new FileEntityProvider();
-        Assert.assertTrue(reader.isReadable(File.class, null, null, null));
-        String data = "to be or not to be";
-        File result = (File)reader.readFrom(File.class, null, null, null, null, new ByteArrayInputStream(data.getBytes("UTF-8")));
-        Assert.assertTrue(result.exists());
-        Assert.assertTrue(result.length() > 0);
-        FileInputStream fdata = new FileInputStream(result);
-        Reader freader = new InputStreamReader(fdata, "UTF-8");
-        char[] c = new char[1024];
-        int b = freader.read(c);
-        String resstr = new String(c, 0, b);
-//        System.out.println(getClass().getName() + " : " + resstr);
-        Assert.assertEquals(data, resstr);
-        if (!result.delete()) {
-            System.out.println(">>>>>> Failed remove temporary file " + result);
-        }
+public class FileEntityProviderTest {
+    private byte[] testContent = "to be or not to be".getBytes();
+    private FileEntityProvider fileEntityProvider;
+
+    @Before
+    public void setUp() throws Exception {
+        fileEntityProvider = new FileEntityProvider();
     }
 
     @Test
-    @SuppressWarnings({"unchecked"})
-    public void testWrite() throws Exception {
-        MessageBodyWriter writer = new FileEntityProvider();
-        Assert.assertTrue(writer.isWriteable(File.class, null, null, null));
-        byte[] data = "to be or not to be".getBytes("UTF-8");
-        File source = File.createTempFile("fileentitytest", null);
-        FileOutputStream fout = new FileOutputStream(source);
-        fout.write(data);
-        fout.close();
+    public void isReadableForFile() throws Exception {
+        assertTrue(fileEntityProvider.isReadable(File.class, null, null, null));
+    }
+
+    @Test
+    public void isNotReadableForTypeOtherThanFile() throws Exception {
+        assertFalse(fileEntityProvider.isReadable(String.class, null, null, null));
+    }
+
+    @Test
+    public void isWritableForFile() throws Exception {
+        assertTrue(fileEntityProvider.isWriteable(File.class, null, null, null));
+    }
+
+    @Test
+    public void isNotWritableForTypeOtherThanFile() throws Exception {
+        assertFalse(fileEntityProvider.isWriteable(String.class, null, null, null));
+    }
+
+    @Test
+    public void readsContentOfEntityStreamAsFile() throws Exception {
+        File result = fileEntityProvider.readFrom(File.class, null, null, null, null, new ByteArrayInputStream(testContent));
+        assertTrue(result.exists());
+        byte[] bytes = Files.toByteArray(result);
+        assertArrayEquals(testContent, bytes);
+    }
+
+    @Test
+    public void writesFileToOutputStream() throws Exception {
+        File source = FileCollector.getInstance().createFile();
+        Files.write(testContent, source);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.writeTo(source, File.class, null, null, null, null, out);
-        // compare as bytes
-        Assert.assertTrue(Arrays.equals(data, out.toByteArray()));
-        if (source.delete()) {
-            System.out.println("Tmp file removed");
-        }
+        fileEntityProvider.writeTo(source, File.class, null, null, null, null, out);
+        assertArrayEquals(testContent, out.toByteArray());
     }
 }
