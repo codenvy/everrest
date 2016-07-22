@@ -30,7 +30,6 @@ import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;
 import org.everrest.core.impl.ApplicationProviderBinderHelper;
 import org.everrest.core.impl.ApplicationPublisher;
-import org.everrest.core.impl.ProviderBinder;
 import org.everrest.core.impl.ResourceBinderImpl;
 import org.everrest.core.servlet.EverrestInitializedListener;
 import org.everrest.core.servlet.EverrestServlet;
@@ -211,8 +210,6 @@ public class JettyHttpServer {
                 (ApplicationProviderBinder)context.getServletContext().getAttribute(ApplicationProviderBinder.class.getName());
 
         ApplicationProviderBinderHelper.resetApplicationProviderBinder(providerBinder);
-        ProviderBinder.setInstance(null);
-
     }
 
 

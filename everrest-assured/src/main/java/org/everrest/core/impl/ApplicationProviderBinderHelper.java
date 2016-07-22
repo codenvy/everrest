@@ -15,14 +15,6 @@ public class ApplicationProviderBinderHelper {
         binder.readProviders.clear();
         binder.responseFilters.clear();
         binder.invokerFilters.clear();
-        ProviderBinder defaults = ProviderBinder.getInstance();
-        binder.writeProviders.putAll(defaults.writeProviders);
-        binder.readProviders.putAll(defaults.readProviders);
-        binder.exceptionMappers.putAll(defaults.exceptionMappers);
-        binder.contextResolvers.putAll(defaults.contextResolvers);
-        binder.readProviders.putAll(defaults.readProviders);
-        binder.responseFilters.putAll(defaults.responseFilters);
-        binder.invokerFilters.putAll(defaults.invokerFilters);
         binder.addMethodInvokerFilter(new SecurityConstraint());
     }
 }
