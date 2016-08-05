@@ -43,7 +43,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -51,6 +53,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.security.Permission;
@@ -672,6 +676,145 @@ public class ProviderBinderTest {
             ProviderBinder.setInstance(providerBinder);
         } finally {
             restoreSecurityManager();
+        }
+    }
+
+    @Test
+    public void findsMessageBodyReaderThatSupportsTypeNearestToDeserializedTypeInClassesHierarchy() {
+        EntityReader entityReader = new EntityReader();
+        ExtendedEntityReader extendedEntityReader = new ExtendedEntityReader();
+        ExtendedExtendedEntityReader extendedExtendedEntityReader = new ExtendedExtendedEntityReader();
+
+        providers.addMessageBodyReader(entityReader);
+        providers.addMessageBodyReader(extendedEntityReader);
+
+        assertSame(entityReader, providers.getMessageBodyReader(Entity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedEntityReader, providers.getMessageBodyReader(ExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedEntityReader, providers.getMessageBodyReader(ExtendedExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+
+        providers.addMessageBodyReader(extendedExtendedEntityReader);
+
+        assertSame(entityReader, providers.getMessageBodyReader(Entity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedEntityReader, providers.getMessageBodyReader(ExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedExtendedEntityReader, providers.getMessageBodyReader(ExtendedExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+    }
+
+    @Test
+    public void findsMessageBodyWriterThatSupportsTypeNearestToSerializedTypeInClassesHierarchy() {
+        EntityWriter entityWriter = new EntityWriter();
+        ExtendedEntityWriter extendedEntityWriter = new ExtendedEntityWriter();
+        ExtendedExtendedEntityWriter extendedExtendedEntityWriter = new ExtendedExtendedEntityWriter();
+
+        providers.addMessageBodyWriter(entityWriter);
+        providers.addMessageBodyWriter(extendedEntityWriter);
+
+        assertSame(entityWriter, providers.getMessageBodyWriter(Entity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedEntityWriter, providers.getMessageBodyWriter(ExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedEntityWriter, providers.getMessageBodyWriter(ExtendedExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+
+        providers.addMessageBodyWriter(extendedExtendedEntityWriter);
+
+        assertSame(entityWriter, providers.getMessageBodyWriter(Entity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedEntityWriter, providers.getMessageBodyWriter(ExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+        assertSame(extendedExtendedEntityWriter, providers.getMessageBodyWriter(ExtendedExtendedEntity.class, null, null, TEXT_PLAIN_TYPE));
+    }
+
+    static class Entity {
+    }
+
+    static class ExtendedEntity extends Entity {
+    }
+
+    static class ExtendedExtendedEntity extends ExtendedEntity {
+    }
+
+    @Provider static class EntityReader implements MessageBodyReader<Entity> {
+        @Override
+        public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Entity.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public Entity readFrom(Class<Entity> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                          MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+            return null;
+        }
+    }
+
+    @Provider static class ExtendedEntityReader implements MessageBodyReader<ExtendedEntity> {
+        @Override
+        public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Entity.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public ExtendedEntity readFrom(Class<ExtendedEntity> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                               MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+            return null;
+        }
+    }
+
+    @Provider static class ExtendedExtendedEntityReader implements MessageBodyReader<ExtendedExtendedEntity> {
+        @Override
+        public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Entity.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public ExtendedExtendedEntity readFrom(Class<ExtendedExtendedEntity> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                                       MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+            return null;
+        }
+    }
+
+    @Provider static class EntityWriter implements MessageBodyWriter<Entity> {
+        @Override
+        public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Entity.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public long getSize(Entity entity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return -1;
+        }
+
+        @Override
+        public void writeTo(Entity entity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+        }
+    }
+
+    @Provider static class ExtendedEntityWriter implements MessageBodyWriter<ExtendedEntity> {
+        @Override
+        public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Entity.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public long getSize(ExtendedEntity extendedEntity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return -1;
+        }
+
+        @Override
+        public void writeTo(ExtendedEntity extendedEntity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+        }
+    }
+
+    @Provider static class ExtendedExtendedEntityWriter implements MessageBodyWriter<ExtendedExtendedEntity> {
+        @Override
+        public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return Entity.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public long getSize(ExtendedExtendedEntity extendedExtendedEntity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return -1;
+        }
+
+        @Override
+        public void writeTo(ExtendedExtendedEntity extendedExtendedEntity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
         }
     }
 
