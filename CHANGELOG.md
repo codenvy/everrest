@@ -1,5 +1,28 @@
 # Change Log
 
+## [1.13.0](https://github.com/codenvy/everrest/tree/1.13.0) (2016-07-06)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.12.3...1.13.0)
+
+**Issues with 'enhancement' label:**
+
+- Incomplete implementation of UriBuilder [\#21](https://github.com/codenvy/everrest/issues/21)
+
+**Issues fixed with 'bugs' label:**
+
+- Incomplete implementation of UriBuilder [\#21](https://github.com/codenvy/everrest/issues/21)
+
+**Pull requests merged:**
+
+- Remove some modules [\#25](https://github.com/codenvy/everrest/pull/25) ([mkuznyetsov](https://github.com/mkuznyetsov))
+- cover everrest-core with test [\#23](https://github.com/codenvy/everrest/pull/23) ([andrew00x](https://github.com/andrew00x))
+
+## [1.12.3](https://github.com/codenvy/everrest/tree/1.12.3) (2016-06-23)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.12.2...1.12.3)
+
+**Pull requests merged:**
+
+- CODENVY-338 Set Guice to 4.1.0 version [\#24](https://github.com/codenvy/everrest/pull/24) ([mkuznyetsov](https://github.com/mkuznyetsov))
+
 ## [1.12.2](https://github.com/codenvy/everrest/tree/1.12.2) (2016-04-18)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.12.1...1.12.2)
 

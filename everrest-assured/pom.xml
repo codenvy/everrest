@@ -16,7 +16,7 @@
     <parent>
         <artifactId>everrest-parent</artifactId>
         <groupId>org.everrest</groupId>
-        <version>1.12.3-SNAPSHOT</version>
+        <version>1.13.2-SNAPSHOT</version>
     </parent>
     <artifactId>everrest-assured</artifactId>
     <name>EverRest :: HTTP :: Testng listener</name>
