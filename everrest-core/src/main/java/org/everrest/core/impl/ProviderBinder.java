@@ -75,6 +75,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.WILDCARD_TYPE;
 
@@ -625,6 +626,7 @@ public class ProviderBinder implements Providers {
     protected <T> MessageBodyReader<T> doGetMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         Iterator<MediaType> mediaTypeRange = MediaTypeHelper.createDescendingMediaTypeIterator(mediaType);
         Map<Class, MessageBodyReader> instanceCache = new HashMap<>();
+        List<MessageBodyReader> matchedReaders = newArrayList();
         while (mediaTypeRange.hasNext()) {
             MediaType actual = mediaTypeRange.next();
             List<ObjectFactory<ProviderDescriptor>> messageBodyReaderFactories = readProviders.get(actual);
@@ -637,10 +639,50 @@ public class ProviderBinder implements Providers {
                         instanceCache.put(messageBodyReaderClass, messageBodyReader);
                     }
                     if (messageBodyReader.isReadable(type, genericType, annotations, actual)) {
-                        return messageBodyReader;
+                        matchedReaders.add(messageBodyReader);
                     }
                 }
             }
+        }
+        if (matchedReaders.isEmpty()) {
+            return null;
+        }
+        if (matchedReaders.size() > 1) {
+            Collections.sort(matchedReaders, (readerOne, readerTwo) -> {
+                Type typeOne = getTypeSupportedByReader(readerOne);
+                Type typeTwo = getTypeSupportedByReader(readerTwo);
+                if (!(typeOne instanceof Class) || !(typeTwo instanceof Class)) {
+                    return 0;
+                }
+                int inheritanceDepthOne = calculateInheritanceDepth((Class<?>)typeOne, type);
+                int inheritanceDepthTwo = calculateInheritanceDepth((Class<?>)typeTwo, type);
+                if (inheritanceDepthOne < 0 && inheritanceDepthTwo >= 0) {
+                    return 1;
+                } else if (inheritanceDepthOne >= 0 && inheritanceDepthTwo < 0) {
+                    return -1;
+                } else if (inheritanceDepthOne > inheritanceDepthTwo) {
+                    return 1;
+                } else if (inheritanceDepthOne < inheritanceDepthTwo) {
+                    return -1;
+                }
+                return 0;
+            });
+        }
+        return matchedReaders.get(0);
+    }
+
+    private static Type getTypeSupportedByReader(MessageBodyReader<?> reader) {
+        Class readerSuperClass = reader.getClass();
+        while (readerSuperClass != null) {
+            for (Type anInterface : readerSuperClass.getGenericInterfaces()) {
+                if (anInterface instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType)anInterface;
+                    if (parameterizedType.getRawType() == MessageBodyReader.class) {
+                        return parameterizedType.getActualTypeArguments()[0];
+                    }
+                }
+            }
+            readerSuperClass = readerSuperClass.getSuperclass();
         }
         return null;
     }
@@ -665,6 +707,7 @@ public class ProviderBinder implements Providers {
     protected <T> MessageBodyWriter<T> doGetMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         Iterator<MediaType> mediaTypeRange = MediaTypeHelper.createDescendingMediaTypeIterator(mediaType);
         Map<Class, MessageBodyWriter> instanceCache = new HashMap<>();
+        List<MessageBodyWriter> matchedWriters = newArrayList();
         while (mediaTypeRange.hasNext()) {
             MediaType actual = mediaTypeRange.next();
             List<ObjectFactory<ProviderDescriptor>> messageBodyWriterFactories = writeProviders.get(actual);
@@ -677,12 +720,65 @@ public class ProviderBinder implements Providers {
                         instanceCache.put(messageBodyWriterClass, writer);
                     }
                     if (writer.isWriteable(type, genericType, annotations, actual)) {
-                        return writer;
+                        matchedWriters.add(writer);
                     }
                 }
             }
         }
+        if (matchedWriters.isEmpty()) {
+            return null;
+        }
+        if (matchedWriters.size() > 1) {
+            Collections.sort(matchedWriters, (writerOne, writerTwo) -> {
+                Type typeOne = getTypeSupportedByWriter(writerOne);
+                Type typeTwo = getTypeSupportedByWriter(writerTwo);
+                if (!(typeOne instanceof Class) || !(typeTwo instanceof Class)) {
+                    return 0;
+                }
+                int inheritanceDepthOne = calculateInheritanceDepth((Class<?>)typeOne, type);
+                int inheritanceDepthTwo = calculateInheritanceDepth((Class<?>)typeTwo, type);
+                if (inheritanceDepthOne < 0 && inheritanceDepthTwo >= 0) {
+                    return 1;
+                } else if (inheritanceDepthOne >= 0 && inheritanceDepthTwo < 0) {
+                    return -1;
+                } else if (inheritanceDepthOne > inheritanceDepthTwo) {
+                    return 1;
+                } else if (inheritanceDepthOne < inheritanceDepthTwo) {
+                    return -1;
+                }
+                return 0;
+            });
+        }
+        return matchedWriters.get(0);
+    }
+
+    private static Type getTypeSupportedByWriter(MessageBodyWriter writer) {
+        Class writerSuperClass = writer.getClass();
+        while (writerSuperClass != null) {
+            for (Type anInterface : writerSuperClass.getGenericInterfaces()) {
+                if (anInterface instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType)anInterface;
+                    if (parameterizedType.getRawType() == MessageBodyWriter.class) {
+                        return parameterizedType.getActualTypeArguments()[0];
+                    }
+                }
+            }
+            writerSuperClass = writerSuperClass.getSuperclass();
+        }
         return null;
+    }
+
+    private static int calculateInheritanceDepth(Class<?> inherited, Class<?> inheritor) {
+        if (!inherited.isAssignableFrom(inheritor)) {
+            return -1;
+        }
+        Class superClass = inheritor;
+        int depth = 0;
+        while (superClass != null && superClass != inherited) {
+            superClass = superClass.getSuperclass();
+            depth++;
+        }
+        return depth;
     }
 
     /**
