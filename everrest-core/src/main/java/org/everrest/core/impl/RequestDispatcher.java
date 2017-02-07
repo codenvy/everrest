@@ -544,7 +544,9 @@ public class RequestDispatcher {
                 String lastCapturedValue = Iterables.getLast(capturedValues);
                 if (lastCapturedValue == null || "/".equals(lastCapturedValue)) {
                     resourceMethods = entry.getValue();
-                    break;
+                    if (resourceMethods.containsKey(request.getMethod())) {
+                        break;
+                    }
                 }
             }
         }
