@@ -48,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.groupingBy;
@@ -69,6 +71,7 @@ import static javax.ws.rs.core.Response.Status.UNSUPPORTED_MEDIA_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Matchers.same;
@@ -414,6 +417,33 @@ public class RequestDispatcherTest {
     }
 
     @Test
+    public void findsSubResourceWithRequestedHttpMethodWhenPathMatchesToMoreThanOneSubResourcesPaths() throws Exception {
+        when(applicationContext.getPathSegments(false)).thenReturn(createPathSegments("a", "b"));
+        when(request.getMethod()).thenReturn("DELETE");
+        when(request.getAcceptMediaTypeList()).thenReturn(newArrayList(new AcceptMediaType(TEXT_PLAIN_TYPE)));
+
+        Resource resource = new Resource();
+        SubResourceMethodDescriptor subResourceMethodOne =
+                mockSubResourceMethod(Resource.class.getMethod("echo", String.class),"(.*)", "GET", newArrayList(WILDCARD_TYPE), newArrayList(TEXT_PLAIN_TYPE));
+        SubResourceMethodDescriptor subResourceMethodTwo =
+                mockSubResourceMethod(Resource.class.getMethod("echo", String.class), ".*", "DELETE", newArrayList(WILDCARD_TYPE), newArrayList(TEXT_PLAIN_TYPE));
+        ObjectFactory resourceFactory = mockResourceFactory(resource, newArrayList(), newArrayList(subResourceMethodOne, subResourceMethodTwo), newArrayList());
+
+        matchRequestPath("b");
+        when(resources.getMatchedResource(eq("/a/b"), anyList())).thenReturn(resourceFactory);
+
+        when(methodInvoker.invokeMethod(same(resource), same(subResourceMethodOne), same(applicationContext))).thenReturn("get");
+        when(methodInvoker.invokeMethod(same(resource), same(subResourceMethodTwo), same(applicationContext))).thenReturn("delete");
+
+        requestDispatcher.dispatch(request, response);
+
+        ArgumentCaptor<Response> argumentCaptor = ArgumentCaptor.forClass(Response.class);
+        verify(response, atLeastOnce()).setResponse(argumentCaptor.capture());
+        assertEquals(OK, argumentCaptor.getValue().getStatusInfo());
+        assertEquals("delete", argumentCaptor.getValue().getEntity());
+    }
+
+    @Test
     public void returnsResponseWithStatus_METHOD_NOT_ALLOWED_WhenNotFoundSubResourceMethodWithRequestedHttpMethod() throws Exception {
         when(applicationContext.getPathSegments(false)).thenReturn(createPathSegments("a", "b", "c", "d;x=y"));
 
@@ -695,9 +725,13 @@ public class RequestDispatcherTest {
         UriPattern uriPattern = mock(UriPattern.class);
         when(uriPattern.getTemplate()).thenReturn(path);
         when(uriPattern.getRegex()).thenReturn(path);
-        when(uriPattern.match(eq(path), anyList())).thenAnswer(invocation -> {
-            matchRequestPath();
-            return true;
+        when(uriPattern.match(anyString(), anyList())).thenAnswer(invocation -> {
+            String toMatch = (String)invocation.getArguments()[0];
+            boolean matches = Pattern.compile(path).matcher(toMatch).matches();
+            if (matches) {
+                matchRequestPath();
+            }
+            return matches;
         });
         return uriPattern;
     }
