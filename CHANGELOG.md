@@ -1,17 +1,38 @@
 # Change Log
 
+## [1.13.3](https://github.com/codenvy/everrest/tree/1.13.3) (2017-02-07)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.13.2...1.13.3)
+
+**Merged pull requests:**
+
+- Fix request dispatching [\#28](https://github.com/codenvy/everrest/pull/28) ([sleshchenko](https://github.com/sleshchenko))
+
+## [1.13.2](https://github.com/codenvy/everrest/tree/1.13.2) (2016-11-03)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.13.1...1.13.2)
+
+**Merged pull requests:**
+
+- Respect entity class hierarchy when lookup message body reader or writer [\#27](https://github.com/codenvy/everrest/pull/27) ([andrew00x](https://github.com/andrew00x))
+
+## [1.13.1](https://github.com/codenvy/everrest/tree/1.13.1) (2016-07-27)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.13.0...1.13.1)
+
+**Merged pull requests:**
+
+- Fixed defaults components reset [\#26](https://github.com/codenvy/everrest/pull/26) ([skabashnyuk](https://github.com/skabashnyuk))
+
 ## [1.13.0](https://github.com/codenvy/everrest/tree/1.13.0) (2016-07-06)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.12.3...1.13.0)
 
-**Issues with 'enhancement' label:**
+**Implemented enhancements:**
 
 - Incomplete implementation of UriBuilder [\#21](https://github.com/codenvy/everrest/issues/21)
 
-**Issues fixed with 'bugs' label:**
+**Fixed bugs:**
 
 - Incomplete implementation of UriBuilder [\#21](https://github.com/codenvy/everrest/issues/21)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Remove some modules [\#25](https://github.com/codenvy/everrest/pull/25) ([mkuznyetsov](https://github.com/mkuznyetsov))
 - cover everrest-core with test [\#23](https://github.com/codenvy/everrest/pull/23) ([andrew00x](https://github.com/andrew00x))
@@ -19,21 +40,21 @@
 ## [1.12.3](https://github.com/codenvy/everrest/tree/1.12.3) (2016-06-23)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.12.2...1.12.3)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - CODENVY-338 Set Guice to 4.1.0 version [\#24](https://github.com/codenvy/everrest/pull/24) ([mkuznyetsov](https://github.com/mkuznyetsov))
 
 ## [1.12.2](https://github.com/codenvy/everrest/tree/1.12.2) (2016-04-18)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.12.1...1.12.2)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Fixed ClassCastException [\#22](https://github.com/codenvy/everrest/pull/22) ([skabashnyuk](https://github.com/skabashnyuk))
 
 ## [1.12.1](https://github.com/codenvy/everrest/tree/1.12.1) (2016-03-01)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.12.0...1.12.1)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - CHE-614 increase maxNumberOfMessageInQueue for websocket messages [\#20](https://github.com/codenvy/everrest/pull/20) ([skabashnyuk](https://github.com/skabashnyuk))
 - change README to markdown format for better reading [\#18](https://github.com/codenvy/everrest/pull/18) ([freewind](https://github.com/freewind))
@@ -42,7 +63,7 @@
 ## [1.12.0](https://github.com/codenvy/everrest/tree/1.12.0) (2016-01-21)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.11.0...1.12.0)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Fix filter deployment [\#15](https://github.com/codenvy/everrest/pull/15) ([skabashnyuk](https://github.com/skabashnyuk))
 - Reset internal stated of ApplicationProviderBinder [\#14](https://github.com/codenvy/everrest/pull/14) ([skabashnyuk](https://github.com/skabashnyuk))
@@ -50,7 +71,7 @@
 ## [1.11.0](https://github.com/codenvy/everrest/tree/1.11.0) (2016-01-19)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.10.0...1.11.0)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Setup maven license plugin. Update headers [\#13](https://github.com/codenvy/everrest/pull/13) ([skabashnyuk](https://github.com/skabashnyuk))
 - EVERREST-81 Correctly provide instances for test [\#12](https://github.com/codenvy/everrest/pull/12) ([skabashnyuk](https://github.com/skabashnyuk))
@@ -61,11 +82,11 @@
 ## [1.10.0](https://github.com/codenvy/everrest/tree/1.10.0) (2015-10-05)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.9.0...1.10.0)
 
-**Issues with no labels:**
+**Closed issues:**
 
 - MultivaluedMapEntityProvider fail in case the request inputStream has already been consumed [\#7](https://github.com/codenvy/everrest/issues/7)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Rework custom path binding for guice 4.0 [\#8](https://github.com/codenvy/everrest/pull/8) ([andrew00x](https://github.com/andrew00x))
 
@@ -84,7 +105,7 @@
 ## [1.5.0](https://github.com/codenvy/everrest/tree/1.5.0) (2015-06-22)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.4.0...1.5.0)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Safety fixes in interpretation of X-Forwarded-Host [\#6](https://github.com/codenvy/everrest/pull/6) ([tareqhs](https://github.com/tareqhs))
 - Initial support for X-Forwarded-Host in Everrest [\#5](https://github.com/codenvy/everrest/pull/5) ([tareqhs](https://github.com/tareqhs))
@@ -92,7 +113,7 @@
 ## [1.4.0](https://github.com/codenvy/everrest/tree/1.4.0) (2015-03-20)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.3.0...1.4.0)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Fix map array deserialization [\#4](https://github.com/codenvy/everrest/pull/4) ([garagatyi](https://github.com/garagatyi))
 
@@ -111,7 +132,7 @@
 ## [1.1.14.1](https://github.com/codenvy/everrest/tree/1.1.14.1) (2014-10-09)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.1.16...1.1.14.1)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - CLDIDE-1995; allow to use guice interceptors and proxies; [\#3](https://github.com/codenvy/everrest/pull/3) ([mshaposhnik](https://github.com/mshaposhnik))
 - Cldide 1914 [\#2](https://github.com/codenvy/everrest/pull/2) ([mshaposhnik](https://github.com/mshaposhnik))
@@ -119,7 +140,7 @@
 ## [1.1.16](https://github.com/codenvy/everrest/tree/1.1.16) (2014-08-19)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.1.15...1.1.16)
 
-**Pull requests merged:**
+**Merged pull requests:**
 
 - Fix log filling when locale not English [\#1](https://github.com/codenvy/everrest/pull/1) ([stephanedaviet](https://github.com/stephanedaviet))
 
