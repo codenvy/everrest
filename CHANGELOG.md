@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.13.4](https://github.com/codenvy/everrest/tree/1.13.4) (2017-03-23)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.13.3...1.13.4)
+
 ## [1.13.3](https://github.com/codenvy/everrest/tree/1.13.3) (2017-02-07)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.13.2...1.13.3)
 
