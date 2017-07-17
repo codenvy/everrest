@@ -11,6 +11,7 @@
 package org.everrest.core.impl.provider.ext;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -44,6 +45,7 @@ class InMemoryFileItem implements FileItem {
     private String                contentType;
     private String                fieldName;
     private boolean               isFormField;
+    private FileItemHeaders       headers;
 
     InMemoryFileItem(String contentType, String fieldName, boolean isFormField, String fileName, int maxSize) {
         this.contentType = contentType;
@@ -159,5 +161,15 @@ class InMemoryFileItem implements FileItem {
     @Override
     public void write(File file) throws Exception {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public FileItemHeaders getHeaders() {
+        return headers;
+    }
+
+    @Override
+    public void setHeaders(FileItemHeaders headers) {
+        this.headers = headers;
     }
 }
