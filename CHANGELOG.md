@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.13.5](https://github.com/codenvy/everrest/tree/1.13.5) (2017-07-17)
+[Full Changelog](https://github.com/codenvy/everrest/compare/1.13.4...1.13.5)
+
+**Merged pull requests:**
+
+- Update commons-fileupload library [\#30](https://github.com/codenvy/everrest/pull/30) ([mkuznyetsov](https://github.com/mkuznyetsov))
+
 ## [1.13.4](https://github.com/codenvy/everrest/tree/1.13.4) (2017-03-23)
 [Full Changelog](https://github.com/codenvy/everrest/compare/1.13.3...1.13.4)
 
