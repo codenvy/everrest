@@ -27,6 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -68,7 +69,7 @@ import static org.everrest.core.impl.header.HeaderHelper.getHeaderAsString;
 /**
  * @author andrew00x
  */
-public final class ResponseImpl extends Response {
+public class ResponseImpl extends Response {
     /** HTTP status. */
     private final int status;
 
@@ -93,7 +94,7 @@ public final class ResponseImpl extends Response {
      * @param headers
      *         HTTP headers
      */
-    ResponseImpl(int status, Object entity, Annotation[] entityAnnotations, MultivaluedMap<String, Object> headers) {
+    protected ResponseImpl(int status, Object entity, Annotation[] entityAnnotations, MultivaluedMap<String, Object> headers) {
         this.status = status;
         this.entity = entity;
         this.entityAnnotations = entityAnnotations;
@@ -401,7 +402,7 @@ public final class ResponseImpl extends Response {
     }
 
     /** @see ResponseBuilder */
-    public static final class ResponseBuilderImpl extends ResponseBuilder {
+    public static class ResponseBuilderImpl extends ResponseBuilder {
 
         /** HTTP headers which can't be multivalued. */
         static final Set<CaselessStringWrapper> SINGLE_VALUE_HEADERS =
@@ -416,7 +417,7 @@ public final class ResponseImpl extends Response {
                            new CaselessStringWrapper(EXPIRES));
 
         /** Default HTTP status, No-content, 204. */
-        private static final int DEFAULT_HTTP_STATUS = Response.Status.NO_CONTENT.getStatusCode();
+        protected static final int DEFAULT_HTTP_STATUS = Response.Status.NO_CONTENT.getStatusCode();
 
         /** Default HTTP status. */
         private int status = DEFAULT_HTTP_STATUS;
@@ -433,7 +434,7 @@ public final class ResponseImpl extends Response {
         private final Map<String, NewCookie> cookies = new HashMap<>();
 
         /** See {@link ResponseBuilder}. */
-        ResponseBuilderImpl() {
+        protected ResponseBuilderImpl() {
         }
 
         /**
@@ -443,7 +444,7 @@ public final class ResponseImpl extends Response {
          *         other ResponseBuilderImpl
          * @see #clone()
          */
-        private ResponseBuilderImpl(ResponseBuilderImpl other) {
+        protected ResponseBuilderImpl(ResponseBuilderImpl other) {
             this.status = other.status;
             this.entity = other.entity;
             this.headers.putAll(other.headers);
@@ -638,6 +639,10 @@ public final class ResponseImpl extends Response {
         public ResponseBuilder status(int status) {
             this.status = status;
             return this;
+        }
+
+        public ResponseBuilder status(int status, String reasonPhrase) {
+            return status(status); // TODO until JAX-RS 2.1 is implemented
         }
 
         @Override
