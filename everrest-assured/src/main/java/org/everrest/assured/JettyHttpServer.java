@@ -14,13 +14,11 @@ package org.everrest.assured;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.UserStore;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlet.*;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Credential;
 import org.eclipse.jetty.util.security.Password;
@@ -41,7 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.ws.rs.core.Application;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.EventListener;
 import java.util.Random;
@@ -108,7 +105,10 @@ public class JettyHttpServer {
         securityHandler.addConstraintMapping(constraintMapping);
 
         HashLoginService loginService = new HashLoginService();
-        loginService.putUser(ADMIN_USER_NAME, new Password(ADMIN_USER_PASSWORD),
+
+        UserStore userStore = new UserStore();
+
+        userStore.addUser(ADMIN_USER_NAME, new Password(ADMIN_USER_PASSWORD),
                              new String[]{"cloud-admin",
                                           "users",
                                           "user",
@@ -122,10 +122,11 @@ public class JettyHttpServer {
                                           "system/admin",
                                           "system/manager"
                              });
-        loginService.putUser(MANAGER_USER_NAME, new Password(MANAGER_USER_PASSWORD), new String[]{"cloud-admin",
+        userStore.addUser(MANAGER_USER_NAME, new Password(MANAGER_USER_PASSWORD), new String[]{"cloud-admin",
                                                                                                   "user",
                                                                                                   "temp_user",
                                                                                                   "users"});
+        loginService.setUserStore(userStore);
 
         securityHandler.setLoginService(loginService);
         securityHandler.setAuthenticator(new BasicAuthenticator());
@@ -148,10 +149,6 @@ public class JettyHttpServer {
     public void stop() throws Exception {
         context = null;
         server.stop();
-    }
-
-    public void addUser(String userName, Credential credential, String[] roles) {
-        ((HashLoginService)context.getSecurityHandler().getLoginService()).putUser(userName, credential, roles);
     }
 
     public void publish(Application application){
@@ -180,14 +177,10 @@ public class JettyHttpServer {
 
 
     public void resetFilter() {
-        context.getServletHandler().setFilters(null);
-
         try {
 
-            Field filterMappings = ServletHandler.class.getDeclaredField("_filterMappings");
-            filterMappings.setAccessible(true);
-            filterMappings.set(context.getServletHandler(), null);
-
+            context.getServletHandler().setFilters(new FilterHolder[0]);
+            context.getServletHandler().setFilterMappings(new FilterMapping[0]);
 
             Method updateMappingsMethod = ServletHandler.class.getDeclaredMethod("updateMappings");
             updateMappingsMethod.setAccessible(true);
