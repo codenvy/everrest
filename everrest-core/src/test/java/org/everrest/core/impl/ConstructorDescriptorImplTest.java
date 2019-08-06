@@ -199,12 +199,7 @@ public class ConstructorDescriptorImplTest {
     @Test
     public void createsInstanceOfClassFromConstructorDescriptorForConstructorWithExternalDependency() throws Exception {
         Dependency dependency = new Dependency();
-        when(dependencySupplier.getInstance(argThat(new ArgumentMatcher<ConstructorParameter>() {
-            @Override
-            public boolean matches(Object argument) {
-                return ((ConstructorParameter)argument).getParameterClass() == Dependency.class;
-            }
-        }))).thenReturn(dependency);
+        when(dependencySupplier.getInstance(argThat((ArgumentMatcher<ConstructorParameter>) argument -> ((ConstructorParameter)argument).getParameterClass() == Dependency.class))).thenReturn(dependency);
 
         Constructor<Resource> constructor = Resource.class.getConstructor(Dependency.class);
         ConstructorDescriptorImpl constructorDescriptor = new ConstructorDescriptorImpl(constructor, parameterResolverFactory);
@@ -228,12 +223,7 @@ public class ConstructorDescriptorImplTest {
 
     @Test
     public void failsCreateInstanceOfClassFromConstructorDescriptorForConstructorWithExternalDependencyWhenDependencySupplierCanNotResolveRequiredDependency() throws Exception {
-        when(dependencySupplier.getInstance(argThat(new ArgumentMatcher<ConstructorParameter>() {
-            @Override
-            public boolean matches(Object argument) {
-                return ((ConstructorParameter)argument).getParameterClass() == Dependency.class;
-            }
-        }))).thenReturn(null);
+        when(dependencySupplier.getInstance(argThat((ArgumentMatcher<ConstructorParameter>) argument -> ((ConstructorParameter)argument).getParameterClass() == Dependency.class))).thenReturn(null);
 
         Constructor<Resource> constructor = Resource.class.getConstructor(Dependency.class);
         ConstructorDescriptorImpl constructorDescriptor = new ConstructorDescriptorImpl(constructor, parameterResolverFactory);

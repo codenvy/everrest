@@ -104,7 +104,7 @@ public class FormParameterResolverTest {
     public void throwsIllegalStateExceptionWhenFormMessageBodyReaderIsNotAvailable() throws Exception {
         Class<MultivaluedMap> type = MultivaluedMap.class;
         ParameterizedType genericType = newParameterizedType(type, String.class, String.class);
-        when(applicationContext.getProviders().getMessageBodyReader(eq(type), eq(genericType), any(Annotation[].class), eq(APPLICATION_FORM_URLENCODED_TYPE)))
+        when(applicationContext.getProviders().getMessageBodyReader(eq(type), eq(genericType), any(), eq(APPLICATION_FORM_URLENCODED_TYPE)))
                 .thenReturn(null);
 
         thrown.expect(IllegalStateException.class);
@@ -121,7 +121,7 @@ public class FormParameterResolverTest {
 
         Class<MultivaluedMap> type = MultivaluedMap.class;
         ParameterizedType genericType = newParameterizedType(type, String.class, String.class);
-        when(applicationContext.getProviders().getMessageBodyReader(eq(type), eq(genericType), any(Annotation[].class), eq(APPLICATION_FORM_URLENCODED_TYPE)))
+        when(applicationContext.getProviders().getMessageBodyReader(eq(type), eq(genericType), any(), eq(APPLICATION_FORM_URLENCODED_TYPE)))
                 .thenReturn(messageBodyReader);
         return applicationContext;
     }
@@ -147,7 +147,7 @@ public class FormParameterResolverTest {
     private void assertThatMessageBodyWriterWasCalled() throws Exception {
         verify(messageBodyReader).readFrom(eq(MultivaluedMap.class),
                                            eq(newParameterizedType(MultivaluedMap.class, String.class, String.class)),
-                                           any(Annotation[].class),
+                                           any(),
                                            eq(APPLICATION_FORM_URLENCODED_TYPE),
                                            any(MultivaluedMap.class),
                                            any(InputStream.class));

@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -57,14 +58,14 @@ public class FieldInjectorImplTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private ParameterResolverFactory       parameterResolverFactory;
-    private ParameterResolver<PathParam>   pathParameterResolver;
-    private ParameterResolver<QueryParam>  queryParameterResolver;
+    private ParameterResolverFactory parameterResolverFactory;
+    private ParameterResolver<PathParam> pathParameterResolver;
+    private ParameterResolver<QueryParam> queryParameterResolver;
     private ParameterResolver<MatrixParam> matrixParameterResolver;
     private ParameterResolver<CookieParam> cookieParameterResolver;
     private ParameterResolver<HeaderParam> headerParameterResolver;
-    private ApplicationContext             applicationContext;
-    private DependencySupplier             dependencySupplier;
+    private ApplicationContext applicationContext;
+    private DependencySupplier dependencySupplier;
 
     @Before
     public void setUp() throws Exception {
@@ -158,12 +159,7 @@ public class FieldInjectorImplTest {
     @Test
     public void injectsExternalDependencyToField() throws Exception {
         Dependency dependency = new Dependency();
-        when(dependencySupplier.getInstance(argThat(new ArgumentMatcher<ConstructorParameter>() {
-            @Override
-            public boolean matches(Object argument) {
-                return ((FieldInjector)argument).getParameterClass() == Dependency.class;
-            }
-        }))).thenReturn(dependency);
+        when(dependencySupplier.getInstance(ArgumentMatchers.<Parameter>argThat(argument -> argument.getParameterClass() == Dependency.class))).thenReturn(dependency);
 
         FieldInjectorImpl fieldInjector = new FieldInjectorImpl(Resource.class.getDeclaredField("dependency"), parameterResolverFactory);
         Resource instance = new Resource();
@@ -229,12 +225,7 @@ public class FieldInjectorImplTest {
 
     @Test
     public void throwsWebApplicationExceptionWithStatus_INTERNAL_SERVER_ERROR_WhenNotAnnotatedFieldCanNotBeResolved() throws Exception {
-        when(dependencySupplier.getInstance(argThat(new ArgumentMatcher<ConstructorParameter>() {
-            @Override
-            public boolean matches(Object argument) {
-                return ((FieldInjector)argument).getParameterClass() == Dependency.class;
-            }
-        }))).thenThrow(new RuntimeException());
+        when(dependencySupplier.getInstance(argThat((ArgumentMatcher<ConstructorParameter>) argument -> ((FieldInjector) argument).getParameterClass() == Dependency.class))).thenThrow(new RuntimeException());
 
         FieldInjectorImpl fieldInjector = new FieldInjectorImpl(Resource.class.getDeclaredField("dependency"), parameterResolverFactory);
         Resource instance = new Resource();
@@ -254,7 +245,7 @@ public class FieldInjectorImplTest {
             @Override
             public boolean matches(Object item) {
                 return item instanceof WebApplicationException
-                       && status.equals(((WebApplicationException)item).getResponse().getStatusInfo());
+                        && status.equals(((WebApplicationException) item).getResponse().getStatusInfo());
             }
 
             @Override
