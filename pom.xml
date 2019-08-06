@@ -93,34 +93,34 @@
         <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
         <com.google.code.guice.version>4.1.0</com.google.code.guice.version>
         <com.google.guava.version>18.0</com.google.guava.version>
+        <com.sun.xml.bind>2.2.11</com.sun.xml.bind>
         <com.tngtech.java>1.9.3</com.tngtech.java>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         <commons-io.version>2.4</commons-io.version>
         <currentYear>2016</currentYear>
         <gpg.useagent>true</gpg.useagent>
         <groovy.version>1.7.6</groovy.version>
+        <javax.activation.version>1.1.1</javax.activation.version>
         <javax.annotation.version>1.2</javax.annotation.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.mail.version>1.4.4</javax.mail.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <javax.websocket.api.version>1.1</javax.websocket.api.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
+        <javax.xml.bind.version>2.2.11</javax.xml.bind.version>
         <jdk.min.version>1.8</jdk.min.version>
         <jetty.version>9.3.1.v20150714</jetty.version>
         <junit.version>4.11</junit.version>
-        <com.sun.xml.bind>2.1.11</com.sun.xml.bind>
         <license_years>${project.inceptionYear}-${currentYear}</license_years>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.min.version>3.5.1</maven.min.version>
         <mockito.version>3.0.0</mockito.version>
-        <mockitong.version>0.4</mockitong.version>
+        <mockitong.version>0.1.1</mockitong.version>
         <org.hamcrest.version>1.3</org.hamcrest.version>
         <org.slf4j.version>1.7.6</org.slf4j.version>
         <resetassured.version>2.4.0</resetassured.version>
         <testng.version>6.8.21</testng.version>
-        <javax.xml.bind.version>2.2.11</javax.xml.bind.version>
-        <javax.activation.version>1.1.1</javax.activation.version>
         <version.buildhelper.plugin>1.9.1</version.buildhelper.plugin>
         <version.buildnumber.plugin>1.3</version.buildnumber.plugin>
         <version.dependency.plugin>3.1.1</version.dependency.plugin>
