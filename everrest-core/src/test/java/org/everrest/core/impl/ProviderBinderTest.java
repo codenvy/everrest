@@ -650,7 +650,7 @@ public class ProviderBinderTest {
         when(providerDescriptor.getObjectClass()).thenReturn((Class)StringEntityProvider.class);
         when(writerFactory.getObjectModel()).thenReturn(providerDescriptor);
         MessageBodyWriter<String> writer = mock(MessageBodyWriter.class);
-        when(writer.isWriteable(eq(String.class), (Type)isNull(), any(Annotation[].class), eq(WILDCARD_TYPE))).thenReturn(true);
+        when(writer.isWriteable(eq(String.class), isNull(), any(), eq(WILDCARD_TYPE))).thenReturn(true);
         when(writerFactory.getInstance(context)).thenReturn(writer);
 
         providers.addMessageBodyWriter(writerFactory);

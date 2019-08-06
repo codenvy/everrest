@@ -94,7 +94,7 @@ public class ApplicationProviderBinderTest {
 
     private MessageBodyWriter<String> mockStringMessageBodyWriter() {
         MessageBodyWriter<String> writer = mock(MessageBodyWriter.class);
-        when(writer.isWriteable(eq(String.class), (Type)isNull(), any(Annotation[].class), eq(WILDCARD_TYPE))).thenReturn(true);
+        when(writer.isWriteable(eq(String.class), isNull(), any(), eq(WILDCARD_TYPE))).thenReturn(true);
         return writer;
     }
 

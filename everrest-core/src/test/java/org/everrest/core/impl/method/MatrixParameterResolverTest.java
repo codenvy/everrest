@@ -100,11 +100,6 @@ public class MatrixParameterResolverTest {
     }
 
     private MultivaluedMap emptyMultivaluedMap() {
-        return argThat(new ArgumentMatcher<MultivaluedMap>() {
-            @Override
-            public boolean matches(Object argument) {
-                return argument != null && ((MultivaluedMap)argument).isEmpty();
-            }
-        });
+        return argThat(argument -> argument != null && argument.isEmpty());
     }
 }
