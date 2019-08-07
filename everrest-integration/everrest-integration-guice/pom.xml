@@ -17,7 +17,7 @@
     <parent>
         <artifactId>everrest-parent</artifactId>
         <groupId>org.everrest</groupId>
-        <version>1.14.2-SNAPSHOT</version>
+        <version>1.14.2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>everrest-integration-guice</artifactId>
