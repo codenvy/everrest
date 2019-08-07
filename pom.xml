@@ -107,10 +107,15 @@
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <javax.websocket.api.version>1.1</javax.websocket.api.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
-        <javax.xml.bind.version>2.3.git 1</javax.xml.bind.version>
+        <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
         <jdk.min.version>1.8</jdk.min.version>
         <jetty.version>9.3.1.v20150714</jetty.version>
         <junit.version>4.11</junit.version>
+        <license_contributor>${project.organization.name} - initial API and implementation</license_contributor>
+        <license_contributor2 />
+        <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
+        <license_header>license-header.txt</license_header>
+        <license_years>${project.inceptionYear}-${currentYear}</license_years>
         <license_years>${project.inceptionYear}-${currentYear}</license_years>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -128,10 +133,13 @@
         <version.gpg.plugin>1.6</version.gpg.plugin>
         <version.jacoco.plugin>0.8.4</version.jacoco.plugin>
         <version.javadoc.plugin>3.1.1</version.javadoc.plugin>
-        <version.license-bundle>13</version.license-bundle>
-        <version.license-header>codenvy-eclipse-license-resource-bundle</version.license-header>
+        <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
+        <version.license.header.groupid>org.eclipse.che.dev</version.license.header.groupid>
+        <version.license.header.version>${version.resource-bundle}</version.license.header.version>
+        <version.license.plugin>1.14</version.license.plugin>
         <version.mycila-license.plugin>2.8</version.mycila-license.plugin>
         <version.release.plugin>2.5.3</version.release.plugin>
+        <version.resource-bundle>19</version.resource-bundle>
         <version.sortpom.plugin>2.3.0</version.sortpom.plugin>
         <version.source.plugin>3.1.0</version.source.plugin>
         <version.war.plugin>2.5</version.war.plugin>
@@ -374,19 +382,21 @@
                     <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license-header.txt file -->
                     <dependencies>
                         <dependency>
-                            <groupId>com.codenvy.resources</groupId>
-                            <artifactId>${version.license-header}</artifactId>
-                            <version>${version.license-bundle}</version>
+                            <groupId>${version.license.header.groupid}</groupId>
+                            <artifactId>${version.license.header.artifactid}</artifactId>
+                            <version>${version.license.header.version}</version>
                         </dependency>
                     </dependencies>
                     <configuration>
-                        <header>license-header.txt</header>
+                        <header>${license_header}</header>
                         <properties>
                             <!-- Values to be substituted in template -->
                             <h_inceptionYear>${project.inceptionYear}</h_inceptionYear>
                             <h_currentYear>${currentYear}</h_currentYear>
-                            <h_copyrightOwner>${project.organization.name}</h_copyrightOwner>
+                            <h_copyrightOwner>${license_copyrightOwner}</h_copyrightOwner>
                             <h_license_years>${license_years}</h_license_years>
+                            <h_contributor>${license_contributor}</h_contributor>
+                            <h_contributor2>${license_contributor2}</h_contributor2>
                         </properties>
                         <failIfMissing>true</failIfMissing>
                         <strictCheck>true</strictCheck>
@@ -476,7 +486,6 @@
                             <exclude>**/*.pem</exclude>
                             <exclude>**/*.txt</exclude>
                             <exclude>**/*.log</exclude>
-                            <exclude>**/*.svg</exclude>
                             <exclude>**/README</exclude>
                             <exclude>**/server.xml</exclude>
                             <exclude>**/*.json</exclude>
@@ -488,9 +497,12 @@
                             <exclude>**/tomcat-users.xml</exclude>
                             <exclude>**/rewrite.config</exclude>
                         </excludes>
-                        <headerDefinitions>
-                            <headerDefinition>javadoc.xml</headerDefinition>
-                        </headerDefinitions>
+                        <mapping>
+                            <svg>XML_STYLE</svg>
+                            <ts>SLASHSTAR_STYLE</ts>
+                            <go>DOUBLESLASH_STYLE</go>
+                            <java>SLASHSTAR_STYLE</java>
+                        </mapping>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -572,6 +584,7 @@
                     <version>${version.javadoc.plugin}</version>
                     <configuration>
                         <additionalparam>-Xdoclint:none</additionalparam>
+                        <quiet>true</quiet>
                         <archive>
                             <manifest>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
