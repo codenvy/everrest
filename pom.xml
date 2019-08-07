@@ -93,7 +93,7 @@
         <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
         <com.google.code.guice.version>4.1.0</com.google.code.guice.version>
         <com.google.guava.version>18.0</com.google.guava.version>
-        <com.sun.xml.bind>2.2.11</com.sun.xml.bind>
+        <com.sun.xml.bind>2.3.0.1</com.sun.xml.bind>
         <com.tngtech.java>1.9.3</com.tngtech.java>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         <commons-io.version>2.4</commons-io.version>
@@ -107,7 +107,7 @@
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <javax.websocket.api.version>1.1</javax.websocket.api.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
-        <javax.xml.bind.version>2.2.11</javax.xml.bind.version>
+        <javax.xml.bind.version>2.3.git 1</javax.xml.bind.version>
         <jdk.min.version>1.8</jdk.min.version>
         <jetty.version>9.3.1.v20150714</jetty.version>
         <junit.version>4.11</junit.version>
@@ -127,13 +127,13 @@
         <version.enforcer.plugin>1.4</version.enforcer.plugin>
         <version.gpg.plugin>1.6</version.gpg.plugin>
         <version.jacoco.plugin>0.8.4</version.jacoco.plugin>
-        <version.javadoc.plugin>2.10.1</version.javadoc.plugin>
+        <version.javadoc.plugin>3.1.1</version.javadoc.plugin>
         <version.license-bundle>13</version.license-bundle>
         <version.license-header>codenvy-eclipse-license-resource-bundle</version.license-header>
         <version.mycila-license.plugin>2.8</version.mycila-license.plugin>
-        <version.release.plugin>2.5.1</version.release.plugin>
+        <version.release.plugin>2.5.3</version.release.plugin>
         <version.sortpom.plugin>2.3.0</version.sortpom.plugin>
-        <version.source.plugin>2.4</version.source.plugin>
+        <version.source.plugin>3.1.0</version.source.plugin>
         <version.war.plugin>2.5</version.war.plugin>
     </properties>
     <dependencyManagement>
