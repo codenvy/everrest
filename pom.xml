@@ -112,8 +112,8 @@
         <jdk.min.version>1.8</jdk.min.version>
         <jetty.version>9.4.19.v20190610</jetty.version>
         <junit.version>4.11</junit.version>
-        <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
         <license_contributor>${project.organization.name} - initial API and implementation</license_contributor>
+        <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
         <maven.antrun.plugin.version>3.0.0</maven.antrun.plugin.version>
         <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
         <maven.buildhelper.plugin.version>3.2.0</maven.buildhelper.plugin.version>
