@@ -14,37 +14,33 @@ package org.everrest.core.impl.method;
 import java.lang.reflect.Constructor;
 
 /**
- * Produces collections each element of it is object of class which has constructor with single String argument.
+ * Produces collections each element of it is object of class which has constructor with single
+ * String argument.
  *
  * @author andrew00x
  */
 public class CollectionStringConstructorProducer extends BaseCollectionProducer {
 
-    /** This constructor will be used for creation collection elements. */
-    private Constructor<?> constructor;
+  /** This constructor will be used for creation collection elements. */
+  private Constructor<?> constructor;
 
-    /**
-     * Constructs new instance of CollectionStringConstructorProducer.
-     *
-     * @param collectionClass
-     *         class of collection which must be created
-     * @param constructor
-     *         this constructor will be used for produce elements of
-     *         collection
-     */
-    CollectionStringConstructorProducer(Class<?> collectionClass, Constructor<?> constructor) {
-        super(collectionClass);
-        this.constructor = constructor;
+  /**
+   * Constructs new instance of CollectionStringConstructorProducer.
+   *
+   * @param collectionClass class of collection which must be created
+   * @param constructor this constructor will be used for produce elements of collection
+   */
+  CollectionStringConstructorProducer(Class<?> collectionClass, Constructor<?> constructor) {
+    super(collectionClass);
+    this.constructor = constructor;
+  }
+
+  @Override
+  protected Object createCollectionItem(String value) throws Exception {
+    if (value == null) {
+      return null;
     }
 
-
-    @Override
-    protected Object createCollectionItem(String value) throws Exception {
-        if (value == null) {
-            return null;
-        }
-
-        return constructor.newInstance(value);
-    }
-
+    return constructor.newInstance(value);
+  }
 }

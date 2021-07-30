@@ -18,29 +18,21 @@ package org.everrest.core.impl.provider.json;
  */
 @SuppressWarnings("serial")
 public class JsonException extends Exception {
-    /**
-     * @param message
-     *         the message.
-     * @param cause
-     *         the cause.
-     */
-    public JsonException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * @param message the message.
+   * @param cause the cause.
+   */
+  public JsonException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * @param cause
-     *         the cause.
-     */
-    public JsonException(Throwable cause) {
-        super(cause);
-    }
+  /** @param cause the cause. */
+  public JsonException(Throwable cause) {
+    super(cause);
+  }
 
-    /**
-     * @param message
-     *         the message.
-     */
-    public JsonException(String message) {
-        super(message);
-    }
+  /** @param message the message. */
+  public JsonException(String message) {
+    super(message);
+  }
 }

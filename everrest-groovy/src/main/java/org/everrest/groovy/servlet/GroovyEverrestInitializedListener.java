@@ -11,36 +11,32 @@
  */
 package org.everrest.groovy.servlet;
 
-import org.everrest.core.impl.EverrestProcessor;
-import org.everrest.core.servlet.EverrestServletContextInitializer;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.core.Application;
+import org.everrest.core.impl.EverrestProcessor;
+import org.everrest.core.servlet.EverrestServletContextInitializer;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public class GroovyEverrestInitializedListener implements ServletContextListener {
 
+  @Override
+  public void contextDestroyed(ServletContextEvent event) {}
 
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
+  @Override
+  public void contextInitialized(ServletContextEvent event) {
+    ServletContext servletContext = event.getServletContext();
+    EverrestProcessor processor =
+        (EverrestProcessor) servletContext.getAttribute(EverrestProcessor.class.getName());
+    if (processor == null) {
+      throw new RuntimeException("EverrestProcessor not found. ");
     }
-
-
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        ServletContext servletContext = event.getServletContext();
-        EverrestProcessor processor = (EverrestProcessor)servletContext.getAttribute(EverrestProcessor.class.getName());
-        if (processor == null) {
-            throw new RuntimeException("EverrestProcessor not found. ");
-        }
-        EverrestServletContextInitializer initializer = new GroovyEverrestServletContextInitializer(servletContext);
-        Application application = initializer.getApplication();
-        if (application != null) {
-            processor.addApplication(application);
-        }
+    EverrestServletContextInitializer initializer =
+        new GroovyEverrestServletContextInitializer(servletContext);
+    Application application = initializer.getApplication();
+    if (application != null) {
+      processor.addApplication(application);
     }
+  }
 }

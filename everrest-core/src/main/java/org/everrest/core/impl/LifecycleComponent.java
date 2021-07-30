@@ -19,29 +19,30 @@ import org.everrest.core.LifecycleMethodStrategy;
  * @see LifecycleMethodStrategy
  */
 public class LifecycleComponent {
-    private static final LifecycleMethodStrategy defaultStrategy = new AnnotatedLifecycleMethodStrategy();
+  private static final LifecycleMethodStrategy defaultStrategy =
+      new AnnotatedLifecycleMethodStrategy();
 
-    private final Object                  component;
-    private final LifecycleMethodStrategy lifecycleStrategy;
+  private final Object component;
+  private final LifecycleMethodStrategy lifecycleStrategy;
 
-    public LifecycleComponent(Object component) {
-        this(component, defaultStrategy);
-    }
+  public LifecycleComponent(Object component) {
+    this(component, defaultStrategy);
+  }
 
-    public LifecycleComponent(Object component, LifecycleMethodStrategy lifecycleStrategy) {
-        this.component = component;
-        this.lifecycleStrategy = lifecycleStrategy;
-    }
+  public LifecycleComponent(Object component, LifecycleMethodStrategy lifecycleStrategy) {
+    this.component = component;
+    this.lifecycleStrategy = lifecycleStrategy;
+  }
 
-    public void initialize() {
-        lifecycleStrategy.invokeInitializeMethods(component);
-    }
+  public void initialize() {
+    lifecycleStrategy.invokeInitializeMethods(component);
+  }
 
-    public void destroy() {
-        lifecycleStrategy.invokeDestroyMethods(component);
-    }
+  public void destroy() {
+    lifecycleStrategy.invokeDestroyMethods(component);
+  }
 
-    public Object getComponent() {
-        return component;
-    }
+  public Object getComponent() {
+    return component;
+  }
 }

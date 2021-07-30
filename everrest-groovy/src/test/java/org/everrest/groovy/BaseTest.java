@@ -25,33 +25,32 @@ import org.everrest.core.tools.ResourceLauncher;
 import org.junit.After;
 import org.junit.Before;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public abstract class BaseTest {
-    protected ProviderBinder          providers;
-    protected ResourceBinderImpl      resources;
-    protected DependencySupplierImpl  dependencySupplier;
-    protected EverrestProcessor       processor;
-    protected ResourceLauncher        launcher;
-    protected GroovyResourcePublisher groovyPublisher;
+  protected ProviderBinder providers;
+  protected ResourceBinderImpl resources;
+  protected DependencySupplierImpl dependencySupplier;
+  protected EverrestProcessor processor;
+  protected ResourceLauncher launcher;
+  protected GroovyResourcePublisher groovyPublisher;
 
-    @Before
-    public void setUp() throws Exception {
-        resources = new ResourceBinderImpl();
-        ProviderBinder.setInstance(null);
-        providers = new ApplicationProviderBinder();
-        providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
-        resources.addResource("/async", AsynchronousJobService.class, null);
-        dependencySupplier = new DependencySupplierImpl();
-        RequestDispatcher dispatcher = new RequestDispatcher(resources);
-        RequestHandlerImpl requestHandler = new RequestHandlerImpl(dispatcher, providers);
-        processor = new EverrestProcessor(new EverrestConfiguration(), dependencySupplier, requestHandler, null);
-        launcher = new ResourceLauncher(processor);
-        groovyPublisher = new GroovyResourcePublisher(resources, dependencySupplier);
-    }
+  @Before
+  public void setUp() throws Exception {
+    resources = new ResourceBinderImpl();
+    ProviderBinder.setInstance(null);
+    providers = new ApplicationProviderBinder();
+    providers.addMessageBodyWriter(new AsynchronousProcessListWriter());
+    resources.addResource("/async", AsynchronousJobService.class, null);
+    dependencySupplier = new DependencySupplierImpl();
+    RequestDispatcher dispatcher = new RequestDispatcher(resources);
+    RequestHandlerImpl requestHandler = new RequestHandlerImpl(dispatcher, providers);
+    processor =
+        new EverrestProcessor(
+            new EverrestConfiguration(), dependencySupplier, requestHandler, null);
+    launcher = new ResourceLauncher(processor);
+    groovyPublisher = new GroovyResourcePublisher(resources, dependencySupplier);
+  }
 
-    @After
-    public void tearDown() throws Exception {
-    }
+  @After
+  public void tearDown() throws Exception {}
 }

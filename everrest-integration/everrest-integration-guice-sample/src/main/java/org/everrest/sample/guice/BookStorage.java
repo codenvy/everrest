@@ -12,57 +12,54 @@
 package org.everrest.sample.guice;
 
 import com.google.inject.Singleton;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 @Singleton
 public class BookStorage {
-    private static int idCounter = 100;
+  private static int idCounter = 100;
 
-    public synchronized String generateId() {
-        idCounter++;
-        return Integer.toString(idCounter);
+  public synchronized String generateId() {
+    idCounter++;
+    return Integer.toString(idCounter);
+  }
+
+  private Map<String, Book> books = new ConcurrentHashMap<String, Book>();
+
+  public BookStorage() {
+    init();
+  }
+
+  private void init() {
+    Book book = new Book();
+    book.setTitle("JUnit in Action");
+    book.setAuthor("Vincent Massol");
+    book.setPages(386);
+    book.setPrice(19.37);
+    putBook(book);
+  }
+
+  public Book getBook(String id) {
+    return books.get(id);
+  }
+
+  public String putBook(Book book) {
+    String id = book.getId();
+    if (id == null || id.trim().length() == 0) {
+      id = generateId();
+      book.setId(id);
     }
+    books.put(id, book);
+    return id;
+  }
 
-    private Map<String, Book> books = new ConcurrentHashMap<String, Book>();
+  public Collection<Book> getAll() {
+    return books.values();
+  }
 
-    public BookStorage() {
-        init();
-    }
-
-    private void init() {
-        Book book = new Book();
-        book.setTitle("JUnit in Action");
-        book.setAuthor("Vincent Massol");
-        book.setPages(386);
-        book.setPrice(19.37);
-        putBook(book);
-    }
-
-    public Book getBook(String id) {
-        return books.get(id);
-    }
-
-    public String putBook(Book book) {
-        String id = book.getId();
-        if (id == null || id.trim().length() == 0) {
-            id = generateId();
-            book.setId(id);
-        }
-        books.put(id, book);
-        return id;
-    }
-
-    public Collection<Book> getAll() {
-        return books.values();
-    }
-
-    public int numberOfBooks() {
-        return books.size();
-    }
+  public int numberOfBooks() {
+    return books.size();
+  }
 }

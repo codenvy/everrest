@@ -11,14 +11,13 @@
  */
 package org.everrest.core.tools;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.util.CaselessMultivaluedMap;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * Mock object that can be used for any tests.
@@ -26,48 +25,54 @@ import java.io.IOException;
  * @author andrew00x
  */
 public class ByteArrayContainerResponseWriter implements ContainerResponseWriter {
-    private byte[] body;
-    private MultivaluedMap<String, Object> headers;
+  private byte[] body;
+  private MultivaluedMap<String, Object> headers;
 
-    private boolean committed;
+  private boolean committed;
 
-    @Override
-    @SuppressWarnings({"unchecked"})
-    public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter) throws IOException {
-        if (committed) {
-            return;
-        }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Object entity = response.getEntity();
-        if (entity != null) {
-            entityWriter.writeTo(entity, entity.getClass(), response.getEntityType(), null, response.getContentType(),
-                                 response.getHttpHeaders(), out);
-            body = out.toByteArray();
-        }
+  @Override
+  @SuppressWarnings({"unchecked"})
+  public void writeBody(GenericContainerResponse response, MessageBodyWriter entityWriter)
+      throws IOException {
+    if (committed) {
+      return;
     }
-
-
-    @Override
-    public void writeHeaders(GenericContainerResponse response) throws IOException {
-        if (committed) {
-            return;
-        }
-        headers = new CaselessMultivaluedMap<>(response.getHttpHeaders());
-        committed = true;
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    Object entity = response.getEntity();
+    if (entity != null) {
+      entityWriter.writeTo(
+          entity,
+          entity.getClass(),
+          response.getEntityType(),
+          null,
+          response.getContentType(),
+          response.getHttpHeaders(),
+          out);
+      body = out.toByteArray();
     }
+  }
 
-    public byte[] getBody() {
-        return body;
+  @Override
+  public void writeHeaders(GenericContainerResponse response) throws IOException {
+    if (committed) {
+      return;
     }
+    headers = new CaselessMultivaluedMap<>(response.getHttpHeaders());
+    committed = true;
+  }
 
-    public MultivaluedMap<String, Object> getHeaders() {
-        return headers;
-    }
+  public byte[] getBody() {
+    return body;
+  }
 
-    /** Clear message body and HTTP headers map. */
-    public void reset() {
-        body = null;
-        headers = null;
-        committed = false;
-    }
+  public MultivaluedMap<String, Object> getHeaders() {
+    return headers;
+  }
+
+  /** Clear message body and HTTP headers map. */
+  public void reset() {
+    body = null;
+    headers = null;
+    committed = false;
+  }
 }

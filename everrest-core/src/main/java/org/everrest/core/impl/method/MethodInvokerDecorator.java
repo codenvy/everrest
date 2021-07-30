@@ -21,22 +21,20 @@ import org.everrest.core.resource.GenericResourceMethod;
  * @author andrew00x
  */
 public class MethodInvokerDecorator implements MethodInvoker {
-    protected final MethodInvoker decoratedInvoker;
+  protected final MethodInvoker decoratedInvoker;
 
-    /**
-     * @param decoratedInvoker
-     *         decorated MethodInvoker
-     */
-    public MethodInvokerDecorator(MethodInvoker decoratedInvoker) {
-        this.decoratedInvoker = decoratedInvoker;
-    }
+  /** @param decoratedInvoker decorated MethodInvoker */
+  public MethodInvokerDecorator(MethodInvoker decoratedInvoker) {
+    this.decoratedInvoker = decoratedInvoker;
+  }
 
-    /**
-     * @see org.everrest.core.method.MethodInvoker#invokeMethod(java.lang.Object,
-     * GenericResourceMethod, org.everrest.core.ApplicationContext)
-     */
-    @Override
-    public Object invokeMethod(Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context) {
-        return decoratedInvoker.invokeMethod(resource, genericResourceMethod, context);
-    }
+  /**
+   * @see org.everrest.core.method.MethodInvoker#invokeMethod(java.lang.Object,
+   *     GenericResourceMethod, org.everrest.core.ApplicationContext)
+   */
+  @Override
+  public Object invokeMethod(
+      Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context) {
+    return decoratedInvoker.invokeMethod(resource, genericResourceMethod, context);
+  }
 }

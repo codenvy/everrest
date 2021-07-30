@@ -11,54 +11,54 @@
  */
 package org.everrest.core.impl.method;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.core.MultivaluedMap;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 public class StringProducerTest {
-    private StringProducer producer;
+  private StringProducer producer;
 
-    @Before
-    public void setUp() throws Exception {
-        producer = new StringProducer();
-    }
+  @Before
+  public void setUp() throws Exception {
+    producer = new StringProducer();
+  }
 
-    @Test
-    public void createsInstanceAndUsesSingleValueFromMap() throws Exception {
-        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
-        values.putSingle("foo", "bar");
+  @Test
+  public void createsInstanceAndUsesSingleValueFromMap() throws Exception {
+    MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+    values.putSingle("foo", "bar");
 
-        Object result = producer.createValue("foo", values, null);
-        assertEquals("bar", result);
-    }
+    Object result = producer.createValue("foo", values, null);
+    assertEquals("bar", result);
+  }
 
-    @Test
-    public void createsInstanceAndUsesFirstValueFromMap() throws Exception {
-        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
-        values.addAll("foo", "bar", "baz");
+  @Test
+  public void createsInstanceAndUsesFirstValueFromMap() throws Exception {
+    MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+    values.addAll("foo", "bar", "baz");
 
-        Object result = producer.createValue("foo", values, null);
-        assertEquals("bar", result);
-    }
+    Object result = producer.createValue("foo", values, null);
+    assertEquals("bar", result);
+  }
 
-    @Test
-    public void createsInstanceAndUsesDefault() throws Exception {
-        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+  @Test
+  public void createsInstanceAndUsesDefault() throws Exception {
+    MultivaluedMap<String, String> values = new MultivaluedMapImpl();
 
-        Object result = producer.createValue("foo", values, "baz");
-        assertEquals("baz", result);
-    }
+    Object result = producer.createValue("foo", values, "baz");
+    assertEquals("baz", result);
+  }
 
-    @Test
-    public void returnsNullWhenMapDoesNotContainRequiredValueAndDefaultValueIsNull() throws Exception {
-        MultivaluedMap<String, String> values = new MultivaluedMapImpl();
+  @Test
+  public void returnsNullWhenMapDoesNotContainRequiredValueAndDefaultValueIsNull()
+      throws Exception {
+    MultivaluedMap<String, String> values = new MultivaluedMapImpl();
 
-        Object result = producer.createValue("foo", values, null);
-        assertNull(result);
-    }
+    Object result = producer.createValue("foo", values, null);
+    assertNull(result);
+  }
 }

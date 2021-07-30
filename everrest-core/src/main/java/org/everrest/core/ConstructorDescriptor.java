@@ -15,27 +15,27 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 /**
- * Abstraction of constructor descriptor. Used for create object instance when type is used in per-request lifecycle.
+ * Abstraction of constructor descriptor. Used for create object instance when type is used in
+ * per-request lifecycle.
  *
  * @author andrew00x
  */
 public interface ConstructorDescriptor {
-    /**
-     * @param context
-     *         ApplicationContext
-     * @return newly created instance of the constructor's
-     * @see ApplicationContext
-     */
-    Object createInstance(ApplicationContext context);
+  /**
+   * @param context ApplicationContext
+   * @return newly created instance of the constructor's
+   * @see ApplicationContext
+   */
+  Object createInstance(ApplicationContext context);
 
-    /**
-     * Get source constructor.
-     *
-     * @return constructor
-     * @see Constructor
-     */
-    Constructor<?> getConstructor();
+  /**
+   * Get source constructor.
+   *
+   * @return constructor
+   * @see Constructor
+   */
+  Constructor<?> getConstructor();
 
-    /** @return constructor's parameters */
-    List<Parameter> getParameters();
+  /** @return constructor's parameters */
+  List<Parameter> getParameters();
 }

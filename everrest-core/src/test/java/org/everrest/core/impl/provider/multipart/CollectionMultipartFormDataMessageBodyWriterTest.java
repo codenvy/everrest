@@ -11,23 +11,6 @@
  */
 package org.everrest.core.impl.provider.multipart;
 
-import com.google.common.collect.ImmutableMap;
-
-import org.everrest.core.util.ParameterizedTypeImpl;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
@@ -41,104 +24,167 @@ import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.google.common.collect.ImmutableMap;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import org.everrest.core.util.ParameterizedTypeImpl;
+import org.junit.Before;
+import org.junit.Test;
+
 public class CollectionMultipartFormDataMessageBodyWriterTest {
-    private CollectionMultipartFormDataMessageBodyWriter collectionMultipartFormDataMessageBodyWriter;
-    private MultipartFormDataWriter                      multipartFormDataWriter;
+  private CollectionMultipartFormDataMessageBodyWriter collectionMultipartFormDataMessageBodyWriter;
+  private MultipartFormDataWriter multipartFormDataWriter;
 
-    @Before
-    public void setUp() throws Exception {
-        multipartFormDataWriter = mock(MultipartFormDataWriter.class);
-        collectionMultipartFormDataMessageBodyWriter = new CollectionMultipartFormDataMessageBodyWriter(multipartFormDataWriter);
-    }
+  @Before
+  public void setUp() throws Exception {
+    multipartFormDataWriter = mock(MultipartFormDataWriter.class);
+    collectionMultipartFormDataMessageBodyWriter =
+        new CollectionMultipartFormDataMessageBodyWriter(multipartFormDataWriter);
+  }
 
-    @Test
-    public void isWriteableForListOfOutputItems() throws Exception {
-        Class<List> type = List.class;
-        ParameterizedType genericType = ParameterizedTypeImpl.newParameterizedType(List.class, OutputItem.class);
+  @Test
+  public void isWriteableForListOfOutputItems() throws Exception {
+    Class<List> type = List.class;
+    ParameterizedType genericType =
+        ParameterizedTypeImpl.newParameterizedType(List.class, OutputItem.class);
 
-        assertTrue(collectionMultipartFormDataMessageBodyWriter.isWriteable(type, genericType, new Annotation[0], null));
-    }
+    assertTrue(
+        collectionMultipartFormDataMessageBodyWriter.isWriteable(
+            type, genericType, new Annotation[0], null));
+  }
 
-    @Test
-    public void isWriteableForSetOfOutputItems() throws Exception {
-        Class<Set> type = Set.class;
-        ParameterizedType genericType = ParameterizedTypeImpl.newParameterizedType(Set.class, OutputItem.class);
+  @Test
+  public void isWriteableForSetOfOutputItems() throws Exception {
+    Class<Set> type = Set.class;
+    ParameterizedType genericType =
+        ParameterizedTypeImpl.newParameterizedType(Set.class, OutputItem.class);
 
-        assertTrue(collectionMultipartFormDataMessageBodyWriter.isWriteable(type, genericType, new Annotation[0], null));
-    }
+    assertTrue(
+        collectionMultipartFormDataMessageBodyWriter.isWriteable(
+            type, genericType, new Annotation[0], null));
+  }
 
-    @Test
-    public void isWriteableForAnyCollectionOfOutputItems() throws Exception {
-        Class<Collection> type = Collection.class;
-        ParameterizedType genericType = ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
+  @Test
+  public void isWriteableForAnyCollectionOfOutputItems() throws Exception {
+    Class<Collection> type = Collection.class;
+    ParameterizedType genericType =
+        ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
 
-        assertTrue(collectionMultipartFormDataMessageBodyWriter.isWriteable(type, genericType, new Annotation[0], null));
-    }
+    assertTrue(
+        collectionMultipartFormDataMessageBodyWriter.isWriteable(
+            type, genericType, new Annotation[0], null));
+  }
 
-    @Test
-    public void isNotWriteableForAnyCollectionOfOtherTypeThanOutputItems() throws Exception {
-        Class<Collection> type = Collection.class;
-        ParameterizedType genericType = ParameterizedTypeImpl.newParameterizedType(Collection.class, String.class);
+  @Test
+  public void isNotWriteableForAnyCollectionOfOtherTypeThanOutputItems() throws Exception {
+    Class<Collection> type = Collection.class;
+    ParameterizedType genericType =
+        ParameterizedTypeImpl.newParameterizedType(Collection.class, String.class);
 
-        assertFalse(collectionMultipartFormDataMessageBodyWriter.isWriteable(type, genericType, new Annotation[0], null));
-    }
+    assertFalse(
+        collectionMultipartFormDataMessageBodyWriter.isWriteable(
+            type, genericType, new Annotation[0], null));
+  }
 
-    @Test
-    public void isNotWriteableWhenGenericTypeIsNotAvailable() throws Exception {
-        Class<Collection> type = Collection.class;
+  @Test
+  public void isNotWriteableWhenGenericTypeIsNotAvailable() throws Exception {
+    Class<Collection> type = Collection.class;
 
-        assertFalse(collectionMultipartFormDataMessageBodyWriter.isWriteable(type, null, new Annotation[0], null));
-    }
+    assertFalse(
+        collectionMultipartFormDataMessageBodyWriter.isWriteable(
+            type, null, new Annotation[0], null));
+  }
 
-    @Test
-    public void sizeOfContentCannotBeDetermined() throws Exception {
-        Class<Collection> type = Collection.class;
-        ParameterizedType genericType = ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
+  @Test
+  public void sizeOfContentCannotBeDetermined() throws Exception {
+    Class<Collection> type = Collection.class;
+    ParameterizedType genericType =
+        ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
 
-        assertEquals(-1, collectionMultipartFormDataMessageBodyWriter.getSize(newArrayList(), type, genericType, new Annotation[0], TEXT_PLAIN_TYPE));
-    }
+    assertEquals(
+        -1,
+        collectionMultipartFormDataMessageBodyWriter.getSize(
+            newArrayList(), type, genericType, new Annotation[0], TEXT_PLAIN_TYPE));
+  }
 
-    @Test
-    public void writesCollectionOfOutputItems() throws Exception {
-        OutputItem item1 = anOutputItem().withName("item1").withEntity("item1 entity").withMediaType(TEXT_PLAIN_TYPE).withFilename("item1.txt").build();
-        OutputItem item2 = anOutputItem().withName("item2").withEntity("{\"item2\":\"entity\"}").withMediaType(APPLICATION_JSON_TYPE).withFilename("item2.json").build();
-        Collection<OutputItem> items = newArrayList(item1, item2);
-        Class<Collection> type = Collection.class;
-        ParameterizedType genericType = ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
-        Annotation[] annotations = new Annotation[0];
-        MediaType mediaType = new MediaType("multipart", "form-data", ImmutableMap.of("boundary", "1234567"));
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        OutputStream out = new ByteArrayOutputStream();
+  @Test
+  public void writesCollectionOfOutputItems() throws Exception {
+    OutputItem item1 =
+        anOutputItem()
+            .withName("item1")
+            .withEntity("item1 entity")
+            .withMediaType(TEXT_PLAIN_TYPE)
+            .withFilename("item1.txt")
+            .build();
+    OutputItem item2 =
+        anOutputItem()
+            .withName("item2")
+            .withEntity("{\"item2\":\"entity\"}")
+            .withMediaType(APPLICATION_JSON_TYPE)
+            .withFilename("item2.json")
+            .build();
+    Collection<OutputItem> items = newArrayList(item1, item2);
+    Class<Collection> type = Collection.class;
+    ParameterizedType genericType =
+        ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
+    Annotation[] annotations = new Annotation[0];
+    MediaType mediaType =
+        new MediaType("multipart", "form-data", ImmutableMap.of("boundary", "1234567"));
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    OutputStream out = new ByteArrayOutputStream();
 
-        collectionMultipartFormDataMessageBodyWriter.writeTo(items, type, genericType, annotations, mediaType, headers, out);
+    collectionMultipartFormDataMessageBodyWriter.writeTo(
+        items, type, genericType, annotations, mediaType, headers, out);
 
-        verify(multipartFormDataWriter).writeItems(same(items), same(out), aryEq("1234567".getBytes()));
+    verify(multipartFormDataWriter).writeItems(same(items), same(out), aryEq("1234567".getBytes()));
 
-        MediaType mediaTypeWithBoundary = (MediaType)headers.getFirst("Content-type");
-        assertNotNull(mediaTypeWithBoundary);
-        String boundary = mediaTypeWithBoundary.getParameters().get("boundary");
-        assertEquals("1234567", boundary);
-    }
+    MediaType mediaTypeWithBoundary = (MediaType) headers.getFirst("Content-type");
+    assertNotNull(mediaTypeWithBoundary);
+    String boundary = mediaTypeWithBoundary.getParameters().get("boundary");
+    assertEquals("1234567", boundary);
+  }
 
-    @Test
-    public void writesCollectionOfOutputItemsAndGenerateBoundary() throws Exception {
-        OutputItem item1 = anOutputItem().withName("item1").withEntity("item1 entity").withMediaType(TEXT_PLAIN_TYPE).withFilename("item1.txt").build();
-        OutputItem item2 = anOutputItem().withName("item2").withEntity("{\"item2\":\"entity\"}").withMediaType(APPLICATION_JSON_TYPE).withFilename("item2.json").build();
-        Collection<OutputItem> items = newArrayList(item1, item2);
-        Class<Collection> type = Collection.class;
-        ParameterizedType genericType = ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
-        Annotation[] annotations = new Annotation[0];
-        MediaType mediaType = MediaType.MULTIPART_FORM_DATA_TYPE;
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        OutputStream out = new ByteArrayOutputStream();
+  @Test
+  public void writesCollectionOfOutputItemsAndGenerateBoundary() throws Exception {
+    OutputItem item1 =
+        anOutputItem()
+            .withName("item1")
+            .withEntity("item1 entity")
+            .withMediaType(TEXT_PLAIN_TYPE)
+            .withFilename("item1.txt")
+            .build();
+    OutputItem item2 =
+        anOutputItem()
+            .withName("item2")
+            .withEntity("{\"item2\":\"entity\"}")
+            .withMediaType(APPLICATION_JSON_TYPE)
+            .withFilename("item2.json")
+            .build();
+    Collection<OutputItem> items = newArrayList(item1, item2);
+    Class<Collection> type = Collection.class;
+    ParameterizedType genericType =
+        ParameterizedTypeImpl.newParameterizedType(Collection.class, OutputItem.class);
+    Annotation[] annotations = new Annotation[0];
+    MediaType mediaType = MediaType.MULTIPART_FORM_DATA_TYPE;
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    OutputStream out = new ByteArrayOutputStream();
 
-        collectionMultipartFormDataMessageBodyWriter.writeTo(items, type, genericType, annotations, mediaType, headers, out);
+    collectionMultipartFormDataMessageBodyWriter.writeTo(
+        items, type, genericType, annotations, mediaType, headers, out);
 
-        MediaType mediaTypeWithBoundary = (MediaType)headers.getFirst("Content-type");
-        assertNotNull(mediaTypeWithBoundary);
-        String boundary = mediaTypeWithBoundary.getParameters().get("boundary");
-        assertNotNull(boundary);
+    MediaType mediaTypeWithBoundary = (MediaType) headers.getFirst("Content-type");
+    assertNotNull(mediaTypeWithBoundary);
+    String boundary = mediaTypeWithBoundary.getParameters().get("boundary");
+    assertNotNull(boundary);
 
-        verify(multipartFormDataWriter).writeItems(same(items), same(out), aryEq(boundary.getBytes()));
-    }
+    verify(multipartFormDataWriter).writeItems(same(items), same(out), aryEq(boundary.getBytes()));
+  }
 }

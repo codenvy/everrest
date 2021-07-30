@@ -19,7 +19,7 @@ import java.net.URL;
  * @author andrew00x
  */
 public class SourceFolder extends ClassPathEntry {
-    public SourceFolder(URL path) {
-        super(path);
-    }
+  public SourceFolder(URL path) {
+    super(path);
+  }
 }

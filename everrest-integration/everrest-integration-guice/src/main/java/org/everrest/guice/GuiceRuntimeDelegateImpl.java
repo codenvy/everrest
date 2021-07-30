@@ -11,9 +11,8 @@
  */
 package org.everrest.guice;
 
-import org.everrest.core.impl.RuntimeDelegateImpl;
-
 import javax.ws.rs.core.UriBuilder;
+import org.everrest.core.impl.RuntimeDelegateImpl;
 
 /**
  * RuntimeDelegate implementation which provides adopted to guice proxies instance of UriBuilder.
@@ -22,8 +21,8 @@ import javax.ws.rs.core.UriBuilder;
  */
 public class GuiceRuntimeDelegateImpl extends RuntimeDelegateImpl {
 
-    @Override
-    public UriBuilder createUriBuilder() {
-        return new GuiceUriBuilderImpl();
-    }
+  @Override
+  public UriBuilder createUriBuilder() {
+    return new GuiceUriBuilderImpl();
+  }
 }

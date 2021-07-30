@@ -11,8 +11,8 @@
  */
 package org.everrest.core;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Abstract description of object.
@@ -21,39 +21,35 @@ import java.util.List;
  */
 public interface ObjectModel {
 
-    /**
-     * @return collections constructor, MAY return empty collection or null if
-     * object is singleton. There is no setter for this to add new
-     * ConstructorInjector use
-     * <code>ObjectModel.getConstructorDescriptors().add(ConstructorInjector)</code>
-     */
-    List<ConstructorDescriptor> getConstructorDescriptors();
+  /**
+   * @return collections constructor, MAY return empty collection or null if object is singleton.
+   *     There is no setter for this to add new ConstructorInjector use <code>
+   *     ObjectModel.getConstructorDescriptors().add(ConstructorInjector)</code>
+   */
+  List<ConstructorDescriptor> getConstructorDescriptors();
 
-    /**
-     * @return collections of object fields, MAY return empty collection or null
-     * if object is singleton. There is no setter for this to add new
-     * ConstructorInjector use
-     * <code>ObjectModel.getFieldInjectors().add(FieldInjector)</code>
-     */
-    List<FieldInjector> getFieldInjectors();
+  /**
+   * @return collections of object fields, MAY return empty collection or null if object is
+   *     singleton. There is no setter for this to add new ConstructorInjector use <code>
+   *     ObjectModel.getFieldInjectors().add(FieldInjector)</code>
+   */
+  List<FieldInjector> getFieldInjectors();
 
-    /** @return {@link Class} of object */
-    Class<?> getObjectClass();
+  /** @return {@link Class} of object */
+  Class<?> getObjectClass();
 
-    /**
-     * @param key
-     *         property name
-     * @return property by key
-     * @see #getProperties()
-     */
-    List<String> getProperty(String key);
+  /**
+   * @param key property name
+   * @return property by key
+   * @see #getProperties()
+   */
+  List<String> getProperty(String key);
 
-    /**
-     * Optional attributes.
-     *
-     * @return all properties. If there is no any optional attributes then empty
-     * map returned never <code>null</code>
-     */
-    MultivaluedMap<String, String> getProperties();
-
+  /**
+   * Optional attributes.
+   *
+   * @return all properties. If there is no any optional attributes then empty map returned never
+   *     <code>null</code>
+   */
+  MultivaluedMap<String, String> getProperties();
 }

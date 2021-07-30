@@ -16,5 +16,4 @@ package org.everrest.websockets.message;
  *
  * @author andrew00x
  */
-public class InputMessage extends Message {
-}
+public class InputMessage extends Message {}

@@ -11,14 +11,12 @@
  */
 package org.everrest.groovy;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public interface ResourceId {
-    /**
-     * Gets the id of resource as string
-     *
-     * @return the resource id
-     */
-    String getId();
+  /**
+   * Gets the id of resource as string
+   *
+   * @return the resource id
+   */
+  String getId();
 }

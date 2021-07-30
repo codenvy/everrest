@@ -11,11 +11,10 @@
  */
 package org.everrest.core.tools;
 
-import org.everrest.core.BaseDependencySupplier;
-
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import org.everrest.core.BaseDependencySupplier;
 
 /**
  * Simple dependency resolver.
@@ -23,21 +22,20 @@ import java.util.Map;
  * @author andrew00x
  */
 public class DependencySupplierImpl extends BaseDependencySupplier {
-    private final Map<Class<?>, Object> dependencies = new HashMap<Class<?>, Object>();
+  private final Map<Class<?>, Object> dependencies = new HashMap<Class<?>, Object>();
 
-    public DependencySupplierImpl() {
-    }
+  public DependencySupplierImpl() {}
 
-    public DependencySupplierImpl(Class<? extends Annotation> injectAnnotation) {
-        super(injectAnnotation);
-    }
+  public DependencySupplierImpl(Class<? extends Annotation> injectAnnotation) {
+    super(injectAnnotation);
+  }
 
-    public void addInstance(Class<?> key, Object instance) {
-        dependencies.put(key, instance);
-    }
+  public void addInstance(Class<?> key, Object instance) {
+    dependencies.put(key, instance);
+  }
 
-    @Override
-    public Object getInstance(Class<?> type) {
-        return dependencies.get(type);
-    }
+  @Override
+  public Object getInstance(Class<?> type) {
+    return dependencies.get(type);
+  }
 }

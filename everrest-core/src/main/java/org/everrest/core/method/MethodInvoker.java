@@ -22,17 +22,14 @@ import org.everrest.core.resource.GenericResourceMethod;
  */
 public interface MethodInvoker {
 
-    /**
-     * Invoke supplied method and return result of method invoking.
-     *
-     * @param resource
-     *         object that contains method
-     * @param genericResourceMethod
-     *         See {@link GenericResourceMethod}
-     * @param context
-     *         See {@link ApplicationContext}
-     * @return result of method invoking
-     */
-    Object invokeMethod(Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context);
-
+  /**
+   * Invoke supplied method and return result of method invoking.
+   *
+   * @param resource object that contains method
+   * @param genericResourceMethod See {@link GenericResourceMethod}
+   * @param context See {@link ApplicationContext}
+   * @return result of method invoking
+   */
+  Object invokeMethod(
+      Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context);
 }

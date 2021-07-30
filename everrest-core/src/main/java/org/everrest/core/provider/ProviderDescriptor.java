@@ -11,30 +11,29 @@
  */
 package org.everrest.core.provider;
 
+import java.util.List;
+import javax.ws.rs.core.MediaType;
 import org.everrest.core.ObjectModel;
 
-import javax.ws.rs.core.MediaType;
-import java.util.List;
-
 /**
- * Descriptor of Provider. Provider is annotated with &#64;Provider and implement interface defined by JAX-RS.
+ * Descriptor of Provider. Provider is annotated with &#64;Provider and implement interface defined
+ * by JAX-RS.
  *
  * @author andrew00x
  */
 public interface ProviderDescriptor extends ObjectModel {
 
-    /**
-     * Get list of {@link MediaType} which current provider consumes.
-     *
-     * @return list of media types
-     */
-    List<MediaType> consumes();
+  /**
+   * Get list of {@link MediaType} which current provider consumes.
+   *
+   * @return list of media types
+   */
+  List<MediaType> consumes();
 
-    /**
-     * Get list of {@link MediaType} which current provider produces.
-     *
-     * @return list of media types
-     */
-    List<MediaType> produces();
-
+  /**
+   * Get list of {@link MediaType} which current provider produces.
+   *
+   * @return list of media types
+   */
+  List<MediaType> produces();
 }

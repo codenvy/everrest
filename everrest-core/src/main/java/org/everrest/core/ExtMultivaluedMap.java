@@ -11,24 +11,20 @@
  */
 package org.everrest.core;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
- * Extension of {@link MultivaluedMap} that allows to get not null value (empty
- * list) even there is no mapping value to supplied key.
+ * Extension of {@link MultivaluedMap} that allows to get not null value (empty list) even there is
+ * no mapping value to supplied key.
  *
- * @param <K>
- *         key
- * @param <V>
- *         value
+ * @param <K> key
+ * @param <V> value
  * @author andrew00x
  * @see #getList(Object)
  */
 public interface ExtMultivaluedMap<K, V> extends MultivaluedMap<K, V> {
 
-    /**
-     * @return never null even any value not found in the map, return empty list instead
-     */
-    List<V> getList(K key);
+  /** @return never null even any value not found in the map, return empty list instead */
+  List<V> getList(K key);
 }

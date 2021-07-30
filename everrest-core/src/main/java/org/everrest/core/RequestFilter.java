@@ -12,19 +12,17 @@
 package org.everrest.core;
 
 /**
- * Process the original {@link GenericContainerRequest} before it dispatch by
- * {@link org.everrest.core.impl.RequestDispatcher}. NOTE this method must be not called directly, it
- * is part of REST framework, otherwise {@link ApplicationContext} may contains
- * wrong parameters.
+ * Process the original {@link GenericContainerRequest} before it dispatch by {@link
+ * org.everrest.core.impl.RequestDispatcher}. NOTE this method must be not called directly, it is
+ * part of REST framework, otherwise {@link ApplicationContext} may contains wrong parameters.
  *
  * @author andrew00x
  */
 public interface RequestFilter {
-    /**
-     * Can modify original request.
-     *
-     * @param request
-     *         the request
-     */
-    void doFilter(GenericContainerRequest request);
+  /**
+   * Can modify original request.
+   *
+   * @param request the request
+   */
+  void doFilter(GenericContainerRequest request);
 }

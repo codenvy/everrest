@@ -11,33 +11,29 @@
  */
 package org.everrest.core;
 
-
+import java.io.IOException;
 import org.everrest.core.impl.ProviderBinder;
 
-import java.io.IOException;
-
 /**
- * Contract of this component is process all requests, initialization and control main components of JAX-RS implementation.
+ * Contract of this component is process all requests, initialization and control main components of
+ * JAX-RS implementation.
  *
  * @author andrew00x
  */
 public interface RequestHandler {
-    /**
-     * Handle the HTTP request by dispatching request to appropriate resource. If
-     * no one appropriate resource found then error response will be produced.
-     *
-     * @param request
-     *         HTTP request
-     * @param response
-     *         HTTP response
-     * @throws java.io.IOException
-     *         if any i/o exceptions occurs
-     * @throws UnhandledException
-     *         if any other errors occurs
-     */
-    void handleRequest(GenericContainerRequest request, GenericContainerResponse response) throws IOException;
+  /**
+   * Handle the HTTP request by dispatching request to appropriate resource. If no one appropriate
+   * resource found then error response will be produced.
+   *
+   * @param request HTTP request
+   * @param response HTTP response
+   * @throws java.io.IOException if any i/o exceptions occurs
+   * @throws UnhandledException if any other errors occurs
+   */
+  void handleRequest(GenericContainerRequest request, GenericContainerResponse response)
+      throws IOException;
 
-    ResourceBinder getResources();
+  ResourceBinder getResources();
 
-    ProviderBinder getProviders();
+  ProviderBinder getProviders();
 }

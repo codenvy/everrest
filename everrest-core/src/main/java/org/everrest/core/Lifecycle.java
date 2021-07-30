@@ -17,15 +17,15 @@ package org.everrest.core;
  * @author andrew00x
  */
 public interface Lifecycle {
-    /**
-     * Star Lifecycle. If this interface implemented by container it must notify all its components. If Lifecycle already
-     * started repeated calling of this method has no effect.
-     */
-    void start();
+  /**
+   * Star Lifecycle. If this interface implemented by container it must notify all its components.
+   * If Lifecycle already started repeated calling of this method has no effect.
+   */
+  void start();
 
-    /**
-     * Stop Lifecycle. If this interface implemented by container it must notify all its components. If Lifecycle already
-     * stopped repeated calling of this method has no effect.
-     */
-    void stop();
+  /**
+   * Stop Lifecycle. If this interface implemented by container it must notify all its components.
+   * If Lifecycle already stopped repeated calling of this method has no effect.
+   */
+  void stop();
 }

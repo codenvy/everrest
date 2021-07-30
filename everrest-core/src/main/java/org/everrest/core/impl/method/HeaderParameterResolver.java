@@ -11,34 +11,32 @@
  */
 package org.everrest.core.impl.method;
 
+import javax.ws.rs.HeaderParam;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.Parameter;
 import org.everrest.core.method.TypeProducer;
 
-import javax.ws.rs.HeaderParam;
-
 /**
- * Creates object that might be injected to JAX-RS component through method (constructor) parameter or field annotated with
- * &#064;HeaderParam annotation.
+ * Creates object that might be injected to JAX-RS component through method (constructor) parameter
+ * or field annotated with &#064;HeaderParam annotation.
  */
 public class HeaderParameterResolver implements ParameterResolver<HeaderParam> {
-    private final HeaderParam         headerParam;
-    private final TypeProducerFactory typeProducerFactory;
+  private final HeaderParam headerParam;
+  private final TypeProducerFactory typeProducerFactory;
 
-    /**
-     * @param headerParam
-     *         HeaderParam
-     */
-    HeaderParameterResolver(HeaderParam headerParam, TypeProducerFactory typeProducerFactory) {
-        this.headerParam = headerParam;
-        this.typeProducerFactory = typeProducerFactory;
-    }
+  /** @param headerParam HeaderParam */
+  HeaderParameterResolver(HeaderParam headerParam, TypeProducerFactory typeProducerFactory) {
+    this.headerParam = headerParam;
+    this.typeProducerFactory = typeProducerFactory;
+  }
 
-
-    @Override
-    public Object resolve(Parameter parameter, ApplicationContext context) throws Exception {
-        String param = this.headerParam.value();
-        TypeProducer typeProducer = typeProducerFactory.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
-        return typeProducer.createValue(param, context.getHttpHeaders().getRequestHeaders(), parameter.getDefaultValue());
-    }
+  @Override
+  public Object resolve(Parameter parameter, ApplicationContext context) throws Exception {
+    String param = this.headerParam.value();
+    TypeProducer typeProducer =
+        typeProducerFactory.createTypeProducer(
+            parameter.getParameterClass(), parameter.getGenericType());
+    return typeProducer.createValue(
+        param, context.getHttpHeaders().getRequestHeaders(), parameter.getDefaultValue());
+  }
 }

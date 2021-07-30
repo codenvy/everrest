@@ -12,27 +12,25 @@
 package org.everrest.core;
 
 /**
- * Should not be used by custom services. They have to use {@link javax.ws.rs.WebApplicationException} instead. UnhandledException is
- * used to propagate exception than can't be handled by this framework to top container (e.g. Servlet Container)
+ * Should not be used by custom services. They have to use {@link
+ * javax.ws.rs.WebApplicationException} instead. UnhandledException is used to propagate exception
+ * than can't be handled by this framework to top container (e.g. Servlet Container)
  *
  * @author andrew00x
  */
 public class UnhandledException extends RuntimeException {
-    private int responseStatus;
+  private int responseStatus;
 
-    public UnhandledException(int responseStatus) {
-        this.responseStatus = responseStatus;
-    }
+  public UnhandledException(int responseStatus) {
+    this.responseStatus = responseStatus;
+  }
 
-    /**
-     * @param throwable
-     *         cause
-     */
-    public UnhandledException(Throwable throwable) {
-        super(throwable);
-    }
+  /** @param throwable cause */
+  public UnhandledException(Throwable throwable) {
+    super(throwable);
+  }
 
-    public int getResponseStatus() {
-        return responseStatus;
-    }
+  public int getResponseStatus() {
+    return responseStatus;
+  }
 }

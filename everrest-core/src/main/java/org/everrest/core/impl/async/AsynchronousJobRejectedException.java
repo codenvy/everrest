@@ -13,7 +13,7 @@ package org.everrest.core.impl.async;
 
 @SuppressWarnings("serial")
 public class AsynchronousJobRejectedException extends Exception {
-    public AsynchronousJobRejectedException(String message) {
-        super(message);
-    }
+  public AsynchronousJobRejectedException(String message) {
+    super(message);
+  }
 }

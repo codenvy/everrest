@@ -13,22 +13,18 @@ package org.everrest.core.impl.provider.json;
 
 public class NullValue extends JsonValue {
 
+  @Override
+  public boolean isNull() {
+    return true;
+  }
 
-    @Override
-    public boolean isNull() {
-        return true;
-    }
+  @Override
+  public String toString() {
+    return "null";
+  }
 
-
-    @Override
-    public String toString() {
-        return "null";
-    }
-
-
-    @Override
-    public void writeTo(JsonWriter writer) throws JsonException {
-        writer.writeNull();
-    }
-
+  @Override
+  public void writeTo(JsonWriter writer) throws JsonException {
+    writer.writeNull();
+  }
 }

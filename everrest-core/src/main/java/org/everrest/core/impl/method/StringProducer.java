@@ -12,12 +12,9 @@
 package org.everrest.core.impl.method;
 
 public final class StringProducer extends BaseTypeProducer {
-    /**
-     * Don't need to do anything just return passed in method String as is.
-     * {@inheritDoc}
-     */
-    @Override
-    protected Object createValue(String value) throws Exception {
-        return value;
-    }
+  /** Don't need to do anything just return passed in method String as is. {@inheritDoc} */
+  @Override
+  protected Object createValue(String value) throws Exception {
+    return value;
+  }
 }

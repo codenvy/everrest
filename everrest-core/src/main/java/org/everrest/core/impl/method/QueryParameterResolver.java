@@ -11,33 +11,32 @@
  */
 package org.everrest.core.impl.method;
 
+import javax.ws.rs.QueryParam;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.method.TypeProducer;
 
-import javax.ws.rs.QueryParam;
-
 /**
- * Creates object that might be injected to JAX-RS component through method (constructor) parameter or field annotated with
- * &#064;QueryParam annotation.
+ * Creates object that might be injected to JAX-RS component through method (constructor) parameter
+ * or field annotated with &#064;QueryParam annotation.
  */
 public class QueryParameterResolver implements ParameterResolver<QueryParam> {
-    private final QueryParam          queryParam;
-    private final TypeProducerFactory typeProducerFactory;
+  private final QueryParam queryParam;
+  private final TypeProducerFactory typeProducerFactory;
 
-    /**
-     * @param queryParam
-     *         QueryParam
-     */
-    QueryParameterResolver(QueryParam queryParam, TypeProducerFactory typeProducerFactory) {
-        this.queryParam = queryParam;
-        this.typeProducerFactory = typeProducerFactory;
-    }
+  /** @param queryParam QueryParam */
+  QueryParameterResolver(QueryParam queryParam, TypeProducerFactory typeProducerFactory) {
+    this.queryParam = queryParam;
+    this.typeProducerFactory = typeProducerFactory;
+  }
 
-
-    @Override
-    public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception {
-        String param = this.queryParam.value();
-        TypeProducer typeProducer = typeProducerFactory.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
-        return typeProducer.createValue(param, context.getQueryParameters(!parameter.isEncoded()), parameter.getDefaultValue());
-    }
+  @Override
+  public Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
+      throws Exception {
+    String param = this.queryParam.value();
+    TypeProducer typeProducer =
+        typeProducerFactory.createTypeProducer(
+            parameter.getParameterClass(), parameter.getGenericType());
+    return typeProducer.createValue(
+        param, context.getQueryParameters(!parameter.isEncoded()), parameter.getDefaultValue());
+  }
 }

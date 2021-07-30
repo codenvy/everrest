@@ -18,34 +18,32 @@ package org.everrest.core;
  * @author andrew00x
  */
 public class SingletonObjectFactory<T extends ObjectModel> implements ObjectFactory<T> {
-    /** @see ObjectModel */
-    protected final T model;
+  /** @see ObjectModel */
+  protected final T model;
 
-    /** Component instance. */
-    protected final Object object;
+  /** Component instance. */
+  protected final Object object;
 
-    /**
-     * @param model
-     *         ObjectMode
-     * @param object
-     *         component instance
-     */
-    public SingletonObjectFactory(T model, Object object) {
-        this.model = model;
-        this.object = object;
-    }
+  /**
+   * @param model ObjectMode
+   * @param object component instance
+   */
+  public SingletonObjectFactory(T model, Object object) {
+    this.model = model;
+    this.object = object;
+  }
 
-    @Override
-    public Object getInstance(ApplicationContext context) {
-        return getInstance();
-    }
+  @Override
+  public Object getInstance(ApplicationContext context) {
+    return getInstance();
+  }
 
-    public Object getInstance() {
-        return object;
-    }
+  public Object getInstance() {
+    return object;
+  }
 
-    @Override
-    public T getObjectModel() {
-        return model;
-    }
+  @Override
+  public T getObjectModel() {
+    return model;
+  }
 }

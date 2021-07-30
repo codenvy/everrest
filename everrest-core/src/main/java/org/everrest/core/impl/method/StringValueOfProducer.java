@@ -13,31 +13,26 @@ package org.everrest.core.impl.method;
 
 import java.lang.reflect.Method;
 
-
 /**
  * Creates object from class which has method {@code valueOf} with single String argument.
  *
  * @author andrew00x
  */
 public final class StringValueOfProducer extends BaseTypeProducer {
-    /** This method will be used for creation object. */
-    private Method valueOfMethod;
+  /** This method will be used for creation object. */
+  private Method valueOfMethod;
 
-    /**
-     * @param valueOfMethod
-     *         static method with single String parameter
-     */
-    StringValueOfProducer(Method valueOfMethod) {
-        this.valueOfMethod = valueOfMethod;
+  /** @param valueOfMethod static method with single String parameter */
+  StringValueOfProducer(Method valueOfMethod) {
+    this.valueOfMethod = valueOfMethod;
+  }
+
+  @Override
+  protected Object createValue(String value) throws Exception {
+    if (value == null) {
+      return null;
     }
 
-
-    @Override
-    protected Object createValue(String value) throws Exception {
-        if (value == null) {
-            return null;
-        }
-
-        return valueOfMethod.invoke(null, value);
-    }
+    return valueOfMethod.invoke(null, value);
+  }
 }

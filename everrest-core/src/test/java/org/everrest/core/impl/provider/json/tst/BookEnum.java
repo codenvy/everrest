@@ -16,18 +16,18 @@ import static org.everrest.core.impl.provider.json.tst.Book.createJavaScriptBook
 import static org.everrest.core.impl.provider.json.tst.Book.createJunitBook;
 
 public enum BookEnum {
-    JUNIT_IN_ACTION(createJunitBook()),
-    ADVANCED_JAVA_SCRIPT(createJavaScriptBook()),
-    BEGINNING_C(createCSharpBook());
+  JUNIT_IN_ACTION(createJunitBook()),
+  ADVANCED_JAVA_SCRIPT(createJavaScriptBook()),
+  BEGINNING_C(createCSharpBook());
 
-    private final Book book;
+  private final Book book;
 
-    BookEnum(Book book) {
-        this.book = book;
-    }
+  BookEnum(Book book) {
+    this.book = book;
+  }
 
-    @Override
-    public String toString() {
-        return book.toString();
-    }
+  @Override
+  public String toString() {
+    return book.toString();
+  }
 }

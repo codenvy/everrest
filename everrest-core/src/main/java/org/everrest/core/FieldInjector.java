@@ -18,17 +18,15 @@ package org.everrest.core;
  */
 public interface FieldInjector extends Parameter {
 
-    /** @return field name */
-    String getName();
+  /** @return field name */
+  String getName();
 
-    /**
-     * Set Object {@link java.lang.reflect.Field} using ApplicationContext for resolve actual field value.
-     *
-     * @param resource
-     *         root resource or provider
-     * @param context
-     *         ApplicationContext
-     */
-    void inject(Object resource, ApplicationContext context);
-
+  /**
+   * Set Object {@link java.lang.reflect.Field} using ApplicationContext for resolve actual field
+   * value.
+   *
+   * @param resource root resource or provider
+   * @param context ApplicationContext
+   */
+  void inject(Object resource, ApplicationContext context);
 }

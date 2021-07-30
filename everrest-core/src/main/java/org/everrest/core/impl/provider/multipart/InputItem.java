@@ -11,28 +11,26 @@
  */
 package org.everrest.core.impl.provider.multipart;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public interface InputItem {
 
-    String getName();
+  String getName();
 
-    String getFilename();
+  String getFilename();
 
-    MediaType getMediaType();
+  MediaType getMediaType();
 
-    MultivaluedMap<String, String> getHeaders();
+  MultivaluedMap<String, String> getHeaders();
 
-    InputStream getBody() throws IOException;
+  InputStream getBody() throws IOException;
 
-    <T> T getBody(Class<T> type, Type genericType) throws IOException;
+  <T> T getBody(Class<T> type, Type genericType) throws IOException;
 
-    String getBodyAsString() throws IOException;
+  String getBodyAsString() throws IOException;
 }

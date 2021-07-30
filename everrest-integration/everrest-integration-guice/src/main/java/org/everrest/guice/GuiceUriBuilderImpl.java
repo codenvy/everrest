@@ -11,53 +11,53 @@
  */
 package org.everrest.guice;
 
-import org.everrest.core.impl.uri.UriBuilderImpl;
-
 import javax.ws.rs.core.UriBuilder;
+import org.everrest.core.impl.uri.UriBuilderImpl;
 
 /**
  * Allows to use service proxy classes which are created by guice for interceptors.
+ *
  * @author Max Shaposhnik
  */
 public class GuiceUriBuilderImpl extends UriBuilderImpl {
 
-    private static final String PROXY_MARKER = "$EnhancerByGuice$";
+  private static final String PROXY_MARKER = "$EnhancerByGuice$";
 
-    public GuiceUriBuilderImpl() {
-        super();
+  public GuiceUriBuilderImpl() {
+    super();
+  }
+
+  @SuppressWarnings({"unchecked"})
+  @Override
+  public UriBuilder path(Class resource) {
+    if (resource == null) {
+      throw new IllegalArgumentException("Resource is null");
     }
 
-    @SuppressWarnings({"unchecked"})
-    @Override
-    public UriBuilder path(Class resource) {
-        if (resource == null) {
-            throw new IllegalArgumentException("Resource is null");
-        }
+    if (resource.getName().contains(PROXY_MARKER)) {
+      return super.path(resource.getSuperclass());
+    }
+    return super.path(resource);
+  }
 
-        if  (resource.getName().contains(PROXY_MARKER)) {
-            return super.path(resource.getSuperclass());
-        }
-        return super.path(resource);
+  @Override
+  public UriBuilder path(Class resource, String method) {
+    if (resource == null) {
+      throw new IllegalArgumentException("Resource is null");
     }
 
-    @Override
-    public UriBuilder path(Class resource, String method) {
-        if (resource == null) {
-            throw new IllegalArgumentException("Resource is null");
-        }
-
-        if (resource.getName().contains(PROXY_MARKER)) {
-            return super.path(resource.getSuperclass(), method);
-        }
-        return super.path(resource, method);
+    if (resource.getName().contains(PROXY_MARKER)) {
+      return super.path(resource.getSuperclass(), method);
     }
+    return super.path(resource, method);
+  }
 
-    protected GuiceUriBuilderImpl(GuiceUriBuilderImpl cloned) {
-        super(cloned);
-    }
+  protected GuiceUriBuilderImpl(GuiceUriBuilderImpl cloned) {
+    super(cloned);
+  }
 
-    @Override
-    public UriBuilder clone() {
-        return new GuiceUriBuilderImpl(this);
-    }
+  @Override
+  public UriBuilder clone() {
+    return new GuiceUriBuilderImpl(this);
+  }
 }

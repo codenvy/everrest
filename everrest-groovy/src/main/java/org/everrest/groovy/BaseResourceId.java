@@ -17,31 +17,31 @@ package org.everrest.groovy;
  * @author andrew00x
  */
 public class BaseResourceId implements ResourceId {
-    private final String id;
+  private final String id;
 
-    public BaseResourceId(String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id may not be null. ");
-        }
-        this.id = id;
+  public BaseResourceId(String id) {
+    if (id == null) {
+      throw new IllegalArgumentException("Id may not be null. ");
     }
+    this.id = id;
+  }
 
-    @Override
-    public String getId() {
-        return id;
-    }
+  @Override
+  public String getId() {
+    return id;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null && getClass() == obj.getClass() && id.equals(((BaseResourceId)obj).id);
-    }
+  @Override
+  public boolean equals(Object obj) {
+    return obj != null && getClass() == obj.getClass() && id.equals(((BaseResourceId) obj).id);
+  }
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
 
-    public String toString() {
-        return getClass().getSimpleName() + '(' + id + ')';
-    }
+  public String toString() {
+    return getClass().getSimpleName() + '(' + id + ')';
+  }
 }

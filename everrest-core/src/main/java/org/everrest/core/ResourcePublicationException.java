@@ -12,18 +12,18 @@
 package org.everrest.core;
 
 /**
- * Throws if root resource can't be published, e.g. resource can't be registered
- * because to conflict of root path
+ * Throws if root resource can't be published, e.g. resource can't be registered because to conflict
+ * of root path
  *
  * @author andrew00x
  */
 @SuppressWarnings("serial")
 public class ResourcePublicationException extends RuntimeException {
-    public ResourcePublicationException(String message) {
-        super(message);
-    }
+  public ResourcePublicationException(String message) {
+    super(message);
+  }
 
-    public ResourcePublicationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public ResourcePublicationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

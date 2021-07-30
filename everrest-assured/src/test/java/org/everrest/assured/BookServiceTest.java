@@ -11,6 +11,12 @@
  */
 package org.everrest.assured;
 
+import static com.jayway.restassured.RestAssured.expect;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import org.everrest.sample.book.Book;
 import org.everrest.sample.book.BookService;
 import org.everrest.sample.book.BookStorage;
@@ -22,34 +28,23 @@ import org.testng.ITestContext;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static com.jayway.restassured.RestAssured.expect;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @Listeners(value = {EverrestJetty.class, MockitoTestNGListener.class})
 public class BookServiceTest {
-    @Mock
-    private BookStorage bookStorage;
+  @Mock private BookStorage bookStorage;
 
-    @InjectMocks
-    private BookService bookService;
+  @InjectMocks private BookService bookService;
 
-    @Test
-    public void testName(ITestContext context) throws Exception {
-        Collection<Book> bookCollection = new ArrayList<Book>();
-        Book book = new Book();
-        book.setId("123-1235-555");
-        bookCollection.add(book);
-        when(bookStorage.getAll()).thenReturn(bookCollection);
+  @Test
+  public void testName(ITestContext context) throws Exception {
+    Collection<Book> bookCollection = new ArrayList<Book>();
+    Book book = new Book();
+    book.setId("123-1235-555");
+    bookCollection.add(book);
+    when(bookStorage.getAll()).thenReturn(bookCollection);
 
-        //unsecure call to rest service
-        expect()
-                .body("id", Matchers.hasItem("123-1235-555"))
-                .when().get("/books");
+    // unsecure call to rest service
+    expect().body("id", Matchers.hasItem("123-1235-555")).when().get("/books");
 
-        verify(bookStorage).getAll();
-    }
+    verify(bookStorage).getAll();
+  }
 }

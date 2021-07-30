@@ -12,21 +12,18 @@
 package org.everrest.guice;
 
 import com.google.inject.Injector;
-
 import org.everrest.core.BaseDependencySupplier;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public class GuiceDependencySupplier extends BaseDependencySupplier {
-    private final Injector injector;
+  private final Injector injector;
 
-    public GuiceDependencySupplier(Injector injector) {
-        this.injector = injector;
-    }
+  public GuiceDependencySupplier(Injector injector) {
+    this.injector = injector;
+  }
 
-    @Override
-    public Object getInstance(Class<?> type) {
-        return injector.getInstance(type);
-    }
+  @Override
+  public Object getInstance(Class<?> type) {
+    return injector.getInstance(type);
+  }
 }

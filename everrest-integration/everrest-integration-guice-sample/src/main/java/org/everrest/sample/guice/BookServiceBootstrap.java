@@ -13,27 +13,24 @@ package org.everrest.sample.guice;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
-
-import org.everrest.guice.servlet.EverrestGuiceContextListener;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.everrest.guice.servlet.EverrestGuiceContextListener;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public class BookServiceBootstrap extends EverrestGuiceContextListener {
-    @Override
-    protected List<Module> getModules() {
-        List<Module> modules = new ArrayList<Module>();
-        modules.add(new Module() {
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(BookService.class);
-                binder.bind(BookStorage.class);
-                binder.bind(BookNotFoundExceptionMapper.class);
-            }
+  @Override
+  protected List<Module> getModules() {
+    List<Module> modules = new ArrayList<Module>();
+    modules.add(
+        new Module() {
+          @Override
+          public void configure(Binder binder) {
+            binder.bind(BookService.class);
+            binder.bind(BookStorage.class);
+            binder.bind(BookNotFoundExceptionMapper.class);
+          }
         });
-        return modules;
-    }
+    return modules;
+  }
 }

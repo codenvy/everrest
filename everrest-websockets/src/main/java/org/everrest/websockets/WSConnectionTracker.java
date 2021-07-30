@@ -13,39 +13,41 @@ package org.everrest.websockets;
 
 import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Close web socket connections when HTTP session to which these connections associated is going to be invalidated.
+ * Close web socket connections when HTTP session to which these connections associated is going to
+ * be invalidated.
  *
  * @author andrew00x
  */
 public final class WSConnectionTracker implements HttpSessionListener {
-    private static final Logger LOG = LoggerFactory.getLogger(WSConnectionTracker.class);
+  private static final Logger LOG = LoggerFactory.getLogger(WSConnectionTracker.class);
 
-    @Override
-    public void sessionCreated(HttpSessionEvent se) {
-    }
+  @Override
+  public void sessionCreated(HttpSessionEvent se) {}
 
-    @Override
-    public void sessionDestroyed(HttpSessionEvent se) {
-        final String destroyedSessionId = se.getSession().getId();
-        for (WSConnectionImpl wsConnection : WSConnectionContext.connections.values()) {
-            final HttpSession httpSession = wsConnection.getHttpSession();
-            if (httpSession != null && destroyedSessionId.equals(httpSession.getId())) {
-                try {
-                    wsConnection.close(NORMAL_CLOSURE.getCode(), "Http session destroyed");
-                } catch (IOException e) {
-                    LOG.warn(String.format("Error occurs while try to close web-socket connection %s. %s", wsConnection, e.getMessage()),
-                             e);
-                }
-            }
+  @Override
+  public void sessionDestroyed(HttpSessionEvent se) {
+    final String destroyedSessionId = se.getSession().getId();
+    for (WSConnectionImpl wsConnection : WSConnectionContext.connections.values()) {
+      final HttpSession httpSession = wsConnection.getHttpSession();
+      if (httpSession != null && destroyedSessionId.equals(httpSession.getId())) {
+        try {
+          wsConnection.close(NORMAL_CLOSURE.getCode(), "Http session destroyed");
+        } catch (IOException e) {
+          LOG.warn(
+              String.format(
+                  "Error occurs while try to close web-socket connection %s. %s",
+                  wsConnection, e.getMessage()),
+              e);
         }
+      }
     }
+  }
 }

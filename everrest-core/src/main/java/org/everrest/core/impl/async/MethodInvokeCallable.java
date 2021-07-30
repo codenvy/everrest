@@ -15,18 +15,18 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 class MethodInvokeCallable implements Callable<Object> {
-    private final Object   resource;
-    private final Method   method;
-    private final Object[] params;
+  private final Object resource;
+  private final Method method;
+  private final Object[] params;
 
-    MethodInvokeCallable(Object resource, Method method, Object[] params) {
-        this.resource = resource;
-        this.method = method;
-        this.params = params;
-    }
+  MethodInvokeCallable(Object resource, Method method, Object[] params) {
+    this.resource = resource;
+    this.method = method;
+    this.params = params;
+  }
 
-    @Override
-    public Object call() throws Exception {
-        return method.invoke(resource, params);
-    }
+  @Override
+  public Object call() throws Exception {
+    return method.invoke(resource, params);
+  }
 }

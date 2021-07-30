@@ -11,29 +11,29 @@
  */
 package org.everrest.sample.book;
 
-import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
+import javax.ws.rs.core.Application;
 
 public class BookApplication extends Application {
 
-    private final Set<Class<?>> classes;
-    private final Set<Object> singletons;
+  private final Set<Class<?>> classes;
+  private final Set<Object> singletons;
 
-    public BookApplication() {
-        classes = new HashSet<>(1);
-        singletons = new HashSet<>(1);
-        classes.add(BookService.class);
-        singletons.add(new BookNotFoundExceptionMapper());
-    }
+  public BookApplication() {
+    classes = new HashSet<>(1);
+    singletons = new HashSet<>(1);
+    classes.add(BookService.class);
+    singletons.add(new BookNotFoundExceptionMapper());
+  }
 
-    @Override
-    public Set<Class<?>> getClasses() {
-        return classes;
-    }
+  @Override
+  public Set<Class<?>> getClasses() {
+    return classes;
+  }
 
-    @Override
-    public Set<Object> getSingletons() {
-        return singletons;
-    }
+  @Override
+  public Set<Object> getSingletons() {
+    return singletons;
+  }
 }

@@ -17,12 +17,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Useful for injection in service, provider or filter properties which is preset in {@link InitialProperties}.
+ * Useful for injection in service, provider or filter properties which is preset in {@link
+ * InitialProperties}.
  *
  * @author andrew00x
  */
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Property {
-    String value();
+  String value();
 }

@@ -11,79 +11,79 @@
  */
 package org.everrest.core.impl.header;
 
+import java.util.Date;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.NewCookie;
-import java.util.Date;
 
-/**
- * Builder for {@link NewCookie}
- */
+/** Builder for {@link NewCookie} */
 public class NewCookieBuilder {
-    public static NewCookieBuilder aNewCookie() {
-        return new NewCookieBuilder();
-    }
+  public static NewCookieBuilder aNewCookie() {
+    return new NewCookieBuilder();
+  }
 
-    private int version = Cookie.DEFAULT_VERSION;
-    private int maxAge  = NewCookie.DEFAULT_MAX_AGE;
-    private String  name;
-    private String  value;
-    private String  path;
-    private String  domain;
-    private String  comment;
-    private boolean secure;
-    private boolean httpOnly;
-    private Date    expiry;
+  private int version = Cookie.DEFAULT_VERSION;
+  private int maxAge = NewCookie.DEFAULT_MAX_AGE;
+  private String name;
+  private String value;
+  private String path;
+  private String domain;
+  private String comment;
+  private boolean secure;
+  private boolean httpOnly;
+  private Date expiry;
 
-    public NewCookieBuilder withName(String name) {
-        this.name = name;
-        return this;
-    }
+  public NewCookieBuilder withName(String name) {
+    this.name = name;
+    return this;
+  }
 
-    public NewCookieBuilder withValue(String value) {
-        this.value = value;
-        return this;
-    }
-    public NewCookieBuilder withVersion(int version) {
-        this.version = version;
-        return this;
-    }
+  public NewCookieBuilder withValue(String value) {
+    this.value = value;
+    return this;
+  }
 
-    public NewCookieBuilder withMaxAge(int maxAge) {
-        this.maxAge = maxAge;
-        return this;
-    }
+  public NewCookieBuilder withVersion(int version) {
+    this.version = version;
+    return this;
+  }
 
-    public NewCookieBuilder withExpiry(Date expiry) {
-        this.expiry = expiry;
-        return this;
-    }
+  public NewCookieBuilder withMaxAge(int maxAge) {
+    this.maxAge = maxAge;
+    return this;
+  }
 
-    public NewCookieBuilder withDomain(String domain) {
-        this.domain = domain;
-        return this;
-    }
+  public NewCookieBuilder withExpiry(Date expiry) {
+    this.expiry = expiry;
+    return this;
+  }
 
-    public NewCookieBuilder withPath(String path) {
-        this.path = path;
-        return this;
-    }
+  public NewCookieBuilder withDomain(String domain) {
+    this.domain = domain;
+    return this;
+  }
 
-    public NewCookieBuilder withSecure(boolean secure) {
-        this.secure = secure;
-        return this;
-    }
+  public NewCookieBuilder withPath(String path) {
+    this.path = path;
+    return this;
+  }
 
-    public NewCookieBuilder withHttpOnly(boolean httpOnly) {
-        this.httpOnly = httpOnly;
-        return this;
-    }
+  public NewCookieBuilder withSecure(boolean secure) {
+    this.secure = secure;
+    return this;
+  }
 
-    public NewCookieBuilder withComment(String comment) {
-        this.comment = comment;
-        return this;
-    }
+  public NewCookieBuilder withHttpOnly(boolean httpOnly) {
+    this.httpOnly = httpOnly;
+    return this;
+  }
 
-    public NewCookie build() {
-        return new NewCookie(name, value, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
-    }
+  public NewCookieBuilder withComment(String comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  public NewCookie build() {
+    return new NewCookie(
+        name, value, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
+  }
 }

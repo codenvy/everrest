@@ -20,16 +20,14 @@ import java.net.URL;
  * @author andrew00x
  */
 public interface ScriptFinder {
-    /**
-     * Find all scripts that are acceptable by <code>filter</code> in specified root URL.
-     *
-     * @param filter
-     *         URL filter
-     * @param root
-     *         root URL from which look up should be stated
-     * @return URLs of all resources that were found, may return whether <code>null</code> or empty array if scripts were not found
-     * @throws MalformedURLException
-     *         if the URL is invalid
-     */
-    URL[] find(URLFilter filter, URL root) throws MalformedURLException;
+  /**
+   * Find all scripts that are acceptable by <code>filter</code> in specified root URL.
+   *
+   * @param filter URL filter
+   * @param root root URL from which look up should be stated
+   * @return URLs of all resources that were found, may return whether <code>null</code> or empty
+   *     array if scripts were not found
+   * @throws MalformedURLException if the URL is invalid
+   */
+  URL[] find(URLFilter filter, URL root) throws MalformedURLException;
 }

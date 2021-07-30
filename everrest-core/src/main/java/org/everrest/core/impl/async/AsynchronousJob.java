@@ -11,41 +11,37 @@
  */
 package org.everrest.core.impl.async;
 
+import java.util.Map;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 
-import java.util.Map;
-
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public interface AsynchronousJob {
-    Long getJobId();
+  Long getJobId();
 
-    /** Get relative URI of this asynchronous job. */
-    String getJobURI();
+  /** Get relative URI of this asynchronous job. */
+  String getJobURI();
 
-    long getExpirationDate();
+  long getExpirationDate();
 
-    ResourceMethodDescriptor getResourceMethod();
+  ResourceMethodDescriptor getResourceMethod();
 
-    boolean isDone();
+  boolean isDone();
 
-    boolean cancel();
+  boolean cancel();
 
-    /**
-     * Get result of job. If job is not done yet this method throws IllegalStateException.
-     * Before call this method caller must check is job done or not with method {@link #isDone()} .
-     *
-     * @return result
-     * @throws IllegalStateException
-     *         if job is not done yet
-     */
-    Object getResult() throws IllegalStateException;
+  /**
+   * Get result of job. If job is not done yet this method throws IllegalStateException. Before call
+   * this method caller must check is job done or not with method {@link #isDone()} .
+   *
+   * @return result
+   * @throws IllegalStateException if job is not done yet
+   */
+  Object getResult() throws IllegalStateException;
 
-    /**
-     * The storage for context attributes.
-     *
-     * @return map never <code>null</code>
-     */
-    Map<String, Object> getContext();
+  /**
+   * The storage for context attributes.
+   *
+   * @return map never <code>null</code>
+   */
+  Map<String, Object> getContext();
 }

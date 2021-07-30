@@ -11,27 +11,24 @@
  */
 package org.everrest.core.impl.method;
 
-import org.everrest.core.ApplicationContext;
-
 import java.lang.annotation.Annotation;
+import org.everrest.core.ApplicationContext;
 
 /**
  * Create object that might be injected in JAX-RS component.
- * @param <T>
- *         on of JAX-RS annotation that used for method, constructor parameters or fields
+ *
+ * @param <T> on of JAX-RS annotation that used for method, constructor parameters or fields
  * @author andrew00x
  */
 public interface ParameterResolver<T extends Annotation> {
-    /**
-     * Creates object which will be passed in resource method or locator.
-     *
-     * @param parameter
-     *         See {@link org.everrest.core.Parameter}
-     * @param context
-     *         See {@link ApplicationContext}
-     * @return newly created instance of class {@link org.everrest.core.Parameter#getParameterClass()}
-     * @throws Exception
-     *         if any errors occurs
-     */
-    Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context) throws Exception;
+  /**
+   * Creates object which will be passed in resource method or locator.
+   *
+   * @param parameter See {@link org.everrest.core.Parameter}
+   * @param context See {@link ApplicationContext}
+   * @return newly created instance of class {@link org.everrest.core.Parameter#getParameterClass()}
+   * @throws Exception if any errors occurs
+   */
+  Object resolve(org.everrest.core.Parameter parameter, ApplicationContext context)
+      throws Exception;
 }

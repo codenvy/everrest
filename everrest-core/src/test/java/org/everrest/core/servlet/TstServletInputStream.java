@@ -11,34 +11,33 @@
  */
 package org.everrest.core.servlet;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
 
 class TstServletInputStream extends ServletInputStream {
-    private final ByteArrayInputStream data;
+  private final ByteArrayInputStream data;
 
-    TstServletInputStream(byte[] data) {
-        this.data = new ByteArrayInputStream(data);
-    }
+  TstServletInputStream(byte[] data) {
+    this.data = new ByteArrayInputStream(data);
+  }
 
-    @Override
-    public int read() throws IOException {
-        return data.read();
-    }
+  @Override
+  public int read() throws IOException {
+    return data.read();
+  }
 
-    @Override
-    public boolean isFinished() {
-        return data.available() == 0;
-    }
+  @Override
+  public boolean isFinished() {
+    return data.available() == 0;
+  }
 
-    @Override
-    public boolean isReady() {
-        return true;
-    }
+  @Override
+  public boolean isReady() {
+    return true;
+  }
 
-    @Override
-    public void setReadListener(ReadListener readListener) {
-    }
+  @Override
+  public void setReadListener(ReadListener readListener) {}
 }

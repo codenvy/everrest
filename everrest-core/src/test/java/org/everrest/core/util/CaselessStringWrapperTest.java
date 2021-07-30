@@ -11,27 +11,28 @@
  */
 package org.everrest.core.util;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
+
 public class CaselessStringWrapperTest {
-    private String                string         = "To Be Or Not To Be";
-    private CaselessStringWrapper caselessString = new CaselessStringWrapper(string);
+  private String string = "To Be Or Not To Be";
+  private CaselessStringWrapper caselessString = new CaselessStringWrapper(string);
 
-    @Test
-    public void keepsOriginalStringAsIs() {
-        assertEquals(string, caselessString.getString());
-    }
+  @Test
+  public void keepsOriginalStringAsIs() {
+    assertEquals(string, caselessString.getString());
+  }
 
-    @Test
-    public void testEquals() throws Exception {
-        assertTrue(caselessString.equals(new CaselessStringWrapper(string.toUpperCase())));
-    }
+  @Test
+  public void testEquals() throws Exception {
+    assertTrue(caselessString.equals(new CaselessStringWrapper(string.toUpperCase())));
+  }
 
-    @Test
-    public void testHashCode() throws Exception {
-        assertEquals(caselessString.hashCode(), new CaselessStringWrapper(string.toUpperCase()).hashCode());
-    }
+  @Test
+  public void testHashCode() throws Exception {
+    assertEquals(
+        caselessString.hashCode(), new CaselessStringWrapper(string.toUpperCase()).hashCode());
+  }
 }

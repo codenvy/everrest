@@ -19,5 +19,5 @@ import org.everrest.core.method.MethodInvoker;
  * @author andrew00x
  */
 public interface MethodInvokerDecoratorFactory {
-    MethodInvokerDecorator makeDecorator(MethodInvoker invoker);
+  MethodInvokerDecorator makeDecorator(MethodInvoker invoker);
 }

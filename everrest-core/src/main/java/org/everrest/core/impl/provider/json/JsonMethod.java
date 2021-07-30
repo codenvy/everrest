@@ -14,11 +14,11 @@ package org.everrest.core.impl.provider.json;
 import java.lang.reflect.Method;
 
 class JsonMethod {
-    final Method method;
-    final String field;
+  final Method method;
+  final String field;
 
-    JsonMethod(Method method, String field) {
-        this.method = method;
-        this.field = field;
-    }
+  JsonMethod(Method method, String field) {
+    this.method = method;
+    this.field = field;
+  }
 }

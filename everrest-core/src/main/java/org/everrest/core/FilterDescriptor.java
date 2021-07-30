@@ -26,15 +26,14 @@ import org.everrest.core.uri.UriPattern;
  */
 public interface FilterDescriptor extends ObjectModel {
 
-    /** @return See {@link PathValue} */
-    PathValue getPathValue();
+  /** @return See {@link PathValue} */
+  PathValue getPathValue();
 
-    /**
-     * UriPattern build in same manner as for resources. For detail see section
-     * 3.4 URI Templates in JAX-RS specification.
-     *
-     * @return See {@link UriPattern}
-     */
-    UriPattern getUriPattern();
-
+  /**
+   * UriPattern build in same manner as for resources. For detail see section 3.4 URI Templates in
+   * JAX-RS specification.
+   *
+   * @return See {@link UriPattern}
+   */
+  UriPattern getUriPattern();
 }

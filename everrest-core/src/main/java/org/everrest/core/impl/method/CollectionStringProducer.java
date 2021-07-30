@@ -17,22 +17,18 @@ package org.everrest.core.impl.method;
  * @author andrew00x
  */
 public final class CollectionStringProducer extends BaseCollectionProducer {
-    /**
-     * Constructs new instance of CollectionStringProducer.
-     *
-     * @param collectionClass
-     *         class of collection which must be created
-     */
-    CollectionStringProducer(Class<?> collectionClass) {
-        super(collectionClass);
-    }
+  /**
+   * Constructs new instance of CollectionStringProducer.
+   *
+   * @param collectionClass class of collection which must be created
+   */
+  CollectionStringProducer(Class<?> collectionClass) {
+    super(collectionClass);
+  }
 
-    /**
-     * Don't need to do anything just return passed in method String as is.
-     * {@inheritDoc}
-     */
-    @Override
-    protected Object createCollectionItem(String value) throws Exception {
-        return value;
-    }
+  /** Don't need to do anything just return passed in method String as is. {@inheritDoc} */
+  @Override
+  protected Object createCollectionItem(String value) throws Exception {
+    return value;
+  }
 }

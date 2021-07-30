@@ -14,49 +14,47 @@ package org.everrest.core.impl.header;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.ext.RuntimeDelegate;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public class EntityTagHeaderDelegate implements RuntimeDelegate.HeaderDelegate<EntityTag> {
 
-    @Override
-    public EntityTag fromString(String header) {
-        if (header == null) {
-            throw new IllegalArgumentException();
-        }
-
-        boolean isWeak = header.startsWith("W/");
-
-        String value;
-        if (isWeak) {
-            value = cutWeakPrefix(header);
-        } else {
-            value = header;
-        }
-        value = value.substring(1, value.length() - 1);
-        value = HeaderHelper.removeQuoteEscapes(value);
-
-        return new EntityTag(value, isWeak);
+  @Override
+  public EntityTag fromString(String header) {
+    if (header == null) {
+      throw new IllegalArgumentException();
     }
 
-    private String cutWeakPrefix(String header) {
-        return header.substring(2);
+    boolean isWeak = header.startsWith("W/");
+
+    String value;
+    if (isWeak) {
+      value = cutWeakPrefix(header);
+    } else {
+      value = header;
+    }
+    value = value.substring(1, value.length() - 1);
+    value = HeaderHelper.removeQuoteEscapes(value);
+
+    return new EntityTag(value, isWeak);
+  }
+
+  private String cutWeakPrefix(String header) {
+    return header.substring(2);
+  }
+
+  @Override
+  public String toString(EntityTag entityTag) {
+    if (entityTag == null) {
+      throw new IllegalArgumentException();
+    }
+    StringBuilder sb = new StringBuilder();
+    if (entityTag.isWeak()) {
+      sb.append('W').append('/');
     }
 
-    @Override
-    public String toString(EntityTag entityTag) {
-        if (entityTag == null) {
-            throw new IllegalArgumentException();
-        }
-        StringBuilder sb = new StringBuilder();
-        if (entityTag.isWeak()) {
-            sb.append('W').append('/');
-        }
+    sb.append('"');
+    HeaderHelper.appendEscapeQuote(sb, entityTag.getValue());
+    sb.append('"');
 
-        sb.append('"');
-        HeaderHelper.appendEscapeQuote(sb, entityTag.getValue());
-        sb.append('"');
-
-        return sb.toString();
-    }
+    return sb.toString();
+  }
 }

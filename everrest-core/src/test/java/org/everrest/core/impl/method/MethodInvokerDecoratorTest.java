@@ -11,33 +11,33 @@
  */
 package org.everrest.core.impl.method;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.method.MethodInvoker;
 import org.everrest.core.resource.GenericResourceMethod;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 public class MethodInvokerDecoratorTest {
-    private MethodInvokerDecorator decorator;
-    private MethodInvoker          methodInvoker;
+  private MethodInvokerDecorator decorator;
+  private MethodInvoker methodInvoker;
 
-    @Before
-    public void setUp() throws Exception {
-        methodInvoker = mock(MethodInvoker.class);
-        decorator = new MethodInvokerDecorator(methodInvoker);
-    }
+  @Before
+  public void setUp() throws Exception {
+    methodInvoker = mock(MethodInvoker.class);
+    decorator = new MethodInvokerDecorator(methodInvoker);
+  }
 
-    @Test
-    public void delegatesCallToMethodInvoker() throws Exception {
-        Object object = new Object();
-        GenericResourceMethod method = mock(GenericResourceMethod.class);
-        ApplicationContext applicationContext = mock(ApplicationContext.class);
+  @Test
+  public void delegatesCallToMethodInvoker() throws Exception {
+    Object object = new Object();
+    GenericResourceMethod method = mock(GenericResourceMethod.class);
+    ApplicationContext applicationContext = mock(ApplicationContext.class);
 
-        decorator.invokeMethod(object, method, applicationContext);
+    decorator.invokeMethod(object, method, applicationContext);
 
-        verify(methodInvoker).invokeMethod(object, method, applicationContext);
-    }
+    verify(methodInvoker).invokeMethod(object, method, applicationContext);
+  }
 }

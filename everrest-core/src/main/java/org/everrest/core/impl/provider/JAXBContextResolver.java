@@ -11,14 +11,14 @@
  */
 package org.everrest.core.impl.provider;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Provide cache for {@link JAXBContext}.
@@ -28,44 +28,42 @@ import java.util.concurrent.ConcurrentMap;
 @Provider
 @Produces({MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML, "text/*+xml"})
 public class JAXBContextResolver implements ContextResolver<JAXBContextResolver> {
-    /** JAXBContext cache. */
-    private final ConcurrentMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<>();
+  /** JAXBContext cache. */
+  private final ConcurrentMap<Class, JAXBContext> jaxbContexts = new ConcurrentHashMap<>();
 
-    @Override
-    public JAXBContextResolver getContext(Class<?> type) {
-        return this;
-    }
+  @Override
+  public JAXBContextResolver getContext(Class<?> type) {
+    return this;
+  }
 
-    /**
-     * Return JAXBContext according to supplied type. If no one context found then try create new context and save it in cache.
-     *
-     * @param aClass
-     *         class to be bound
-     * @return JAXBContext
-     * @throws JAXBException
-     *         if JAXBContext creation failed
-     */
-    public JAXBContext getJAXBContext(Class<?> aClass) throws JAXBException {
-        JAXBContext jaxbContext = jaxbContexts.get(aClass);
-        if (jaxbContext == null) {
-            jaxbContexts.putIfAbsent(aClass, JAXBContext.newInstance(aClass));
-        }
-        return jaxbContexts.get(aClass);
+  /**
+   * Return JAXBContext according to supplied type. If no one context found then try create new
+   * context and save it in cache.
+   *
+   * @param aClass class to be bound
+   * @return JAXBContext
+   * @throws JAXBException if JAXBContext creation failed
+   */
+  public JAXBContext getJAXBContext(Class<?> aClass) throws JAXBException {
+    JAXBContext jaxbContext = jaxbContexts.get(aClass);
+    if (jaxbContext == null) {
+      jaxbContexts.putIfAbsent(aClass, JAXBContext.newInstance(aClass));
     }
+    return jaxbContexts.get(aClass);
+  }
 
-    /**
-     * Add prepared JAXBContext that will be mapped to set of class. In this case this class works as cache for JAXBContexts.
-     *
-     * @param jaxbContext
-     *         JAXBContext
-     * @param aClass
-     *         java classes to be bound
-     */
-    public void addJAXBContext(JAXBContext jaxbContext, Class<?> aClass) {
-        jaxbContexts.put(aClass, jaxbContext);
-    }
+  /**
+   * Add prepared JAXBContext that will be mapped to set of class. In this case this class works as
+   * cache for JAXBContexts.
+   *
+   * @param jaxbContext JAXBContext
+   * @param aClass java classes to be bound
+   */
+  public void addJAXBContext(JAXBContext jaxbContext, Class<?> aClass) {
+    jaxbContexts.put(aClass, jaxbContext);
+  }
 
-    public void removeJAXBContext(Class<?> aClass) {
-        jaxbContexts.remove(aClass);
-    }
+  public void removeJAXBContext(Class<?> aClass) {
+    jaxbContexts.remove(aClass);
+  }
 }

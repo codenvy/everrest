@@ -13,7 +13,7 @@ package org.everrest.sample.book;
 
 @SuppressWarnings("serial")
 public class BookNotFoundException extends Exception {
-    public BookNotFoundException(String id) {
-        super("Book with id " + id + " not found.");
-    }
+  public BookNotFoundException(String id) {
+    super("Book with id " + id + " not found.");
+  }
 }

@@ -13,39 +13,34 @@ package org.everrest.core.impl.provider.json;
 
 public class BooleanValue extends JsonValue {
 
-    private final boolean value;
+  private final boolean value;
 
-    public BooleanValue(boolean value) {
-        this.value = value;
-    }
+  public BooleanValue(boolean value) {
+    this.value = value;
+  }
 
+  @Override
+  public boolean isBoolean() {
+    return true;
+  }
 
-    @Override
-    public boolean isBoolean() {
-        return true;
-    }
+  @Override
+  public String toString() {
+    return getStringValue();
+  }
 
+  @Override
+  public boolean getBooleanValue() {
+    return value;
+  }
 
-    @Override
-    public String toString() {
-        return getStringValue();
-    }
+  @Override
+  public String getStringValue() {
+    return value ? "true" : "false";
+  }
 
-
-    @Override
-    public boolean getBooleanValue() {
-        return value;
-    }
-
-
-    @Override
-    public String getStringValue() {
-        return value ? "true" : "false";
-    }
-
-
-    @Override
-    public void writeTo(JsonWriter writer) throws JsonException {
-        writer.writeValue(value);
-    }
+  @Override
+  public void writeTo(JsonWriter writer) throws JsonException {
+    writer.writeValue(value);
+  }
 }

@@ -11,6 +11,13 @@
  */
 package org.everrest.core.impl;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.After;
@@ -19,134 +26,134 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertTrue;
-
 public class AnnotatedLifecycleMethodStrategyTest {
-    static final List<String> callAssertion = new ArrayList<>();
+  static final List<String> callAssertion = new ArrayList<>();
 
-    public static class WithLifeCycleAnnotation {
-        @PostConstruct
-        public void init() {
-            callAssertion.add("init");
-        }
-
-        @PostConstruct
-        private void nonPublicInit() {
-            callAssertion.add("nonPublicInit");
-        }
-
-        @PostConstruct
-        public static void staticInit() {
-            callAssertion.add("staticInit");
-        }
-
-        @PostConstruct
-        public void initWithParams(String str) {
-            callAssertion.add("initWithParams");
-        }
-
-        @PostConstruct
-        public void initThatThrowsCheckedException() throws Exception {
-            callAssertion.add("initThatThrowsCheckedException");
-        }
-
-        @PreDestroy
-        public void destroy() {
-            callAssertion.add("destroy");
-        }
-
-        @PreDestroy
-        private void nonPublicdestroy() {
-            callAssertion.add("nonPublicDestroy");
-        }
-
-        @PreDestroy
-        public static void staticDestroy() {
-            callAssertion.add("staticDestroy");
-        }
-
-        @PreDestroy
-        public void destroyWithParams(String str) {
-            callAssertion.add("destroyWithParams");
-        }
-
-        @PreDestroy
-        public void destroyThatThrowsCheckedException() throws Exception {
-            callAssertion.add("destroyThatThrowsCheckedException");
-        }
+  public static class WithLifeCycleAnnotation {
+    @PostConstruct
+    public void init() {
+      callAssertion.add("init");
     }
 
-    @Rule public ExpectedException thrown = ExpectedException.none();
-    private AnnotatedLifecycleMethodStrategy lifecycleMethodStrategy;
-
-    @Before
-    public void setUp() throws Exception {
-        lifecycleMethodStrategy = new AnnotatedLifecycleMethodStrategy();
+    @PostConstruct
+    private void nonPublicInit() {
+      callAssertion.add("nonPublicInit");
     }
 
-    @After
-    public void tearDown() throws Exception {
-        callAssertion.clear();
+    @PostConstruct
+    public static void staticInit() {
+      callAssertion.add("staticInit");
     }
 
-    @Test
-    public void invokesInitializeMethods() throws Exception {
-        lifecycleMethodStrategy.invokeInitializeMethods(new WithLifeCycleAnnotation());
-        assertTrue(String.format("Only \"init\" and \"nonPublicInit\" methods are expected to be invoked but %s were invoked", callAssertion),
-                   callAssertion.size() == 2 && callAssertion.containsAll(newArrayList("init", "nonPublicInit")));
+    @PostConstruct
+    public void initWithParams(String str) {
+      callAssertion.add("initWithParams");
     }
 
-    @Test
-    public void invokesDestroyMethods() throws Exception {
-        lifecycleMethodStrategy.invokeDestroyMethods(new WithLifeCycleAnnotation());
-        assertTrue(String.format("Only \"destroy\" and \"nonPublicDestroy\" methods are expected to be invoked but %s were invoked", callAssertion),
-                   callAssertion.size() == 2 && callAssertion.containsAll(newArrayList("destroy", "nonPublicDestroy")));
+    @PostConstruct
+    public void initThatThrowsCheckedException() throws Exception {
+      callAssertion.add("initThatThrowsCheckedException");
     }
 
-    public static class LifeCycleMethodsThrowsRuntimeException {
-        @PostConstruct
-        public void init() {
-            throw new RuntimeException("init fails");
-        }
-
-        @PreDestroy
-        public void destroy() {
-            throw new RuntimeException("destroy fails");
-        }
+    @PreDestroy
+    public void destroy() {
+      callAssertion.add("destroy");
     }
 
-    @Test
-    public void wrapsRuntimeExceptionThrownByInitMethodWithInternalException() {
-        thrown.expect(lifecycleMethodInvocationExceptionMatcher("init fails"));
-        lifecycleMethodStrategy.invokeInitializeMethods(new LifeCycleMethodsThrowsRuntimeException());
+    @PreDestroy
+    private void nonPublicdestroy() {
+      callAssertion.add("nonPublicDestroy");
     }
 
-    @Test
-    public void wrapsRuntimeExceptionThrownByDestroyMethodWithInternalException() {
-        thrown.expect(lifecycleMethodInvocationExceptionMatcher("destroy fails"));
-        lifecycleMethodStrategy.invokeDestroyMethods(new LifeCycleMethodsThrowsRuntimeException());
+    @PreDestroy
+    public static void staticDestroy() {
+      callAssertion.add("staticDestroy");
     }
 
-    private BaseMatcher<Throwable> lifecycleMethodInvocationExceptionMatcher(String expectedMessage) {
-        return new BaseMatcher<Throwable>() {
-            @Override
-            public boolean matches(Object item) {
-                return item instanceof InternalException
-                       && ((InternalException) item).getCause() instanceof RuntimeException
-                       && expectedMessage.equals(((InternalException) item).getCause().getMessage());
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText(String.format("Expected exception with message: %s", expectedMessage));
-            }
-        };
+    @PreDestroy
+    public void destroyWithParams(String str) {
+      callAssertion.add("destroyWithParams");
     }
 
+    @PreDestroy
+    public void destroyThatThrowsCheckedException() throws Exception {
+      callAssertion.add("destroyThatThrowsCheckedException");
+    }
+  }
+
+  @Rule public ExpectedException thrown = ExpectedException.none();
+  private AnnotatedLifecycleMethodStrategy lifecycleMethodStrategy;
+
+  @Before
+  public void setUp() throws Exception {
+    lifecycleMethodStrategy = new AnnotatedLifecycleMethodStrategy();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    callAssertion.clear();
+  }
+
+  @Test
+  public void invokesInitializeMethods() throws Exception {
+    lifecycleMethodStrategy.invokeInitializeMethods(new WithLifeCycleAnnotation());
+    assertTrue(
+        String.format(
+            "Only \"init\" and \"nonPublicInit\" methods are expected to be invoked but %s were invoked",
+            callAssertion),
+        callAssertion.size() == 2
+            && callAssertion.containsAll(newArrayList("init", "nonPublicInit")));
+  }
+
+  @Test
+  public void invokesDestroyMethods() throws Exception {
+    lifecycleMethodStrategy.invokeDestroyMethods(new WithLifeCycleAnnotation());
+    assertTrue(
+        String.format(
+            "Only \"destroy\" and \"nonPublicDestroy\" methods are expected to be invoked but %s were invoked",
+            callAssertion),
+        callAssertion.size() == 2
+            && callAssertion.containsAll(newArrayList("destroy", "nonPublicDestroy")));
+  }
+
+  public static class LifeCycleMethodsThrowsRuntimeException {
+    @PostConstruct
+    public void init() {
+      throw new RuntimeException("init fails");
+    }
+
+    @PreDestroy
+    public void destroy() {
+      throw new RuntimeException("destroy fails");
+    }
+  }
+
+  @Test
+  public void wrapsRuntimeExceptionThrownByInitMethodWithInternalException() {
+    thrown.expect(lifecycleMethodInvocationExceptionMatcher("init fails"));
+    lifecycleMethodStrategy.invokeInitializeMethods(new LifeCycleMethodsThrowsRuntimeException());
+  }
+
+  @Test
+  public void wrapsRuntimeExceptionThrownByDestroyMethodWithInternalException() {
+    thrown.expect(lifecycleMethodInvocationExceptionMatcher("destroy fails"));
+    lifecycleMethodStrategy.invokeDestroyMethods(new LifeCycleMethodsThrowsRuntimeException());
+  }
+
+  private BaseMatcher<Throwable> lifecycleMethodInvocationExceptionMatcher(String expectedMessage) {
+    return new BaseMatcher<Throwable>() {
+      @Override
+      public boolean matches(Object item) {
+        return item instanceof InternalException
+            && ((InternalException) item).getCause() instanceof RuntimeException
+            && expectedMessage.equals(((InternalException) item).getCause().getMessage());
+      }
+
+      @Override
+      public void describeTo(Description description) {
+        description.appendText(
+            String.format("Expected exception with message: %s", expectedMessage));
+      }
+    };
+  }
 }

@@ -12,18 +12,15 @@
 package org.everrest.guice.servlet;
 
 import com.google.inject.Singleton;
-
 import org.everrest.core.servlet.EverrestServlet;
 
 /**
- * Has additional {@link Singleton} annotation which required for web components
- * by guice container. Since we want to have possibility to deploy servlet via
- * {@link com.google.inject.servlet.ServletModule#configureServlets
- * ServletModule.configureServlets} .
+ * Has additional {@link Singleton} annotation which required for web components by guice container.
+ * Since we want to have possibility to deploy servlet via {@link
+ * com.google.inject.servlet.ServletModule#configureServlets ServletModule.configureServlets} .
  *
  * @author andrew00x
  */
 @SuppressWarnings("serial")
 @Singleton
-public final class GuiceEverrestServlet extends EverrestServlet {
-}
+public final class GuiceEverrestServlet extends EverrestServlet {}

@@ -17,58 +17,51 @@ import java.util.List;
 
 public class ArrayValue extends JsonValue {
 
-    /** List of children. */
-    private final List<JsonValue> children = new ArrayList<>();
+  /** List of children. */
+  private final List<JsonValue> children = new ArrayList<>();
 
+  @Override
+  public void addElement(JsonValue child) {
+    children.add(child);
+  }
 
-    @Override
-    public void addElement(JsonValue child) {
-        children.add(child);
+  @Override
+  public boolean isArray() {
+    return true;
+  }
+
+  @Override
+  public Iterator<JsonValue> getElements() {
+    return children.iterator();
+  }
+
+  @Override
+  public int size() {
+    return children.size();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append('[');
+    int i = 0;
+    for (JsonValue child : children) {
+      if (i > 0) {
+        sb.append(',');
+      }
+      i++;
+      sb.append(child.toString());
     }
+    sb.append(']');
+    return sb.toString();
+  }
 
-
-    @Override
-    public boolean isArray() {
-        return true;
+  @Override
+  public void writeTo(JsonWriter writer) throws JsonException {
+    writer.writeStartArray();
+    for (JsonValue child : children) {
+      child.writeTo(writer);
     }
-
-
-    @Override
-    public Iterator<JsonValue> getElements() {
-        return children.iterator();
-    }
-
-
-    @Override
-    public int size() {
-        return children.size();
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append('[');
-        int i = 0;
-        for (JsonValue child : children) {
-            if (i > 0) {
-                sb.append(',');
-            }
-            i++;
-            sb.append(child.toString());
-        }
-        sb.append(']');
-        return sb.toString();
-    }
-
-
-    @Override
-    public void writeTo(JsonWriter writer) throws JsonException {
-        writer.writeStartArray();
-        for (JsonValue child : children) {
-            child.writeTo(writer);
-        }
-        writer.writeEndArray();
-    }
-
+    writer.writeEndArray();
+  }
 }

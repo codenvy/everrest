@@ -11,29 +11,28 @@
  */
 package org.everrest.core.servlet;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 class TstServletOutputStream extends ServletOutputStream {
-    private ByteArrayOutputStream data = new ByteArrayOutputStream();
+  private ByteArrayOutputStream data = new ByteArrayOutputStream();
 
-    byte[] getData() {
-        return data.toByteArray();
-    }
+  byte[] getData() {
+    return data.toByteArray();
+  }
 
-    @Override
-    public boolean isReady() {
-        return true;
-    }
+  @Override
+  public boolean isReady() {
+    return true;
+  }
 
-    @Override
-    public void setWriteListener(WriteListener writeListener) {
-    }
+  @Override
+  public void setWriteListener(WriteListener writeListener) {}
 
-    @Override
-    public void write(int b) throws IOException {
-        data.write(b);
-    }
+  @Override
+  public void write(int b) throws IOException {
+    data.write(b);
+  }
 }

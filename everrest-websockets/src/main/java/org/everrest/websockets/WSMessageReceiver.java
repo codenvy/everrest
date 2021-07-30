@@ -20,20 +20,18 @@ import org.everrest.websockets.message.InputMessage;
  * @see WSConnection#removeMessageReceiver(WSMessageReceiver)
  */
 public interface WSMessageReceiver {
-    /**
-     * Called when new message received.
-     *
-     * @param input
-     *         input message
-     */
-    void onMessage(InputMessage input);
+  /**
+   * Called when new message received.
+   *
+   * @param input input message
+   */
+  void onMessage(InputMessage input);
 
-    /**
-     * Called when error occurs when process incoming message so method {@link #onMessage(org.everrest.websockets.message.InputMessage)}
-     * cannot be called.
-     *
-     * @param error
-     *         error
-     */
-    void onError(Exception error);
+  /**
+   * Called when error occurs when process incoming message so method {@link
+   * #onMessage(org.everrest.websockets.message.InputMessage)} cannot be called.
+   *
+   * @param error error
+   */
+  void onError(Exception error);
 }

@@ -12,27 +12,25 @@
 package org.everrest.websockets;
 
 /**
- * Notified when WSConnection opened and closed. Implementation of this interface should be registered in
- * WSConnectionContext context.
+ * Notified when WSConnection opened and closed. Implementation of this interface should be
+ * registered in WSConnectionContext context.
  *
  * @author andrew00x
  * @see WSConnectionContext#registerConnectionListener(WSConnectionListener)
  * @see WSConnectionContext#removeConnectionListener(WSConnectionListener)
  */
 public interface WSConnectionListener {
-    /**
-     * Called when new connection opened.
-     *
-     * @param connection
-     *         new connection
-     */
-    void onOpen(WSConnection connection);
+  /**
+   * Called when new connection opened.
+   *
+   * @param connection new connection
+   */
+  void onOpen(WSConnection connection);
 
-    /**
-     * Called when connection closed.
-     *
-     * @param connection
-     *         closed connection
-     */
-    void onClose(WSConnection connection);
+  /**
+   * Called when connection closed.
+   *
+   * @param connection closed connection
+   */
+  void onClose(WSConnection connection);
 }

@@ -18,5 +18,5 @@ package org.everrest.core.impl.async;
  * @see AsynchronousJobPool
  */
 public interface AsynchronousJobListener {
-    void done(AsynchronousJob job);
+  void done(AsynchronousJob job);
 }

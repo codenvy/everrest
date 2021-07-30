@@ -11,6 +11,7 @@
  */
 package org.everrest.core.impl.method;
 
+import javax.ws.rs.core.Response;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.method.MethodInvoker;
@@ -18,18 +19,18 @@ import org.everrest.core.resource.GenericResourceMethod;
 import org.everrest.core.wadl.WadlProcessor;
 import org.everrest.core.wadl.research.Application;
 
-import javax.ws.rs.core.Response;
-
 public class OptionsRequestMethodInvoker implements MethodInvoker {
-    private WadlProcessor wadlProcessor;
+  private WadlProcessor wadlProcessor;
 
-    public OptionsRequestMethodInvoker(WadlProcessor wadlProcessor) {
-        this.wadlProcessor = wadlProcessor;
-    }
+  public OptionsRequestMethodInvoker(WadlProcessor wadlProcessor) {
+    this.wadlProcessor = wadlProcessor;
+  }
 
-    @Override
-    public Object invokeMethod(Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context) {
-        Application wadlApplication = wadlProcessor.process(genericResourceMethod.getParentResource(), context.getBaseUri());
-        return Response.ok(wadlApplication, MediaTypeHelper.WADL_TYPE).build();
-    }
+  @Override
+  public Object invokeMethod(
+      Object resource, GenericResourceMethod genericResourceMethod, ApplicationContext context) {
+    Application wadlApplication =
+        wadlProcessor.process(genericResourceMethod.getParentResource(), context.getBaseUri());
+    return Response.ok(wadlApplication, MediaTypeHelper.WADL_TYPE).build();
+  }
 }

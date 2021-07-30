@@ -11,50 +11,49 @@
  */
 package org.everrest.core.impl.header;
 
-import javax.ws.rs.ext.RuntimeDelegate;
-import java.util.Locale;
-
 import static org.everrest.core.impl.header.HeaderHelper.removeWhitespaces;
 import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.scan;
 
+import java.util.Locale;
+import javax.ws.rs.ext.RuntimeDelegate;
+
 public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Locale> {
 
-    @Override
-    public Locale fromString(String header) {
-        if (header == null) {
-            throw new IllegalArgumentException();
-        }
-
-        header = removeWhitespaces(header);
-        int p = scan(header, ',');
-        if (charAtIs(header, p, ',')) {
-            header = header.substring(0, p);
-        }
-
-        p = scan(header, '-');
-        if (charAtIs(header, p, '-')) {
-            return new Locale(header.substring(0, p), header.substring(p + 1));
-        }
-        return new Locale(header);
+  @Override
+  public Locale fromString(String header) {
+    if (header == null) {
+      throw new IllegalArgumentException();
     }
 
-
-    @Override
-    public String toString(Locale locale) {
-        if (locale == null) {
-            throw new IllegalArgumentException();
-        }
-        String language = locale.getLanguage();
-        if (language.isEmpty() || "*".equals(language)) {
-            return null;
-        }
-
-        String country = locale.getCountry();
-        if (country.isEmpty()) {
-            return language.toLowerCase();
-        }
-
-        return language.toLowerCase() + "-" + country.toLowerCase();
+    header = removeWhitespaces(header);
+    int p = scan(header, ',');
+    if (charAtIs(header, p, ',')) {
+      header = header.substring(0, p);
     }
+
+    p = scan(header, '-');
+    if (charAtIs(header, p, '-')) {
+      return new Locale(header.substring(0, p), header.substring(p + 1));
+    }
+    return new Locale(header);
+  }
+
+  @Override
+  public String toString(Locale locale) {
+    if (locale == null) {
+      throw new IllegalArgumentException();
+    }
+    String language = locale.getLanguage();
+    if (language.isEmpty() || "*".equals(language)) {
+      return null;
+    }
+
+    String country = locale.getCountry();
+    if (country.isEmpty()) {
+      return language.toLowerCase();
+    }
+
+    return language.toLowerCase() + "-" + country.toLowerCase();
+  }
 }

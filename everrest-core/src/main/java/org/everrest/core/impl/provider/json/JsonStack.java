@@ -15,29 +15,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 class JsonStack<T> {
-    private final List<T> elements;
+  private final List<T> elements;
 
-    JsonStack() {
-        elements = new ArrayList<>();
-    }
+  JsonStack() {
+    elements = new ArrayList<>();
+  }
 
-    boolean isEmpty() {
-        return elements.isEmpty();
-    }
+  boolean isEmpty() {
+    return elements.isEmpty();
+  }
 
-    T peek() {
-        return isEmpty() ? null : elements.get(elements.size() - 1);
-    }
+  T peek() {
+    return isEmpty() ? null : elements.get(elements.size() - 1);
+  }
 
-    T pop() {
-        return isEmpty() ? null : elements.remove(elements.size() - 1);
-    }
+  T pop() {
+    return isEmpty() ? null : elements.remove(elements.size() - 1);
+  }
 
-    void push(T token) {
-        elements.add(token);
-    }
+  void push(T token) {
+    elements.add(token);
+  }
 
-    void clear() {
-        elements.clear();
-    }
+  void clear() {
+    elements.clear();
+  }
 }

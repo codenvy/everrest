@@ -19,24 +19,20 @@ import java.lang.reflect.Constructor;
  * @author andrew00x
  */
 public final class StringConstructorProducer extends BaseTypeProducer {
-    /** Constructor which must be used for creation object. */
-    private Constructor<?> constructor;
+  /** Constructor which must be used for creation object. */
+  private Constructor<?> constructor;
 
-    /**
-     * @param constructor
-     *         this constructor will be used for creation instance of object
-     */
-    StringConstructorProducer(Constructor<?> constructor) {
-        this.constructor = constructor;
+  /** @param constructor this constructor will be used for creation instance of object */
+  StringConstructorProducer(Constructor<?> constructor) {
+    this.constructor = constructor;
+  }
+
+  @Override
+  protected Object createValue(String value) throws Exception {
+    if (value == null) {
+      return null;
     }
 
-
-    @Override
-    protected Object createValue(String value) throws Exception {
-        if (value == null) {
-            return null;
-        }
-
-        return constructor.newInstance(value);
-    }
+    return constructor.newInstance(value);
+  }
 }

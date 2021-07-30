@@ -14,19 +14,19 @@ package org.everrest.core.impl.provider.json.tst;
 import static org.everrest.core.impl.provider.json.tst.BookWrapperOne.createBookWrapperOne;
 
 public class BookWrapperTwo {
-    public static BookWrapperTwo createBookWrapperTwo(Book book) {
-        BookWrapperTwo bookWrapperTwo = new BookWrapperTwo();
-        bookWrapperTwo.setBookWrapper(createBookWrapperOne(book));
-        return bookWrapperTwo;
-    }
+  public static BookWrapperTwo createBookWrapperTwo(Book book) {
+    BookWrapperTwo bookWrapperTwo = new BookWrapperTwo();
+    bookWrapperTwo.setBookWrapper(createBookWrapperOne(book));
+    return bookWrapperTwo;
+  }
 
-    private BookWrapperOne bookWrapper;
+  private BookWrapperOne bookWrapper;
 
-    public void setBookWrapper(BookWrapperOne bw) {
-        bookWrapper = bw;
-    }
+  public void setBookWrapper(BookWrapperOne bw) {
+    bookWrapper = bw;
+  }
 
-    public BookWrapperOne getBookWrapper() {
-        return bookWrapper;
-    }
+  public BookWrapperOne getBookWrapper() {
+    return bookWrapper;
+  }
 }

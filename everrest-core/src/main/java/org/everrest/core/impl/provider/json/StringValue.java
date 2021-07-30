@@ -12,80 +12,75 @@
 package org.everrest.core.impl.provider.json;
 
 public class StringValue extends JsonValue {
-    /** Value. */
-    private final String value;
+  /** Value. */
+  private final String value;
 
-    /**
-     * Constructs new StringValue.
-     *
-     * @param value
-     *         the value.
-     */
-    public StringValue(String value) {
-        this.value = value;
-    }
+  /**
+   * Constructs new StringValue.
+   *
+   * @param value the value.
+   */
+  public StringValue(String value) {
+    this.value = value;
+  }
 
+  @Override
+  public boolean isString() {
+    return true;
+  }
 
-    @Override
-    public boolean isString() {
-        return true;
-    }
+  @Override
+  public String getStringValue() {
+    return value;
+  }
 
+  @Override
+  public boolean getBooleanValue() {
+    return Boolean.parseBoolean(value);
+  }
 
-    @Override
-    public String getStringValue() {
-        return value;
-    }
+  @Override
+  public Number getNumberValue() {
+    return Double.parseDouble(value);
+  }
 
-    @Override
-    public boolean getBooleanValue() {
-        return Boolean.parseBoolean(value);
-    }
+  @Override
+  public byte getByteValue() {
+    return getNumberValue().byteValue();
+  }
 
-    @Override
-    public Number getNumberValue() {
-        return Double.parseDouble(value);
-    }
+  @Override
+  public short getShortValue() {
+    return getNumberValue().shortValue();
+  }
 
-    @Override
-    public byte getByteValue() {
-        return getNumberValue().byteValue();
-    }
+  @Override
+  public int getIntValue() {
+    return getNumberValue().intValue();
+  }
 
-    @Override
-    public short getShortValue() {
-        return getNumberValue().shortValue();
-    }
+  @Override
+  public long getLongValue() {
+    return getNumberValue().longValue();
+  }
 
-    @Override
-    public int getIntValue() {
-        return getNumberValue().intValue();
-    }
+  @Override
+  public float getFloatValue() {
+    return getNumberValue().floatValue();
+  }
 
-    @Override
-    public long getLongValue() {
-        return getNumberValue().longValue();
-    }
+  @Override
+  public double getDoubleValue() {
+    return getNumberValue().doubleValue();
+  }
 
-    @Override
-    public float getFloatValue() {
-        return getNumberValue().floatValue();
-    }
+  @Override
+  public String toString() {
+    return JsonUtils.getJsonString(value);
+  }
 
-    @Override
-    public double getDoubleValue() {
-        return getNumberValue().doubleValue();
-    }
-
-
-    @Override
-    public String toString() {
-        return JsonUtils.getJsonString(value);
-    }
-
-
-    @Override
-    public void writeTo(JsonWriter writer) throws JsonException {
-        writer.writeValue(value);
-    }
+  @Override
+  public void writeTo(JsonWriter writer) throws JsonException {
+    writer.writeValue(value);
+  }
 }

@@ -11,54 +11,54 @@
  */
 package org.everrest.core.impl.header;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.ws.rs.core.Cookie;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import javax.ws.rs.core.Cookie;
+import org.junit.Before;
+import org.junit.Test;
+
 public class CookieHeaderDelegateTest {
 
-    private CookieHeaderDelegate cookieHeaderDelegate;
+  private CookieHeaderDelegate cookieHeaderDelegate;
 
-    @Before
-    public void setUp() throws Exception {
-        cookieHeaderDelegate = new CookieHeaderDelegate();
-    }
+  @Before
+  public void setUp() throws Exception {
+    cookieHeaderDelegate = new CookieHeaderDelegate();
+  }
 
-    @Test
-    public void parsesCookieHeader() throws Exception {
-        Cookie cookie = cookieHeaderDelegate.fromString("foo=bar");
-        assertEquals(new Cookie("foo", "bar"), cookie);
-    }
+  @Test
+  public void parsesCookieHeader() throws Exception {
+    Cookie cookie = cookieHeaderDelegate.fromString("foo=bar");
+    assertEquals(new Cookie("foo", "bar"), cookie);
+  }
 
-    @Test
-    public void parsesCookieHeaderAndReturnsFirstIfMoreThanOneIsParsed() throws Exception {
-        Cookie cookie = cookieHeaderDelegate.fromString("foo=bar;xxx=yyy");
-        assertEquals(new Cookie("foo", "bar"), cookie);
-    }
+  @Test
+  public void parsesCookieHeaderAndReturnsFirstIfMoreThanOneIsParsed() throws Exception {
+    Cookie cookie = cookieHeaderDelegate.fromString("foo=bar;xxx=yyy");
+    assertEquals(new Cookie("foo", "bar"), cookie);
+  }
 
-    @Test
-    public void returnsNullIfHeaderDoesNotContainsCookie() throws Exception {
-        Cookie cookie = cookieHeaderDelegate.fromString("");
-        assertNull(cookie);
-    }
+  @Test
+  public void returnsNullIfHeaderDoesNotContainsCookie() throws Exception {
+    Cookie cookie = cookieHeaderDelegate.fromString("");
+    assertNull(cookie);
+  }
 
-    @Test
-    public void testToString() throws Exception {
-        Cookie cookie = new Cookie("foo", "bar", "/aaa", "andrew.com");
-        assertEquals("$Version=1;foo=bar;$Domain=andrew.com;$Path=/aaa", cookieHeaderDelegate.toString(cookie));
-    }
+  @Test
+  public void testToString() throws Exception {
+    Cookie cookie = new Cookie("foo", "bar", "/aaa", "andrew.com");
+    assertEquals(
+        "$Version=1;foo=bar;$Domain=andrew.com;$Path=/aaa", cookieHeaderDelegate.toString(cookie));
+  }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void throwsExceptionWhenCookieHeaderIsNull() throws Exception {
-        cookieHeaderDelegate.fromString(null);
-    }
+  @Test(expected = IllegalArgumentException.class)
+  public void throwsExceptionWhenCookieHeaderIsNull() throws Exception {
+    cookieHeaderDelegate.fromString(null);
+  }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void throwsExceptionWhenCookieIsNull() throws Exception {
-        cookieHeaderDelegate.toString(null);
-    }
+  @Test(expected = IllegalArgumentException.class)
+  public void throwsExceptionWhenCookieIsNull() throws Exception {
+    cookieHeaderDelegate.toString(null);
+  }
 }

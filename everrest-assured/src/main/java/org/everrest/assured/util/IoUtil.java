@@ -11,46 +11,45 @@
  */
 package org.everrest.assured.util;
 
+import java.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
 
 /** Utility class for io operations. */
 public class IoUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IoUtil.class);
+  private static final Logger LOG = LoggerFactory.getLogger(IoUtil.class);
 
-    public static String getResource(String resourceName) {
+  public static String getResource(String resourceName) {
 
-        InputStream stream = null;
+    InputStream stream = null;
+    try {
+      File file = new File(resourceName);
+      if (file.isFile() && file.exists()) {
+        stream = new FileInputStream(file);
+      } else {
+        stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+      }
+      Reader reader = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder builder = new StringBuilder();
+      char[] buffer = new char[8192];
+      int read;
+      while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
+        builder.append(buffer, 0, read);
+      }
+      return builder.toString();
+    } catch (IOException e) {
+      LOG.error(e.getLocalizedMessage(), e);
+
+    } finally {
+      if (stream != null) {
         try {
-            File file = new File(resourceName);
-            if (file.isFile() && file.exists()) {
-                stream = new FileInputStream(file);
-            } else {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
-            }
-            Reader reader = new BufferedReader(new InputStreamReader(stream));
-            StringBuilder builder = new StringBuilder();
-            char[] buffer = new char[8192];
-            int read;
-            while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
-                builder.append(buffer, 0, read);
-            }
-            return builder.toString();
+          stream.close();
         } catch (IOException e) {
-            LOG.error(e.getLocalizedMessage(), e);
-
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    LOG.error(e.getLocalizedMessage(), e);
-                }
-            }
+          LOG.error(e.getLocalizedMessage(), e);
         }
-        return "";
+      }
     }
+    return "";
+  }
 }

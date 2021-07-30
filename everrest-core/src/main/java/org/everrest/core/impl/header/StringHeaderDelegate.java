@@ -13,19 +13,16 @@ package org.everrest.core.impl.header;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public class StringHeaderDelegate implements RuntimeDelegate.HeaderDelegate<String> {
 
-    @Override
-    public String fromString(String value) {
-        return value;
-    }
+  @Override
+  public String fromString(String value) {
+    return value;
+  }
 
-
-    @Override
-    public String toString(String value) {
-        return value;
-    }
+  @Override
+  public String toString(String value) {
+    return value;
+  }
 }

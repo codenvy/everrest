@@ -17,24 +17,23 @@ package org.everrest.websockets.message;
  * @author andrew00x
  */
 public class OutputMessage extends Message {
-    private int responseCode;
+  private int responseCode;
 
-    /**
-     * Get response code.
-     *
-     * @return response code.
-     */
-    public int getResponseCode() {
-        return responseCode;
-    }
+  /**
+   * Get response code.
+   *
+   * @return response code.
+   */
+  public int getResponseCode() {
+    return responseCode;
+  }
 
-    /**
-     * Get response code.
-     *
-     * @param responseCode
-     *         response code.
-     */
-    public void setResponseCode(int responseCode) {
-        this.responseCode = responseCode;
-    }
+  /**
+   * Get response code.
+   *
+   * @param responseCode response code.
+   */
+  public void setResponseCode(int responseCode) {
+    this.responseCode = responseCode;
+  }
 }

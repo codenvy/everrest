@@ -16,34 +16,32 @@ import org.everrest.core.Parameter;
 import org.everrest.core.Property;
 
 /**
- * Obtains value of property (see {@link org.everrest.core.InitialProperties}) with name supplied in {@link Property#value()} .
+ * Obtains value of property (see {@link org.everrest.core.InitialProperties}) with name supplied in
+ * {@link Property#value()} .
  *
  * @author andrew00x
  */
 public class PropertyResolver implements ParameterResolver<Property> {
-    private final Property property;
+  private final Property property;
 
-    /**
-     * @param property
-     *         Property
-     */
-    PropertyResolver(Property property) {
-        this.property = property;
+  /** @param property Property */
+  PropertyResolver(Property property) {
+    this.property = property;
+  }
+
+  @Override
+  public Object resolve(Parameter parameter, ApplicationContext context) throws Exception {
+    if (parameter.getParameterClass() != String.class) {
+      throw new IllegalArgumentException(
+          "Only parameters and fields with string type may be annotated by @Property.");
+    }
+    String param = this.property.value();
+
+    Object value = context.getInitialProperties().getProperties().get(param);
+    if (value == null) {
+      return parameter.getDefaultValue();
     }
 
-
-    @Override
-    public Object resolve(Parameter parameter, ApplicationContext context) throws Exception {
-        if (parameter.getParameterClass() != String.class) {
-            throw new IllegalArgumentException("Only parameters and fields with string type may be annotated by @Property.");
-        }
-        String param = this.property.value();
-
-        Object value = context.getInitialProperties().getProperties().get(param);
-        if (value == null) {
-            return parameter.getDefaultValue();
-        }
-
-        return value;
-    }
+    return value;
+  }
 }

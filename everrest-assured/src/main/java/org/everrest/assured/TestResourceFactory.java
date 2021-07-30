@@ -11,6 +11,8 @@
  */
 package org.everrest.assured;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.FieldInjector;
 import org.everrest.core.ObjectFactory;
@@ -22,57 +24,54 @@ import org.everrest.core.provider.ProviderDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 /** Get instance of the REST resource from test class in request time. */
 public class TestResourceFactory<T extends ObjectModel> implements ObjectFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestResourceFactory.class);
-    private final Object testParent;
-    private final Field  resourceField;
-    private final T      model;
+  private static final Logger LOG = LoggerFactory.getLogger(TestResourceFactory.class);
+  private final Object testParent;
+  private final Field resourceField;
+  private final T model;
 
-    public TestResourceFactory(T model, Object testParent, Field resourceField) {
-        this.model = model;
-        this.testParent = testParent;
-        this.resourceField = resourceField;
-        this.resourceField.setAccessible(true);
-    }
+  public TestResourceFactory(T model, Object testParent, Field resourceField) {
+    this.model = model;
+    this.testParent = testParent;
+    this.resourceField = resourceField;
+    this.resourceField.setAccessible(true);
+  }
 
-    /** @see org.everrest.core.ObjectFactory#getInstance(org.everrest.core.ApplicationContext) */
-    @Override
-    public Object getInstance(ApplicationContext context) {
-        try {
+  /** @see org.everrest.core.ObjectFactory#getInstance(org.everrest.core.ApplicationContext) */
+  @Override
+  public Object getInstance(ApplicationContext context) {
+    try {
 
-            Object object = resourceField.get(testParent);
-            if (object != null) {
-                ProviderDescriptor descriptor = new ProviderDescriptorImpl(object);
-                List<FieldInjector> fieldInjectors = model.getFieldInjectors();
-                if (fieldInjectors != null && fieldInjectors.size() > 0) {
-                    fieldInjectors.stream()
-                                  .filter(injector -> injector.getAnnotation() != null)
-                                  .forEach(injector -> injector.inject(object, context));
-                }
-                return new SingletonObjectFactory<>(descriptor, object).getInstance(context);
-            } else {
-                ProviderDescriptor descriptor = new ProviderDescriptorImpl(resourceField.getType());
-                return new PerRequestObjectFactory<>(descriptor).getInstance(context);
-            }
-
-        } catch (IllegalArgumentException e) {
-            LOG.error(e.getLocalizedMessage(), e);
-            throw new RuntimeException(e.getLocalizedMessage(), e);
-        } catch (IllegalAccessException e) {
-            LOG.error(e.getLocalizedMessage(), e);
-            throw new RuntimeException(e.getLocalizedMessage(), e);
+      Object object = resourceField.get(testParent);
+      if (object != null) {
+        ProviderDescriptor descriptor = new ProviderDescriptorImpl(object);
+        List<FieldInjector> fieldInjectors = model.getFieldInjectors();
+        if (fieldInjectors != null && fieldInjectors.size() > 0) {
+          fieldInjectors
+              .stream()
+              .filter(injector -> injector.getAnnotation() != null)
+              .forEach(injector -> injector.inject(object, context));
         }
-    }
+        return new SingletonObjectFactory<>(descriptor, object).getInstance(context);
+      } else {
+        ProviderDescriptor descriptor = new ProviderDescriptorImpl(resourceField.getType());
+        return new PerRequestObjectFactory<>(descriptor).getInstance(context);
+      }
 
-    /** @see org.everrest.core.ObjectFactory#getObjectModel() */
-    @Override
-    public T getObjectModel() {
-        return model;
+    } catch (IllegalArgumentException e) {
+      LOG.error(e.getLocalizedMessage(), e);
+      throw new RuntimeException(e.getLocalizedMessage(), e);
+    } catch (IllegalAccessException e) {
+      LOG.error(e.getLocalizedMessage(), e);
+      throw new RuntimeException(e.getLocalizedMessage(), e);
     }
+  }
 
+  /** @see org.everrest.core.ObjectFactory#getObjectModel() */
+  @Override
+  public T getObjectModel() {
+    return model;
+  }
 }

@@ -16,17 +16,17 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public class BookServiceBootstrap implements ServletContextListener {
-    static final String BOOK_STORAGE_NAME = BookStorage.class.getName();
+  static final String BOOK_STORAGE_NAME = BookStorage.class.getName();
 
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        ServletContext servletContext = sce.getServletContext();
-        servletContext.removeAttribute(BOOK_STORAGE_NAME);
-    }
+  @Override
+  public void contextDestroyed(ServletContextEvent sce) {
+    ServletContext servletContext = sce.getServletContext();
+    servletContext.removeAttribute(BOOK_STORAGE_NAME);
+  }
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        ServletContext servletContext = sce.getServletContext();
-        servletContext.setAttribute(BOOK_STORAGE_NAME, new BookStorage());
-    }
+  @Override
+  public void contextInitialized(ServletContextEvent sce) {
+    ServletContext servletContext = sce.getServletContext();
+    servletContext.setAttribute(BOOK_STORAGE_NAME, new BookStorage());
+  }
 }

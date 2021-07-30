@@ -11,26 +11,26 @@
  */
 package org.everrest.core.impl.header;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 public class StringHeaderDelegateTest {
-    private StringHeaderDelegate stringHeaderDelegate;
+  private StringHeaderDelegate stringHeaderDelegate;
 
-    @Before
-    public void setUp() throws Exception {
-        stringHeaderDelegate = new StringHeaderDelegate();
-    }
+  @Before
+  public void setUp() throws Exception {
+    stringHeaderDelegate = new StringHeaderDelegate();
+  }
 
-    @Test
-    public void testValueOf() throws Exception {
-        assertEquals("to be or not to be", stringHeaderDelegate.fromString("to be or not to be"));
-    }
+  @Test
+  public void testValueOf() throws Exception {
+    assertEquals("to be or not to be", stringHeaderDelegate.fromString("to be or not to be"));
+  }
 
-    @Test
-    public void testToString() throws Exception {
-        assertEquals("to be or not to be", stringHeaderDelegate.toString("to be or not to be"));
-    }
+  @Test
+  public void testToString() throws Exception {
+    assertEquals("to be or not to be", stringHeaderDelegate.toString("to be or not to be"));
+  }
 }

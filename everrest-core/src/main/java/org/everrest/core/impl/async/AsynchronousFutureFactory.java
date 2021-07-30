@@ -11,23 +11,23 @@
  */
 package org.everrest.core.impl.async;
 
-import org.everrest.core.resource.ResourceMethodDescriptor;
-
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
+import org.everrest.core.resource.ResourceMethodDescriptor;
 
 class AsynchronousFutureFactory {
-    private static final AtomicLong sequence = new AtomicLong(1);
+  private static final AtomicLong sequence = new AtomicLong(1);
 
-    private static Long nextId() {
-        return sequence.getAndIncrement();
-    }
+  private static Long nextId() {
+    return sequence.getAndIncrement();
+  }
 
-    public AsynchronousFuture createAsynchronousFuture(Callable<Object> callable,
-                                                       long expirationDate,
-                                                       ResourceMethodDescriptor resourceMethod,
-                                                       List<AsynchronousJobListener> jobListeners) {
-        return new AsynchronousFuture(nextId(), callable, expirationDate, resourceMethod, jobListeners);
-    }
+  public AsynchronousFuture createAsynchronousFuture(
+      Callable<Object> callable,
+      long expirationDate,
+      ResourceMethodDescriptor resourceMethod,
+      List<AsynchronousJobListener> jobListeners) {
+    return new AsynchronousFuture(nextId(), callable, expirationDate, resourceMethod, jobListeners);
+  }
 }

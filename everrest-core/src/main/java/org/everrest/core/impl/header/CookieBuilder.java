@@ -13,51 +13,49 @@ package org.everrest.core.impl.header;
 
 import javax.ws.rs.core.Cookie;
 
-/**
- * Builder for {@link Cookie}
- */
+/** Builder for {@link Cookie} */
 public class CookieBuilder {
-    public static CookieBuilder aCookie() {
-        return new CookieBuilder();
-    }
+  public static CookieBuilder aCookie() {
+    return new CookieBuilder();
+  }
 
-    /** Cookie version. */
-    private int version = Cookie.DEFAULT_VERSION;
-    /** Cookie name. */
-    private String name;
-    /** Cookie value. */
-    private String value;
-    /** Cookie path. */
-    private String path;
-    /** Cookie domain. */
-    private String domain;
+  /** Cookie version. */
+  private int version = Cookie.DEFAULT_VERSION;
+  /** Cookie name. */
+  private String name;
+  /** Cookie value. */
+  private String value;
+  /** Cookie path. */
+  private String path;
+  /** Cookie domain. */
+  private String domain;
 
-    public CookieBuilder withName(String name) {
-        this.name = name;
-        return this;
-    }
+  public CookieBuilder withName(String name) {
+    this.name = name;
+    return this;
+  }
 
-    public CookieBuilder withValue(String value) {
-        this.value = value;
-        return this;
-    }
+  public CookieBuilder withValue(String value) {
+    this.value = value;
+    return this;
+  }
 
-    public CookieBuilder withDomain(String domain) {
-        this.domain = domain;
-        return this;
-    }
+  public CookieBuilder withDomain(String domain) {
+    this.domain = domain;
+    return this;
+  }
 
-    public CookieBuilder withPath(String path) {
-        this.path = path;
-        return this;
-    }
+  public CookieBuilder withPath(String path) {
+    this.path = path;
+    return this;
+  }
 
-    public CookieBuilder withVersion(int version) {
-        this.version = version;
-        return this;
-    }
+  public CookieBuilder withVersion(int version) {
+    this.version = version;
+    return this;
+  }
 
-    public Cookie build() {
-        return new Cookie(name, value, path, domain, version);
-    }
+  public Cookie build() {
+    return new Cookie(name, value, path, domain, version);
+  }
 }

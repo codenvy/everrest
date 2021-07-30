@@ -11,62 +11,73 @@
  */
 package org.everrest.sample.guice;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public class Book {
-    private String title;
-    private String author;
-    private int    pages;
-    private double price;
-    private String id;
+  private String title;
+  private String author;
+  private int pages;
+  private double price;
+  private String id;
 
-    public String getAuthor() {
-        return author;
-    }
+  public String getAuthor() {
+    return author;
+  }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public int getPages() {
-        return pages;
-    }
+  public int getPages() {
+    return pages;
+  }
 
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
+  public void setPages(int pages) {
+    this.pages = pages;
+  }
 
-    public Double getPrice() {
-        return price;
-    }
+  public Double getPrice() {
+    return price;
+  }
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+  public void setPrice(Double price) {
+    this.price = price;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Book:{").append("Author: ").append(author).append(" ").append("Title: ").append(title).append(" ")
-          .append("Pages: ").append(pages).append(" ").append("Price: ").append(price).append(" ").append("ID: ")
-          .append(id).append("} ");
-        return sb.toString();
-    }
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Book:{")
+        .append("Author: ")
+        .append(author)
+        .append(" ")
+        .append("Title: ")
+        .append(title)
+        .append(" ")
+        .append("Pages: ")
+        .append(pages)
+        .append(" ")
+        .append("Price: ")
+        .append(price)
+        .append(" ")
+        .append("ID: ")
+        .append(id)
+        .append("} ");
+    return sb.toString();
+  }
 }

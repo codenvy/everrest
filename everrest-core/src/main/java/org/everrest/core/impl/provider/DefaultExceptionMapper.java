@@ -11,28 +11,24 @@
  */
 package org.everrest.core.impl.provider;
 
-import org.everrest.core.ExtHttpHeaders;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import org.everrest.core.ExtHttpHeaders;
 
-/**
- * Transforms {@link java.lang.Exception} to JAX-RS response.
- */
+/** Transforms {@link java.lang.Exception} to JAX-RS response. */
 public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
 
-    @Override
-    public Response toResponse(Exception exception) {
-        String message = exception.getMessage();
-        if (message == null) {
-            message = exception.getClass().getName();
-        }
-        return Response
-                .status(500)
-                .entity(message)
-                .type(MediaType.TEXT_PLAIN)
-                .header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message")
-                .build();
+  @Override
+  public Response toResponse(Exception exception) {
+    String message = exception.getMessage();
+    if (message == null) {
+      message = exception.getClass().getName();
     }
+    return Response.status(500)
+        .entity(message)
+        .type(MediaType.TEXT_PLAIN)
+        .header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message")
+        .build();
+  }
 }

@@ -11,31 +11,30 @@
  */
 package org.everrest.core.impl.provider;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.InputStream;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.stream.StreamSource;
-
-import java.io.InputStream;
-
-import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TemplatesParserTest {
-    private TemplatesParser templatesParser;
+  private TemplatesParser templatesParser;
 
-    @Before
-    public void setUp() throws Exception {
-        templatesParser = new TemplatesParser();
-    }
+  @Before
+  public void setUp() throws Exception {
+    templatesParser = new TemplatesParser();
+  }
 
-    @Test
-    public void parsesGivenSourceToTemplates() throws Exception {
-        try (InputStream testXslResource = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt/book.xsl")) {
-            Source source = new StreamSource(testXslResource);
-            Templates templates = templatesParser.parseTemplates(source);
-            assertNotNull(templates);
-        }
+  @Test
+  public void parsesGivenSourceToTemplates() throws Exception {
+    try (InputStream testXslResource =
+        Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt/book.xsl")) {
+      Source source = new StreamSource(testXslResource);
+      Templates templates = templatesParser.parseTemplates(source);
+      assertNotNull(templates);
     }
+  }
 }

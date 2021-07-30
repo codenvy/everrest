@@ -11,40 +11,41 @@
  */
 package org.everrest.core.uri;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
 @RunWith(Parameterized.class)
 public class UriPatternRegexTest {
 
-    @Parameterized.Parameters(name = "{index} When URI template is {0} then regex is {1}")
-    public static List<Object[]> testData() {
-        return Arrays.asList(new Object[][]{
-                {"/", "(/.*)?"},
-                {"/a", "/a(/.*)?"},
-                {"a", "/a(/.*)?"},
-                {"/a/", "/a(/.*)?"},
-                {"/a/{x}", "/a/([^/]+?)(/.*)?"},
-                {"/a/{x}/", "/a/([^/]+?)(/.*)?"},
-                {"/a/{x:}/", "/a/([^/]+?)(/.*)?"},
-                {"/a/{x  :   .*}/", "/a/(.*)(/.*)?"},
+  @Parameterized.Parameters(name = "{index} When URI template is {0} then regex is {1}")
+  public static List<Object[]> testData() {
+    return Arrays.asList(
+        new Object[][] {
+          {"/", "(/.*)?"},
+          {"/a", "/a(/.*)?"},
+          {"a", "/a(/.*)?"},
+          {"/a/", "/a(/.*)?"},
+          {"/a/{x}", "/a/([^/]+?)(/.*)?"},
+          {"/a/{x}/", "/a/([^/]+?)(/.*)?"},
+          {"/a/{x:}/", "/a/([^/]+?)(/.*)?"},
+          {"/a/{x  :   .*}/", "/a/(.*)(/.*)?"},
         });
-    }
+  }
 
-    @Parameterized.Parameter(0)
-    public String uriTemplate;
-    @Parameterized.Parameter(1)
-    public String expectedRegex;
+  @Parameterized.Parameter(0)
+  public String uriTemplate;
 
-    @Test
-    public void testRegex() {
-        UriPattern pattern = new UriPattern(uriTemplate);
-        assertEquals(expectedRegex, pattern.getRegex());
-    }
+  @Parameterized.Parameter(1)
+  public String expectedRegex;
+
+  @Test
+  public void testRegex() {
+    UriPattern pattern = new UriPattern(uriTemplate);
+    assertEquals(expectedRegex, pattern.getRegex());
+  }
 }

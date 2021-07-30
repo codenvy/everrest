@@ -11,28 +11,25 @@
  */
 package org.everrest.core.impl.header;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.net.URI;
+import javax.ws.rs.ext.RuntimeDelegate;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public class URIHeaderDelegate implements RuntimeDelegate.HeaderDelegate<URI> {
 
-    @Override
-    public URI fromString(String header) {
-        if (header == null) {
-            throw new IllegalArgumentException();
-        }
-        return URI.create(header);
+  @Override
+  public URI fromString(String header) {
+    if (header == null) {
+      throw new IllegalArgumentException();
     }
+    return URI.create(header);
+  }
 
-
-    @Override
-    public String toString(URI uri) {
-        if (uri == null) {
-            throw new IllegalArgumentException();
-        }
-        return uri.toASCIIString();
+  @Override
+  public String toString(URI uri) {
+    if (uri == null) {
+      throw new IllegalArgumentException();
     }
+    return uri.toASCIIString();
+  }
 }

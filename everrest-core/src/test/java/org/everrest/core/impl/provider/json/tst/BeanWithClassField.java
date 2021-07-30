@@ -12,19 +12,19 @@
 package org.everrest.core.impl.provider.json.tst;
 
 public class BeanWithClassField {
-    public static BeanWithClassField createBeanWithClassField() {
-        BeanWithClassField beanWithClassField = new BeanWithClassField();
-        beanWithClassField.setKlass(BeanWithClassField.class);
-        return beanWithClassField;
-    }
+  public static BeanWithClassField createBeanWithClassField() {
+    BeanWithClassField beanWithClassField = new BeanWithClassField();
+    beanWithClassField.setKlass(BeanWithClassField.class);
+    return beanWithClassField;
+  }
 
-    private Class klass;
+  private Class klass;
 
-    public Class getKlass() {
-        return klass;
-    }
+  public Class getKlass() {
+    return klass;
+  }
 
-    public void setKlass(Class klass) {
-        this.klass = klass;
-    }
+  public void setKlass(Class klass) {
+    this.klass = klass;
+  }
 }

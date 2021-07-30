@@ -12,31 +12,31 @@
 package org.everrest.core.impl.provider.json.tst;
 
 public interface IBook {
-    void setAuthor(String s);
+  void setAuthor(String s);
 
-    void setTitle(String s);
+  void setTitle(String s);
 
-    void setPrice(double d);
+  void setPrice(double d);
 
-    void setIsdn(long i);
+  void setIsdn(long i);
 
-    void setPages(int i);
+  void setPages(int i);
 
-    void setAvailability(boolean availability);
+  void setAvailability(boolean availability);
 
-    void setDelivery(boolean delivery);
+  void setDelivery(boolean delivery);
 
-    String getAuthor();
+  String getAuthor();
 
-    String getTitle();
+  String getTitle();
 
-    double getPrice();
+  double getPrice();
 
-    long getIsdn();
+  long getIsdn();
 
-    int getPages();
+  int getPages();
 
-    boolean getAvailability();
+  boolean getAvailability();
 
-    boolean getDelivery();
+  boolean getDelivery();
 }

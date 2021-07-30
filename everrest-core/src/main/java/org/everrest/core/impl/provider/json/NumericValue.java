@@ -13,10 +13,8 @@ package org.everrest.core.impl.provider.json;
 
 public abstract class NumericValue extends JsonValue {
 
-
-    @Override
-    public boolean isNumeric() {
-        return true;
-    }
-
+  @Override
+  public boolean isNumeric() {
+    return true;
+  }
 }

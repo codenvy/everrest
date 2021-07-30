@@ -14,31 +14,31 @@ package org.everrest.core.impl.provider.json.tst;
 import org.everrest.core.impl.provider.json.JsonTransient;
 
 public class BeanWithTransientField {
-    private String field = "visible";
-    @JsonTransient transient String jsonTransientField = "invisible";
-    transient private String transientField = "invisible";
+  private String field = "visible";
+  @JsonTransient transient String jsonTransientField = "invisible";
+  private transient String transientField = "invisible";
 
-    public String getField() {
-        return field;
-    }
+  public String getField() {
+    return field;
+  }
 
-    public void setField(String field) {
-        this.field = field;
-    }
+  public void setField(String field) {
+    this.field = field;
+  }
 
-    public String getTransientField() {
-        return transientField;
-    }
+  public String getTransientField() {
+    return transientField;
+  }
 
-    public void setTransientField(String transientField) {
-        this.transientField = transientField;
-    }
+  public void setTransientField(String transientField) {
+    this.transientField = transientField;
+  }
 
-    public String getJsonTransientField() {
-        return jsonTransientField;
-    }
+  public String getJsonTransientField() {
+    return jsonTransientField;
+  }
 
-    public void setJsonTransientField(String jsonTransientField) {
-        this.jsonTransientField = jsonTransientField;
-    }
+  public void setJsonTransientField(String jsonTransientField) {
+    this.jsonTransientField = jsonTransientField;
+  }
 }

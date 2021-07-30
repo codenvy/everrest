@@ -11,9 +11,8 @@
  */
 package org.everrest.core.impl.method;
 
-import org.everrest.core.method.TypeProducer;
-
 import javax.ws.rs.core.MultivaluedMap;
+import org.everrest.core.method.TypeProducer;
 
 /**
  * Abstraction for creation single (not collection) type.
@@ -21,29 +20,28 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author andrew00x
  */
 public abstract class BaseTypeProducer implements TypeProducer {
-    /**
-     * Creates object from given string. String will be used as parameter for constructor or static valueOf method.
-     *
-     * @param value
-     *         string value
-     * @return newly created object
-     * @throws Exception
-     *         if any error occurs
-     */
-    protected abstract Object createValue(String value) throws Exception;
+  /**
+   * Creates object from given string. String will be used as parameter for constructor or static
+   * valueOf method.
+   *
+   * @param value string value
+   * @return newly created object
+   * @throws Exception if any error occurs
+   */
+  protected abstract Object createValue(String value) throws Exception;
 
+  @Override
+  public Object createValue(
+      String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception {
 
-    @Override
-    public Object createValue(String param, MultivaluedMap<String, String> values, String defaultValue) throws Exception {
+    String value = values.getFirst(param);
 
-        String value = values.getFirst(param);
-
-        if (value != null) {
-            return createValue(value);
-        } else if (defaultValue != null) {
-            return createValue(defaultValue);
-        }
-
-        return null;
+    if (value != null) {
+      return createValue(value);
+    } else if (defaultValue != null) {
+      return createValue(defaultValue);
     }
+
+    return null;
+  }
 }

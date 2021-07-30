@@ -12,7 +12,7 @@
 package org.everrest.core.impl.provider;
 
 public class DuplicateProviderException extends RuntimeException {
-    public DuplicateProviderException(String message) {
-        super(message);
-    }
+  public DuplicateProviderException(String message) {
+    super(message);
+  }
 }

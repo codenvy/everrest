@@ -12,19 +12,19 @@
 package org.everrest.core.impl;
 
 /**
- * Stop FileCollector if FileCollector class is loaded by the context class loader. Typically it means FileCollector
- * loaded from .war file by the web application class loader. Do nothing if class is loaded by another class loader than
- * context class loader.
+ * Stop FileCollector if FileCollector class is loaded by the context class loader. Typically it
+ * means FileCollector loaded from .war file by the web application class loader. Do nothing if
+ * class is loaded by another class loader than context class loader.
  *
  * @author andrew00x
  */
 public class FileCollectorDestroyer {
-    public void stopFileCollector() {
-        FileCollector fileCollector = FileCollector.getInstance();
-        Class<? extends FileCollector> fileCollectorClass = fileCollector.getClass();
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        if (contextClassLoader == fileCollectorClass.getClassLoader()) {
-            fileCollector.stop();
-        }
+  public void stopFileCollector() {
+    FileCollector fileCollector = FileCollector.getInstance();
+    Class<? extends FileCollector> fileCollectorClass = fileCollector.getClass();
+    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    if (contextClassLoader == fileCollectorClass.getClassLoader()) {
+      fileCollector.stop();
     }
+  }
 }

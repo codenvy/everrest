@@ -15,21 +15,18 @@ import java.net.URL;
 
 /**
  * URL's filter.
- * <p>
- * Instances of this interface may be passed to the
- * {@link ScriptFinder#find(URLFilter, URL)}.
- * </p>
+ *
+ * <p>Instances of this interface may be passed to the {@link ScriptFinder#find(URLFilter, URL)}.
  *
  * @author andrew00x
  */
 public interface URLFilter {
-    /**
-     * Tests whether or not the specified URL should be included in URL list.
-     *
-     * @param url
-     *         URL to be tested
-     * @return <code>true</code> if specified URL must be include in result set
-     * of URLs and <code>false</code> otherwise
-     */
-    boolean accept(URL url);
+  /**
+   * Tests whether or not the specified URL should be included in URL list.
+   *
+   * @param url URL to be tested
+   * @return <code>true</code> if specified URL must be include in result set of URLs and <code>
+   *     false</code> otherwise
+   */
+  boolean accept(URL url);
 }

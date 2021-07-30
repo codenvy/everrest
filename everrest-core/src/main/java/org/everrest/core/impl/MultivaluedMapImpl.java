@@ -11,26 +11,26 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.core.ExtMultivaluedMap;
-
-import javax.ws.rs.core.MultivaluedHashMap;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ws.rs.core.MultivaluedHashMap;
+import org.everrest.core.ExtMultivaluedMap;
 
 /**
  * @author andrew00x
  * @see javax.ws.rs.core.MultivaluedMap
  */
-public class MultivaluedMapImpl extends MultivaluedHashMap<String, String> implements ExtMultivaluedMap<String, String> {
-    private static final long serialVersionUID = -6066678602537059655L;
+public class MultivaluedMapImpl extends MultivaluedHashMap<String, String>
+    implements ExtMultivaluedMap<String, String> {
+  private static final long serialVersionUID = -6066678602537059655L;
 
-    @Override
-    public List<String> getList(String key) {
-        List<String> list = get(key);
-        if (list == null) {
-            list = new ArrayList<>();
-            put(key, list);
-        }
-        return list;
+  @Override
+  public List<String> getList(String key) {
+    List<String> list = get(key);
+    if (list == null) {
+      list = new ArrayList<>();
+      put(key, list);
     }
+    return list;
+  }
 }

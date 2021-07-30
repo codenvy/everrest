@@ -11,22 +11,6 @@
  */
 package org.everrest.core.impl;
 
-import org.everrest.core.ApplicationContext;
-import org.everrest.core.ContainerResponseWriter;
-import org.everrest.core.impl.provider.StringEntityProvider;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.stubbing.Answer;
-
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
@@ -45,219 +29,262 @@ import static org.mockito.Mockito.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
+import org.everrest.core.ApplicationContext;
+import org.everrest.core.ContainerResponseWriter;
+import org.everrest.core.impl.provider.StringEntityProvider;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.stubbing.Answer;
+
 public class ContainerResponseTest {
-    private ProviderBinder          providers;
-    private ContainerRequest        containerRequest;
-    private ContainerResponseWriter containerResponseWriter;
-    private ByteArrayOutputStream   entityStream;
+  private ProviderBinder providers;
+  private ContainerRequest containerRequest;
+  private ContainerResponseWriter containerResponseWriter;
+  private ByteArrayOutputStream entityStream;
 
-    private ContainerResponse containerResponse;
+  private ContainerResponse containerResponse;
 
-    @Before
-    public void setUp() throws Exception {
-        providers = mock(ProviderBinder.class);
-        containerRequest = mock(ContainerRequest.class);
-        ApplicationContext applicationContext = mock(ApplicationContext.class);
-        when(applicationContext.getProviders()).thenReturn(providers);
-        when(applicationContext.getContainerRequest()).thenReturn(containerRequest);
-        when(applicationContext.getQueryParameters()).thenReturn(new MultivaluedHashMap<>());
-        ApplicationContext.setCurrent(applicationContext);
+  @Before
+  public void setUp() throws Exception {
+    providers = mock(ProviderBinder.class);
+    containerRequest = mock(ContainerRequest.class);
+    ApplicationContext applicationContext = mock(ApplicationContext.class);
+    when(applicationContext.getProviders()).thenReturn(providers);
+    when(applicationContext.getContainerRequest()).thenReturn(containerRequest);
+    when(applicationContext.getQueryParameters()).thenReturn(new MultivaluedHashMap<>());
+    ApplicationContext.setCurrent(applicationContext);
 
-        entityStream = new ByteArrayOutputStream();
-        containerResponseWriter = mock(ContainerResponseWriter.class);
-        containerResponse = new ContainerResponse(containerResponseWriter);
-        doAnswer(writeEntity()).when(containerResponseWriter).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    entityStream = new ByteArrayOutputStream();
+    containerResponseWriter = mock(ContainerResponseWriter.class);
+    containerResponse = new ContainerResponse(containerResponseWriter);
+    doAnswer(writeEntity())
+        .when(containerResponseWriter)
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    private Answer<Void> writeEntity() {
-        return invocation -> {
-            MessageBodyWriter messageBodyWriter = (MessageBodyWriter)invocation.getArguments()[1];
-            Object entity = containerResponse.getEntity();
-            if (entity != null) {
-                messageBodyWriter.writeTo(entity,
-                                          entity.getClass(),
-                                          containerResponse.getEntityType(),
-                                          null,
-                                          containerResponse.getContentType(),
-                                          containerResponse.getHttpHeaders(),
-                                          entityStream);
-            }
-            return null;
-        };
-    }
+  private Answer<Void> writeEntity() {
+    return invocation -> {
+      MessageBodyWriter messageBodyWriter = (MessageBodyWriter) invocation.getArguments()[1];
+      Object entity = containerResponse.getEntity();
+      if (entity != null) {
+        messageBodyWriter.writeTo(
+            entity,
+            entity.getClass(),
+            containerResponse.getEntityType(),
+            null,
+            containerResponse.getContentType(),
+            containerResponse.getHttpHeaders(),
+            entityStream);
+      }
+      return null;
+    };
+  }
 
-    @Test
-    public void setsNullResponse() throws Exception {
-        containerResponse.setResponse(null);
+  @Test
+  public void setsNullResponse() throws Exception {
+    containerResponse.setResponse(null);
 
-        assertNull(containerResponse.getResponse());
-        assertEquals(0, containerResponse.getStatus());
-        assertNull(containerResponse.getEntity());
-        assertNull(containerResponse.getEntityType());
-        assertTrue(containerResponse.getHttpHeaders().isEmpty());
-        assertNull(containerResponse.getContentType());
-    }
+    assertNull(containerResponse.getResponse());
+    assertEquals(0, containerResponse.getStatus());
+    assertNull(containerResponse.getEntity());
+    assertNull(containerResponse.getEntityType());
+    assertTrue(containerResponse.getHttpHeaders().isEmpty());
+    assertNull(containerResponse.getContentType());
+  }
 
-    @Test
-    public void setsResponse() throws Exception {
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
-        Response response = mockResponse(200, headers, "foo");
+  @Test
+  public void setsResponse() throws Exception {
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
+    Response response = mockResponse(200, headers, "foo");
 
-        containerResponse.setResponse(response);
+    containerResponse.setResponse(response);
 
-        assertSame(response, containerResponse.getResponse());
-        assertEquals(200, containerResponse.getStatus());
-        assertEquals("foo", containerResponse.getEntity());
-        assertEquals(String.class, containerResponse.getEntityType());
-        assertEquals(headers, containerResponse.getHttpHeaders());
-        assertEquals(TEXT_PLAIN_TYPE, containerResponse.getContentType());
-    }
+    assertSame(response, containerResponse.getResponse());
+    assertEquals(200, containerResponse.getStatus());
+    assertEquals("foo", containerResponse.getEntity());
+    assertEquals(String.class, containerResponse.getEntityType());
+    assertEquals(headers, containerResponse.getHttpHeaders());
+    assertEquals(TEXT_PLAIN_TYPE, containerResponse.getContentType());
+  }
 
-    @Test
-    public void setsResponseWithGenericEntity() throws Exception {
-        GenericEntity<List<String>> genericEntity = new GenericEntity<List<String>>(newArrayList("foo")) {
-        };
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
-        Response response = mockResponse(200, headers, genericEntity);
+  @Test
+  public void setsResponseWithGenericEntity() throws Exception {
+    GenericEntity<List<String>> genericEntity =
+        new GenericEntity<List<String>>(newArrayList("foo")) {};
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
+    Response response = mockResponse(200, headers, genericEntity);
 
-        containerResponse.setResponse(response);
+    containerResponse.setResponse(response);
 
-        assertSame(response, containerResponse.getResponse());
-        assertEquals(200, containerResponse.getStatus());
-        assertEquals(newArrayList("foo"), containerResponse.getEntity());
-        assertEquals(newParameterizedType(List.class, String.class), containerResponse.getEntityType());
-        assertEquals(headers, containerResponse.getHttpHeaders());
-        assertEquals(TEXT_PLAIN_TYPE, containerResponse.getContentType());
-    }
+    assertSame(response, containerResponse.getResponse());
+    assertEquals(200, containerResponse.getStatus());
+    assertEquals(newArrayList("foo"), containerResponse.getEntity());
+    assertEquals(newParameterizedType(List.class, String.class), containerResponse.getEntityType());
+    assertEquals(headers, containerResponse.getHttpHeaders());
+    assertEquals(TEXT_PLAIN_TYPE, containerResponse.getContentType());
+  }
 
-    @Test
-    public void writesResponseWhenResponseEntityIsNullAndRequestMethodIsGET() throws Exception {
-        when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE)).thenReturn(new StringEntityProvider());
-        when(containerRequest.getMethod()).thenReturn("GET");
+  @Test
+  public void writesResponseWhenResponseEntityIsNullAndRequestMethodIsGET() throws Exception {
+    when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE))
+        .thenReturn(new StringEntityProvider());
+    when(containerRequest.getMethod()).thenReturn("GET");
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        Response response = mockResponse(200, headers, null);
-        containerResponse.setResponse(response);
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    Response response = mockResponse(200, headers, null);
+    containerResponse.setResponse(response);
 
-        containerResponse.writeResponse();
+    containerResponse.writeResponse();
 
-        assertEquals(200, containerResponse.getStatus());
-        verify(containerResponseWriter).writeHeaders(containerResponse);
-        verify(containerResponseWriter, never()).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    assertEquals(200, containerResponse.getStatus());
+    verify(containerResponseWriter).writeHeaders(containerResponse);
+    verify(containerResponseWriter, never())
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    @Test
-    public void writesResponseWhenResponseEntityIsNotNullRequestMethodIsHEADAndContentTypeIsSetExplicitly() throws Exception {
-        when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE)).thenReturn(new StringEntityProvider());
-        when(containerRequest.getMethod()).thenReturn("HEAD");
+  @Test
+  public void
+      writesResponseWhenResponseEntityIsNotNullRequestMethodIsHEADAndContentTypeIsSetExplicitly()
+          throws Exception {
+    when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE))
+        .thenReturn(new StringEntityProvider());
+    when(containerRequest.getMethod()).thenReturn("HEAD");
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
-        Response response = mockResponse(200, headers, "foo");
-        containerResponse.setResponse(response);
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
+    Response response = mockResponse(200, headers, "foo");
+    containerResponse.setResponse(response);
 
-        containerResponse.writeResponse();
+    containerResponse.writeResponse();
 
-        assertEquals(200, containerResponse.getStatus());
-        InOrder inOrder = inOrder(containerResponseWriter);
-        inOrder.verify(containerResponseWriter).writeHeaders(containerResponse);
-        inOrder.verify(containerResponseWriter, never()).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    assertEquals(200, containerResponse.getStatus());
+    InOrder inOrder = inOrder(containerResponseWriter);
+    inOrder.verify(containerResponseWriter).writeHeaders(containerResponse);
+    inOrder
+        .verify(containerResponseWriter, never())
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    @Test
-    public void writesResponseWhenResponseEntityIsNotNullRequestMethodIsGETAndContentTypeIsSetExplicitly() throws Exception {
-        when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE)).thenReturn(new StringEntityProvider());
-        when(containerRequest.getMethod()).thenReturn("GET");
+  @Test
+  public void
+      writesResponseWhenResponseEntityIsNotNullRequestMethodIsGETAndContentTypeIsSetExplicitly()
+          throws Exception {
+    when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE))
+        .thenReturn(new StringEntityProvider());
+    when(containerRequest.getMethod()).thenReturn("GET");
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
-        Response response = mockResponse(200, headers, "foo");
-        containerResponse.setResponse(response);
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    headers.putSingle(CONTENT_TYPE, TEXT_PLAIN_TYPE);
+    Response response = mockResponse(200, headers, "foo");
+    containerResponse.setResponse(response);
 
-        containerResponse.writeResponse();
+    containerResponse.writeResponse();
 
-        assertEquals(200, containerResponse.getStatus());
-        InOrder inOrder = inOrder(containerResponseWriter);
-        inOrder.verify(containerResponseWriter).writeHeaders(containerResponse);
-        inOrder.verify(containerResponseWriter, never()).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    assertEquals(200, containerResponse.getStatus());
+    InOrder inOrder = inOrder(containerResponseWriter);
+    inOrder.verify(containerResponseWriter).writeHeaders(containerResponse);
+    inOrder
+        .verify(containerResponseWriter, never())
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    @Test
-    public void writesResponseWhenResponseEntityIsNotNullRequestMethodIsGETAcceptHeaderIsSetAndContentTypeIsNotSet() throws Exception {
-        when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE)).thenReturn(new StringEntityProvider());
-        when(containerRequest.getMethod()).thenReturn("GET");
-        when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(TEXT_PLAIN_TYPE));
+  @Test
+  public void
+      writesResponseWhenResponseEntityIsNotNullRequestMethodIsGETAcceptHeaderIsSetAndContentTypeIsNotSet()
+          throws Exception {
+    when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE))
+        .thenReturn(new StringEntityProvider());
+    when(containerRequest.getMethod()).thenReturn("GET");
+    when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(TEXT_PLAIN_TYPE));
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        Response response = mockResponse(200, headers, "foo");
-        containerResponse.setResponse(response);
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    Response response = mockResponse(200, headers, "foo");
+    containerResponse.setResponse(response);
 
-        containerResponse.writeResponse();
+    containerResponse.writeResponse();
 
-        assertEquals(200, containerResponse.getStatus());
-        assertEquals(TEXT_PLAIN_TYPE, containerResponse.getContentType());
-        verify(containerResponseWriter).writeHeaders(containerResponse);
-        verify(containerResponseWriter).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    assertEquals(200, containerResponse.getStatus());
+    assertEquals(TEXT_PLAIN_TYPE, containerResponse.getContentType());
+    verify(containerResponseWriter).writeHeaders(containerResponse);
+    verify(containerResponseWriter)
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    @Test
-    public void writesResponseWhenResponseEntityIsNotNullRequestMethodIsGETAcceptHeaderIsNotSetAndContentTypeIsNotSet() throws Exception {
-        when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE)).thenReturn(new StringEntityProvider());
-        when(providers.getAcceptableWriterMediaTypes(String.class, String.class, null)).thenReturn(newArrayList(TEXT_PLAIN_TYPE));
-        when(containerRequest.getMethod()).thenReturn("GET");
-        when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(WILDCARD_TYPE));
-        when(containerRequest.getAcceptableMediaType(newArrayList(TEXT_PLAIN_TYPE))).thenReturn(TEXT_PLAIN_TYPE);
+  @Test
+  public void
+      writesResponseWhenResponseEntityIsNotNullRequestMethodIsGETAcceptHeaderIsNotSetAndContentTypeIsNotSet()
+          throws Exception {
+    when(providers.getMessageBodyWriter(String.class, String.class, null, TEXT_PLAIN_TYPE))
+        .thenReturn(new StringEntityProvider());
+    when(providers.getAcceptableWriterMediaTypes(String.class, String.class, null))
+        .thenReturn(newArrayList(TEXT_PLAIN_TYPE));
+    when(containerRequest.getMethod()).thenReturn("GET");
+    when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(WILDCARD_TYPE));
+    when(containerRequest.getAcceptableMediaType(newArrayList(TEXT_PLAIN_TYPE)))
+        .thenReturn(TEXT_PLAIN_TYPE);
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        Response response = mockResponse(200, headers, "foo");
-        containerResponse.setResponse(response);
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    Response response = mockResponse(200, headers, "foo");
+    containerResponse.setResponse(response);
 
-        containerResponse.writeResponse();
+    containerResponse.writeResponse();
 
-        assertEquals(200, containerResponse.getStatus());
-        verify(containerResponseWriter).writeHeaders(containerResponse);
-        verify(containerResponseWriter).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    assertEquals(200, containerResponse.getStatus());
+    verify(containerResponseWriter).writeHeaders(containerResponse);
+    verify(containerResponseWriter)
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    @Test
-    public void createsNOT_ACCEPTABLEResponseWhenNotFoundAnyWriterForEntity() throws Exception {
-        when(containerRequest.getMethod()).thenReturn("GET");
-        when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(WILDCARD_TYPE));
+  @Test
+  public void createsNOT_ACCEPTABLEResponseWhenNotFoundAnyWriterForEntity() throws Exception {
+    when(containerRequest.getMethod()).thenReturn("GET");
+    when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(WILDCARD_TYPE));
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        Response response = mockResponse(200, headers, "foo");
-        containerResponse.setResponse(response);
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    Response response = mockResponse(200, headers, "foo");
+    containerResponse.setResponse(response);
 
-        containerResponse.writeResponse();
+    containerResponse.writeResponse();
 
-        assertEquals(406, containerResponse.getStatus());
-        verify(containerResponseWriter).writeHeaders(containerResponse);
-        verify(containerResponseWriter).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    assertEquals(406, containerResponse.getStatus());
+    verify(containerResponseWriter).writeHeaders(containerResponse);
+    verify(containerResponseWriter)
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    @Test
-    public void neverCreatesNOT_ACCEPTABLEResponseForHEADRequestEvenWhenNotFoundAnyWriterForEntity() throws Exception {
-        when(containerRequest.getMethod()).thenReturn("HEAD");
-        when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(WILDCARD_TYPE));
+  @Test
+  public void neverCreatesNOT_ACCEPTABLEResponseForHEADRequestEvenWhenNotFoundAnyWriterForEntity()
+      throws Exception {
+    when(containerRequest.getMethod()).thenReturn("HEAD");
+    when(containerRequest.getAcceptableMediaTypes()).thenReturn(newArrayList(WILDCARD_TYPE));
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        Response response = mockResponse(200, headers, "foo");
-        containerResponse.setResponse(response);
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    Response response = mockResponse(200, headers, "foo");
+    containerResponse.setResponse(response);
 
-        containerResponse.writeResponse();
+    containerResponse.writeResponse();
 
-        assertEquals(200, containerResponse.getStatus());
-        verify(containerResponseWriter).writeHeaders(containerResponse);
-        verify(containerResponseWriter, never()).writeBody(same(containerResponse), any(MessageBodyWriter.class));
-    }
+    assertEquals(200, containerResponse.getStatus());
+    verify(containerResponseWriter).writeHeaders(containerResponse);
+    verify(containerResponseWriter, never())
+        .writeBody(same(containerResponse), any(MessageBodyWriter.class));
+  }
 
-    private Response mockResponse(int status, MultivaluedMap<String, Object> headers, Object entity) {
-        Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(status);
-        when(response.getMetadata()).thenReturn(headers);
-        when(response.getEntity()).thenReturn(entity);
-        return response;
-    }
+  private Response mockResponse(int status, MultivaluedMap<String, Object> headers, Object entity) {
+    Response response = mock(Response.class);
+    when(response.getStatus()).thenReturn(status);
+    when(response.getMetadata()).thenReturn(headers);
+    when(response.getEntity()).thenReturn(entity);
+    return response;
+  }
 }

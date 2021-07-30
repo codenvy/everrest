@@ -19,28 +19,24 @@ import javax.ws.rs.Path;
  * @author andrew00x
  */
 public class PathValue {
-    public static String getPath(Path annotation) {
-        return annotation == null ? null : annotation.value();
-    }
+  public static String getPath(Path annotation) {
+    return annotation == null ? null : annotation.value();
+  }
 
-    /** URI template, see {@link javax.ws.rs.Path#value()} . */
-    private final String path;
+  /** URI template, see {@link javax.ws.rs.Path#value()} . */
+  private final String path;
 
-    /**
-     * @param path
-     *         URI template
-     */
-    public PathValue(String path) {
-        this.path = path;
-    }
+  /** @param path URI template */
+  public PathValue(String path) {
+    this.path = path;
+  }
 
-    /** @return URI template string */
-    public String getPath() {
-        return path;
-    }
+  /** @return URI template string */
+  public String getPath() {
+    return path;
+  }
 
-
-    public String toString() {
-        return "(" + path + ")";
-    }
+  public String toString() {
+    return "(" + path + ")";
+  }
 }

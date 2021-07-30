@@ -19,13 +19,13 @@ import java.net.URL;
  * @author andrew00x
  */
 public class ClassPathEntry {
-    private final URL path;
+  private final URL path;
 
-    public ClassPathEntry(URL path) {
-        this.path = path;
-    }
+  public ClassPathEntry(URL path) {
+    this.path = path;
+  }
 
-    public URL getPath() {
-        return path;
-    }
+  public URL getPath() {
+    return path;
+  }
 }

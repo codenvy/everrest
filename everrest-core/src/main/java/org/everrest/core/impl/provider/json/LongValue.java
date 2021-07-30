@@ -13,77 +13,65 @@ package org.everrest.core.impl.provider.json;
 
 public class LongValue extends NumericValue {
 
-    /** Value. */
-    private final long value;
+  /** Value. */
+  private final long value;
 
-    /**
-     * Constructs new LongValue.
-     *
-     * @param value
-     *         the value.
-     */
-    public LongValue(long value) {
-        this.value = value;
-    }
+  /**
+   * Constructs new LongValue.
+   *
+   * @param value the value.
+   */
+  public LongValue(long value) {
+    this.value = value;
+  }
 
+  @Override
+  public boolean isLong() {
+    return true;
+  }
 
-    @Override
-    public boolean isLong() {
-        return true;
-    }
+  @Override
+  public String getStringValue() {
+    return Long.toString(value);
+  }
 
+  @Override
+  public byte getByteValue() {
+    return (byte) value;
+  }
 
-    @Override
-    public String getStringValue() {
-        return Long.toString(value);
-    }
+  @Override
+  public short getShortValue() {
+    return (short) value;
+  }
 
+  @Override
+  public int getIntValue() {
+    return (int) value;
+  }
 
-    @Override
-    public byte getByteValue() {
-        return (byte)value;
-    }
+  @Override
+  public long getLongValue() {
+    return value;
+  }
 
+  @Override
+  public double getDoubleValue() {
+    return value;
+  }
 
-    @Override
-    public short getShortValue() {
-        return (short)value;
-    }
+  @Override
+  public float getFloatValue() {
+    return value;
+  }
 
+  @Override
+  public String toString() {
+    return getStringValue();
+  }
 
-    @Override
-    public int getIntValue() {
-        return (int)value;
-    }
-
-
-    @Override
-    public long getLongValue() {
-        return value;
-    }
-
-
-    @Override
-    public double getDoubleValue() {
-        return value;
-    }
-
-
-    @Override
-    public float getFloatValue() {
-        return value;
-    }
-
-
-    @Override
-    public String toString() {
-        return getStringValue();
-    }
-
-
-    @Override
-    public void writeTo(JsonWriter writer) throws JsonException {
-        writer.writeValue(value);
-    }
-
+  @Override
+  public void writeTo(JsonWriter writer) throws JsonException {
+    writer.writeValue(value);
+  }
 }

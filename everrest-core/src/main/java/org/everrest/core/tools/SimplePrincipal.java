@@ -15,38 +15,38 @@ import java.security.Principal;
 import java.util.Objects;
 
 public class SimplePrincipal implements Principal {
-    private final String identity;
+  private final String identity;
 
-    public SimplePrincipal(String identity) {
-        this.identity = identity;
+  public SimplePrincipal(String identity) {
+    this.identity = identity;
+  }
+
+  @Override
+  public String getName() {
+    return identity;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof SimplePrincipal)) {
+      return false;
     }
 
-    @Override
-    public String getName() {
-        return identity;
-    }
+    return Objects.equals(identity, ((SimplePrincipal) obj).identity);
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof SimplePrincipal)) {
-            return false;
-        }
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = hash * 31 + Objects.hashCode(identity);
+    return hash;
+  }
 
-        return Objects.equals(identity, ((SimplePrincipal)obj).identity);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = hash * 31 + Objects.hashCode(identity);
-        return hash;
-    }
-
-    @Override
-    public String toString() {
-        return "SimplePrincipal{identity='" + identity + '\'' + '}';
-    }
+  @Override
+  public String toString() {
+    return "SimplePrincipal{identity='" + identity + '\'' + '}';
+  }
 }

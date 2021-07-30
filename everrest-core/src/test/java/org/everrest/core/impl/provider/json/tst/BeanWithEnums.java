@@ -11,47 +11,47 @@
  */
 package org.everrest.core.impl.provider.json.tst;
 
-import java.util.List;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static org.everrest.core.impl.provider.json.tst.BookEnum.ADVANCED_JAVA_SCRIPT;
 import static org.everrest.core.impl.provider.json.tst.BookEnum.BEGINNING_C;
 import static org.everrest.core.impl.provider.json.tst.BookEnum.JUNIT_IN_ACTION;
 
+import java.util.List;
+
 public class BeanWithEnums {
-    public static BeanWithEnums createBeanWithEnums() {
-        BeanWithEnums beanWithEnums = new BeanWithEnums();
-        beanWithEnums.setBook(ADVANCED_JAVA_SCRIPT);
-        beanWithEnums.setBookArray(new BookEnum[]{BEGINNING_C, JUNIT_IN_ACTION});
-        beanWithEnums.setBookList(newArrayList(BEGINNING_C, JUNIT_IN_ACTION));
-        return beanWithEnums;
-    }
+  public static BeanWithEnums createBeanWithEnums() {
+    BeanWithEnums beanWithEnums = new BeanWithEnums();
+    beanWithEnums.setBook(ADVANCED_JAVA_SCRIPT);
+    beanWithEnums.setBookArray(new BookEnum[] {BEGINNING_C, JUNIT_IN_ACTION});
+    beanWithEnums.setBookList(newArrayList(BEGINNING_C, JUNIT_IN_ACTION));
+    return beanWithEnums;
+  }
 
-    private BookEnum        book;
-    private BookEnum[]      bookArray;
-    private List<BookEnum>  bookList;
+  private BookEnum book;
+  private BookEnum[] bookArray;
+  private List<BookEnum> bookList;
 
-    public BookEnum getBook() {
-        return book;
-    }
+  public BookEnum getBook() {
+    return book;
+  }
 
-    public void setBook(BookEnum book) {
-        this.book = book;
-    }
+  public void setBook(BookEnum book) {
+    this.book = book;
+  }
 
-    public BookEnum[] getBookArray() {
-        return bookArray;
-    }
+  public BookEnum[] getBookArray() {
+    return bookArray;
+  }
 
-    public void setBookArray(BookEnum[] bookArray) {
-        this.bookArray = bookArray;
-    }
+  public void setBookArray(BookEnum[] bookArray) {
+    this.bookArray = bookArray;
+  }
 
-    public List<BookEnum> getBookList() {
-        return bookList;
-    }
+  public List<BookEnum> getBookList() {
+    return bookList;
+  }
 
-    public void setBookList(List<BookEnum> bookList) {
-        this.bookList = bookList;
-    }
+  public void setBookList(List<BookEnum> bookList) {
+    this.bookList = bookList;
+  }
 }

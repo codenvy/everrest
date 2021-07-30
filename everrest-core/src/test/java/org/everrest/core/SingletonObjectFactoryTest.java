@@ -11,19 +11,20 @@
  */
 package org.everrest.core;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-public class SingletonObjectFactoryTest {
-    @Test
-    public void returnsInstanceGivenInCreationOfObjectFactory() {
-        Object instance = new Object();
-        ObjectModel objectModel = mock(ObjectModel.class);
-        SingletonObjectFactory singletonObjectFactory = new SingletonObjectFactory<>(objectModel, instance);
+import org.junit.Test;
 
-        Object result = singletonObjectFactory.getInstance(null);
-        assertSame(instance, result);
-    }
+public class SingletonObjectFactoryTest {
+  @Test
+  public void returnsInstanceGivenInCreationOfObjectFactory() {
+    Object instance = new Object();
+    ObjectModel objectModel = mock(ObjectModel.class);
+    SingletonObjectFactory singletonObjectFactory =
+        new SingletonObjectFactory<>(objectModel, instance);
+
+    Object result = singletonObjectFactory.getInstance(null);
+    assertSame(instance, result);
+  }
 }

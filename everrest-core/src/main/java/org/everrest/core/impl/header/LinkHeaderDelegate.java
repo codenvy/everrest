@@ -11,19 +11,18 @@
  */
 package org.everrest.core.impl.header;
 
-import org.everrest.core.impl.uri.LinkBuilderImpl;
-
 import javax.ws.rs.core.Link;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import org.everrest.core.impl.uri.LinkBuilderImpl;
 
-public class LinkHeaderDelegate implements HeaderDelegate<Link>{
-    @Override
-    public Link fromString(String value) {
-        return new LinkBuilderImpl().link(value).build();
-    }
+public class LinkHeaderDelegate implements HeaderDelegate<Link> {
+  @Override
+  public Link fromString(String value) {
+    return new LinkBuilderImpl().link(value).build();
+  }
 
-    @Override
-    public String toString(Link value) {
-        return value.toString();
-    }
+  @Override
+  public String toString(Link value) {
+    return value.toString();
+  }
 }

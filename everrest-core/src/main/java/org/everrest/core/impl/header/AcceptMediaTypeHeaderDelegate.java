@@ -11,34 +11,36 @@
  */
 package org.everrest.core.impl.header;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.RuntimeDelegate;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import static org.everrest.core.header.QualityValue.QVALUE;
 
-public class AcceptMediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<AcceptMediaType> {
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.RuntimeDelegate;
 
-    @Override
-    public AcceptMediaType fromString(String header) {
-        if (header == null) {
-            throw new IllegalArgumentException();
-        }
-        return new AcceptMediaType(MediaType.valueOf(header));
-    }
+public class AcceptMediaTypeHeaderDelegate
+    implements RuntimeDelegate.HeaderDelegate<AcceptMediaType> {
 
-    @Override
-    public String toString(AcceptMediaType acceptMediaType) {
-        if (acceptMediaType == null) {
-            throw new IllegalArgumentException();
-        }
-        final Map<String, String> parameters = acceptMediaType.getParameters();
-        if (parameters.isEmpty() || (parameters.size() == 1 && parameters.containsKey(QVALUE))) {
-            return acceptMediaType.getMediaType().toString();
-        }
-        final Map<String, String> copyParameters = new LinkedHashMap<>(parameters);
-        copyParameters.remove(QVALUE);
-        return new MediaType(acceptMediaType.getType(), acceptMediaType.getSubtype(), copyParameters).toString();
+  @Override
+  public AcceptMediaType fromString(String header) {
+    if (header == null) {
+      throw new IllegalArgumentException();
     }
+    return new AcceptMediaType(MediaType.valueOf(header));
+  }
+
+  @Override
+  public String toString(AcceptMediaType acceptMediaType) {
+    if (acceptMediaType == null) {
+      throw new IllegalArgumentException();
+    }
+    final Map<String, String> parameters = acceptMediaType.getParameters();
+    if (parameters.isEmpty() || (parameters.size() == 1 && parameters.containsKey(QVALUE))) {
+      return acceptMediaType.getMediaType().toString();
+    }
+    final Map<String, String> copyParameters = new LinkedHashMap<>(parameters);
+    copyParameters.remove(QVALUE);
+    return new MediaType(acceptMediaType.getType(), acceptMediaType.getSubtype(), copyParameters)
+        .toString();
+  }
 }

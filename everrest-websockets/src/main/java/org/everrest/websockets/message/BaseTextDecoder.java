@@ -14,15 +14,11 @@ package org.everrest.websockets.message;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public abstract class BaseTextDecoder<T> implements Decoder.Text<T> {
-    @Override
-    public void init(EndpointConfig config) {
-    }
+  @Override
+  public void init(EndpointConfig config) {}
 
-    @Override
-    public void destroy() {
-    }
+  @Override
+  public void destroy() {}
 }

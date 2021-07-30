@@ -14,12 +14,10 @@ package org.everrest.core.tools;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @author andrew00x
- */
+/** @author andrew00x */
 public final class EmptyInputStream extends InputStream {
-    @Override
-    public int read() throws IOException {
-        return -1;
-    }
+  @Override
+  public int read() throws IOException {
+    return -1;
+  }
 }
