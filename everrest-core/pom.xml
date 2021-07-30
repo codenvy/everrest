@@ -198,7 +198,8 @@
                         <id>analyze</id>
                         <configuration>
                             <ignoredUnusedDeclaredDependencies>
-                                <dep>com.sun.xml.bind:*</dep>
+                                <ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-core</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-impl</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
