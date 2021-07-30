@@ -111,7 +111,7 @@
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
         <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
         <jdk.min.version>1.8</jdk.min.version>
-        <jetty.version>9.4.42.v20210604</jetty.version>
+        <jetty.version>11.0.6</jetty.version>
         <junit.version>4.13.2</junit.version>
         <license_contributor>${project.organization.name} - initial API and implementation</license_contributor>
         <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
