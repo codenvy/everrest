@@ -46,7 +46,7 @@ public final class IOHelper {
    * @throws IOException if i/o errors occurs
    */
   @Deprecated // Guava used instead in everrest-core, in other modules will be replaced with Guava
-              // also
+  // also
   public static String readString(InputStream in, String cs) throws IOException {
     Charset charset;
     // Must respect application specified character set.
@@ -77,7 +77,7 @@ public final class IOHelper {
    * @throws IOException if i/o errors occurs
    */
   @Deprecated // Guava used instead in everrest-core, in other modules will be replaced with Guava
-              // also
+  // also
   public static void writeString(String s, OutputStream out, String cs) throws IOException {
     Charset charset;
     // Must respect application specified character set.

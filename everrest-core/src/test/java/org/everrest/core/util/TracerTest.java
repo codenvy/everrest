@@ -92,6 +92,6 @@ public class TracerTest {
   }
 
   private void enableTracing() {
-    when(applicationContext.getQueryParameters().getFirst("tracing")).thenReturn("true");
+    when((Object) applicationContext.getQueryParameters().getFirst("tracing")).thenReturn("true");
   }
 }
