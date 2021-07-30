@@ -92,7 +92,7 @@
     </distributionManagement>
     <properties>
         <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
-        <com.google.code.guice.version>4.1.0</com.google.code.guice.version>
+        <com.google.code.guice.version>4.2.3</com.google.code.guice.version>
         <com.google.guava.version>18.0</com.google.guava.version>
         <com.sun.xml.bind>2.3.0.1</com.sun.xml.bind>
         <com.tngtech.java>1.9.3</com.tngtech.java>
