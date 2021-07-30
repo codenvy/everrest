@@ -141,7 +141,7 @@
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
         <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.3.1</maven.war.plugin.version>
-        <mockito.version>3.0.0</mockito.version>
+        <mockito.version>3.11.2</mockito.version>
         <mockitong.version>0.1.1</mockitong.version>
         <org.hamcrest.version>1.3</org.hamcrest.version>
         <org.slf4j.version>1.7.6</org.slf4j.version>
