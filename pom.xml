@@ -112,7 +112,7 @@
         <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
         <jdk.min.version>1.8</jdk.min.version>
         <jetty.version>9.4.19.v20190610</jetty.version>
-        <junit.version>4.13.1</junit.version>
+        <junit.version>4.13.2</junit.version>
         <license_contributor>${project.organization.name} - initial API and implementation</license_contributor>
         <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
         <maven.antrun.plugin.version>3.0.0</maven.antrun.plugin.version>
