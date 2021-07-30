@@ -132,7 +132,7 @@
         <version.compiler.plugin>3.8.1</version.compiler.plugin>
         <version.dependency.plugin>3.1.1</version.dependency.plugin>
         <version.enforcer.plugin>1.4</version.enforcer.plugin>
-        <version.gpg.plugin>1.6</version.gpg.plugin>
+        <version.gpg.plugin>3.0.1</version.gpg.plugin>
         <version.jacoco.plugin>0.8.4</version.jacoco.plugin>
         <version.javadoc.plugin>3.1.1</version.javadoc.plugin>
         <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
