@@ -484,6 +484,7 @@
                             <exclude>**/-darcs-backup*</exclude>
                             <exclude>**/.darcs-temp-mail</exclude>
                             <exclude>**/target/**</exclude>
+                            <exclude>**/checkout/**</exclude>
                             <exclude>**/test-output/**</exclude>
                             <exclude>**/release.properties</exclude>
                             <exclude>**/dependency-reduced-pom.xml</exclude>
