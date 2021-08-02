@@ -17,7 +17,7 @@
     <parent>
         <artifactId>everrest-parent</artifactId>
         <groupId>org.everrest</groupId>
-        <version>1.14.6-SNAPSHOT</version>
+        <version>1.14.5-SNAPSHOT</version>
     </parent>
     <artifactId>everrest-groovy</artifactId>
     <name>EverRest :: Groovy</name>
