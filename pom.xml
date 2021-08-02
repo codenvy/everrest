@@ -128,7 +128,7 @@
         <maven.exec.plugin.version>3.0.0</maven.exec.plugin.version>
         <maven.fabric8io.docker.plugin.version>0.35.0</maven.fabric8io.docker.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
-        <maven.fmt.plugin.version>2.5.1</maven.fmt.plugin.version>
+        <maven.fmt.plugin.version>2.11</maven.fmt.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <maven.install.plugin.version>3.0.0-M1</maven.install.plugin.version>
         <maven.jacoco.plugin.version>0.8.7</maven.jacoco.plugin.version>
