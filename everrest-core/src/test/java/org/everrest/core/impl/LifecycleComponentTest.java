@@ -15,9 +15,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.everrest.core.LifecycleMethodStrategy;
 import org.junit.Test;
 

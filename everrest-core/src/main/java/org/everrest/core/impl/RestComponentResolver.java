@@ -11,12 +11,12 @@
  */
 package org.everrest.core.impl;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
 import org.everrest.core.Filter;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.RequestFilter;

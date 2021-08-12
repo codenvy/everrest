@@ -11,7 +11,7 @@
  */
 package org.everrest.core.method;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.resource.GenericResourceMethod;
 

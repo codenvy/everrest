@@ -11,11 +11,10 @@
  */
 package org.everrest.assured;
 
+import jakarta.servlet.Filter;
+import jakarta.ws.rs.core.Application;
 import java.lang.reflect.Method;
-import java.util.EventListener;
 import java.util.Random;
-import javax.servlet.Filter;
-import javax.ws.rs.core.Application;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -81,7 +80,7 @@ public class JettyHttpServer {
       context = new ServletContextHandler(handler, "/", ServletContextHandler.SESSIONS);
     }
 
-    context.setEventListeners(new EventListener[] {new EverrestInitializedListener()});
+    context.addEventListener(new EverrestInitializedListener());
     ServletHolder servletHolder = new ServletHolder(new EverrestServlet());
 
     context.addServlet(servletHolder, UNSECURE_PATH_SPEC);

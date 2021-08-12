@@ -14,6 +14,9 @@ package org.everrest.core.impl.provider;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 import com.google.common.io.CharStreams;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,9 +25,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
 import org.everrest.core.provider.EntityProvider;
 
 @Provider

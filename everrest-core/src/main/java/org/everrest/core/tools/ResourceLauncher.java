@@ -11,14 +11,14 @@
  */
 package org.everrest.core.tools;
 
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.SecurityContext;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.SecurityContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.ContainerResponse;

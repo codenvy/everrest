@@ -40,10 +40,10 @@ public class GroovySimpleTest extends BaseTest {
 
   private void publicationTest(boolean singleton, ResourceId resourceId) throws Exception {
     String script = //
-        "@javax.ws.rs.Path(\"a\")" //
+        "@jakarta.ws.rs.Path(\"a\")" //
             + "class GroovyResource {" //
-            + "@javax.ws.rs.GET @javax.ws.rs.Path(\"{who}\")" //
-            + "def m0(@javax.ws.rs.PathParam(\"who\") String who) { return (\"hello \" + who)}" //
+            + "@jakarta.ws.rs.GET @jakarta.ws.rs.Path(\"{who}\")" //
+            + "def m0(@jakarta.ws.rs.PathParam(\"who\") String who) { return (\"hello \" + who)}" //
             + "}";
 
     int initSize = resources.getSize();

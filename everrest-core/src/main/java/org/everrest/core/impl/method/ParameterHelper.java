@@ -11,25 +11,25 @@
  */
 package org.everrest.core.impl.method;
 
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.MatrixParam;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import org.everrest.core.Property;
 
 public class ParameterHelper {
   /**
    * Collections of annotation that allowed to be used on fields on any type of Provider.
    *
-   * @see javax.ws.rs.ext.Provider
-   * @see javax.ws.rs.ext.Providers
+   * @see jakarta.ws.rs.ext.Provider
+   * @see jakarta.ws.rs.ext.Providers
    */
   public static final List<String> PROVIDER_FIELDS_ANNOTATIONS;
 
@@ -37,8 +37,8 @@ public class ParameterHelper {
    * Collections of annotation than allowed to be used on constructor's parameters of any type of
    * Provider.
    *
-   * @see javax.ws.rs.ext.Provider
-   * @see javax.ws.rs.ext.Providers
+   * @see jakarta.ws.rs.ext.Provider
+   * @see jakarta.ws.rs.ext.Providers
    */
   public static final List<String> PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS;
 

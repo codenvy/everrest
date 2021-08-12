@@ -13,10 +13,10 @@ package org.everrest.core.impl.header;
 
 import static org.everrest.core.header.QualityValue.QVALUE;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 public class AcceptMediaTypeHeaderDelegate
     implements RuntimeDelegate.HeaderDelegate<AcceptMediaType> {

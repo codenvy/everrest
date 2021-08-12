@@ -11,11 +11,11 @@
  */
 package org.everrest.core.impl;
 
+import jakarta.ws.rs.core.Application;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.core.Application;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ObjectModel;
 
@@ -86,7 +86,7 @@ public class EverrestApplication extends Application {
     return factories;
   }
 
-  /** @see javax.ws.rs.core.Application#getClasses() */
+  /** @see jakarta.ws.rs.core.Application#getClasses() */
   @Override
   public Set<Class<?>> getClasses() {
     Set<Class<?>> myClasses = new LinkedHashSet<>(this.classes);
@@ -96,7 +96,7 @@ public class EverrestApplication extends Application {
     return myClasses;
   }
 
-  /** @see javax.ws.rs.core.Application#getSingletons() */
+  /** @see jakarta.ws.rs.core.Application#getSingletons() */
   @Override
   public Set<Object> getSingletons() {
     return singletons;
@@ -106,7 +106,7 @@ public class EverrestApplication extends Application {
    * Add components defined by <code>application</code> to this instance.
    *
    * @param application application
-   * @see javax.ws.rs.core.Application
+   * @see jakarta.ws.rs.core.Application
    */
   public void addApplication(Application application) {
     if (application != null) {

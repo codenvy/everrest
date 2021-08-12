@@ -36,8 +36,8 @@
         </tr>
         <tr>
             <td>org.everrest.groovy.Application</td>
-            <td>This attribute has the same purpose as <i>javax.ws.rs.Application</i>. This is FQN of Groovy or Java class that
-                extends <i>javax.ws.rs.core.Application</i> and provides set of classes and(or) instances of JAX-RS components.
+            <td>This attribute has the same purpose as <i>jakarta.ws.rs.Application</i>. This is FQN of Groovy or Java class that
+                extends <i>jakarta.ws.rs.core.Application</i> and provides set of classes and(or) instances of JAX-RS components.
             </td>
         </tr>
         <tr>
@@ -77,7 +77,7 @@
     <p><i>org.everrest.sample.groovy.BookApplication.groovy</i> - application deployer. We decide to have all components
         as singleton.</p>
       <pre>
-      class BookApplication extends javax.ws.rs.core.Application {
+      class BookApplication extends jakarta.ws.rs.core.Application {
           def bookService
           def bookNotFoundExceptionMapper
 

@@ -19,8 +19,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import org.everrest.core.impl.header.Ranges.Range;
 import org.junit.After;
 import org.junit.Before;

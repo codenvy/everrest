@@ -11,10 +11,10 @@
  */
 package org.everrest.groovy.servlet;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.ws.rs.core.Application;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.ws.rs.core.Application;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 

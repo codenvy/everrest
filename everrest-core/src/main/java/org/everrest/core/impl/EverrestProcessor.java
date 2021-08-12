@@ -16,10 +16,10 @@ import static org.everrest.core.ApplicationContext.anApplicationContext;
 import static org.everrest.core.ExtHttpHeaders.X_HTTP_METHOD_OVERRIDE;
 import static org.everrest.core.impl.EverrestConfiguration.METHOD_INVOKER_DECORATOR_FACTORY;
 
+import jakarta.ws.rs.core.Application;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.ws.rs.core.Application;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.GenericContainerRequest;

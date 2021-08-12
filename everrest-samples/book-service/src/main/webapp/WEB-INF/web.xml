@@ -16,7 +16,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd">
     <display-name>book-service</display-name>
     <!--context-param>
-        <param-name>javax.ws.rs.Application</param-name>
+        <param-name>jakarta.ws.rs.Application</param-name>
         <param-value>org.everrest.sample.book.BookApplication</param-value>
     </context-param-->
     <context-param>

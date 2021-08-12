@@ -12,9 +12,9 @@
 package org.everrest.core.impl;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
-import static javax.ws.rs.core.MediaType.WILDCARD_TYPE;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.MediaType.WILDCARD_TYPE;
 import static org.everrest.core.util.ParameterizedTypeImpl.newParameterizedType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -29,13 +29,13 @@ import static org.mockito.Mockito.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.impl.provider.StringEntityProvider;

@@ -13,14 +13,14 @@ package org.everrest.core.impl;
 
 import static java.util.stream.Collectors.toList;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.RequestFilter;
 import org.everrest.core.ResponseFilter;
@@ -34,7 +34,7 @@ import org.everrest.core.method.MethodInvokerFilter;
  * Application.
  *
  * @author andrew00x
- * @see javax.ws.rs.core.Application
+ * @see jakarta.ws.rs.core.Application
  */
 public class ApplicationProviderBinder extends ProviderBinder {
   @Override

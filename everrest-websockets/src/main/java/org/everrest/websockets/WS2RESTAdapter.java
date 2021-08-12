@@ -11,8 +11,12 @@
  */
 package org.everrest.websockets;
 
-import static javax.websocket.CloseReason.CloseCodes.VIOLATED_POLICY;
+import static jakarta.websocket.CloseReason.CloseCodes.VIOLATED_POLICY;
 
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.EncodeException;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.SecurityContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -22,10 +26,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import javax.websocket.DecodeException;
-import javax.websocket.EncodeException;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.SecurityContext;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;

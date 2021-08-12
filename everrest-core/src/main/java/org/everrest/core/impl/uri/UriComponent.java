@@ -14,6 +14,9 @@ package org.everrest.core.impl.uri;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Strings;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -21,9 +24,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriBuilder;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.util.NoSyncByteArrayOutputStream;
 

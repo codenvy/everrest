@@ -11,8 +11,8 @@
  */
 package org.everrest.websockets.message;
 
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.EndpointConfig;
 
 /** @author andrew00x */
 public abstract class BaseTextEncoder<T> implements Encoder.Text<T> {

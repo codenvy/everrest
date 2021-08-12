@@ -15,8 +15,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.everrest.core.impl.header.HeaderHelper.addQuotesIfHasWhitespace;
 import static org.everrest.core.impl.header.HeaderHelper.parseNewCookie;
 
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 /** @author andrew00x */
 public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<NewCookie> {

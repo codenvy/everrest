@@ -32,11 +32,11 @@ public class ConstructorParameter implements Parameter {
 
   /**
    * Default value for this parameter, default value can be used if there is not found required
-   * parameter in request. See {@link javax.ws.rs.DefaultValue}.
+   * parameter in request. See {@link jakarta.ws.rs.DefaultValue}.
    */
   private final String defaultValue;
 
-  /** See {@link javax.ws.rs.Encoded}. */
+  /** See {@link jakarta.ws.rs.Encoded}. */
   private final boolean encoded;
 
   /**
@@ -46,7 +46,7 @@ public class ConstructorParameter implements Parameter {
    * @param additional see {@link #additional}
    * @param clazz parameter class
    * @param genericType generic parameter type
-   * @param defaultValue default value for parameter. See {@link javax.ws.rs.DefaultValue}.
+   * @param defaultValue default value for parameter. See {@link jakarta.ws.rs.DefaultValue}.
    * @param encoded true if parameter must not be decoded false otherwise
    */
   public ConstructorParameter(

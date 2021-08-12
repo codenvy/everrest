@@ -11,8 +11,8 @@
  */
 package org.everrest.core;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.uri.UriPattern;
 
@@ -44,7 +44,7 @@ public interface ResourceBinder {
    *     ObjectModel#getProperties()}. This parameter may be <code>null</code>
    * @throws ResourcePublicationException if resource can't be published because to:
    *     <ul>
-   *       <li>&#64javax.ws.rs.Path annotation is missing
+   *       <li>&#64jakarta.ws.rs.Path annotation is missing
    *       <li>resource has not any method with JAX-RS annotations
    *       <li>JAX-RS annotations are ambiguous or invalid
    *       <li>resource with the sane {@link UriPattern} already registered
@@ -90,7 +90,7 @@ public interface ResourceBinder {
    *     ObjectModel#getProperties()}. This parameter may be <code>null</code>
    * @throws ResourcePublicationException if resource can't be published because to:
    *     <ul>
-   *       <li>&#64javax.ws.rs.Path annotation is missing
+   *       <li>&#64jakarta.ws.rs.Path annotation is missing
    *       <li>resource has not any method with JAX-RS annotations
    *       <li>JAX-RS annotations are ambiguous or invalid
    *       <li>resource with the sane {@link UriPattern} already registered

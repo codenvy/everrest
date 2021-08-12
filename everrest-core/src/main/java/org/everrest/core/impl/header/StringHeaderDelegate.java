@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl.header;
 
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 /** @author andrew00x */
 public class StringHeaderDelegate implements RuntimeDelegate.HeaderDelegate<String> {

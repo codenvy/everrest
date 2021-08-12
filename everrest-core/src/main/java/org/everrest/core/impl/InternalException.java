@@ -15,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Should not be used by custom services. They have to use {@link
- * javax.ws.rs.WebApplicationException} instead. This Exception is used as wrapper for exception
+ * jakarta.ws.rs.WebApplicationException} instead. This Exception is used as wrapper for exception
  * that may occur during request processing.
  *
  * @author andrew00x

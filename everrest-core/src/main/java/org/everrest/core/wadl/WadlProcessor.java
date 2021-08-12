@@ -11,12 +11,12 @@
  */
 package org.everrest.core.wadl;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.JAXBElement;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import org.everrest.core.Parameter;
 import org.everrest.core.impl.resource.AbstractResourceDescriptor;
@@ -301,10 +301,10 @@ public class WadlProcessor {
    */
   private Param processParam(Parameter methodParameter) {
     Param wadlParam = null;
-    // Skip parameters without annotation (entity) and parameters with javax.ws.rs.core.Context.
+    // Skip parameters without annotation (entity) and parameters with jakarta.ws.rs.core.Context.
     // Context parameter dependent of environment and not used in WADL representation
     if (methodParameter.getAnnotation() != null
-        && methodParameter.getAnnotation().annotationType() != javax.ws.rs.core.Context.class) {
+        && methodParameter.getAnnotation().annotationType() != jakarta.ws.rs.core.Context.class) {
       wadlParam = wadlGenerator.createParam(methodParameter);
     }
 

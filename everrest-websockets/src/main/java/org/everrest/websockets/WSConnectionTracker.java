@@ -11,12 +11,12 @@
  */
 package org.everrest.websockets;
 
-import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
+import static jakarta.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 import java.io.IOException;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

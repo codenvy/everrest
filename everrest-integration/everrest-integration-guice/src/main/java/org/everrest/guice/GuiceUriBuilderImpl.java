@@ -11,7 +11,7 @@
  */
 package org.everrest.guice;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import org.everrest.core.impl.uri.UriBuilderImpl;
 
 /**

@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl.provider;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

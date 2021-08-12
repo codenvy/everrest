@@ -11,19 +11,19 @@
  */
 package org.everrest.core.impl.integration;
 
-import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
 import static org.everrest.core.ExtHttpHeaders.ACCEPT_RANGES;
 import static org.everrest.core.ExtHttpHeaders.CONTENT_RANGE;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.Set;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.MultivaluedMapImpl;

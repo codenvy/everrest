@@ -17,11 +17,11 @@ import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.charAtIsNot;
 import static org.everrest.core.util.StringUtils.scan;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 /** @author andrew00x */
 public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<MediaType> {

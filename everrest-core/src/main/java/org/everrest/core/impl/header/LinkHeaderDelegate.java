@@ -11,8 +11,8 @@
  */
 package org.everrest.core.impl.header;
 
-import javax.ws.rs.core.Link;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import org.everrest.core.impl.uri.LinkBuilderImpl;
 
 public class LinkHeaderDelegate implements HeaderDelegate<Link> {

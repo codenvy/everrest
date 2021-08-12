@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl.method;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.everrest.core.method.TypeProducer;
 
 /**

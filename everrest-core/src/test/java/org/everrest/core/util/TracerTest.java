@@ -18,7 +18,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.util.Tracer.TraceHolder;

@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.impl.resource.PathValue;

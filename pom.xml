@@ -58,14 +58,14 @@
             </roles>
         </developer>
     </developers>
-    <prerequisites>
-        <maven>${maven.min.version}</maven>
-    </prerequisites>
     <modules>
         <module>everrest-test</module>
+        <module>everrest-commons-fileupload</module>
         <module>everrest-core</module>
         <module>everrest-groovy</module>
+        <module>everrest-rest-assured-xml-path</module>
         <module>everrest-assured</module>
+        <module>everrest-integration/everrest-guice-servlet</module>
         <module>everrest-integration/everrest-integration-guice</module>
         <module>everrest-samples/book-service</module>
         <module>everrest-samples/groovy-book-service</module>
@@ -95,23 +95,24 @@
         <com.google.code.guice.version>4.2.2</com.google.code.guice.version>
         <com.google.errorprone>2.3.4</com.google.errorprone>
         <com.google.guava.version>30.1.1-jre</com.google.guava.version>
-        <com.sun.xml.bind>2.3.0.1</com.sun.xml.bind>
+        <com.sun.xml.bind>3.0.0</com.sun.xml.bind>
         <com.tngtech.java>1.9.3</com.tngtech.java>
-        <commons-fileupload.version>1.3.3</commons-fileupload.version>
+        <commons-fileupload.version>1.4</commons-fileupload.version>
         <commons-io.version>2.11.0</commons-io.version>
         <currentYear>2016</currentYear>
         <gpg.useagent>true</gpg.useagent>
-        <groovy.version>1.7.6</groovy.version>
-        <javax.activation.version>1.1</javax.activation.version>
-        <javax.annotation.version>1.2</javax.annotation.version>
-        <javax.inject.version>1</javax.inject.version>
-        <javax.mail.version>1.4.4</javax.mail.version>
-        <javax.servlet.version>3.1.0</javax.servlet.version>
-        <javax.websocket.api.version>1.1</javax.websocket.api.version>
-        <javax.ws.rs.version>2.0</javax.ws.rs.version>
-        <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
-        <jdk.min.version>1.8</jdk.min.version>
-        <jetty.version>9.4.42.v20210604</jetty.version>
+        <groovy.version>3.0.8</groovy.version>
+        <io.rest-assured.version>4.4.0</io.rest-assured.version>
+        <jakarta.activation.version>2.0.1</jakarta.activation.version>
+        <jakarta.annotation.version>2.0.0</jakarta.annotation.version>
+        <jakarta.inject.version>1.0.3</jakarta.inject.version>
+        <jakarta.mail.version>2.0.1</jakarta.mail.version>
+        <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
+        <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
+        <jakarta.ws.rs.version>3.0.0</jakarta.ws.rs.version>
+        <jakarta.xml.bind>3.0.0</jakarta.xml.bind>
+        <java.target.version>11</java.target.version>
+        <jetty.version>11.0.6</jetty.version>
         <junit.version>4.13.2</junit.version>
         <license_contributor>${project.organization.name} - initial API and implementation</license_contributor>
         <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
@@ -134,7 +135,6 @@
         <maven.jacoco.plugin.version>0.8.7</maven.jacoco.plugin.version>
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
         <maven.javadoc.plugin.vesion>3.3.0</maven.javadoc.plugin.vesion>
-        <maven.min.version>3.5.1</maven.min.version>
         <maven.mycila.license.plugin.version>3.0</maven.mycila.license.plugin.version>
         <maven.plugin.plugin.version>3.6.1</maven.plugin.plugin.version>
         <maven.release.plugin.version>3.0.0-M4</maven.release.plugin.version>
@@ -142,14 +142,14 @@
         <maven.sonar.plugin.version>3.9.0.2155</maven.sonar.plugin.version>
         <maven.sortpom.plugin.version>2.3.1</maven.sortpom.plugin.version>
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
+        <maven.supported-versions>[3.6.2,)</maven.supported-versions>
         <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.3.1</maven.war.plugin.version>
-        <org.hamcrest.version>1.3</org.hamcrest.version>
+        <org.hamcrest.version>2.2</org.hamcrest.version>
         <org.mockito.mockito-testng.version>0.4.8</org.mockito.mockito-testng.version>
         <org.mockito.version>3.11.2</org.mockito.version>
         <org.slf4j.version>1.7.24</org.slf4j.version>
         <org.testng.version>7.4.0</org.testng.version>
-        <resetassured.version>2.4.0</resetassured.version>
         <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
         <version.license.header.groupid>org.eclipse.che.dev</version.license.header.groupid>
         <version.license.header.version>${version.resource-bundle}</version.license.header.version>
@@ -175,6 +175,16 @@
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>${com.google.code.guice.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>javax.inject</artifactId>
+                        <groupId>javax.inject</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.google.inject.extensions</groupId>
@@ -185,21 +195,34 @@
                 <groupId>com.google.inject.extensions</groupId>
                 <artifactId>guice-servlet</artifactId>
                 <version>${com.google.code.guice.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.jayway.restassured</groupId>
-                <artifactId>rest-assured</artifactId>
-                <version>${resetassured.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${com.sun.xml.bind}</version>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>jakarta.mail</artifactId>
+                <version>${jakarta.mail.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jakarta.activation</artifactId>
+                        <groupId>com.sun.activation</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
                 <version>${com.sun.xml.bind}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jakarta.activation</artifactId>
+                        <groupId>com.sun.activation</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.tngtech.java</groupId>
@@ -223,56 +246,76 @@
                 <version>${commons-io.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.activation</groupId>
-                <artifactId>activation</artifactId>
-                <version>${javax.activation.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>${javax.annotation.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-                <version>${javax.inject.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>${javax.mail.version}</version>
-                <!-- Java6 has it -->
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${io.rest-assured.version}</version>
                 <exclusions>
                     <exclusion>
-                        <artifactId>activation</artifactId>
-                        <groupId>javax.activation</groupId>
+                        <artifactId>xml-path</artifactId>
+                        <groupId>io.rest-assured</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${javax.servlet.version}</version>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>xml-path</artifactId>
+                <version>${io.rest-assured.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>${javax.ws.rs.version}</version>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${jakarta.activation.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${javax.xml.bind.version}</version>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation.version}</version>
             </dependency>
-            <!-- Third part dependencies -->
+            <dependency>
+                <groupId>jakarta.inject</groupId>
+                <artifactId>jakarta.inject-api</artifactId>
+                <version>${jakarta.inject.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${jakarta.servlet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.websocket</groupId>
+                <artifactId>jakarta.websocket-api</artifactId>
+                <version>${jakarta.websocket.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${jakarta.ws.rs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jakarta.xml.bind}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jakarta.activation</artifactId>
+                        <groupId>com.sun.activation</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hamcrest-core</artifactId>
+                        <groupId>org.hamcrest</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-all</artifactId>
+                <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
                 <exclusions>
                     <exclusion>
@@ -290,29 +333,15 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-http</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-security</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-servlet</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-util</artifactId>
-                <version>${jetty.version}</version>
+                <groupId>org.everrest</groupId>
+                <artifactId>everrest-commons-fileupload</artifactId>
+                <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-fileupload</artifactId>
+                        <groupId>commons-fileupload</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
@@ -326,8 +355,30 @@
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
+                <artifactId>everrest-guice-servlet</artifactId>
+                <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guice-servlet</artifactId>
+                        <groupId>com.google.inject.extensions</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.everrest</groupId>
                 <artifactId>everrest-integration-guice</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.everrest</groupId>
+                <artifactId>everrest-rest-assured-xml-path</artifactId>
+                <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>xml-path</artifactId>
+                        <groupId>io.rest-assured</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.everrest</groupId>
@@ -341,12 +392,7 @@
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-core</artifactId>
-                <version>${org.hamcrest.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-library</artifactId>
+                <artifactId>hamcrest</artifactId>
                 <version>${org.hamcrest.version}</version>
             </dependency>
             <dependency>
@@ -380,16 +426,17 @@
                 <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.websocket</groupId>
-                <artifactId>javax.websocket-api</artifactId>
-                <version>${javax.websocket.api.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>${org.testng.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-bom</artifactId>
+                <version>${jetty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -565,16 +612,6 @@
                             <artifactId>enforcer-rules</artifactId>
                             <version>1.2.0</version>
                         </dependency>
-                        <dependency>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>animal-sniffer-enforcer-rule</artifactId>
-                            <version>1.20</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>extra-enforcer-rules</artifactId>
-                            <version>1.0-beta-3</version>
-                        </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
@@ -687,7 +724,7 @@
                 <plugin>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
-                    <version>9.4.42.v20210604</version>
+                    <version>${jetty.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -706,35 +743,7 @@
                 <version>${maven.enforcer.plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>enforce-java-version</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <message>To build this project JDK ${jdk.min.version} (or upper) is required. Please install it.</message>
-                                    <version>${jdk.min.version}</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>enforce-maven-version</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <message>To build this project Maven ${maven.min.version} (or upper) is required. Please install it.</message>
-                                    <version>${maven.min.version}</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>distribution-management-used</id>
+                        <id>enforce</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
@@ -742,60 +751,46 @@
                             <rules>
                                 <requireDepMgt>
                                     <message>You are trying to use artifacts that are not in the list of allowed artifacts included in
-                                        dependencyManagement in maven-depmgt-pom or have different version.</message>
+                                        dependencyManagement in root pom or have different version.</message>
                                     <checkVersion>true</checkVersion>
                                     <ignoreScopes>
                                         <ignoreScope>runtime</ignoreScope>
                                     </ignoreScopes>
                                 </requireDepMgt>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>no-distribution-management-at-all</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <banDistributionManagement>
-                                    <allowRepository>true</allowRepository>
-                                    <allowSnapshotRepository>true</allowSnapshotRepository>
-                                    <allowSite>true</allowSite>
-                                </banDistributionManagement>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>dependency</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <DependencyConvergence />
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ban-bad-dependencies</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
+                                <dependencyConvergence />
+                                <requireJavaVersion>
+                                    <version>[${java.target.version},)</version>
+                                </requireJavaVersion>
+                                <requireMavenVersion>
+                                    <version>${maven.supported-versions}</version>
+                                </requireMavenVersion>
                                 <bannedDependencies>
-                                    <searchTransitive>true</searchTransitive>
                                     <excludes>
+                                        <!-- Exclude javax dependencies in favor of Jakarta -->
+                                        <exclude>javax.activation:activation</exclude>
+                                        <exclude>javax.activation:javax.activation-api</exclude>
+                                        <exclude>javax.annotation:javax.annotation-api</exclude>
+                                        <exclude>javax.enterprise:cdi-api</exclude>
+                                        <exclude>javax.inject:javax.inject</exclude>
+                                        <exclude>javax.json:javax.json-api</exclude>
+                                        <exclude>javax.json.bind:javax.json.bind-api</exclude>
+                                        <exclude>org.glassfish:javax.json</exclude>
+                                        <exclude>org.glassfish:javax.el</exclude>
+                                        <exclude>javax.persistence:javax.persistence-api</exclude>
+                                        <exclude>javax.persistence:persistence-api</exclude>
+                                        <exclude>javax.security.enterprise:javax.security.enterprise-api</exclude>
+                                        <exclude>javax.servlet:servlet-api</exclude>
+                                        <exclude>javax.servlet:javax.servlet-api</exclude>
+                                        <exclude>javax.transaction:jta</exclude>
+                                        <exclude>javax.transaction:javax.transaction-api</exclude>
+                                        <exclude>javax.validation:validation-api</exclude>
+                                        <exclude>javax.xml.bind:jaxb-api</exclude>
+                                        <exclude>javax.websocket:javax.websocket-api</exclude>
+                                        <exclude>javax.ws.rs:javax.ws.rs-api</exclude>
+                                        <exclude>com.sun.activation:jakarta.activation</exclude>
                                         <exclude>commons-logging:commons-logging-api</exclude>
                                         <exclude>concurrent:concurrent</exclude>
                                         <exclude>com.google.code.findbugs:annotations</exclude>
-                                        <exclude>javax.servlet:servlet-api</exclude>
-                                        <exclude>javax.xml:jaxrpc-api</exclude>
-                                        <exclude>javax.xml.soap:saaj-api</exclude>
-                                        <exclude>javax.xml.stream:stax-api</exclude>
                                         <exclude>jboss:jboss-logging-spi</exclude>
                                         <exclude>org.apache.xalan:serializer</exclude>
                                         <exclude>org.apache.xalan:xalan</exclude>

@@ -11,10 +11,10 @@
  */
 package org.everrest.core.impl;
 
+import jakarta.ws.rs.core.Application;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.core.Application;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.ObjectModel;
 import org.everrest.core.ResourceBinder;

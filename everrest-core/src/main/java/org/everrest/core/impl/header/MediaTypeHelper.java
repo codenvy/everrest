@@ -11,9 +11,15 @@
  */
 package org.everrest.core.impl.header;
 
+import static jakarta.ws.rs.core.MediaType.MEDIA_TYPE_WILDCARD;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.MediaType.MEDIA_TYPE_WILDCARD;
 
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -21,12 +27,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import org.everrest.core.util.MediaTypeComparator;
 
 public final class MediaTypeHelper {

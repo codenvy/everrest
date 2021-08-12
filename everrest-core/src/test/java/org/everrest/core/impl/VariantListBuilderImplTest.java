@@ -12,14 +12,14 @@
 package org.everrest.core.impl;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.ws.rs.core.Variant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import javax.ws.rs.core.Variant;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -11,8 +11,8 @@
  */
 package org.everrest.core.provider;
 
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
 import org.everrest.core.ObjectModel;
 
 /**

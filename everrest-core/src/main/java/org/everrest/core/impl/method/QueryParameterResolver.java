@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl.method;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.method.TypeProducer;
 

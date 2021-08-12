@@ -12,6 +12,8 @@
 package org.everrest.core.util;
 
 import com.google.common.base.Objects;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -21,8 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.ExtMultivaluedMap;
 
 /**

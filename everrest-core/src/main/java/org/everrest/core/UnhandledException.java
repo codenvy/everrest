@@ -13,7 +13,7 @@ package org.everrest.core;
 
 /**
  * Should not be used by custom services. They have to use {@link
- * javax.ws.rs.WebApplicationException} instead. UnhandledException is used to propagate exception
+ * jakarta.ws.rs.WebApplicationException} instead. UnhandledException is used to propagate exception
  * than can't be handled by this framework to top container (e.g. Servlet Container)
  *
  * @author andrew00x

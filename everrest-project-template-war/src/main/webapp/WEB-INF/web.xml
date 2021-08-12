@@ -16,7 +16,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd">
     <display-name>simple.rest.war</display-name>
     <!-- context-param>
-      <param-name>javax.ws.rs.Application</param-name>
+      <param-name>jakarta.ws.rs.Application</param-name>
       <param-value>APPLICATION FQN</param-value>	
     </context-param -->
     <context-param>

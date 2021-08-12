@@ -13,9 +13,9 @@ package org.everrest.core.util;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.ws.rs.core.MediaType;
 import java.util.Arrays;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

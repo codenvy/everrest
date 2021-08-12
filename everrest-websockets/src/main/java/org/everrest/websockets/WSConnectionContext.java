@@ -11,12 +11,12 @@
  */
 package org.everrest.websockets;
 
+import jakarta.websocket.EncodeException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.websocket.EncodeException;
 import org.everrest.websockets.message.ChannelBroadcastMessage;
 import org.everrest.websockets.message.Pair;
 import org.everrest.websockets.message.RestOutputMessage;

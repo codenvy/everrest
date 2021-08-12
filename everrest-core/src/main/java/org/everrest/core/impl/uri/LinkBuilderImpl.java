@@ -18,6 +18,9 @@ import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.scan;
 
 import com.google.common.base.Objects;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilderException;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -25,9 +28,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 import org.everrest.core.impl.header.HeaderParameterParser;
 
 /** @author andrew00x */

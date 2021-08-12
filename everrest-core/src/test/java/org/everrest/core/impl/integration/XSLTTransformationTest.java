@@ -12,18 +12,18 @@
 package org.everrest.core.impl.integration;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_HTML_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_HTML_TYPE;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Providers;
 import java.util.Set;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
 import javax.xml.transform.stream.StreamSource;
 import org.everrest.core.impl.BaseTest;
 import org.everrest.core.impl.ContainerResponse;

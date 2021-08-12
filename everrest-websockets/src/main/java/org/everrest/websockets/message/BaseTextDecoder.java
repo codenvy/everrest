@@ -11,8 +11,8 @@
  */
 package org.everrest.websockets.message;
 
-import javax.websocket.Decoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.EndpointConfig;
 
 /** @author andrew00x */
 public abstract class BaseTextDecoder<T> implements Decoder.Text<T> {

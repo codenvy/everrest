@@ -11,8 +11,8 @@
  */
 package a.b
 
-import javax.ws.rs.GET
-import javax.ws.rs.Path
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
 
 @Path("a")
 class GroovyResource3 {

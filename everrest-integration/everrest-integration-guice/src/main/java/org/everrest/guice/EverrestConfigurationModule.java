@@ -26,8 +26,8 @@ import static org.everrest.core.impl.EverrestConfiguration.METHOD_INVOKER_DECORA
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.servlet.ServletModule;
+import jakarta.servlet.ServletContext;
 import javax.inject.Named;
-import javax.servlet.ServletContext;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.servlet.EverrestServletContextInitializer;
 

@@ -17,10 +17,10 @@ import static org.everrest.core.impl.header.HeaderHelper.parseQualityValue;
 import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.scan;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 public class AcceptLanguageHeaderDelegate
     implements RuntimeDelegate.HeaderDelegate<AcceptLanguage> {

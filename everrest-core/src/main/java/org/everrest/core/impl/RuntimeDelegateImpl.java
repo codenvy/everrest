@@ -13,16 +13,16 @@ package org.everrest.core.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.Variant.VariantListBuilder;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.Variant.VariantListBuilder;
-import javax.ws.rs.ext.RuntimeDelegate;
 import org.everrest.core.impl.header.AcceptLanguageHeaderDelegate;
 import org.everrest.core.impl.header.AcceptMediaTypeHeaderDelegate;
 import org.everrest.core.impl.header.CacheControlHeaderDelegate;
@@ -39,7 +39,6 @@ import org.everrest.core.impl.header.URIHeaderDelegate;
 import org.everrest.core.impl.uri.LinkBuilderImpl;
 import org.everrest.core.impl.uri.UriBuilderImpl;
 
-/** @author andrew00x */
 public class RuntimeDelegateImpl extends RuntimeDelegate {
   /** HeaderDelegate cache. */
   private final Map<Class<?>, HeaderDelegate> headerDelegates = new HashMap<>();

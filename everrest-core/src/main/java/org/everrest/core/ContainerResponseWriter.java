@@ -11,8 +11,8 @@
  */
 package org.everrest.core;
 
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
-import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * All implementation of this interface should be able to write data in container response, e. g.

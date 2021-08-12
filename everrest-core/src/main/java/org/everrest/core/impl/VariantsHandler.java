@@ -11,21 +11,21 @@
  */
 package org.everrest.core.impl;
 
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_CHARSET;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_ENCODING;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_CHARSET;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_ENCODING;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.everrest.core.impl.header.HeaderHelper.convertToString;
 import static org.everrest.core.impl.header.HeaderHelper.createAcceptMediaTypeList;
 import static org.everrest.core.impl.header.HeaderHelper.createAcceptedCharsetList;
 import static org.everrest.core.impl.header.HeaderHelper.createAcceptedEncodingList;
 import static org.everrest.core.impl.header.HeaderHelper.createAcceptedLanguageList;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Variant;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
 import org.everrest.core.impl.header.AcceptLanguage;
 import org.everrest.core.impl.header.AcceptMediaType;
 import org.everrest.core.impl.header.AcceptToken;

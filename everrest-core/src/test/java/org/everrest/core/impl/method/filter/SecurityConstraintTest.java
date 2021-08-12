@@ -14,12 +14,12 @@ package org.everrest.core.impl.method.filter;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.SecurityContext;
 import java.lang.annotation.Annotation;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.SecurityContext;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.resource.GenericResourceMethod;
 import org.hamcrest.BaseMatcher;

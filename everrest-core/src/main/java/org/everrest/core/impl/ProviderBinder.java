@@ -12,10 +12,17 @@
 package org.everrest.core.impl;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static jakarta.ws.rs.core.MediaType.WILDCARD_TYPE;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.MediaType.WILDCARD_TYPE;
 
 import com.google.common.collect.Iterables;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Providers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -32,13 +39,6 @@ import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;

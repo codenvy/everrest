@@ -15,8 +15,8 @@ import static org.everrest.core.impl.header.HeaderHelper.removeWhitespaces;
 import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.scan;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.Locale;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 public class LocaleHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Locale> {
 

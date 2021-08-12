@@ -20,12 +20,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import groovy.lang.GroovyClassLoader;
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.core.Application;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Application;
 import org.everrest.core.impl.ApplicationPublisher;
 import org.everrest.groovy.servlet.GroovyEverrestServletContextInitializer;
 import org.junit.Before;
@@ -51,13 +51,13 @@ public class GroovyApplicationTest extends BaseTest {
   @Test
   public void testApplication() throws Exception {
     String application =
-        "class Application0 extends javax.ws.rs.core.Application\n"
+        "class Application0 extends jakarta.ws.rs.core.Application\n"
             + "{\n" //
             + "Set<Class<?>> getClasses(){new HashSet<Class<?>>([a.b.GResource1.class, a.b.GExceptionMapper.class])}\n"
             + "}\n";
     Class<?> class1 = groovyClassLoader.parseClass(application);
-    javax.ws.rs.core.Application groovyApplication =
-        (javax.ws.rs.core.Application) class1.newInstance();
+    jakarta.ws.rs.core.Application groovyApplication =
+        (jakarta.ws.rs.core.Application) class1.newInstance();
     applicationPublisher.publish(groovyApplication);
     assertEquals("GResource1", launcher.service("GET", "/a/1", "", null, null, null).getEntity());
     // ExceptionMapper written in Groovy should process a.b.GRuntimeException.

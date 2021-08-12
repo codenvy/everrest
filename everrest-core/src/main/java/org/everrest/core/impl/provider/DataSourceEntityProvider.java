@@ -12,9 +12,15 @@
 package org.everrest.core.impl.provider;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 
 import com.google.common.io.ByteStreams;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.util.ByteArrayDataSource;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,12 +29,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.util.ByteArrayDataSource;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.FileCollector;
 import org.everrest.core.provider.EntityProvider;

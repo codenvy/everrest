@@ -11,9 +11,9 @@
  */
 package org.everrest.core.impl;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.util.CaselessUnmodifiableMultivaluedMap;
 
 /** Read only case insensitive {@link MultivaluedMap}. */

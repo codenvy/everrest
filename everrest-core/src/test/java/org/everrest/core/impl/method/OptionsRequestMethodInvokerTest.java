@@ -16,9 +16,9 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.net.URI;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.resource.GenericResourceMethod;
 import org.everrest.core.resource.ResourceDescriptor;

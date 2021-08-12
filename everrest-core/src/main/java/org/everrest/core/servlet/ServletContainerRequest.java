@@ -11,6 +11,9 @@
  */
 package org.everrest.core.servlet;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -19,9 +22,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.Principal;
 import java.util.Enumeration;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.SecurityContext;
 import org.everrest.core.ExtHttpHeaders;
 import org.everrest.core.impl.ContainerRequest;
 import org.everrest.core.impl.InputHeadersMap;

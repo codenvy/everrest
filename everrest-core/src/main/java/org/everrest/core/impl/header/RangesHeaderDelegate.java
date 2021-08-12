@@ -14,9 +14,9 @@ package org.everrest.core.impl.header;
 import static org.everrest.core.util.StringUtils.charAtIsNot;
 import static org.everrest.core.util.StringUtils.scan;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.ext.RuntimeDelegate;
 import org.everrest.core.impl.header.Ranges.Range;
 
 /** @author andrew00x */

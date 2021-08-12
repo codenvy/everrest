@@ -11,10 +11,10 @@
  */
 package org.everrest
 
-@javax.ws.rs.Path("scan/a")
+@jakarta.ws.rs.Path("scan/a")
 class A {
     A() {}
 
-    @javax.ws.rs.GET
+    @jakarta.ws.rs.GET
     def m() { "A" }
 }

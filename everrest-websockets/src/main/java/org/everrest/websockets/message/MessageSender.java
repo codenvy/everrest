@@ -11,17 +11,17 @@
  */
 package org.everrest.websockets.message;
 
-import static javax.websocket.CloseReason.CloseCodes.VIOLATED_POLICY;
-import static javax.websocket.RemoteEndpoint.Async;
+import static jakarta.websocket.CloseReason.CloseCodes.VIOLATED_POLICY;
+import static jakarta.websocket.RemoteEndpoint.Async;
 
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.SendHandler;
+import jakarta.websocket.SendResult;
+import jakarta.websocket.Session;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
-import javax.websocket.CloseReason;
-import javax.websocket.EncodeException;
-import javax.websocket.SendHandler;
-import javax.websocket.SendResult;
-import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

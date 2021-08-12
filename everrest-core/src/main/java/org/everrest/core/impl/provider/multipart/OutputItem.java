@@ -11,9 +11,9 @@
  */
 package org.everrest.core.impl.provider.multipart;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Type;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 
 /** @author andrew00x */

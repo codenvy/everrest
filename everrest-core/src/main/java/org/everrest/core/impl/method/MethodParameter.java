@@ -39,11 +39,11 @@ public class MethodParameter implements Parameter {
 
   /**
    * Default value for this parameter, default value can be used if there is no required parameter
-   * in request. See {@link javax.ws.rs.DefaultValue}.
+   * in request. See {@link jakarta.ws.rs.DefaultValue}.
    */
   private final String defaultValue;
 
-  /** See {@link javax.ws.rs.Encoded}. */
+  /** See {@link jakarta.ws.rs.Encoded}. */
   private final boolean encoded;
 
   /**
@@ -53,7 +53,7 @@ public class MethodParameter implements Parameter {
    * @param additional see {@link #additional}
    * @param clazz parameter class
    * @param genericType generic parameter type
-   * @param defaultValue default value for parameter. See {@link javax.ws.rs.DefaultValue}.
+   * @param defaultValue default value for parameter. See {@link jakarta.ws.rs.DefaultValue}.
    * @param encoded true if parameter must not be decoded false otherwise
    */
   public MethodParameter(

@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl.method;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.header.MediaTypeHelper;
 import org.everrest.core.method.MethodInvoker;

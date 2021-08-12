@@ -11,9 +11,9 @@
  */
 package org.everrest.websockets;
 
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import javax.ws.rs.ext.MessageBodyWriter;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.websockets.message.Pair;

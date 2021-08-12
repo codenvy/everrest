@@ -30,6 +30,11 @@ import static org.everrest.core.impl.uri.UriComponent.validateUriComponent;
 import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.scan;
 
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilderException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -38,11 +43,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 
 public class UriBuilderImpl extends UriBuilder {
   private String schema;
@@ -472,7 +472,7 @@ public class UriBuilderImpl extends UriBuilder {
     checkArgument(resource != null, "Null resource class isn't allowed");
 
     Annotation pathAnnotation = resource.getAnnotation(Path.class);
-    checkArgument(pathAnnotation != null, "Class is not annotated with javax.ws.rs.Path");
+    checkArgument(pathAnnotation != null, "Class is not annotated with jakarta.ws.rs.Path");
 
     return path(((Path) pathAnnotation).value());
   }

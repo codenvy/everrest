@@ -12,6 +12,8 @@
 package org.everrest.groovy;
 
 import groovy.lang.GroovyCodeSource;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -26,8 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.PerRequestObjectFactory;

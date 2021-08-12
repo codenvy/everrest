@@ -11,7 +11,7 @@
  */
 package org.everrest.core.method;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 /**
  * Can create object by using String value. For each type of object should be created new

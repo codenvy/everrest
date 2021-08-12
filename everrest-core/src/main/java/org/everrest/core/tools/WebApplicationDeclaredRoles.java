@@ -14,13 +14,13 @@ package org.everrest.core.tools;
 import static com.google.common.base.Throwables.propagate;
 import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
 
+import jakarta.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;

@@ -11,8 +11,8 @@
  */
 package org.everrest.core.servlet;
 
+import jakarta.servlet.ServletContext;
 import java.lang.annotation.Annotation;
-import javax.servlet.ServletContext;
 import org.everrest.core.BaseDependencySupplier;
 
 /**

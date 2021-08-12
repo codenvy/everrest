@@ -51,7 +51,7 @@ public interface ResourceDescriptor extends ObjectModel {
 
   /**
    * @return {@code true} if resource is root resource false otherwise. Root resource is class which
-   *     has own {@link javax.ws.rs.Path} annotation
+   *     has own {@link jakarta.ws.rs.Path} annotation
    */
   boolean isRootResource();
 }

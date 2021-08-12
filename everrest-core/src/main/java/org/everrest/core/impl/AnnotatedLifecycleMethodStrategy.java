@@ -17,6 +17,8 @@ import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,8 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.everrest.core.LifecycleMethodStrategy;
 
 /**

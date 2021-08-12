@@ -11,6 +11,7 @@
  */
 package org.everrest.core.impl.async;
 
+import jakarta.ws.rs.WebApplicationException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import javax.ws.rs.WebApplicationException;
 import org.everrest.core.impl.InternalException;
 import org.everrest.core.resource.ResourceMethodDescriptor;
 import org.slf4j.Logger;

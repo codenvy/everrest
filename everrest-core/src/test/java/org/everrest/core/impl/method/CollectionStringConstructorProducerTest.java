@@ -17,10 +17,10 @@ import static com.google.common.collect.Sets.newTreeSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.junit.Test;
 

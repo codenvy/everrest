@@ -11,10 +11,10 @@
  */
 package org.everrest.core.impl.provider;
 
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -13,10 +13,10 @@ package org.everrest.core.impl.header;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.ws.rs.core.NewCookie;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import javax.ws.rs.core.NewCookie;
 import org.junit.Before;
 import org.junit.Test;
 

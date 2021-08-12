@@ -11,8 +11,8 @@
  */
 package org.everrest.core;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Extension of {@link MultivaluedMap} that allows to get not null value (empty list) even there is

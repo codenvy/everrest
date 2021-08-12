@@ -23,10 +23,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
+import jakarta.ws.rs.MatrixParam;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.Parameter;
 import org.everrest.core.method.TypeProducer;

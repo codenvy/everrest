@@ -11,13 +11,13 @@
  */
 package org.everrest.core.impl.method;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Request;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.Providers;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.InitialProperties;
 import org.everrest.core.impl.EnvironmentContext;

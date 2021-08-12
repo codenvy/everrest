@@ -10,12 +10,12 @@ Add required _context-param_
 
 ```xml
 <context-param>
-  <param-name>javax.ws.rs.Application</param-name>
+  <param-name>jakarta.ws.rs.Application</param-name>
   <param-value>org.everrest.sample.book.BookApplication</param-value>   
 </context-param>
 ```
 
-- `javax.ws.rs.Application`: This is FQN of Java class that extends _javax.ws.rs.core.Application_ and provides set of classes and(or) instances of JAX-RS components.
+- `jakarta.ws.rs.Application`: This is FQN of Java class that extends _jakarta.ws.rs.core.Application_ and provides set of classes and(or) instances of JAX-RS components.
 
 
 Add bootstrap listeners

@@ -11,6 +11,14 @@
  */
 package org.everrest.core.impl.provider;
 
+import jakarta.activation.DataSource;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.xml.bind.JAXBElement;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,14 +29,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
-import javax.activation.DataSource;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBElement;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;

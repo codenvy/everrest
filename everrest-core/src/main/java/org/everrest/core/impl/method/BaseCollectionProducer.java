@@ -11,6 +11,7 @@
  */
 package org.everrest.core.impl.method;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.method.TypeProducer;
 
 public abstract class BaseCollectionProducer implements TypeProducer {

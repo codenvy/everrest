@@ -14,7 +14,7 @@ package org.everrest.core.impl.header;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import javax.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.Cookie;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -11,7 +11,7 @@
  */
 package a.b
 
-@javax.ws.rs.Path("a")
+@jakarta.ws.rs.Path("a")
 class GroovyResource2 {
     private org.everrest.groovy.GroovyIoCInjectTest.Component1 component
 
@@ -19,7 +19,7 @@ class GroovyResource2 {
         this.component = component
     }
 
-    @javax.ws.rs.GET
-    @javax.ws.rs.Path("b")
+    @jakarta.ws.rs.GET
+    @jakarta.ws.rs.Path("b")
     def m0() { component.getName() }
 }

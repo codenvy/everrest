@@ -12,9 +12,9 @@
 package org.everrest.core.impl.header;
 
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.Collections;
 import java.util.List;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Represents set of ranges provided by client in 'Range' header.
