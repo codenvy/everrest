@@ -148,7 +148,7 @@
         <org.hamcrest.version>2.2</org.hamcrest.version>
         <org.mockito.mockito-testng.version>0.4.8</org.mockito.mockito-testng.version>
         <org.mockito.version>3.11.2</org.mockito.version>
-        <org.slf4j.version>1.7.24</org.slf4j.version>
+        <org.slf4j.version>1.7.32</org.slf4j.version>
         <org.testng.version>7.4.0</org.testng.version>
         <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
         <version.license.header.groupid>org.eclipse.che.dev</version.license.header.groupid>
