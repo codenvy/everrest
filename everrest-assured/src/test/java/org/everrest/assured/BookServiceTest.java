@@ -11,7 +11,7 @@
  */
 package org.everrest.assured;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static io.restassured.RestAssured.expect;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

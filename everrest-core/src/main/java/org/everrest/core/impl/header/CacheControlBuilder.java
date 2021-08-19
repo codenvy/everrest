@@ -11,9 +11,9 @@
  */
 package org.everrest.core.impl.header;
 
+import jakarta.ws.rs.core.CacheControl;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.CacheControl;
 
 public class CacheControlBuilder {
   public static CacheControlBuilder aCacheControl() {

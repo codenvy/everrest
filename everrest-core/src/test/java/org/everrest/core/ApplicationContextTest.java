@@ -24,13 +24,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.LifecycleComponent;

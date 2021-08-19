@@ -14,18 +14,18 @@ package org.everrest.core.servlet;
 import static java.lang.reflect.Modifier.isAbstract;
 import static org.everrest.core.servlet.EverrestServletContextInitializer.EVERREST_SCAN_SKIP_PACKAGES;
 
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ext.Provider;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.HandlesTypes;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
 import org.everrest.core.Filter;
 
 /** @author andrew00x */
@@ -39,7 +39,7 @@ public class ComponentFinder implements ServletContainerInitializer {
   }
 
   private Set<String> defaultSkipPackages =
-      new HashSet<>(Arrays.asList("org.everrest.core", "javax.ws.rs"));
+      new HashSet<>(Arrays.asList("org.everrest.core", "jakarta.ws.rs"));
 
   void reset() {
     defaultSkipPackages.clear();

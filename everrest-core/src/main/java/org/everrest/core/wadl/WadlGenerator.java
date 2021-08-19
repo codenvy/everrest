@@ -11,7 +11,7 @@
  */
 package org.everrest.core.wadl;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import org.everrest.core.Parameter;
 import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;

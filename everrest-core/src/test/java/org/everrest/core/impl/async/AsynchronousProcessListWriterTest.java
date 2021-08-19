@@ -17,6 +17,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.io.CharStreams;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
@@ -24,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import javax.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.EntityTag;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -15,9 +15,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.ServletContext;
 import java.util.Arrays;
 import java.util.HashSet;
-import javax.servlet.ServletContext;
 import org.junit.Before;
 import org.junit.Test;
 

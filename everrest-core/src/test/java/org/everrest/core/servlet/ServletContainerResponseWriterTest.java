@@ -17,9 +17,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.impl.provider.StringEntityProvider;
 import org.junit.Before;

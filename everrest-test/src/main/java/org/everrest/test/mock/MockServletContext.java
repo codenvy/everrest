@@ -11,6 +11,16 @@
  */
 package org.everrest.test.mock;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionTrackingMode;
+import jakarta.servlet.descriptor.JspConfigDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,16 +33,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.descriptor.JspConfigDescriptor;
 
 /**
  * The Class MockServletContext.
@@ -81,7 +81,7 @@ public class MockServletContext implements ServletContext {
   public MockServletContext(String name, String path) {
     this(name);
     contextPath = path;
-    attributes.put("javax.servlet.context.tempdir", path);
+    attributes.put("jakarta.servlet.context.tempdir", path);
   }
 
   /**
@@ -307,6 +307,11 @@ public class MockServletContext implements ServletContext {
   }
 
   @Override
+  public ServletRegistration.Dynamic addJspFile(String servletName, String jspFile) {
+    throw new UnsupportedOperationException("not supported");
+  }
+
+  @Override
   public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
     throw new UnsupportedOperationException("not supported");
   }
@@ -405,5 +410,35 @@ public class MockServletContext implements ServletContext {
   @Override
   public String getVirtualServerName() {
     return null;
+  }
+
+  @Override
+  public int getSessionTimeout() {
+    throw new UnsupportedOperationException("not supported");
+  }
+
+  @Override
+  public void setSessionTimeout(int sessionTimeout) {
+    throw new UnsupportedOperationException("not supported");
+  }
+
+  @Override
+  public String getRequestCharacterEncoding() {
+    throw new UnsupportedOperationException("not supported");
+  }
+
+  @Override
+  public void setRequestCharacterEncoding(String encoding) {
+    throw new UnsupportedOperationException("not supported");
+  }
+
+  @Override
+  public String getResponseCharacterEncoding() {
+    throw new UnsupportedOperationException("not supported");
+  }
+
+  @Override
+  public void setResponseCharacterEncoding(String encoding) {
+    throw new UnsupportedOperationException("not supported");
   }
 }

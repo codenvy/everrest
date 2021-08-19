@@ -18,9 +18,9 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.Parameter;
 import org.everrest.core.method.TypeProducer;

@@ -14,8 +14,8 @@ package org.everrest.core.impl.provider.ext;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.ws.rs.WebApplicationException;
 import java.io.File;
-import javax.ws.rs.WebApplicationException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;

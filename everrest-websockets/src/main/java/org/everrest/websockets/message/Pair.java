@@ -11,9 +11,9 @@
  */
 package org.everrest.websockets.message;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.impl.header.HeaderHelper;
 

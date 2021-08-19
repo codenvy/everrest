@@ -12,10 +12,10 @@
 package org.everrest.core.impl.method;
 
 import com.google.common.collect.Iterables;
+import jakarta.ws.rs.MatrixParam;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.PathSegment;
 import java.util.List;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.PathSegment;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.method.TypeProducer;
 

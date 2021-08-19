@@ -11,11 +11,11 @@
  */
 package org.everrest.core.tools;
 
+import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.ws.rs.core.SecurityContext;
 
 public class SimpleSecurityContext implements SecurityContext {
   private final String authenticationScheme;

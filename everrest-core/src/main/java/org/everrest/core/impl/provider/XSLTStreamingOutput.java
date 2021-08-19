@@ -11,9 +11,9 @@
  */
 package org.everrest.core.impl.provider;
 
+import jakarta.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.ws.rs.core.StreamingOutput;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;

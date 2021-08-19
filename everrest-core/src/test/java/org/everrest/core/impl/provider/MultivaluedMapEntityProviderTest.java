@@ -12,7 +12,7 @@
 package org.everrest.core.impl.provider;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 import static org.everrest.core.util.ParameterizedTypeImpl.newParameterizedType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,14 +25,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.tools.EmptyInputStream;

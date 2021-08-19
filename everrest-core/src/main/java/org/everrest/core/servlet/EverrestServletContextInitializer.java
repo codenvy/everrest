@@ -11,14 +11,14 @@
  */
 package org.everrest.core.servlet;
 
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.RequestHandler;
@@ -45,7 +45,7 @@ public class EverrestServletContextInitializer {
 
   public static final String EVERREST_SCAN_COMPONENTS = "org.everrest.scan.components";
   public static final String EVERREST_SCAN_SKIP_PACKAGES = "org.everrest.scan.skip.packages";
-  public static final String JAXRS_APPLICATION = "javax.ws.rs.Application";
+  public static final String JAXRS_APPLICATION = "jakarta.ws.rs.Application";
 
   protected final ServletContext servletContext;
 
@@ -54,12 +54,12 @@ public class EverrestServletContextInitializer {
   }
 
   /**
-   * Try get application's FQN from context-param javax.ws.rs.Application and instantiate it. If
+   * Try get application's FQN from context-param jakarta.ws.rs.Application and instantiate it. If
    * such parameter is not specified then scan web application's folders WEB-INF/classes and
    * WEB-INF/lib for classes which contains JAX-RS annotations. Interesting for three annotations
    * {@link Path}, {@link Provider} and {@link Filter} .
    *
-   * @return instance of javax.ws.rs.core.Application
+   * @return instance of jakarta.ws.rs.core.Application
    */
   public Application getApplication() {
     Application application = null;
@@ -68,7 +68,7 @@ public class EverrestServletContextInitializer {
     if (applicationFQN != null) {
       if (scan) {
         String msg =
-            "Scan of JAX-RS components is disabled cause to specified 'javax.ws.rs.Application'.";
+            "Scan of JAX-RS components is disabled cause to specified 'jakarta.ws.rs.Application'.";
         LOG.warn(msg);
       }
       try {

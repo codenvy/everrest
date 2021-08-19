@@ -14,11 +14,11 @@ package org.everrest.core.tools;
 import static com.google.common.base.Throwables.propagate;
 import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
 
+import jakarta.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;

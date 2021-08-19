@@ -11,8 +11,8 @@
  */
 package org.everrest.core.impl.header;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.net.URI;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 /** @author andrew00x */
 public class URIHeaderDelegate implements RuntimeDelegate.HeaderDelegate<URI> {

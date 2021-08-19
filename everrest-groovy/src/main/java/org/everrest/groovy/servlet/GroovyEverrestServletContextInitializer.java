@@ -11,6 +11,10 @@
  */
 package org.everrest.groovy.servlet;
 
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
@@ -18,10 +22,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.everrest.core.Filter;
 import org.everrest.core.servlet.EverrestServletContextInitializer;

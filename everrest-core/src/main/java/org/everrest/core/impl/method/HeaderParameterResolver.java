@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl.method;
 
-import javax.ws.rs.HeaderParam;
+import jakarta.ws.rs.HeaderParam;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.Parameter;
 import org.everrest.core.method.TypeProducer;

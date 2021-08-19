@@ -12,7 +12,7 @@
 package org.everrest.core.impl.header;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static javax.ws.rs.core.MediaType.WILDCARD;
+import static jakarta.ws.rs.core.MediaType.WILDCARD;
 import static org.everrest.core.impl.header.CookieBuilder.aCookie;
 import static org.everrest.core.impl.header.NewCookieBuilder.aNewCookie;
 import static org.everrest.core.util.StringUtils.charAtIs;
@@ -20,6 +20,12 @@ import static org.everrest.core.util.StringUtils.doesNotContain;
 import static org.everrest.core.util.StringUtils.scan;
 
 import com.google.common.base.Joiner;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,12 +39,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import org.everrest.core.header.QualityValue;
 import org.everrest.core.impl.header.ListHeaderProducer.ListItemFactory;
 

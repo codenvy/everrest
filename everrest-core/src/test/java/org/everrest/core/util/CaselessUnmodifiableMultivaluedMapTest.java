@@ -14,12 +14,12 @@ package org.everrest.core.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.ExtMultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.junit.Before;

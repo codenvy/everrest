@@ -12,10 +12,10 @@
 package org.everrest.core.impl.resource;
 
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
 import org.everrest.core.Parameter;
 import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.ResourceMethodDescriptor;
@@ -33,10 +33,10 @@ public class ResourceMethodDescriptorImpl implements ResourceMethodDescriptor {
   /** Parent resource for this method resource, in other words class which contains this method. */
   private final ResourceDescriptor parentResource;
 
-  /** List of media types which this method can consume. See {@link javax.ws.rs.Consumes} . */
+  /** List of media types which this method can consume. See {@link jakarta.ws.rs.Consumes} . */
   private final List<MediaType> consumes;
 
-  /** List of media types which this method can produce. See {@link javax.ws.rs.Produces} . */
+  /** List of media types which this method can produce. See {@link jakarta.ws.rs.Produces} . */
   private final List<MediaType> produces;
 
   private final Annotation[] additional;

@@ -18,9 +18,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.ws.rs.core.Application;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.ws.rs.core.Application;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;

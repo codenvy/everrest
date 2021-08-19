@@ -13,10 +13,10 @@ package org.everrest.core.impl.header;
 
 import static org.everrest.core.impl.header.HeaderHelper.addQuotesIfHasWhitespace;
 
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 public class CacheControlHeaderDelegate implements RuntimeDelegate.HeaderDelegate<CacheControl> {
 

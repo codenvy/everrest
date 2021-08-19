@@ -11,14 +11,14 @@
  */
 package org.everrest.assured;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
 import java.lang.reflect.Field;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;
 import org.everrest.core.ObjectFactory;
@@ -143,13 +143,14 @@ public class EverrestJetty implements ITestListener, IInvokedMethodListener {
               if (factory != null) {
                 everrest.addFactory(factory);
               }
-            } else if (javax.servlet.Filter.class.isAssignableFrom(field.getType())) {
+            } else if (jakarta.servlet.Filter.class.isAssignableFrom(field.getType())) {
               field.setAccessible(true);
               Object fieldInstance = field.get(instance);
               if (fieldInstance != null) {
-                httpServer.addFilter(((javax.servlet.Filter) fieldInstance), "/*");
+                httpServer.addFilter(((jakarta.servlet.Filter) fieldInstance), "/*");
               } else {
-                httpServer.addFilter((Class<? extends javax.servlet.Filter>) field.getType(), "/*");
+                httpServer.addFilter(
+                    (Class<? extends jakarta.servlet.Filter>) field.getType(), "/*");
               }
             }
           } catch (IllegalAccessException e) {

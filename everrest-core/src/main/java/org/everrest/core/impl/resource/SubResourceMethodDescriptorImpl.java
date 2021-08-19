@@ -12,10 +12,10 @@
 package org.everrest.core.impl.resource;
 
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
 import org.everrest.core.Parameter;
 import org.everrest.core.resource.ResourceDescriptor;
 import org.everrest.core.resource.SubResourceMethodDescriptor;

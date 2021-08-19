@@ -11,9 +11,9 @@
  */
 package org.everrest.core.util;
 
+import jakarta.ws.rs.core.MediaType;
 import java.util.Comparator;
 import java.util.regex.Matcher;
-import javax.ws.rs.core.MediaType;
 import org.everrest.core.impl.header.MediaTypeHelper;
 
 /**

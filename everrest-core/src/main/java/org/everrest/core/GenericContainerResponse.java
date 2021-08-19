@@ -11,11 +11,11 @@
  */
 package org.everrest.core;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 
 public interface GenericContainerResponse {
 

@@ -11,11 +11,11 @@
  */
 package org.everrest.core.impl.method;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.util.ReflectionUtils;
 
 /**
@@ -33,7 +33,7 @@ public final class PrimitiveTypeProducer extends BaseTypeProducer {
 
   /**
    * Default values for primitive types. This value will be used if not found required parameter in
-   * request and default value {@link javax.ws.rs.DefaultValue} is null.
+   * request and default value {@link jakarta.ws.rs.DefaultValue} is null.
    */
   private static final Map<String, Object> PRIMITIVE_TYPE_DEFAULTS;
 

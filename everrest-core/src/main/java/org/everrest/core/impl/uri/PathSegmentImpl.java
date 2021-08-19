@@ -17,9 +17,9 @@ import static org.everrest.core.util.StringUtils.charAtIs;
 import static org.everrest.core.util.StringUtils.scan;
 
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
 import java.util.Objects;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import org.everrest.core.impl.MultivaluedMapImpl;
 
 public final class PathSegmentImpl implements PathSegment {

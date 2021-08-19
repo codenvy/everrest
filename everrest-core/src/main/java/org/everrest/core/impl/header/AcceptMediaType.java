@@ -13,9 +13,9 @@ package org.everrest.core.impl.header;
 
 import static org.everrest.core.impl.header.HeaderHelper.parseQualityValue;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.RuntimeDelegate;
 import org.everrest.core.header.QualityValue;
 
 public class AcceptMediaType implements QualityValue {

@@ -19,16 +19,16 @@ import com.google.inject.Module;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.RuntimeDelegate;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.Filter;
 import org.everrest.core.FilterDescriptor;
@@ -62,7 +62,7 @@ import org.everrest.guice.GuiceRuntimeDelegateImpl;
 public abstract class EverrestGuiceContextListener extends GuiceServletContextListener {
   /**
    * Default EverrestGuiceContextListener implementation. It gets application's FQN from
-   * context-param <i>javax.ws.rs.Application</i> and instantiate it. If such parameter is not
+   * context-param <i>jakarta.ws.rs.Application</i> and instantiate it. If such parameter is not
    * specified then scan (if scanning is enabled) web application's folders WEB-INF/classes and
    * WEB-INF/lib for classes which contains JAX-RS annotations. Interesting for three annotations
    * {@link Path}, {@link Provider} and {@link Filter}. Scanning of JAX-RS components is managed by

@@ -12,6 +12,8 @@
 package org.everrest.core.impl;
 
 import com.google.common.collect.Iterables;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,8 +21,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ObjectFactory;
 import org.everrest.core.PerRequestObjectFactory;
@@ -62,7 +62,7 @@ public class ResourceBinderImpl implements ResourceBinder {
     if (!resourceClass.isAnnotationPresent(Path.class)) {
       throw new ResourcePublicationException(
           String.format(
-              "Resource class %s it is not root resource. Path annotation javax.ws.rs.Path is not specified for this class.",
+              "Resource class %s it is not root resource. Path annotation jakarta.ws.rs.Path is not specified for this class.",
               resourceClass.getName()));
     }
     try {
@@ -100,7 +100,7 @@ public class ResourceBinderImpl implements ResourceBinder {
     if (!resource.getClass().isAnnotationPresent(Path.class)) {
       throw new ResourcePublicationException(
           String.format(
-              "Resource class %s it is not root resource. Path annotation javax.ws.rs.Path is not specified for this class.",
+              "Resource class %s it is not root resource. Path annotation jakarta.ws.rs.Path is not specified for this class.",
               resource.getClass().getName()));
     }
     addResource(

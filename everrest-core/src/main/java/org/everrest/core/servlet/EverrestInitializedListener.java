@@ -11,10 +11,10 @@
  */
 package org.everrest.core.servlet;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.ws.rs.core.Application;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.ws.rs.core.Application;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.ApplicationProviderBinder;

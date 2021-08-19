@@ -16,7 +16,7 @@ import static org.everrest.core.impl.header.CacheControlBuilder.aCacheControl;
 import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.ImmutableMap;
-import javax.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.CacheControl;
 import org.junit.Before;
 import org.junit.Test;
 

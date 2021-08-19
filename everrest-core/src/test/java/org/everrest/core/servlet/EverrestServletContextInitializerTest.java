@@ -20,14 +20,14 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.ResourceBinder;
 import org.everrest.core.impl.EverrestApplication;
@@ -60,7 +60,7 @@ public class EverrestServletContextInitializerTest {
 
   @Test
   public void createsApplicationIsConfiguredInServletContext() {
-    when(servletContext.getInitParameter("javax.ws.rs.Application"))
+    when(servletContext.getInitParameter("jakarta.ws.rs.Application"))
         .thenReturn(SomeApplication.class.getName());
 
     EverrestServletContextInitializer everrestServletContextInitializer =
@@ -83,7 +83,7 @@ public class EverrestServletContextInitializerTest {
 
   @Test
   public void ignoresScanParameterIfApplicationIsConfiguredInServletContext() throws Exception {
-    when(servletContext.getInitParameter("javax.ws.rs.Application"))
+    when(servletContext.getInitParameter("jakarta.ws.rs.Application"))
         .thenReturn(SomeApplication.class.getName());
     when(servletContext.getInitParameter("org.everrest.scan.components")).thenReturn("true");
 

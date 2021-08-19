@@ -12,7 +12,7 @@
 package org.everrest.core.impl.provider.multipart;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.everrest.core.util.ParameterizedTypeImpl.newParameterizedType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -24,14 +24,14 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.Providers;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Providers;
 import org.apache.commons.fileupload.FileItem;
 import org.junit.Before;
 import org.junit.Rule;

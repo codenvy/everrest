@@ -19,9 +19,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
+import jakarta.ws.rs.core.Link;
 import java.net.URI;
 import java.util.Map;
-import javax.ws.rs.core.Link;
 import org.junit.Before;
 import org.junit.Test;
 

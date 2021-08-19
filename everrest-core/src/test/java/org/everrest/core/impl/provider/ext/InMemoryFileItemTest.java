@@ -14,7 +14,7 @@ package org.everrest.core.impl.provider.ext;
 import static org.junit.Assert.assertArrayEquals;
 
 import com.google.common.io.ByteStreams;
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
 

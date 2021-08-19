@@ -11,10 +11,10 @@
  */
 package org.everrest.core.impl.resource;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.everrest.core.Parameter;
 import org.everrest.core.resource.ResourceDescriptor;
 

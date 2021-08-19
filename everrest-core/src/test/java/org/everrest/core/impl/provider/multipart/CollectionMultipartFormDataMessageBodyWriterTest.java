@@ -12,8 +12,8 @@
 package org.everrest.core.impl.provider.multipart;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.everrest.core.impl.provider.multipart.OutputItem.anOutputItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,6 +25,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.ImmutableMap;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -32,9 +35,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.util.ParameterizedTypeImpl;
 import org.junit.Before;
 import org.junit.Test;

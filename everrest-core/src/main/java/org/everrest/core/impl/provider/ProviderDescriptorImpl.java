@@ -15,19 +15,19 @@ import static org.everrest.core.impl.header.MediaTypeHelper.createConsumesList;
 import static org.everrest.core.impl.header.MediaTypeHelper.createProducesList;
 
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.provider.ProviderDescriptor;
 
 /** @author andrew00x */
 public class ProviderDescriptorImpl extends BaseObjectModel implements ProviderDescriptor {
-  /** List of media types which this method can consume. See {@link javax.ws.rs.Consumes} */
+  /** List of media types which this method can consume. See {@link jakarta.ws.rs.Consumes} */
   private final List<MediaType> consumes;
 
-  /** List of media types which this method can produce. See {@link javax.ws.rs.Produces} */
+  /** List of media types which this method can produce. See {@link jakarta.ws.rs.Produces} */
   private final List<MediaType> produces;
 
   public ProviderDescriptorImpl(Class<?> providerClass) {

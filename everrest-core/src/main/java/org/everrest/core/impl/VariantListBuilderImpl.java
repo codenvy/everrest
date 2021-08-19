@@ -13,14 +13,14 @@ package org.everrest.core.impl;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Variant;
+import jakarta.ws.rs.core.Variant.VariantListBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.core.Variant.VariantListBuilder;
 
 /** See {@link VariantListBuilder}. */
 public class VariantListBuilderImpl extends VariantListBuilder {

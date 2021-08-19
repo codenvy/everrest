@@ -13,11 +13,11 @@ package org.everrest.core.impl.method;
 
 import static org.everrest.core.util.ParameterizedTypeImpl.newParameterizedType;
 
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyReader;
 import java.lang.reflect.ParameterizedType;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.method.TypeProducer;

@@ -11,11 +11,11 @@
  */
 package org.everrest.websockets;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.Session;
 import java.io.IOException;
 import java.util.Collection;
-import javax.servlet.http.HttpSession;
-import javax.websocket.EncodeException;
-import javax.websocket.Session;
 import org.everrest.websockets.message.OutputMessage;
 
 /**

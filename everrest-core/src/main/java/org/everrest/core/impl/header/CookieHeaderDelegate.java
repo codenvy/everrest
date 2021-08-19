@@ -14,9 +14,9 @@ package org.everrest.core.impl.header;
 import static org.everrest.core.impl.header.HeaderHelper.addQuotesIfHasWhitespace;
 
 import com.google.common.collect.Iterables;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Cookie> {
 

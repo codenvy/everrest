@@ -14,7 +14,7 @@ package org.everrest.core.impl.method;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.junit.Before;
 import org.junit.Test;

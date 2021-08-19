@@ -11,15 +11,22 @@
  */
 package org.everrest.core.impl;
 
-import static javax.ws.rs.HttpMethod.HEAD;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
+import static jakarta.ws.rs.HttpMethod.HEAD;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,13 +34,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.EventObject;
 import java.util.List;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.MessageBodyWriter;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;

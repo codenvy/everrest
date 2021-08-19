@@ -10,10 +10,10 @@
  *   Codenvy, S.A. - initial API and implementation
  */
 package a.b
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
 
 @Path("a")
 class GroovyResource1

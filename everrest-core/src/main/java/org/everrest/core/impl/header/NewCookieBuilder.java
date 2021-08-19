@@ -11,9 +11,9 @@
  */
 package org.everrest.core.impl.header;
 
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.NewCookie;
 import java.util.Date;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.NewCookie;
 
 /** Builder for {@link NewCookie} */
 public class NewCookieBuilder {

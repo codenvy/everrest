@@ -11,11 +11,24 @@
  */
 package org.everrest.core.impl.resource;
 
-import static javax.ws.rs.core.MediaType.WILDCARD_TYPE;
+import static jakarta.ws.rs.core.MediaType.WILDCARD_TYPE;
 import static org.everrest.core.impl.header.MediaTypeHelper.WADL_TYPE;
 import static org.everrest.core.impl.method.ParameterHelper.RESOURCE_METHOD_PARAMETER_ANNOTATIONS;
 
 import com.google.common.base.MoreObjects;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.Encoded;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -29,19 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Encoded;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.BaseObjectModel;
 import org.everrest.core.Parameter;
 import org.everrest.core.impl.header.MediaTypeHelper;
@@ -556,8 +556,8 @@ public class AbstractResourceDescriptor extends BaseObjectModel implements Resou
 
   /**
    * Get all method with at least one annotation which has annotation <i>annotation</i>. It is
-   * useful for annotation {@link javax.ws.rs.GET}, etc. All HTTP method annotations has annotation
-   * {@link javax.ws.rs.HttpMethod}.
+   * useful for annotation {@link jakarta.ws.rs.GET}, etc. All HTTP method annotations has
+   * annotation {@link jakarta.ws.rs.HttpMethod}.
    *
    * @param <T> annotation type
    * @param method method
@@ -708,9 +708,9 @@ public class AbstractResourceDescriptor extends BaseObjectModel implements Resou
    * @param clazz
    *         class which contains <code>method</code>
    * @return one of security annotation or <code>null</code> is no such annotation found
-   * @see javax.annotation.security.DenyAll
-   * @see javax.annotation.security.RolesAllowed
-   * @see javax.annotation.security.PermitAll
+   * @see jakarta.annotation.security.DenyAll
+   * @see jakarta.annotation.security.RolesAllowed
+   * @see jakarta.annotation.security.PermitAll
    */
   @SuppressWarnings("unchecked")
   private <T extends Annotation> T getSecurityAnnotation(Method method, Class<?> clazz) {

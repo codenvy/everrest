@@ -14,10 +14,10 @@ package org.everrest.core.impl.uri;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
 import java.util.Arrays;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

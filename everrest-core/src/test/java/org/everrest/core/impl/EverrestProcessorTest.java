@@ -23,13 +23,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.PreDestroy;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.RequestHandler;

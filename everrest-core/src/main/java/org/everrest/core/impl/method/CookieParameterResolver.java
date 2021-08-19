@@ -11,10 +11,10 @@
  */
 package org.everrest.core.impl.method;
 
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.Map;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.everrest.core.method.TypeProducer;

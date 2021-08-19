@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 import org.everrest.core.method.MethodInvokerFilter;
 
 /**
- * Marks an implementation of an extension interface. Filters may contain {@link javax.ws.rs.Path}
+ * Marks an implementation of an extension interface. Filters may contain {@link jakarta.ws.rs.Path}
  * annotation for restriction filter scope. If &#64;Path is not specified then filter will be
  * applied for all requests (RequestFilter), responses (ResponseFilter) or all resource methods
  * (MethodInvokerFilter).

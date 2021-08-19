@@ -11,27 +11,27 @@
  */
 package org.everrest.core.impl;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.everrest.core.impl.method.ParameterHelper.PROVIDER_FIELDS_ANNOTATIONS;
 import static org.everrest.core.impl.method.ParameterHelper.RESOURCE_FIELDS_ANNOTATIONS;
 
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.Encoded;
+import jakarta.ws.rs.MatrixParam;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Encoded;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.DependencySupplier;
 import org.everrest.core.FieldInjector;
@@ -45,10 +45,10 @@ public class FieldInjectorImpl implements FieldInjector {
   private final Annotation annotation;
   /**
    * Default value for this parameter, default value can be used if there is not found required
-   * parameter in request. See {@link javax.ws.rs.DefaultValue}.
+   * parameter in request. See {@link jakarta.ws.rs.DefaultValue}.
    */
   private final String defaultValue;
-  /** See {@link javax.ws.rs.Encoded}. */
+  /** See {@link jakarta.ws.rs.Encoded}. */
   private final boolean encoded;
 
   private final Field field;

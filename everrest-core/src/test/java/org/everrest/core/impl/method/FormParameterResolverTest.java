@@ -11,7 +11,7 @@
  */
 package org.everrest.core.impl.method;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 import static org.everrest.core.util.ParameterizedTypeImpl.newParameterizedType;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -21,12 +21,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyReader;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.Parameter;
 import org.everrest.core.method.TypeProducer;

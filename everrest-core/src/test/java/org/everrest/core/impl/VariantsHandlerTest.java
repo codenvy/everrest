@@ -11,20 +11,20 @@
  */
 package org.everrest.core.impl;
 
-import static javax.ws.rs.core.HttpHeaders.ACCEPT;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_CHARSET;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_ENCODING;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_CHARSET;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_ENCODING;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Variant;
 import java.util.List;
 import java.util.Locale;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Variant;
 import org.junit.Before;
 import org.junit.Test;
 

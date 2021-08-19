@@ -11,13 +11,13 @@
  */
 package org.everrest.core;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Request;
+import jakarta.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.SecurityContext;
 import org.everrest.core.impl.header.AcceptMediaType;
 
 public interface GenericContainerRequest extends Request, SecurityContext, ExtHttpHeaders {

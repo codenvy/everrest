@@ -11,14 +11,14 @@
  */
 package org.everrest.core.impl;
 
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedHashMap;
 import org.everrest.core.ExtMultivaluedMap;
 
 /**
  * @author andrew00x
- * @see javax.ws.rs.core.MultivaluedMap
+ * @see jakarta.ws.rs.core.MultivaluedMap
  */
 public class MultivaluedMapImpl extends MultivaluedHashMap<String, String>
     implements ExtMultivaluedMap<String, String> {

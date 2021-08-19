@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import org.everrest.core.generated.Book;
 import org.junit.Before;
 import org.junit.Test;

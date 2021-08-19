@@ -11,9 +11,9 @@
  */
 package org.everrest.core.impl.provider;
 
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,12 +23,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.io.ByteStreams;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.util.ByteArrayDataSource;
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.util.ByteArrayDataSource;
-import javax.ws.rs.core.MultivaluedHashMap;
 import org.everrest.core.ApplicationContext;
 import org.junit.After;
 import org.junit.Before;

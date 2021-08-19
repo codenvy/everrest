@@ -13,17 +13,17 @@ package org.everrest.core.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagateIfPossible;
+import static jakarta.ws.rs.core.HttpHeaders.ALLOW;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.HttpHeaders.LOCATION;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.Response.Status.ACCEPTED;
+import static jakarta.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
+import static jakarta.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.UNSUPPORTED_MEDIA_TYPE;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.HttpHeaders.ALLOW;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.HttpHeaders.LOCATION;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.Status.ACCEPTED;
-import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
-import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.UNSUPPORTED_MEDIA_TYPE;
 import static org.everrest.core.impl.header.HeaderHelper.convertToString;
 import static org.everrest.core.impl.header.MediaTypeHelper.findFistCompatibleAcceptMediaType;
 
@@ -31,6 +31,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterables;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -39,9 +42,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Response;
 import org.everrest.core.ApplicationContext;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.GenericContainerResponse;
@@ -406,7 +406,7 @@ public class RequestDispatcher {
   }
 
   /**
-   * Process result of invoked method, and set {@link javax.ws.rs.core.Response} parameters
+   * Process result of invoked method, and set {@link jakarta.ws.rs.core.Response} parameters
    * dependent of returned object.
    *
    * @param methodInvocationResult result of invoked method
@@ -559,7 +559,7 @@ public class RequestDispatcher {
    * @param request See {@link org.everrest.core.GenericContainerRequest}
    * @param response See {@link org.everrest.core.GenericContainerResponse}
    * @param capturedValues the list for keeping template values. See {@link
-   *     javax.ws.rs.core.UriInfo#getPathParameters()}
+   *     jakarta.ws.rs.core.UriInfo#getPathParameters()}
    * @param matchedMethods list for method resources
    * @return true if at least one sub-resource method found false otherwise
    */

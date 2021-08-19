@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.everrest.core.impl.MultivaluedMapImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;

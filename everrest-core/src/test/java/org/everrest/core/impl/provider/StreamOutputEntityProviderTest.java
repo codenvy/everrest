@@ -17,9 +17,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.StreamingOutput;
 import org.junit.Before;
 import org.junit.Test;
 

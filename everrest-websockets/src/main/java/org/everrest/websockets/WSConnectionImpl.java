@@ -11,12 +11,21 @@
  */
 package org.everrest.websockets;
 
-import static javax.websocket.CloseReason.CloseCodes.getCloseCode;
+import static jakarta.websocket.CloseReason.CloseCodes.getCloseCode;
 import static org.everrest.websockets.ServerContainerInitializeListener.EVERREST_PROCESSOR_ATTRIBUTE;
 import static org.everrest.websockets.ServerContainerInitializeListener.EXECUTOR_ATTRIBUTE;
 import static org.everrest.websockets.ServerContainerInitializeListener.HTTP_SESSION_ATTRIBUTE;
 import static org.everrest.websockets.ServerContainerInitializeListener.SECURITY_CONTEXT;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.Session;
+import jakarta.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,15 +36,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.servlet.http.HttpSession;
-import javax.websocket.CloseReason;
-import javax.websocket.DecodeException;
-import javax.websocket.EncodeException;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
-import javax.websocket.Session;
-import javax.ws.rs.core.SecurityContext;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.websockets.message.MessageSender;
 import org.everrest.websockets.message.OutputMessage;

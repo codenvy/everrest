@@ -13,29 +13,40 @@ package org.everrest.core.impl;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Sets.newHashSet;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_ENCODING;
+import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
+import static jakarta.ws.rs.core.HttpHeaders.ALLOW;
+import static jakarta.ws.rs.core.HttpHeaders.CACHE_CONTROL;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_ENCODING;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_LANGUAGE;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_LOCATION;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.HttpHeaders.DATE;
+import static jakarta.ws.rs.core.HttpHeaders.ETAG;
+import static jakarta.ws.rs.core.HttpHeaders.EXPIRES;
+import static jakarta.ws.rs.core.HttpHeaders.LAST_MODIFIED;
+import static jakarta.ws.rs.core.HttpHeaders.LINK;
+import static jakarta.ws.rs.core.HttpHeaders.LOCATION;
+import static jakarta.ws.rs.core.HttpHeaders.SET_COOKIE;
+import static jakarta.ws.rs.core.HttpHeaders.VARY;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_ENCODING;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
-import static javax.ws.rs.core.HttpHeaders.ALLOW;
-import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_ENCODING;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_LANGUAGE;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_LOCATION;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.HttpHeaders.DATE;
-import static javax.ws.rs.core.HttpHeaders.ETAG;
-import static javax.ws.rs.core.HttpHeaders.EXPIRES;
-import static javax.ws.rs.core.HttpHeaders.LAST_MODIFIED;
-import static javax.ws.rs.core.HttpHeaders.LINK;
-import static javax.ws.rs.core.HttpHeaders.LOCATION;
-import static javax.ws.rs.core.HttpHeaders.SET_COOKIE;
-import static javax.ws.rs.core.HttpHeaders.VARY;
 import static org.everrest.core.impl.header.HeaderHelper.getHeaderAsString;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Variant;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -49,17 +60,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.RuntimeDelegate;
 import org.everrest.core.ExtMultivaluedMap;
 import org.everrest.core.impl.header.HeaderHelper;
 import org.everrest.core.util.CaselessMultivaluedMap;
@@ -73,7 +73,7 @@ public class ResponseImpl extends Response {
   /** Entity of response */
   private final Object entity;
 
-  /** Annotations that will be passed to the {@link javax.ws.rs.ext.MessageBodyWriter}. */
+  /** Annotations that will be passed to the {@link jakarta.ws.rs.ext.MessageBodyWriter}. */
   private Annotation[] entityAnnotations;
 
   /** HTTP headers. */

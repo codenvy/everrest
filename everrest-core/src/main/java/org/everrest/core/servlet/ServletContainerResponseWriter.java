@@ -11,12 +11,12 @@
  */
 package org.everrest.core.servlet;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ext.MessageBodyWriter;
 import org.everrest.core.ContainerResponseWriter;
 import org.everrest.core.GenericContainerResponse;
 import org.everrest.core.impl.header.HeaderHelper;

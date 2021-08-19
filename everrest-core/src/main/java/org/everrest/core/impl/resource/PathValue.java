@@ -11,10 +11,10 @@
  */
 package org.everrest.core.impl.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 /**
- * Describe the Path annotation, see {@link javax.ws.rs.Path}.
+ * Describe the Path annotation, see {@link jakarta.ws.rs.Path}.
  *
  * @author andrew00x
  */
@@ -23,7 +23,7 @@ public class PathValue {
     return annotation == null ? null : annotation.value();
   }
 
-  /** URI template, see {@link javax.ws.rs.Path#value()} . */
+  /** URI template, see {@link jakarta.ws.rs.Path#value()} . */
   private final String path;
 
   /** @param path URI template */

@@ -11,11 +11,11 @@
  */
 package org.everrest.core.impl.provider.multipart;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 /** @author andrew00x */
 public interface InputItem {

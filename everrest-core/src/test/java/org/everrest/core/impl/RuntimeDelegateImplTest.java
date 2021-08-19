@@ -13,15 +13,15 @@ package org.everrest.core.impl;
 
 import static org.junit.Assert.assertNotNull;
 
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
 import java.net.URI;
 import java.util.Date;
 import java.util.Locale;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
 import org.everrest.core.impl.header.AcceptLanguage;
 import org.everrest.core.impl.header.AcceptMediaType;
 import org.everrest.core.impl.header.Ranges;

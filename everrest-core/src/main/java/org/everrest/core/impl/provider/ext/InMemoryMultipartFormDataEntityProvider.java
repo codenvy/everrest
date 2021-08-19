@@ -11,17 +11,17 @@
  */
 package org.everrest.core.impl.provider.ext;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
@@ -52,7 +52,8 @@ public class InMemoryMultipartFormDataEntityProvider extends MultipartFormDataEn
       int bufferSize = context.getEverrestConfiguration().getMaxBufferSize();
       FileItemFactory factory = new InMemoryItemFactory(bufferSize);
       FileUpload upload = new FileUpload(factory);
-      return upload.parseRequest(httpRequest).iterator();
+      // return upload.parseRequest(new RequestContext() {}).iterator();
+      throw new FileUploadException("not implemented");
     } catch (FileUploadException e) {
       throw new IOException(String.format("Can't process multipart data item, %s", e));
     }

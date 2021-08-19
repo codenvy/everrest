@@ -11,9 +11,23 @@
  */
 package org.everrest.websockets;
 
-import static javax.websocket.server.ServerEndpointConfig.Builder.create;
-import static javax.websocket.server.ServerEndpointConfig.Configurator;
+import static jakarta.websocket.server.ServerEndpointConfig.Builder.create;
+import static jakarta.websocket.server.ServerEndpointConfig.Configurator;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.HandshakeResponse;
+import jakarta.websocket.server.HandshakeRequest;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpointConfig;
+import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -23,20 +37,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpSession;
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.DeploymentException;
-import javax.websocket.EncodeException;
-import javax.websocket.Encoder;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpointConfig;
-import javax.ws.rs.core.SecurityContext;
 import org.everrest.core.impl.EverrestConfiguration;
 import org.everrest.core.impl.EverrestProcessor;
 import org.everrest.core.impl.provider.json.JsonException;
@@ -73,7 +73,7 @@ public class ServerContainerInitializeListener implements ServletContextListener
       everrestConfiguration = new EverrestConfiguration();
     }
     final ServerContainer serverContainer =
-        (ServerContainer) servletContext.getAttribute("javax.websocket.server.ServerContainer");
+        (ServerContainer) servletContext.getAttribute("jakarta.websocket.server.ServerContainer");
     try {
       serverEndpointConfig = createServerEndpointConfig(servletContext);
       serverContainer.addEndpoint(serverEndpointConfig);

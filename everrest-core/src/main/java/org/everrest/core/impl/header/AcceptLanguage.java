@@ -11,8 +11,8 @@
  */
 package org.everrest.core.impl.header;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.util.Locale;
-import javax.ws.rs.ext.RuntimeDelegate;
 import org.everrest.core.header.QualityValue;
 
 /** @author andrew00x */

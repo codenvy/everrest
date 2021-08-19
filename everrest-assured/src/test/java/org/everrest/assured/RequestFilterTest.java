@@ -11,17 +11,17 @@
  */
 package org.everrest.assured;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static io.restassured.RestAssured.expect;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.Providers;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.Providers;
 import org.everrest.core.Filter;
 import org.everrest.core.GenericContainerRequest;
 import org.everrest.core.RequestFilter;

@@ -14,10 +14,10 @@ package org.everrest.core.impl;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.After;

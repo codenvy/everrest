@@ -12,8 +12,8 @@
 package org.everrest.core.impl.provider.multipart;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.everrest.core.impl.provider.multipart.OutputItem.anOutputItem;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -23,12 +23,12 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Providers;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -11,12 +11,12 @@
  */
 package org.everrest.core;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedMap;
 import org.everrest.core.impl.ConstructorDescriptorImpl;
 import org.everrest.core.impl.FieldInjectorImpl;
 import org.everrest.core.impl.MultivaluedMapImpl;

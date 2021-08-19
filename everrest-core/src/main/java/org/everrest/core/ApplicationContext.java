@@ -11,6 +11,16 @@
  */
 package org.everrest.core;
 
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.Request;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Providers;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -19,16 +29,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
 import org.everrest.core.impl.ContainerResponse;
 import org.everrest.core.impl.EnvironmentContext;
 import org.everrest.core.impl.EverrestConfiguration;

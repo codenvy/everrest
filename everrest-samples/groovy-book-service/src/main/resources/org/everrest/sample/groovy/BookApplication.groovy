@@ -11,7 +11,7 @@
  */
 package org.everrest.sample.groovy
 
-class BookApplication extends javax.ws.rs.core.Application {
+class BookApplication extends jakarta.ws.rs.core.Application {
     def bookService
     def bookNotFoundExceptionMapper
 

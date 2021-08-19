@@ -11,7 +11,7 @@
  */
 package org.everrest.core;
 
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 /** @author andrew00x */
 public interface ExtHttpHeaders extends HttpHeaders {

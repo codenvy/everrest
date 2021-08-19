@@ -15,10 +15,10 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.jayway.restassured.RestAssured;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
+import io.restassured.RestAssured;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
 import org.everrest.core.Filter;
 import org.everrest.core.method.MethodInvokerFilter;
 import org.everrest.core.resource.GenericResourceMethod;
