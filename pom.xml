@@ -110,7 +110,7 @@
         <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
         <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
         <jakarta.ws.rs.version>3.0.0</jakarta.ws.rs.version>
-        <jakarta.xml.bind>3.0.0</jakarta.xml.bind>
+        <jakarta.xml.bind>3.0.1</jakarta.xml.bind>
         <java.target.version>11</java.target.version>
         <jetty.version>11.0.6</jetty.version>
         <junit.version>4.13.2</junit.version>
