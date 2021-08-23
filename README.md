@@ -3,7 +3,7 @@
 ![Java CI with Maven](https://github.com/codenvy/everrest/workflows/Java%20CI%20with%20Maven/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.everrest/everrest-core/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.everrest/everrest-core)[![GitHub tag](https://img.shields.io/github/tag/codenvy/everrest.svg?style=plastic)](https://github.com/codenvy/everrest/releases/latest)
 
 EverRest project it is RESTful application framework along with complete JAX-RS (JSR-311) implementation. It is portable between different Servlet containers.
-  - Easy integrate with [Spring Integration](https://github.com/codenvy/everrest/wiki/Spring Integration) ,  [Picocontainer Integration](https://github.com/codenvy/everrest/wiki/Picocontainer Integration) , [Guice Integration](https://github.com/codenvy/everrest/wiki/Guice Integration).
+  - Easy integrate with [Guice Integration](https://github.com/codenvy/everrest/wiki/Guice Integration).
   - [WADL](https://github.com/codenvy/everrest/wiki/WADL)
   - [Filters](https://github.com/codenvy/everrest/wiki/Filters)
   - [Support of X-HTTP-Method-Override HTTP header](https://github.com/codenvy/everrest/wiki/XHTTP-Method-Override)
