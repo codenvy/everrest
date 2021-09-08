@@ -135,7 +135,7 @@
         <maven.jacoco.plugin.version>0.8.7</maven.jacoco.plugin.version>
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
         <maven.javadoc.plugin.vesion>3.3.1</maven.javadoc.plugin.vesion>
-        <maven.mycila.license.plugin.version>3.0</maven.mycila.license.plugin.version>
+        <maven.mycila.license.plugin.version>4.1</maven.mycila.license.plugin.version>
         <maven.plugin.plugin.version>3.6.1</maven.plugin.plugin.version>
         <maven.release.plugin.version>3.0.0-M4</maven.release.plugin.version>
         <maven.resources.plugin.version>3.2.0</maven.resources.plugin.version>
