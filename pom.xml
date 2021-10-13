@@ -112,7 +112,7 @@
         <jakarta.ws.rs.version>3.0.0</jakarta.ws.rs.version>
         <jakarta.xml.bind>3.0.0</jakarta.xml.bind>
         <java.target.version>11</java.target.version>
-        <jetty.version>11.0.6</jetty.version>
+        <jetty.version>11.0.7</jetty.version>
         <junit.version>4.13.2</junit.version>
         <license_contributor>${project.organization.name} - initial API and implementation</license_contributor>
         <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
