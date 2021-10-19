@@ -105,7 +105,7 @@
         <io.rest-assured.version>4.4.0</io.rest-assured.version>
         <jakarta.activation.version>2.0.1</jakarta.activation.version>
         <jakarta.annotation.version>2.0.0</jakarta.annotation.version>
-        <jakarta.inject.version>1.0.4</jakarta.inject.version>
+        <jakarta.inject.version>1.0.5</jakarta.inject.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
         <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
