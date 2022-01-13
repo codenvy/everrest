@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -38,9 +38,7 @@ public class MatchedURIsAndResourcesTest extends BaseTest {
     @GET
     @Path("2")
     public String m1(@Context UriInfo uriInfo) {
-      return uriInfo
-          .getMatchedResources()
-          .stream()
+      return uriInfo.getMatchedResources().stream()
           .map(o -> o.getClass().getSimpleName())
           .collect(joining(","));
     }
@@ -61,9 +59,7 @@ public class MatchedURIsAndResourcesTest extends BaseTest {
     @GET
     @Path("2")
     public String m1(@Context UriInfo uriInfo) {
-      return uriInfo
-          .getMatchedResources()
-          .stream()
+      return uriInfo.getMatchedResources().stream()
           .map(o -> o.getClass().getSimpleName())
           .collect(joining(","));
     }
@@ -84,9 +80,7 @@ public class MatchedURIsAndResourcesTest extends BaseTest {
     @GET
     @Path("2")
     public String m1(@Context UriInfo uriInfo) {
-      return uriInfo
-          .getMatchedResources()
-          .stream()
+      return uriInfo.getMatchedResources().stream()
           .map(o -> o.getClass().getSimpleName())
           .collect(joining(","));
     }

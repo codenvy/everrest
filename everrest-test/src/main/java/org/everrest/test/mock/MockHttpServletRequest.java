@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -258,9 +258,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
   @Override
   public String getParameter(String name) {
-    return parameters
-        .entrySet()
-        .stream()
+    return parameters.entrySet().stream()
         .filter(entry -> entry.getKey().equalsIgnoreCase(name))
         .map(entry -> entry.getValue())
         .filter(value -> value != null)
@@ -271,9 +269,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
   @Override
   public Map getParameterMap() {
-    return parameters
-        .entrySet()
-        .stream()
+    return parameters.entrySet().stream()
         .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())
         .collect(
             Collectors.toMap(Map.Entry::getKey, p -> p.getValue().stream().toArray(String[]::new)));
@@ -286,9 +282,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
   @Override
   public String[] getParameterValues(String name) {
-    return parameters
-        .entrySet()
-        .stream()
+    return parameters.entrySet().stream()
         .filter(entry -> entry.getKey().equalsIgnoreCase(name))
         .map(entry -> entry.getValue())
         .filter(value -> value != null)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -97,8 +97,7 @@ public class ContainerResponse implements GenericContainerResponse {
             httpHeaders,
             new NotifiesOutputStream(entityStream, writeListener));
       } catch (Exception e) {
-        if (Throwables.getCausalChain(e)
-            .stream()
+        if (Throwables.getCausalChain(e).stream()
             .anyMatch(
                 throwable ->
                     "org.apache.catalina.connector.ClientAbortException"

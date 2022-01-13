@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -180,9 +180,7 @@ public class EverrestServletContextInitializerTest {
         everrestApplication.getResourceClasses().get("/async") == AsynchronousJobService.class);
 
     Object[] objectsMatchedToAsynchronousJobPool =
-        everrestApplication
-            .getSingletons()
-            .stream()
+        everrestApplication.getSingletons().stream()
             .filter(e -> e instanceof AsynchronousJobPool)
             .toArray();
     assertTrue(
@@ -198,9 +196,7 @@ public class EverrestServletContextInitializerTest {
 
     assertTrue(
         "AsynchronousProcessListWriter is expected to be deployed as provider",
-        everrestApplication
-                .getSingletons()
-                .stream()
+        everrestApplication.getSingletons().stream()
                 .filter(e -> e instanceof AsynchronousProcessListWriter)
                 .count()
             == 1);
@@ -228,9 +224,7 @@ public class EverrestServletContextInitializerTest {
         everrestApplication.getResourceClasses().get("/zzz") == AsynchronousJobService.class);
 
     Object[] objectsMatchedToAsynchronousJobPool =
-        everrestApplication
-            .getSingletons()
-            .stream()
+        everrestApplication.getSingletons().stream()
             .filter(e -> e instanceof AsynchronousJobPool)
             .toArray();
     assertTrue(
@@ -246,9 +240,7 @@ public class EverrestServletContextInitializerTest {
 
     assertTrue(
         "AsynchronousProcessListWriter is expected to be deployed as provider",
-        everrestApplication
-                .getSingletons()
-                .stream()
+        everrestApplication.getSingletons().stream()
                 .filter(e -> e instanceof AsynchronousProcessListWriter)
                 .count()
             == 1);
@@ -268,28 +260,21 @@ public class EverrestServletContextInitializerTest {
 
     assertTrue(
         "AsynchronousJobService is expected to be deployed as resource",
-        everrestApplication
-                .getResourceClasses()
-                .values()
-                .stream()
+        everrestApplication.getResourceClasses().values().stream()
                 .filter(e -> e == AsynchronousJobService.class)
                 .count()
             == 0);
 
     assertTrue(
         "AsynchronousJobPool is not expected to be deployed as provider",
-        everrestApplication
-                .getSingletons()
-                .stream()
+        everrestApplication.getSingletons().stream()
                 .filter(e -> e instanceof AsynchronousJobPool)
                 .count()
             == 0);
 
     assertTrue(
         "AsynchronousProcessListWriter is not expected to be deployed as provider",
-        everrestApplication
-                .getSingletons()
-                .stream()
+        everrestApplication.getSingletons().stream()
                 .filter(e -> e instanceof AsynchronousProcessListWriter)
                 .count()
             == 0);
@@ -309,9 +294,7 @@ public class EverrestServletContextInitializerTest {
 
     assertTrue(
         "SecurityConstraint is expected to be deployed as provider",
-        everrestApplication
-                .getSingletons()
-                .stream()
+        everrestApplication.getSingletons().stream()
                 .filter(e -> e instanceof SecurityConstraint)
                 .count()
             == 1);
@@ -330,9 +313,7 @@ public class EverrestServletContextInitializerTest {
 
     assertTrue(
         "SecurityConstraint is expected to be deployed as provider",
-        everrestApplication
-                .getSingletons()
-                .stream()
+        everrestApplication.getSingletons().stream()
                 .filter(e -> e instanceof SecurityConstraint)
                 .count()
             == 1);
@@ -352,9 +333,7 @@ public class EverrestServletContextInitializerTest {
 
     assertTrue(
         "SecurityConstraint is not expected to be deployed as provider",
-        everrestApplication
-                .getSingletons()
-                .stream()
+        everrestApplication.getSingletons().stream()
                 .filter(e -> e instanceof SecurityConstraint)
                 .count()
             == 0);

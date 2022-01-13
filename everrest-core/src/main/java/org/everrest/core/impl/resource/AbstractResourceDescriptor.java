@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -315,8 +315,7 @@ public class AbstractResourceDescriptor extends BaseObjectModel implements Resou
     List<Parameter> methodParameters = resourceMethod.getMethodParameters();
     int numberOfEntityParameters =
         (int)
-            methodParameters
-                .stream()
+            methodParameters.stream()
                 .filter(parameter -> parameter.getAnnotation() == null)
                 .count();
     if (numberOfEntityParameters > 1) {
@@ -326,8 +325,7 @@ public class AbstractResourceDescriptor extends BaseObjectModel implements Resou
               resourceMethod.getMethod().getName(), numberOfEntityParameters));
     }
     boolean isAnyParameterAnnotatedWithFormParam =
-        methodParameters
-            .stream()
+        methodParameters.stream()
             .anyMatch(
                 parameter ->
                     parameter.getAnnotation() != null
@@ -335,8 +333,7 @@ public class AbstractResourceDescriptor extends BaseObjectModel implements Resou
     if (isAnyParameterAnnotatedWithFormParam && numberOfEntityParameters == 1) {
       boolean entityParameterIsMultivaluedMap = false;
       Parameter entityParameter =
-          methodParameters
-              .stream()
+          methodParameters.stream()
               .filter(parameter -> parameter.getAnnotation() == null)
               .findFirst()
               .get();

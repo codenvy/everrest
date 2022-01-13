@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012-2021 Codenvy, S.A.
+    Copyright (c) 2012-2022 Codenvy, S.A.
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
     which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -118,26 +118,26 @@
         <license_copyrightOwner>${project.organization.name}</license_copyrightOwner>
         <maven.antrun.plugin.version>3.0.0</maven.antrun.plugin.version>
         <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
-        <maven.buildhelper.plugin.version>3.2.0</maven.buildhelper.plugin.version>
+        <maven.buildhelper.plugin.version>3.3.0</maven.buildhelper.plugin.version>
         <maven.buildnumber.plugin.version>1.4</maven.buildnumber.plugin.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
-        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.9.0</maven.compiler.plugin.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <maven.dependency.plugin.version>3.2.0</maven.dependency.plugin.version>
+        <maven.dependency.plugin.version>3.1.2</maven.dependency.plugin.version>
         <maven.enforcer.plugin.version>3.0.0</maven.enforcer.plugin.version>
         <maven.exec.plugin.version>3.0.0</maven.exec.plugin.version>
         <maven.fabric8io.docker.plugin.version>0.35.0</maven.fabric8io.docker.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
-        <maven.fmt.plugin.version>2.5.1</maven.fmt.plugin.version>
+        <maven.fmt.plugin.version>2.13</maven.fmt.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <maven.install.plugin.version>3.0.0-M1</maven.install.plugin.version>
         <maven.jacoco.plugin.version>0.8.7</maven.jacoco.plugin.version>
-        <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
+        <maven.jar.plugin.version>3.2.2</maven.jar.plugin.version>
         <maven.javadoc.plugin.vesion>3.3.1</maven.javadoc.plugin.vesion>
         <maven.mycila.license.plugin.version>3.0</maven.mycila.license.plugin.version>
         <maven.plugin.plugin.version>3.6.1</maven.plugin.plugin.version>
-        <maven.release.plugin.version>3.0.0-M4</maven.release.plugin.version>
+        <maven.release.plugin.version>3.0.0-M5</maven.release.plugin.version>
         <maven.resources.plugin.version>3.2.0</maven.resources.plugin.version>
         <maven.sonar.plugin.version>3.9.0.2155</maven.sonar.plugin.version>
         <maven.sortpom.plugin.version>2.3.1</maven.sortpom.plugin.version>

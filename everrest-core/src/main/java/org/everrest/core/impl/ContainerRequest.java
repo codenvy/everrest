@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -291,8 +291,7 @@ public class ContainerRequest implements GenericContainerRequest {
           createAcceptedLanguageList(convertToString(getRequestHeader(ACCEPT_LANGUAGE)));
       List<Locale> locales = new ArrayList<>(acceptLanguages.size());
       locales.addAll(
-          acceptLanguages
-              .stream()
+          acceptLanguages.stream()
               .map(language -> language.getLanguage().getLocale())
               .collect(toList()));
 

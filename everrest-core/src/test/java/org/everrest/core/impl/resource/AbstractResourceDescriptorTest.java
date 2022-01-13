@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -126,8 +126,7 @@ public class AbstractResourceDescriptorTest {
     assertTrue(resourceDescriptor.getSubResourceMethods().isEmpty());
     assertTrue(resourceDescriptor.getSubResourceLocators().isEmpty());
     assertTrue(
-        retrieveLoggingEvents()
-            .stream()
+        retrieveLoggingEvents().stream()
             .anyMatch(
                 loggingEvent ->
                     loggingEvent.getLevel() == Level.WARN
@@ -335,8 +334,7 @@ public class AbstractResourceDescriptorTest {
   public void warnWhenResourceHasTwoConstructorsWithTheSameNumberOfParameters() {
     new AbstractResourceDescriptor(ResourceWithTwoConstructorsWithTheSameNumberOfParameters.class);
     assertTrue(
-        retrieveLoggingEvents()
-            .stream()
+        retrieveLoggingEvents().stream()
             .anyMatch(
                 loggingEvent ->
                     loggingEvent.getLevel() == Level.WARN
@@ -362,8 +360,7 @@ public class AbstractResourceDescriptorTest {
   public void warnWhenResourceHasNonPublicJaxRsMethods() {
     new AbstractResourceDescriptor(ResourceWithNonPublicJaxRsMethod.class);
     assertTrue(
-        retrieveLoggingEvents()
-            .stream()
+        retrieveLoggingEvents().stream()
             .anyMatch(
                 loggingEvent ->
                     loggingEvent.getLevel() == Level.WARN
@@ -672,10 +669,7 @@ public class AbstractResourceDescriptorTest {
     ResourceDescriptor resource =
         new AbstractResourceDescriptor(ResourceForTestSortingOfResourceMethods.class);
     List<String> methodNames =
-        resource
-            .getResourceMethods()
-            .get("GET")
-            .stream()
+        resource.getResourceMethods().get("GET").stream()
             .map(resourceMethod -> resourceMethod.getMethod().getName())
             .collect(toList());
     assertEquals(newArrayList("first", "second", "third", "fourth", "fifth", "last"), methodNames);
@@ -727,10 +721,7 @@ public class AbstractResourceDescriptorTest {
     assertEquals(3, subResourceMethods.get(new UriPattern("/b")).get("GET").size());
 
     List<String> methodNames =
-        subResourceMethods
-            .get(new UriPattern("/b"))
-            .get("GET")
-            .stream()
+        subResourceMethods.get(new UriPattern("/b")).get("GET").stream()
             .map(subResourceMethod -> subResourceMethod.getMethod().getName())
             .collect(toList());
     assertEquals(newArrayList("m2", "m5", "m0"), methodNames);
@@ -988,8 +979,7 @@ public class AbstractResourceDescriptorTest {
 
   private List<FieldInjector> filterFieldsInsertedByJacocoFrameworkDuringInstrumentation(
       List<FieldInjector> initialList) {
-    return initialList
-        .stream()
+    return initialList.stream()
         .filter(fieldInjector -> !fieldInjector.getName().startsWith("$jacocoData"))
         .collect(toList());
   }

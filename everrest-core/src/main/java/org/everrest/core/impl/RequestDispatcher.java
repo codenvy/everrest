@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 Codenvy, S.A.
+ * Copyright (c) 2012-2022 Codenvy, S.A.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -490,8 +490,7 @@ public class RequestDispatcher {
       resourceMethodCandidates.addAll(resourceMethodsByHttpMethod);
     } else {
       resourceMethodCandidates.addAll(
-          resourceMethodsByHttpMethod
-              .stream()
+          resourceMethodsByHttpMethod.stream()
               .filter(
                   resourceMethod ->
                       MediaTypeHelper.isConsume(resourceMethod.consumes(), contentType))
@@ -508,8 +507,7 @@ public class RequestDispatcher {
 
     List<AcceptMediaType> acceptMediaTypes = request.getAcceptMediaTypeList();
     resourceMethodCandidates =
-        resourceMethodCandidates
-            .stream()
+        resourceMethodCandidates.stream()
             .filter(notAcceptableFilter(acceptMediaTypes))
             .sorted(byAcceptMediaTypeComparator(acceptMediaTypes))
             .collect(toList());
@@ -613,9 +611,7 @@ public class RequestDispatcher {
       List<String> capturingValues,
       List<SubResourceLocatorDescriptor> locators) {
     locators.addAll(
-        subResourceLocators
-            .entrySet()
-            .stream()
+        subResourceLocators.entrySet().stream()
             .filter(e -> e.getKey().match(requestedPath, capturingValues))
             .map(e -> e.getValue())
             .collect(toList()));
