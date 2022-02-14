@@ -103,7 +103,7 @@
         <gpg.useagent>true</gpg.useagent>
         <groovy.version>3.0.9</groovy.version>
         <io.rest-assured.version>4.5.1</io.rest-assured.version>
-        <jakarta.activation.version>2.0.1</jakarta.activation.version>
+        <jakarta.activation.version>2.1.0</jakarta.activation.version>
         <jakarta.annotation.version>2.0.0</jakarta.annotation.version>
         <jakarta.inject.version>1.0.5</jakarta.inject.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
