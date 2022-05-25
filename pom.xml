@@ -108,7 +108,7 @@
         <jakarta.inject.version>1.0.5</jakarta.inject.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
-        <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
+        <jakarta.websocket.version>2.1.0</jakarta.websocket.version>
         <jakarta.ws.rs.version>3.0.0</jakarta.ws.rs.version>
         <jakarta.xml.bind>3.0.0</jakarta.xml.bind>
         <java.target.version>11</java.target.version>
