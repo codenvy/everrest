@@ -94,7 +94,7 @@
         <ch.qos.logback.version>1.2.10</ch.qos.logback.version>
         <com.google.code.guice.version>4.2.2</com.google.code.guice.version>
         <com.google.errorprone>2.3.4</com.google.errorprone>
-        <com.google.guava.version>31.0.1-jre</com.google.guava.version>
+        <com.google.guava.version>31.1-jre</com.google.guava.version>
         <com.sun.xml.bind>3.0.0</com.sun.xml.bind>
         <com.tngtech.java>1.13.1</com.tngtech.java>
         <commons-fileupload.version>1.4</commons-fileupload.version>
@@ -102,7 +102,7 @@
         <currentYear>2016</currentYear>
         <gpg.useagent>true</gpg.useagent>
         <groovy.version>3.0.9</groovy.version>
-        <io.rest-assured.version>4.5.1</io.rest-assured.version>
+        <io.rest-assured.version>5.1.0</io.rest-assured.version>
         <jakarta.activation.version>2.0.1</jakarta.activation.version>
         <jakarta.annotation.version>2.0.0</jakarta.annotation.version>
         <jakarta.inject.version>1.0.5</jakarta.inject.version>
