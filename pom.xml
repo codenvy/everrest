@@ -101,7 +101,7 @@
         <commons-io.version>2.11.0</commons-io.version>
         <currentYear>2016</currentYear>
         <gpg.useagent>true</gpg.useagent>
-        <groovy.version>3.0.9</groovy.version>
+        <groovy.version>3.0.11</groovy.version>
         <io.rest-assured.version>4.5.1</io.rest-assured.version>
         <jakarta.activation.version>2.0.1</jakarta.activation.version>
         <jakarta.annotation.version>2.0.0</jakarta.annotation.version>
