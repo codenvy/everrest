@@ -147,7 +147,7 @@
         <maven.war.plugin.version>3.3.2</maven.war.plugin.version>
         <org.hamcrest.version>2.2</org.hamcrest.version>
         <org.mockito.mockito-testng.version>0.4.13</org.mockito.mockito-testng.version>
-        <org.mockito.version>3.12.4</org.mockito.version>
+        <org.mockito.version>4.9.0</org.mockito.version>
         <org.slf4j.version>1.7.36</org.slf4j.version>
         <org.testng.version>7.6.0</org.testng.version>
         <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
